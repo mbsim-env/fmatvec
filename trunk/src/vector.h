@@ -152,7 +152,7 @@ namespace fmatvec {
        * Vector<double> x("[3;1;2]");
        * \endcode
        * constructs the vector
-       * \f[ \vec{x}=\pmat{3\\ 1 \\ 2}  \f]
+       * \f[ x=\begin{pmatrix}3\\ 1 \\ 2\end{pmatrix}  \f]
        * \param str The string the vector will be initialized with. 
        * */
       Vector(const char *str);

@@ -151,7 +151,7 @@ namespace fmatvec {
        * Matrix<General,double> A("[3,2;1,2]");
        * \endcode 
        * constructs the matrix
-       * \f[ \vec{A}=\pmat{3 & 2\\ 1 & 2}  \f]
+       * \f[ A=\begin{pmatrix}3 & 2\\ 1 & 2\end{pmatrix}  \f]
        * \param str The string the matrix will be initialized with. 
        * */
       Matrix(const char *str);
@@ -364,16 +364,16 @@ namespace fmatvec {
        * \endcode
        * yields
        * \f[ 
-       * \vec{A}=\pmat{
+       * A=\begin{pmatrix}
        * 	a_{00} & a_{01} & a_{02} & a_{03} & a_{04}\\
        * 	a_{10} & a_{11} & a_{12} & a_{13} & a_{14}\\
        * 	a_{20} & a_{21} & a_{22} & a_{23} & a_{24}\\
        * 	a_{30} & a_{31} & a_{32} & a_{33} & a_{34}
-       * }\quad \Rightarrow \quad
-       * \vec{B}=\pmat{
+       * \end{pmatrix}\quad \Rightarrow \quad
+       * B=\begin{pmatrix}
        * 	 a_{12} & a_{13} & a_{14}\\
        * 	 a_{22} & a_{23} & a_{24}
-       * }
+       * \end{pmatrix}
        * \f]
        * \attention The submatrix and the
        * calling matrix will share the same physical memory.
