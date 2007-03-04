@@ -1,0 +1,112 @@
+/* Copyright (C) 2003-2005  Martin Förg
+
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * Contact:
+ *   martin.foerg@web.de
+ *
+ */
+
+#ifndef types_h
+#define types_h
+
+#ifndef CBLAS_ENUM_DEFINED_H
+   #define CBLAS_ENUM_DEFINED_H
+   enum CBLAS_ORDER {CblasRowMajor=101, CblasColMajor=102 };
+   enum CBLAS_TRANSPOSE {CblasNoTrans=111, CblasTrans=112, CblasConjTrans=113,
+                         AtlasConj=114};
+   enum CBLAS_UPLO  {CblasUpper=121, CblasLower=122};
+   enum CBLAS_DIAG  {CblasNonUnit=131, CblasUnit=132};
+   enum CBLAS_SIDE  {CblasLeft=141, CblasRight=142};
+#endif
+
+#ifndef ATLAS_ENUM_H
+   #define ATLAS_ENUM_H
+   #define ATLAS_ORDER CBLAS_ORDER
+      #define AtlasRowMajor CblasRowMajor
+      #define AtlasColMajor CblasColMajor
+   #define ATLAS_TRANS CBLAS_TRANSPOSE
+      #define AtlasNoTrans CblasNoTrans
+      #define AtlasTrans CblasTrans
+      #define AtlasConjTrans CblasConjTrans
+   #define ATLAS_UPLO CBLAS_UPLO
+      #define AtlasUpper CblasUpper
+      #define AtlasLower CblasLower
+   #define ATLAS_DIAG CBLAS_DIAG
+      #define AtlasNonUnit CblasNonUnit
+      #define AtlasUnit CblasUnit
+   #define ATLAS_SIDE CBLAS_SIDE
+      #define AtlasLeft  CblasLeft
+      #define AtlasRight CblasRight
+#endif
+
+/*! 
+ * \brief Namespace fmatvec.
+ *
+ * */
+namespace fmatvec {
+
+  /*! 
+   *  \brief This is the basic shape class for matrices.
+   *
+   * Class BasicType is the basic shape type.
+   * */
+  class BasicType {
+  };
+
+  /*! 
+   *  \brief This the shape class for general matrices.
+   *
+   * Class General is a shape class for general matrices.
+   * */
+  class General : public BasicType {
+  };
+
+  /*! 
+   *  \brief This the shape class for general band matrices.
+   *
+   * Class General is a shape class for general band matrices.
+   * */
+  class GeneralBand : public BasicType {
+  };
+
+  /*! 
+   *  \brief This the shape class for symmetric matrices.
+   *
+   * Class General is a shape class for symmetric matrices.
+   * */
+  class Symmetric : public BasicType {
+  };
+
+  class SymmetricBand : public BasicType {
+  };
+
+  class SymmetricPacked : public BasicType {
+  };
+
+  /*! 
+   *  \brief This the shape class for diagonal matrices.
+   *
+   * Class General is a shape class for diagonal matrices.
+   * */
+  class Diagonal : public BasicType {
+  };
+
+  class Sparse : public BasicType {
+  };
+
+}
+
+#endif
