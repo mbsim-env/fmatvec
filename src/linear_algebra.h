@@ -375,8 +375,8 @@ namespace fmatvec {
    * tilde(x);
    * \endcode 
    *  \f[
-   *  \vec{x}=\pmat{x_1 \\ x_2 \\ x_3} \quad \Rightarrow \quad
-   *  \vec{\tilde x} = \pmat{ 0 & -x_3 & x_2 \\ x_3 &  0 & -x_1 \\ -x_2 & x_1 & 0}
+   *  x=\begin{pmatrix}x_1 \\ x_2 \\ x_3\end{pmatrix} \quad \Rightarrow \quad
+   *  \tilde x = \begin{pmatrix} 0 & -x_3 & x_2 \\ x_3 &  0 & -x_1 \\ -x_2 & x_1 & 0\end{pmatrix}
    *  \f]
    * */
   template <class AT>
