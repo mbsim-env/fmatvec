@@ -25,7 +25,8 @@ Installation:
 	0. Install ATLAS with full LAPACK support, if necessary. For more
 	   details see http://math-atlas.sourceforge.net/faq.html.
 
-	1. Run aclocal, autoheader, autoconf, libtoolize und automake:
+	1. Run aclocal, autoheader, autoconf, libtoolize und automake, if
+	   necessary:
 		
 		aclocal
 		autoheader
