@@ -297,7 +297,7 @@ namespace fmatvec {
   /*! \brief Transpose of a matrix.
    *
    * This function computes the transpose of a matrix.
-   * \f[ \vec{A} \rightarrow \vec{A}^T  \f]
+   * \f[ A \rightarrow A^T  \f]
    * The result is a matrix.
    * \return The transpose.
    * */
