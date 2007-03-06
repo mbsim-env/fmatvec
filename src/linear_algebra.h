@@ -397,6 +397,12 @@ namespace fmatvec {
       return B;
     }
 
+  /*! \brief Matrix-vector multiplication.
+   *
+   * This function computes the product of a matrix 
+   * and a vector.
+   * \return The product.
+   * */
   template <class AT, class Type> 
     Vector<AT> operator*(const Matrix<Type, AT> &A, const Vector<AT > &x) {
 
@@ -413,10 +419,12 @@ namespace fmatvec {
       return z;
     }
 
-  //-------------------------------------
-  // RowVector/Matrix operations
-  //-------------------------------------
-
+  /*! \brief Vector-matrix multiplication.
+   *
+   * This function computes the product of a vector 
+   * and a matrix.
+   * \return The product.
+   * */
   template <class AT, class Type> 
     RowVector<AT> operator*(const RowVector<AT > &x, const Matrix<Type, AT> &A) {
 
@@ -433,11 +441,12 @@ namespace fmatvec {
       return z;
     }
 
-  //-------------------------------------
-  // Matrix/Matrix operations
-  //-------------------------------------
-
-  template <class AT, class Type1, class Type2> 
+   /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+ template <class AT, class Type1, class Type2> 
     Matrix<General, AT> operator+(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
 
       assert(A.rows() == B.rows());
@@ -451,6 +460,11 @@ namespace fmatvec {
       return C;
     }
 
+   /*! \brief Matrix-matrix subtraction.
+   *
+   * This function computes the difference of two matrices
+   * \return The difference.
+   * */
   template <class AT, class Type1, class Type2>
     Matrix<General, AT> operator-(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
 
@@ -465,6 +479,11 @@ namespace fmatvec {
       return C;
     }
 
+   /*! \brief Matrix-matrix multiplication.
+   *
+   * This function computes the product of two matrices
+   * \return The product.
+   * */
   template <class AT, class Type1, class Type2> 
     Matrix<General, AT> operator*(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
 
@@ -483,6 +502,11 @@ namespace fmatvec {
       return C;
     }
 
+   /*! \brief Matrix-matrix comparison.
+   *
+   * This function compares two matrices
+   * \return True, if the matrices are identical, false otherwise.
+   * */
   template <class AT, class Type1, class Type2> 
     bool operator==(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
 
@@ -500,6 +524,11 @@ namespace fmatvec {
       return true;
     }
 
+   /*! \brief Matrix-matrix comparison.
+   *
+   * This function compares two matrices.
+   * \return True, if the matrices are different, false otherwise.
+   * */
   template <class AT, class Type1, class Type2> 
     bool operator!=(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
 
@@ -514,6 +543,12 @@ namespace fmatvec {
       return false;
     }
 
+   /*! \brief Matrix-vector multiplication.
+   *
+   * This function computes the product of a sparse matrix
+   * and a vector.
+   * \return The product.
+   * */
   template <class AT> 
     Vector<AT> operator*(const Matrix<Sparse, AT> &A, const Vector<AT> &x) {
       assert(A.cols() == x.size());
@@ -532,6 +567,11 @@ namespace fmatvec {
       return z;
     }
 
+   /*! \brief Maximum value.
+   *
+   * This function computes the maximum value of a vector.
+   * \return The maximum value.
+   * */
   template <class AT>
     AT max(const Vector<AT> &x) {
       assert(x.size() > 0);
@@ -543,6 +583,11 @@ namespace fmatvec {
       return maximum;
     }
 
+   /*! \brief Index of maximum value.
+   *
+   * This function computes the index of the maximum value of a vector
+   * \return The index of the maximum value.
+   * */
   template <class AT>
     int maxIndex(const Vector<AT> &x) {
       assert(x.size() > 0);
@@ -557,6 +602,11 @@ namespace fmatvec {
       return index;
     }
 
+   /*! \brief Minimum value.
+   *
+   * This function computes the minimum value of a vector.
+   * \return The minimum value.
+   * */
   template <class AT>
     AT min(const Vector<AT> &x) {
       assert(x.size() > 0);
@@ -568,6 +618,11 @@ namespace fmatvec {
       return minimum;
     }
 
+   /*! \brief Index of minimum value.
+   *
+   * This function computes the index of the minimum value of a vector
+   * \return The index of the minimum value.
+   * */
   template <class AT>
     int minIndex(const Vector<AT> &x) {
       assert(x.size() > 0);
@@ -668,6 +723,11 @@ namespace fmatvec {
       return A;
     }
 
+   /*! \brief Count nonzero elements.
+   *
+   * This function counts the nonzero elements of a matrix.
+   * \return The number of nonzero elemets.
+   * */
    template <class AT, class Type> int countElements(const Matrix<Type, AT> &A) { 
     int k=0;
     for(int i=0; i<A.rows(); i++) {
