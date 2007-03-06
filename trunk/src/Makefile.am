@@ -1,4 +1,5 @@
 lib_LTLIBRARIES = libfmatvec.la
+libfmatvec_la_LDFLAGS = -version-info @LIBFMATVEC_VERSION_INFO@
 libfmatvec_la_SOURCES = blas_extensions_double.cc \
 			diagonal_matrix_double.cc \
 			general_matrix_double.cc \
