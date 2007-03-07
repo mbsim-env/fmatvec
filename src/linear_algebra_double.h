@@ -35,65 +35,192 @@
 //-------------------------------------
 
 namespace fmatvec {
+
+  /*! \brief Matrix-scalar multiplication.
+   *
+   * This function multiplies a diagonal matrix by a scalar. 
+   * \param A A diagonal matrix. 
+   * \param alpha A scalar. 
+   * \return A reference to the diagonal matrix. 
+   * */
   Matrix<Diagonal, double >& operator*=(const Matrix<Diagonal, double >& A, double alpha);
 
+  /*! \brief Matrix-scalar division.
+   *
+   * This function divides a diagonal matrix by a scalar. 
+   * \param A A diagonal matrix. 
+   * \param alpha A scalar. 
+   * \return A reference to the diagonal matrix. 
+   * */
   Matrix<Diagonal, double >& operator/=(const Matrix<Diagonal, double >& A, double alpha);
 
+  /*! \brief Matrix-scalar multiplication.
+   *
+   * This function multiplies a square matrix by a scalar. 
+   * \param A A square matrix. 
+   * \param alpha A scalar. 
+   * \return A reference to the square matrix. 
+   * */
   SquareMatrix<double>& operator*=(const SquareMatrix<double>& A, double alpha);
 
+  /*! \brief Matrix-scalar division.
+   *
+   * This function divides a square matrix by a scalar. 
+   * \param A A square matrix. 
+   * \param alpha A scalar. 
+   * \return A reference to the square matrix. 
+   * */
   SquareMatrix<double>& operator/=(const SquareMatrix<double>& A, double alpha);
 
+  /*! \brief Matrix-scalar multiplication.
+   *
+   * This function computes the product of a square matrix and a scalar. 
+   * \param A A square matrix. 
+   * \param alpha A scalar. 
+   * \return A new square matrix containig the result.
+   * */
   SquareMatrix<double> operator*(const SquareMatrix<double> &A, double alpha);
 
+  /*! \brief Scalar-matrix multiplication.
+   *
+   * \see operator*(const SquareMatrix<double> &A, double alpha).
+   * */
   SquareMatrix<double> operator*(double alpha, const SquareMatrix<double> &A);
 
+  /*! \brief Matrix-scalar division.
+   *
+   * This function computes the division of a square matrix and a scalar. 
+   * \param A A square matrix. 
+   * \param alpha A scalar. 
+   * \return A new square matrix containig the result.
+   * */
   SquareMatrix<double> operator/(const SquareMatrix<double> &A, double alpha);
 
-  /*! \brief Matrix multiplying.
+ /*! \brief Matrix-scalar multiplication.
    *
-   * Multiplies the calling matrix by the scalar a. This is equivalent to A<<A*a but may be slightly faster.
-   * \param a The scalar the calling matrix will be multiplied by. 
-   * \return The calling matrix.
+   * This function multiplies a general matrix by a scalar. 
+   * \param A A general matrix. 
+   * \param alpha A scalar. 
+   * \return A reference to the general matrix. 
    * */
-  Matrix<General, double >& operator*=(const Matrix<General, double > &A, const double &a);
+  Matrix<General, double >& operator*=(const Matrix<General, double > &A, const double &alpha);
 
-  /*! \brief Matrix division.
+  /*! \brief Matrix-scalar division.
    *
-   * Divides the calling matrix by the scalar a. This is equivalent to A<<A/a but may be slightly faster.
-   * \param a The scalar the calling matrix will be divided by.
-   * \return The calling matrix.
+   * This function divides a general matrix by a scalar. 
+   * \param A A general matrix. 
+   * \param alpha A scalar. 
+   * \return A reference to the general matrix. 
    * */
   Matrix<General, double >& operator/=(const Matrix<General, double > &A, const double &a);
 
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of a two general matrices. 
+   * \param A A general matrix. 
+   * \param A B general matrix. 
+   * \return A new general matrix containig the result.
+   * */
   Matrix<General, double > operator+(const Matrix<General, double > &A, const Matrix<General, double > &B);
 
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of a two square matrices. 
+   * \param A A square matrix. 
+   * \param A B square matrix. 
+   * \return A new square matrix containig the result.
+   * */
   SquareMatrix<double> operator+(const SquareMatrix<double> &A, const SquareMatrix<double> &B);
 
-  Matrix<Symmetric, double > operator+(const Matrix<Symmetric, double > &A, const Matrix<Symmetric, double > &B);
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of a two symmetric matrices. 
+   * \param A A symmetric matrix. 
+   * \param A B symmetric matrix. 
+   * \return A new symmetric matrix containig the result.
+   * */
+  Matrix<Symmetric, double> operator+(const Matrix<Symmetric, double > &A, const Matrix<Symmetric, double > &B);
 
+  /*! \brief Matrix-matrix subtraction.
+   *
+   * This function computes the difference of a two square matrices. 
+   * \param A A square matrix. 
+   * \param A B square matrix. 
+   * \return A new square matrix containig the result.
+   * */
   SquareMatrix<double> operator-(const SquareMatrix<double> &A, const SquareMatrix<double> &B);
 
+  /*! \brief Matrix-scalar multiplication.
+   *
+   * This function computes the product of a general matrix and a scalar. 
+   * \param A A general matrix. 
+   * \param alpha A scalar. 
+   * \return A new general matrix containig the result.
+   * */
   Matrix<General, double> operator*(const Matrix<General, double> &A, double alpha);
 
-  Matrix<General, double> operator/(const Matrix<General, double> &A, double alpha);
-
+  /*! \brief Scalar-matrix multiplication.
+   *
+   * \see operator*(const Matrix<General, double> &A, double alpha).
+   * */
   Matrix<General, double> operator*(double alpha, const Matrix<General, double> &A);
 
+  /*! \brief Matrix-scalar division.
+   *
+   * This function computes the division of a general matrix and a scalar. 
+   * \param A A general matrix. 
+   * \param alpha A scalar. 
+   * \return A new general matrix containig the result.
+   * */
+  Matrix<General, double> operator/(const Matrix<General, double> &A, double alpha);
+
+  /*! \brief Matrix-scalar multiplication.
+   *
+   * This function computes the product of a symmetric matrix and a scalar. 
+   * \param A A symmetric matrix. 
+   * \param alpha A scalar. 
+   * \return A new symmetric matrix containig the result.
+   * */
   Matrix<Symmetric, double> operator*(const Matrix<Symmetric, double> &A, double alpha);
 
-  Matrix<Symmetric, double> operator/(const Matrix<Symmetric, double> &A, double alpha);
-
+   /*! \brief Scalar-matrix multiplication.
+   *
+   * \see operator*(const Matrix<Symmetric, double> &A, double alpha).
+   * */
   Matrix<Symmetric, double> operator*(double alpha, const Matrix<Symmetric, double> &A);
 
+  /*! \brief Matrix-scalar division.
+   *
+   * This function computes the division of a symmetric matrix and a scalar. 
+   * \param A A symmetric matrix. 
+   * \param alpha A scalar. 
+   * \return A new symmetric matrix containig the result.
+   * */
+  Matrix<Symmetric, double> operator/(const Matrix<Symmetric, double> &A, double alpha);
+
+  /*! \brief Matrix-scalar multiplication.
+   *
+   * This function computes the product of a diagonal matrix and a scalar. 
+   * \param A A diagonal matrix. 
+   * \param alpha A scalar. 
+   * \return A new diagonal matrix containig the result.
+   * */
   Matrix<Diagonal, double> operator*(const Matrix<Diagonal, double> &D, double alpha);
 
+ /*! \brief Scalar-matrix multiplication.
+   *
+   * \see operator*(const Matrix<Diagonal, double> &D, double alpha).
+   * */
   Matrix<Diagonal, double> operator*(double alpha, const Matrix<Diagonal, double> &D);
 
+   /*! \brief Matrix-scalar division.
+   *
+   * This function computes the division of a diagonal matrix and a scalar. 
+   * \param A A diagonal matrix. 
+   * \param alpha A scalar. 
+   * \return A new diagonal matrix containig the result.
+   * */
   Matrix<Diagonal, double> operator/(const Matrix<Diagonal, double> &D, double alpha);
-
-  //-------------------------------------
-  // Matrix/Matrix operations
-  //-------------------------------------
 
   Matrix<Symmetric, double> JTJ(const Matrix<General, double> &J);
 
