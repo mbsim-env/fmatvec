@@ -798,6 +798,27 @@ namespace fmatvec {
     return A;
   }
 
+  Matrix<Symmetric, double>& operator-=(const Matrix<Symmetric, double >& A_, const Matrix<Symmetric, double> &B) {
+
+    Matrix<Symmetric, double> &A = const_cast<Matrix<Symmetric, double> &>(A_);
+
+#ifdef FMATVEC_SIZE_CHECK
+    assert(A.size() == B.size()); 
+#endif
+
+#ifdef FMATVEC_VOID_CHECK
+    if(A.size() == 0)
+      return A;
+#endif
+
+    // TODO Blas FUnktion suchen!
+    for(int i=0; i<A.size(); i++)
+      for(int j=0; j<=i; j++)
+	A(i,j) -= B(i,j);
+
+    return A;
+  }
+
   SquareMatrix<double>& operator-=(const SquareMatrix<double>& A_, const SquareMatrix<double> &B) {
 
     SquareMatrix<double> &A = const_cast<SquareMatrix<double> &>(A_);
