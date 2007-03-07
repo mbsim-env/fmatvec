@@ -338,6 +338,8 @@ namespace fmatvec {
    *
    * This function computes the product of a matrix 
    * and a scalar.
+   * \param A The matrix. 
+   * \param alpha The scalar. 
    * \return The product.
    * */
   template <class AT, class Type>
