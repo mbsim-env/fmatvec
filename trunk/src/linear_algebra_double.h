@@ -116,16 +116,26 @@ namespace fmatvec {
 
   /*! \brief Matrix-matrix addition.
    *
-   * This function computes the sum of a two general matrices. 
+   * This function computes the sum of two general matrices. 
    * \param A A general matrix. 
    * \param A B general matrix. 
    * \return A new general matrix containig the result.
    * */
   Matrix<General, double > operator+(const Matrix<General, double > &A, const Matrix<General, double > &B);
 
+  /*! \brief Matrix-matrix subtraction.
+   *
+   * This function computes the difference of two general matrices
+   * according to \f[\boldsymbol{A}-\boldsymbol{B} \f]. 
+   * \param A A general matrix. 
+   * \param A B general matrix. 
+   * \return A new general matrix containig the result.
+   * */
+  Matrix<General, double> operator-(const Matrix<General, double> &A, const Matrix<General, double> &B);
+
   /*! \brief Matrix-matrix addition.
    *
-   * This function computes the sum of a two square matrices. 
+   * This function computes the sum of two square matrices. 
    * \param A A square matrix. 
    * \param A B square matrix. 
    * \return A new square matrix containig the result.
@@ -134,7 +144,7 @@ namespace fmatvec {
 
   /*! \brief Matrix-matrix addition.
    *
-   * This function computes the sum of a two symmetric matrices. 
+   * This function computes the sum of two symmetric matrices. 
    * \param A A symmetric matrix. 
    * \param A B symmetric matrix. 
    * \return A new symmetric matrix containig the result.
@@ -143,7 +153,7 @@ namespace fmatvec {
 
   /*! \brief Matrix-matrix subtraction.
    *
-   * This function computes the difference of a two square matrices. 
+   * This function computes the difference of two square matrices. 
    * \param A A square matrix. 
    * \param A B square matrix. 
    * \return A new square matrix containig the result.
@@ -222,55 +232,165 @@ namespace fmatvec {
    * */
   Matrix<Diagonal, double> operator/(const Matrix<Diagonal, double> &D, double alpha);
 
-  Matrix<Symmetric, double> JTJ(const Matrix<General, double> &J);
+   /*! \brief Special multiplication.
+   *
+   * This function computes the product of a general matrix according to \f[ \boldsymbol{A}^T\,\boldsymbol{A} \f]. 
+   * \param A A general matrix. 
+   * \return A new symmetric matrix containig the result.
+   * */
+  Matrix<Symmetric, double> JTJ(const Matrix<General, double> &A);
 
-  Matrix<Symmetric, double> JTMJ(const Matrix<Symmetric, double> &M, const Matrix<General, double> &J);
+   /*! \brief Special multiplication.
+   *
+   * This function computes the product of a symmetric and a general matrix
+   * according to \f[ \boldsymbol{A}^T\,\boldsymbol{B}\,\boldsymbol{A} \f]. 
+   * \param A A general matrix. 
+   * \param B A symmetric matrix. 
+   * \return A new symmetric matrix containig the result.
+   * */
+  Matrix<Symmetric, double> JTMJ(const Matrix<Symmetric, double> &B, const Matrix<General, double> &A);
 
-  Matrix<Symmetric, double> JTMJ(const Matrix<Diagonal, double> &M, const Matrix<General, double> &J);
+   /*! \brief Special multiplication.
+   *
+   * This function computes the product of a diagonal and a symmetric matrix
+   * according to \f[ \boldsymbol{A}^T\,\boldsymbol{B}\,\boldsymbol{A} \f]. 
+   * \param A A general matrix. 
+   * \param B A diagonal matrix. 
+   * \return A new symmetric matrix containig the result.
+   * */
+  Matrix<Symmetric, double> JTMJ(const Matrix<Diagonal, double> &B, const Matrix<General, double> &A);
 
-  Matrix<Diagonal, double >& operator+=(const Matrix<Diagonal, double >& A, const Matrix<Diagonal, double > &A);
+ /*! \brief Matrix-matrix addition.
+   *
+   * This function adds a diagonal matrix to a diagonal matrix. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}+\boldsymbol{B} \f]. 
+   * \param A A diagonal matrix. 
+   * \param B A diagonal matrix. 
+   * \return A reference to the first diagonal matrix. 
+   * */
+  Matrix<Diagonal, double >& operator+=(const Matrix<Diagonal, double >& A, const Matrix<Diagonal, double > &B);
 
-  Matrix<Symmetric, double>& operator+=(const Matrix<Symmetric, double >& A_, const Matrix<Symmetric, double> &B);
-
+ /*! \brief Matrix-matrix subtraction.
+   *
+   * This function subtracts a diagonal matrix from a diagonal matrix. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}-\boldsymbol{B} \f]. 
+   * \param A A diagonal matrix. 
+   * \param B A diagonal matrix. 
+   * \return A reference to the first matrix.
+   * */
   Matrix<Diagonal, double >& operator-=(const Matrix<Diagonal, double >& A, const Matrix<Diagonal, double > &A);
 
+ /*! \brief Matrix-matrix addition.
+   *
+   * This function adds a symmetric matrix to a symmetric matrix. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}+\boldsymbol{B} \f]. 
+   * \param A A symmetric matrix. 
+   * \param B A symmetric matrix. 
+   * \return A reference to the first matrix. 
+   * */
+  Matrix<Symmetric, double>& operator+=(const Matrix<Symmetric, double >& A, const Matrix<Symmetric, double> &B);
+
+ /*! \brief Matrix-matrix subtraction.
+   *
+   * This function subtracts a symmetric matrix from a symmetric matrix. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}-\boldsymbol{B} \f]. 
+   * \param A A symmetric matrix. 
+   * \param B A symmetric matrix. 
+   * \return A reference to the first matrix.
+   * */
+  Matrix<Symmetric, double>& operator-=(const Matrix<Symmetric, double >& A, const Matrix<Symmetric, double> &B);
+
+ /*! \brief Matrix-matrix addition.
+   *
+   * This function adds a square matrix to a square matrix. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}+\boldsymbol{B} \f]. 
+   * \param A A square matrix. 
+   * \param B A square matrix. 
+   * \return A reference to the first matrix. 
+   * */
   SquareMatrix<double>& operator+=(const SquareMatrix<double>& A, const SquareMatrix<double> &A);
 
+ /*! \brief Matrix-matrix subtraction.
+   *
+   * This function subtracts a square matrix from a square matrix. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}-\boldsymbol{B} \f]. 
+   * \param A A square matrix. 
+   * \param B A square matrix. 
+   * \return A reference to the first matrix.
+   * */
   SquareMatrix<double>& operator-=(const SquareMatrix<double>& A, const SquareMatrix<double> &A);
 
-  /*! \brief Matrix addition.
+ /*! \brief Matrix-matrix addition.
    *
-   * Adds the matrix A on the calling matrix. This is equivalent to A<<A+B but may be slightly faster.
-   * \param A The matrix, that will be added on the calling matrix. 
-   * \return The calling matrix.
+   * This function adds a general matrix to a general matrix. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}+\boldsymbol{B} \f]. 
+   * \param A A general matrix. 
+   * \param B A general matrix. 
+   * \return A reference to the first matrix. 
    * */
   Matrix<General, double >& operator+=(const Matrix<General, double > &A, const Matrix<General, double > &A);
 
-  /*! \brief Matrix subtraction.
+ /*! \brief Matrix-matrix subtraction.
    *
-   * Subtracts the matrix A from the calling matrix. This is equivalent to A<<A-B but may be slightly faster.
-   * \param A The matrix, that will be subtracted from the calling matrix. 
-   * \return The calling matrix.
+   * This function subtracts a general matrix from a general matrix
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}-\boldsymbol{B} \f]. 
+   * \param A A general matrix. 
+   * \param B A general matrix. 
+   * \return A reference to the first matrix.
    * */
   Matrix<General, double >& operator-=(const Matrix<General, double > &A, const Matrix<General, double > &A);
 
-  Matrix<General, double> operator-(const Matrix<General, double> &A, const Matrix<General, double> &B);
-
+  /*! \brief Matrix-matrix multiplication.
+   *
+   * This function computes the product of two general matrices
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}\,\boldsymbol{B} \f]. 
+   * \param A A general matrix. 
+   * \param B A general matrix. 
+   * \return A new general matrix containig the result.
+   * */
   Matrix<General, double> operator*(const Matrix<General, double> &A, const Matrix<General, double> &B);
 
+  /*! \brief Matrix-matrix multiplication.
+   *
+   * This function computes the product of two square matrices
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}\,\boldsymbol{B} \f]. 
+   * \param A A square matrix. 
+   * \param B A square matrix. 
+   * \return A new square matrix containig the result.
+   * */
   SquareMatrix<double> operator*(const SquareMatrix<double> &A, const SquareMatrix<double> &B);
 
+  /*! \brief Matrix-matrix multiplication.
+   *
+   * This function computes the product of a general and a symmetric matrix.
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}\,\boldsymbol{B} \f]. 
+   * \param A A general matrix. 
+   * \param B A symmetric matrix. 
+   * \return A new general matrix containig the result.
+   * */
   Matrix<General, double> operator*(const Matrix<General, double> &A, const Matrix<Symmetric, double> &B);
 
+  /*! \brief Scalar-matrix multiplication.
+   *
+   * \see operator*(const Matrix<General, double> &A, const Matrix<Symmetric, double> &B)
+   * */
   Matrix<General, double> operator*(const Matrix<Symmetric, double> &A, const Matrix<General, double> &B);
 
-  Matrix<General, double> operator*(const Matrix<General, double> &A,const Matrix<Diagonal, double> &D);
+  /*! \brief Matrix-matrix multiplication.
+   *
+   * This function computes the product of a general and a diagonal matrix.
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}\,\boldsymbol{B} \f]. 
+   * \param A A general matrix. 
+   * \param B A diagonal matrix. 
+   * \return A new general matrix containig the result.
+   * */
+  Matrix<General, double> operator*(const Matrix<General, double> &A,const Matrix<Diagonal, double> &B);
 
-  Matrix<General, double> operator*(const Matrix<Diagonal, double> &D, const Matrix<General, double> &B);
-
-  //-------------------------------------
-  // Vector operations
-  //-------------------------------------
+  /*! \brief Scalar-matrix multiplication.
+   *
+   * \see operator*(const Matrix<General, double> &A,const Matrix<Diagonal, double> &B)
+   * */
+  Matrix<General, double> operator*(const Matrix<Diagonal, double> &B, const Matrix<General, double> &A);
 
   /*! \brief Vector multiplying.
    *
