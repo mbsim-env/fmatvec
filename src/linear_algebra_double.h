@@ -392,51 +392,86 @@ namespace fmatvec {
    * */
   Matrix<General, double> operator*(const Matrix<Diagonal, double> &B, const Matrix<General, double> &A);
 
-  /*! \brief Vector multiplying.
+/*! \brief Vector-scalar multiplication.
    *
-   * Multiplies the calling vectortor by the scalar a. This is equivalent to x<<x*a but may be slightly faster.
-   * \param a The scalar the calling vectortor will be multiplied by. 
-   * \return The calling vectortor.
+   * This function multiplies a vector by a scalar. 
+   * \param A A vector.
+   * \param alpha A scalar. 
+   * \return A reference to the vector.
    * */
-  Vector<double>& operator*=(const Vector<double> &x, const double& a);
+  Vector<double>& operator*=(const Vector<double> &x, const double& alpha);
 
-  /*! \brief Vector division.
+ /*! \brief Vector-scalar multiplication.
    *
-   * Divides the calling vectortor by the scalar a. This is equivalent to A<<A/a but may be slightly faster.
-   * \param a The scalar the calling vectortor will be divided by.
-   * \return The calling vectortor.
+   * This function computes the product of a vector and a scalar. 
+   * \param A A vector.
+   * \param alpha A scalar. 
+   * \return A new vector containig the result.
    * */
-  Vector<double>& operator/=(const Vector<double> &x, const double &a);
-
-  /*! \brief Vector addition.
-   *
-   * Adds the vectortor x on the calling vectortor. This is equivalent to a<<a+x but may be slightly faster.
-   * \param x The vectortor, that will be added on the calling vectortor. 
-   * \return The calling vectortor.
-   * */
-
-  Vector<double> operator/(const Vector<double> &x, double alpha);
-
-  Vector<double> operator*(double alpha, const Vector<double> &x);
-
   Vector<double> operator*(const Vector<double> &x, double alpha);
 
-  //-------------------------------------
-  // Vector/Vector operations
-  //-------------------------------------
-
-  Vector<double>& operator+=(const Vector<double> &x, const Vector<double> &x);
-
-  /*! \brief Vector subtraction.
+  /*! \brief Scalar-matrix multiplication.
    *
-   * Subtracts the vectortor x from the calling vectortor. This is equivalent to a<<a-x but may be slightly faster.
-   * \param x The vectortor, that will be subtracted from the calling vectortor. 
-   * \return The calling vectortor.
+   * \see operator*(const Vector<double> &x, double alpha)
    * */
-  Vector<double>& operator-=(const Vector<double> &x, const Vector<double> &x);
+  Vector<double> operator*(double alpha, const Vector<double> &x);
 
+  /*! \brief Vector-scalar division.
+   *
+   * This function divides a vector by a scalar. 
+   * \param A A vector.
+   * \param alpha A scalar. 
+   * \return A reference to the vector.
+   * */
+  Vector<double>& operator/=(const Vector<double> &x, const double &alpha);
+
+ /*! \brief Vector-scalar division.
+   *
+   * This function computes the division of a vector and a scalar. 
+   * \param A A vector.
+   * \param alpha A scalar. 
+   * \return A new vector containig the result.
+   * */
+  Vector<double> operator/(const Vector<double> &x, double alpha);
+
+  /*! \brief Vector-vector addition.
+   *
+   * This function adds two vectors 
+   * according to \f[\boldsymbol{x} \rightarrow \boldsymbol{x}+\boldsymbol{y} \f]. 
+   * \param x A vector.
+   * \param y A vector.
+   * \return A reference to the first vector.
+   * */
+  Vector<double>& operator+=(const Vector<double> &x, const Vector<double> &y);
+
+  /*! \brief Vector-vector subtraction.
+   *
+   * This function subtracts two vectors 
+   * according to \f[\boldsymbol{x} \rightarrow \boldsymbol{x}-\boldsymbol{y} \f]. 
+   * \param x A vector.
+   * \param y A vector.
+   * \return A reference to the first vector.
+   * */
+  Vector<double>& operator-=(const Vector<double> &x, const Vector<double> &y);
+
+  /*! \brief Vector-vector addition.
+   *
+   * This function computes the sum of two vectors
+   * according to \f[\boldsymbol{x}+\boldsymbol{y} \f]. 
+   * \param A A vector.
+   * \param y A vector.
+   * \return A new vector containig the result.
+   * */
   Vector<double> operator+(const Vector<double> &x, const Vector<double> &y);
 
+  /*! \brief Vector-vector subtraction.
+   *
+   * This function computes the difference of two vectors
+   * according to \f[\boldsymbol{x}-\boldsymbol{y} \f]. 
+   * \param A A vector.
+   * \param y A vector.
+   * \return A new vector containig the result.
+   * */
   Vector<double> operator-(const Vector<double> &x, const Vector<double> &y);
 
 
