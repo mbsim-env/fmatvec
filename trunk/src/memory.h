@@ -31,6 +31,8 @@ using namespace std;
 
 namespace fmatvec {
 
+ /// @cond NO_SHOW
+
   template <class AT> class MemoryStack {
       private:
 	AT ***ele;
@@ -151,4 +153,6 @@ namespace fmatvec {
     };
 }
 
+ /// @endcond
+ 
 #endif

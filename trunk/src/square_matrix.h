@@ -44,22 +44,23 @@ namespace fmatvec {
     using Matrix<General, AT>::tp;
     using Matrix<General, AT>::memory;
     using Matrix<General, AT>::elePtr;
+
     public:
 
     /// @cond NO_SHOW
+
     template <class T> friend const SquareMatrix<T> trans(const SquareMatrix<T> &A);
     template <class T> friend SquareMatrix<T> trans(SquareMatrix<T> &A);
 
     friend const SquareMatrix<AT> Matrix<General, AT>::operator()(const Index &I) const;
     friend SquareMatrix<AT> Matrix<General, AT>::operator()(const Index &I);
-    /// @endcond
 
     protected:
 
-    /*! \internal 
-     * */
-      SquareMatrix(int n, int lda, int tp, Memory<AT> memory, const AT* ele) : Matrix<General, AT>(n, n, lda, tp, memory, ele) {
-      }
+    SquareMatrix(int n, int lda, int tp, Memory<AT> memory, const AT* ele) : Matrix<General, AT>(n, n, lda, tp, memory, ele) {
+    }
+
+    /// @endcond
 
     public:
 
@@ -247,19 +248,6 @@ namespace fmatvec {
       return A;
     }
 
-  template <class AT>
-    const SquareMatrix<AT>  trans(const SquareMatrix<AT> &A) {
-
-      return SquareMatrix<AT>(A.n, A.lda, A.tp?false:true, A.memory, A.ele);
-
-    }
-
-  template <class AT>
-    SquareMatrix<AT>  trans(SquareMatrix<AT> &A) {
-
-      return SquareMatrix<AT>(A.n, A.lda, A.tp?false:true, A.memory, A.ele);
-
-    }
 
 }
 

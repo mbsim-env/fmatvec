@@ -38,42 +38,28 @@ namespace fmatvec {
    * */
   template <class AT> class Matrix<Diagonal, AT> {
 
-      private:
-
       protected:
 
-	/*! \internal 
-	 * */
-	void deepCopy(const Matrix<Diagonal, AT> &x);
+    /// @cond NO_SHOW
 
-	/*! \internal 
-	 * */
 	Memory<AT> memory;
-
-	/*! \internal 
-	 * */
 	AT *ele;
-
-	/*! \internal 
-	 * */
 	int n;
 
-	/*! \internal 
-	 * */
+	void deepCopy(const Matrix<Diagonal, AT> &x);
+
 	Matrix(int n_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_) {
 	}
 
-	/*! \internal 
-	 * */
 	const AT* elePtr(int i) const {
 	  return ele+i;
 	}
 
-	/*! \internal 
-	 * */
 	AT* elePtr(int i) {
 	  return ele+i;
 	}
+
+    /// @endcond
 
       public:
 
@@ -328,7 +314,7 @@ namespace fmatvec {
 	 * \param a Value all elements will be initialized with.
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Diagonal, AT>& init(AT val);
+	Matrix<Diagonal, AT>& init(const AT &a);
 
     };
 
@@ -364,7 +350,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    Matrix<Diagonal, AT>&  Matrix<Diagonal, AT>::init(AT val) {
+    Matrix<Diagonal, AT>&  Matrix<Diagonal, AT>::init(const AT &val) {
 
       for(int i=0; i<rows(); i++) 
 	operator()(i) = val;

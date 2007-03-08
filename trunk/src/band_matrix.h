@@ -38,20 +38,22 @@ namespace fmatvec {
    * */
   template <class AT> class Matrix<GeneralBand, AT> {
 
-    public:
+   /// @cond NO_SHOW
 
     protected:
-
-      void deepCopy(const Matrix<GeneralBand, AT> &A); 
 
       Memory<AT> memory;
       AT *ele;
       int n;
       int kl;
       int ku;
-      
+
+      void deepCopy(const Matrix<GeneralBand, AT> &A); 
+
       Matrix(int n_, int kl_, int ku_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_), kl(kl_), ku(ku_) {
       }
+
+      /// @endcond
 
     public:
 

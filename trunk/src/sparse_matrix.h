@@ -40,17 +40,22 @@ namespace fmatvec {
   template <class AT>
     class Matrix<Sparse, AT> {
 
-      private:
-
       protected:
-	void deepCopy(const Matrix<Sparse, AT> &x);
-	template <class Type> void deepCopy(const Matrix<Type, AT> &A);
 
+    /// @cond NO_SHOW
+    
 	Memory<AT> memEle;
 	Memory<int> memI, memJ;
 	AT *ele;
 	int *I, *J;
 	int m, n, k;
+
+	void deepCopy(const Matrix<Sparse, AT> &x);
+
+	template <class Type> void deepCopy(const Matrix<Type, AT> &A);
+
+    /// @endcond
+
 
       public:
 
@@ -61,10 +66,35 @@ namespace fmatvec {
 	Matrix() : memEle(), memI(), memJ(), ele(0), I(0), J(0), m(0), n(0), k(0) {
 	}
 
+      /*! \brief Regular Constructor
+       *
+       * Constructs a matrix of size m x n.
+       * \param m_ The number of rows.
+       * \param n_ The number of columns.
+       * \remark The matrix will be initialised to
+       * zero by default. This default behavior can be changed by defining 
+       * FMATVEC_NO_INITIALIZATION.
+       * */
 	Matrix(int m_, int n_) : memEle(m_*n_), memI(m_+1), memJ(m_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(m_), n(n_), k(m_*n_) {
+#ifndef FMATVEC_NO_INITIALIZATION 
+	init(0);
+#endif
 	}
 
-	Matrix(int m_, int n_, int k_) : memEle(k_), memI(m_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(m_), n(n_), k(k_) {
+	/*! \brief Regular Constructor
+       *
+       * Constructs a matrix of size m x n.
+       * \param m_ The number of rows.
+       * \param n_ The number of columns.
+       * \param k_ The number of nonzero elements.
+       * \remark The matrix will be initialised to
+       * zero by default. This default behavior can be changed by defining 
+       * FMATVEC_NO_INITIALIZATION.
+       * */
+Matrix(int m_, int n_, int k_) : memEle(k_), memI(m_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(m_), n(n_), k(k_) {
+#ifndef FMATVEC_NO_INITIALIZATION 
+	init(0);
+#endif
 	}
 
 	/*! \brief Copy Constructor
@@ -195,17 +225,17 @@ namespace fmatvec {
 	 * \return A reference to the calling matrix.
 	 * */
 	Matrix<Sparse, AT>& resize() {m=0;n=0;k=0;return *this;};
-      /*! \brief Matrix resizing. 
-       *
-       * Resizes the matrix to size m x n. The matrix will be initialized to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * matrix will not be initialized.
-       * \param m_ The number of rows.
-       * \param n_ The number of columns.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the matrix will be initialized with (default 0)
-       * \return A reference to the calling matrix.
-       * */
+
+	/*! \brief Matrix resizing. 
+	 *
+	 * Resizes the matrix to size m x n. The matrix will be initialized to the value given by \em a
+	 * (default 0), if ini is set to INIT. If init is set to NONINIT, the
+	 * matrix will not be initialized.
+	 * \param m_ The number of rows.
+	 * \param n_ The number of columns.
+	 * \param k_ The number of nonzero elements.
+	 * \return A reference to the calling matrix.
+	 * */
 	Matrix<Sparse, AT>& resize(int m_, int n_, int k_) {
 	  m=m_;n=n_;k=k_;
 	  memEle.resize(k);
@@ -217,6 +247,15 @@ namespace fmatvec {
 
 	  return *this;
 	}
+
+	/*! \brief Initialization.
+	 *
+	 * Initializes all elements of the calling matrix with 
+	 * the value given by \em a.
+	 * \param a Value all elements will be initialized with.
+	 * \return A reference to the calling matrix.
+	 * */
+	Matrix<Sparse, AT>& init(const AT &a);
 
     };
   // ------------------------- Constructors -------------------------------------
@@ -346,6 +385,15 @@ namespace fmatvec {
       I[i]=k;
     }
 
+  template <class AT>
+    Matrix<Sparse, AT>&  Matrix<Sparse, AT>::init(const AT& val) {
+
+      for(int i=0; i<k; i++) {
+	ele[i] = val;
+      }
+
+      return *this;
+    }
 
 /* template <class AT> template <class Type> void Matrix<Sparse, AT>::deepCopy(const Matrix<Type, AT> &A) { 
       k=0;

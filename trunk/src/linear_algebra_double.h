@@ -112,13 +112,13 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A reference to the general matrix. 
    * */
-  Matrix<General, double >& operator/=(const Matrix<General, double > &A, const double &a);
+  Matrix<General, double >& operator/=(const Matrix<General, double > &A, const double &alpha);
 
   /*! \brief Matrix-matrix addition.
    *
    * This function computes the sum of two general matrices. 
    * \param A A general matrix. 
-   * \param A B general matrix. 
+   * \param B A general matrix. 
    * \return A new general matrix containig the result.
    * */
   Matrix<General, double > operator+(const Matrix<General, double > &A, const Matrix<General, double > &B);
@@ -128,7 +128,7 @@ namespace fmatvec {
    * This function computes the difference of two general matrices
    * according to \f[\boldsymbol{A}-\boldsymbol{B} \f]
    * \param A A general matrix. 
-   * \param A B general matrix. 
+   * \param B A general matrix. 
    * \return A new general matrix containig the result.
    * */
   Matrix<General, double> operator-(const Matrix<General, double> &A, const Matrix<General, double> &B);
@@ -137,7 +137,7 @@ namespace fmatvec {
    *
    * This function computes the sum of two square matrices. 
    * \param A A square matrix. 
-   * \param A B square matrix. 
+   * \param B A square matrix. 
    * \return A new square matrix containig the result.
    * */
   SquareMatrix<double> operator+(const SquareMatrix<double> &A, const SquareMatrix<double> &B);
@@ -146,7 +146,7 @@ namespace fmatvec {
    *
    * This function computes the sum of two symmetric matrices. 
    * \param A A symmetric matrix. 
-   * \param A B symmetric matrix. 
+   * \param B A symmetric matrix. 
    * \return A new symmetric matrix containig the result.
    * */
   Matrix<Symmetric, double> operator+(const Matrix<Symmetric, double > &A, const Matrix<Symmetric, double > &B);
@@ -155,7 +155,7 @@ namespace fmatvec {
    *
    * This function computes the difference of two square matrices. 
    * \param A A square matrix. 
-   * \param A B square matrix. 
+   * \param B A square matrix. 
    * \return A new square matrix containig the result.
    * */
   SquareMatrix<double> operator-(const SquareMatrix<double> &A, const SquareMatrix<double> &B);
@@ -215,13 +215,13 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A new diagonal matrix containig the result.
    * */
-  Matrix<Diagonal, double> operator*(const Matrix<Diagonal, double> &D, double alpha);
+  Matrix<Diagonal, double> operator*(const Matrix<Diagonal, double> &A, double alpha);
 
  /*! \brief Scalar-matrix multiplication.
    *
    * \see operator*(const Matrix<Diagonal, double> &D, double alpha).
    * */
-  Matrix<Diagonal, double> operator*(double alpha, const Matrix<Diagonal, double> &D);
+  Matrix<Diagonal, double> operator*(double alpha, const Matrix<Diagonal, double> &A);
 
    /*! \brief Matrix-scalar division.
    *
@@ -230,7 +230,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A new diagonal matrix containig the result.
    * */
-  Matrix<Diagonal, double> operator/(const Matrix<Diagonal, double> &D, double alpha);
+  Matrix<Diagonal, double> operator/(const Matrix<Diagonal, double> &A, double alpha);
 
    /*! \brief Special multiplication.
    *
@@ -279,7 +279,7 @@ namespace fmatvec {
    * \param B A diagonal matrix. 
    * \return A reference to the first matrix.
    * */
-  Matrix<Diagonal, double >& operator-=(const Matrix<Diagonal, double >& A, const Matrix<Diagonal, double > &A);
+  Matrix<Diagonal, double >& operator-=(const Matrix<Diagonal, double >& A, const Matrix<Diagonal, double > &B);
 
  /*! \brief Matrix-matrix addition.
    *
@@ -309,7 +309,7 @@ namespace fmatvec {
    * \param B A square matrix. 
    * \return A reference to the first matrix. 
    * */
-  SquareMatrix<double>& operator+=(const SquareMatrix<double>& A, const SquareMatrix<double> &A);
+  SquareMatrix<double>& operator+=(const SquareMatrix<double>& A, const SquareMatrix<double> &B);
 
  /*! \brief Matrix-matrix subtraction.
    *
@@ -319,7 +319,7 @@ namespace fmatvec {
    * \param B A square matrix. 
    * \return A reference to the first matrix.
    * */
-  SquareMatrix<double>& operator-=(const SquareMatrix<double>& A, const SquareMatrix<double> &A);
+  SquareMatrix<double>& operator-=(const SquareMatrix<double>& A, const SquareMatrix<double> &B);
 
  /*! \brief Matrix-matrix addition.
    *
@@ -329,7 +329,7 @@ namespace fmatvec {
    * \param B A general matrix. 
    * \return A reference to the first matrix. 
    * */
-  Matrix<General, double >& operator+=(const Matrix<General, double > &A, const Matrix<General, double > &A);
+  Matrix<General, double >& operator+=(const Matrix<General, double > &A, const Matrix<General, double > &B);
 
  /*! \brief Matrix-matrix subtraction.
    *
@@ -339,7 +339,7 @@ namespace fmatvec {
    * \param B A general matrix. 
    * \return A reference to the first matrix.
    * */
-  Matrix<General, double >& operator-=(const Matrix<General, double > &A, const Matrix<General, double > &A);
+  Matrix<General, double >& operator-=(const Matrix<General, double > &A, const Matrix<General, double > &B);
 
   /*! \brief Matrix-matrix multiplication.
    *
@@ -396,7 +396,7 @@ namespace fmatvec {
 /*! \brief Vector-scalar multiplication.
    *
    * This function multiplies a vector by a scalar. 
-   * \param A A vector.
+   * \param x A vector.
    * \param alpha A scalar. 
    * \return A reference to the vector.
    * */
@@ -405,7 +405,7 @@ namespace fmatvec {
  /*! \brief Vector-scalar multiplication.
    *
    * This function computes the product of a vector and a scalar. 
-   * \param A A vector.
+   * \param x A vector.
    * \param alpha A scalar. 
    * \return A new vector containig the result.
    * */
@@ -420,7 +420,7 @@ namespace fmatvec {
   /*! \brief Vector-scalar division.
    *
    * This function divides a vector by a scalar. 
-   * \param A A vector.
+   * \param x A vector.
    * \param alpha A scalar. 
    * \return A reference to the vector.
    * */
@@ -429,7 +429,7 @@ namespace fmatvec {
  /*! \brief Vector-scalar division.
    *
    * This function computes the division of a vector and a scalar. 
-   * \param A A vector.
+   * \param x A vector.
    * \param alpha A scalar. 
    * \return A new vector containig the result.
    * */
@@ -459,7 +459,7 @@ namespace fmatvec {
    *
    * This function computes the sum of two vectors
    * according to \f[\boldsymbol{x}+\boldsymbol{y} \f]
-   * \param A A vector.
+   * \param x A vector.
    * \param y A vector.
    * \return A new vector containig the result.
    * */
@@ -469,7 +469,7 @@ namespace fmatvec {
    *
    * This function computes the difference of two vectors
    * according to \f[\boldsymbol{x}-\boldsymbol{y} \f]
-   * \param A A vector.
+   * \param x A vector.
    * \param y A vector.
    * \return A new vector containig the result.
    * */
@@ -478,25 +478,25 @@ namespace fmatvec {
 /*! \brief vector-scalar multiplication.
    *
    * This function multiplies a row vector by a scalar. 
-   * \param A A row vector.
+   * \param x A row vector.
    * \param alpha A scalar. 
    * \return A reference to the row vector.
    * */
-  RowVector<double>& operator*=(const RowVector<double> &x, const double& a);
+  RowVector<double>& operator*=(const RowVector<double> &x, const double& alpha);
 
   /*! \brief Vector-scalar division.
    *
    * This function divides a row vector by a scalar. 
-   * \param A A row vector.
+   * \param x A row vector.
    * \param alpha A scalar. 
    * \return A reference to the vector.
    * */
-  RowVector<double>& operator/=(const RowVector<double> &x, const double &a);
+  RowVector<double>& operator/=(const RowVector<double> &x, const double &alpha);
 
   /*! \brief Vector-scalar multiplication.
    *
    * This function computes the product of a vector and a scalar. 
-   * \param A A row vector.
+   * \param x A row vector.
    * \param alpha A scalar. 
    * \return A new row vector containig the result.
    * */
@@ -511,7 +511,7 @@ namespace fmatvec {
   /*! \brief Vector-scalar division.
    *
    * This function computes the division of a row vector and a scalar. 
-   * \param A A row vector.
+   * \param x A row vector.
    * \param alpha A scalar. 
    * \return A new row vector containig the result.
    * */
@@ -525,7 +525,7 @@ namespace fmatvec {
    * \param y A row vector.
    * \return A reference to the first row vector.
    * */
-  RowVector<double>& operator+=(const RowVector<double> &x, const RowVector<double> &x);
+  RowVector<double>& operator+=(const RowVector<double> &x, const RowVector<double> &y);
 
   /*! \brief Vector-vector subtraction.
    *
@@ -535,13 +535,13 @@ namespace fmatvec {
    * \param y A row vector.
    * \return A reference to the first row vector.
    * */
-  RowVector<double>& operator-=(const RowVector<double> &x, const RowVector<double> &x);
+  RowVector<double>& operator-=(const RowVector<double> &x, const RowVector<double> &y);
 
   /*! \brief Vector-vector addition.
    *
    * This function computes the sum of two row vectors
    * according to \f[\boldsymbol{x}+\boldsymbol{y} \f]
-   * \param A A row vector.
+   * \param x A row vector.
    * \param y A row vector.
    * \return A new vector containig the result.
    * */
@@ -551,7 +551,7 @@ namespace fmatvec {
    *
    * This function computes the difference of two row vectors
    * according to \f[\boldsymbol{x}-\boldsymbol{y} \f]
-   * \param A A row vector.
+   * \param x A row vector.
    * \param y A row vector.
    * \return A new vector containig the result.
    * */
@@ -615,7 +615,7 @@ namespace fmatvec {
    * \param A A diagonal matrix.
    * \return A new row vector containig the result.
    * */
-  RowVector<double> operator*(const RowVector<double> &x, const Matrix<Diagonal, double> &D);
+  RowVector<double> operator*(const RowVector<double> &x, const Matrix<Diagonal, double> &A);
 
   /*! \brief Vector-vector multiplication.
    *
@@ -708,7 +708,7 @@ namespace fmatvec {
    * according to \f[\boldsymbol{A}\,\boldsymbol{X}=\boldsymbol{B} \f]
    * by a LL decompostion.
    * \param A A symmetric matrix. 
-   * \param b A general matrix containing the right hand sides.
+   * \param B A general matrix containing the right hand sides.
    * \return A general matrix containig the solution.
    * */
   Matrix<General, double> slvLL(const Matrix<Symmetric, double> &A, const Matrix<General, double> &B);
@@ -739,7 +739,7 @@ namespace fmatvec {
    * according to \f[\boldsymbol{A}\,\boldsymbol{X}=\boldsymbol{B} \f]
    * by a QR decompostion.
    * \param A A square matrix. 
-   * \param b A general matrix containing the right hand sides.
+   * \param B A general matrix containing the right hand sides.
    * \return A general matrix containig the solution.
    * */
   Matrix<General, double> slvQR(const SquareMatrix<double> &A, const Matrix<General, double> &B);
@@ -753,7 +753,7 @@ namespace fmatvec {
    * \param b A vector containing the right hand side.
    * \return A vector containig the solution.
    * */
-  Vector<double> slvQR(const SquareMatrix<double> &A, const Vector<double> &x);
+  Vector<double> slvQR(const SquareMatrix<double> &A, const Vector<double> &b);
 
   /*! \brief Inverse
    *
