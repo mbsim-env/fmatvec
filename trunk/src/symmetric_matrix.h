@@ -26,10 +26,6 @@
 #include "types.h"
 #include "memory.h"
 
-/*! 
- * \brief Namespace fmatvec.
- *
- * */
 namespace fmatvec {
 
   /*! 

@@ -23,10 +23,6 @@
 #define linear_algebra_h
 #include "square_matrix.h"
 
-/*! 
- * \brief Namespace fmatvec.
- *
- * */
 namespace fmatvec {
 
   /*! \brief Transpose of a vector.

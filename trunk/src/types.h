@@ -52,10 +52,6 @@
       #define AtlasRight CblasRight
 #endif
 
-/*! 
- * \brief Namespace fmatvec.
- *
- * */
 namespace fmatvec {
 
   /*! 
@@ -77,7 +73,7 @@ namespace fmatvec {
   /*! 
    *  \brief This the shape class for general band matrices.
    *
-   * Class General is a shape class for general band matrices.
+   * Class GeneralBand is a shape class for general band matrices.
    * */
   class GeneralBand : public BasicType {
   };
@@ -85,25 +81,24 @@ namespace fmatvec {
   /*! 
    *  \brief This the shape class for symmetric matrices.
    *
-   * Class General is a shape class for symmetric matrices.
+   * Class Symmetric is a shape class for symmetric matrices.
    * */
   class Symmetric : public BasicType {
-  };
-
-  class SymmetricBand : public BasicType {
-  };
-
-  class SymmetricPacked : public BasicType {
   };
 
   /*! 
    *  \brief This the shape class for diagonal matrices.
    *
-   * Class General is a shape class for diagonal matrices.
+   * Class Diagonal is a shape class for diagonal matrices.
    * */
   class Diagonal : public BasicType {
   };
 
+  /*! 
+   *  \brief This the shape class for sparse matrices.
+   *
+   * Class Sparse is a shape class for sparse matrices.
+   * */
   class Sparse : public BasicType {
   };
 
