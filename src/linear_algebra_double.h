@@ -126,7 +126,7 @@ namespace fmatvec {
   /*! \brief Matrix-matrix subtraction.
    *
    * This function computes the difference of two general matrices
-   * according to \f[\boldsymbol{A}-\boldsymbol{B} \f]. 
+   * according to \f[\boldsymbol{A}-\boldsymbol{B} \f]
    * \param A A general matrix. 
    * \param A B general matrix. 
    * \return A new general matrix containig the result.
@@ -234,7 +234,8 @@ namespace fmatvec {
 
    /*! \brief Special multiplication.
    *
-   * This function computes the product of a general matrix according to \f[ \boldsymbol{A}^T\,\boldsymbol{A} \f]. 
+   * This function computes the product of a general matrix 
+   * according to \f[ \boldsymbol{A}^T\,\boldsymbol{A} \f]
    * \param A A general matrix. 
    * \return A new symmetric matrix containig the result.
    * */
@@ -243,7 +244,7 @@ namespace fmatvec {
    /*! \brief Special multiplication.
    *
    * This function computes the product of a symmetric and a general matrix
-   * according to \f[ \boldsymbol{A}^T\,\boldsymbol{B}\,\boldsymbol{A} \f]. 
+   * according to \f[ \boldsymbol{A}^T\,\boldsymbol{B}\,\boldsymbol{A} \f]
    * \param A A general matrix. 
    * \param B A symmetric matrix. 
    * \return A new symmetric matrix containig the result.
@@ -253,7 +254,7 @@ namespace fmatvec {
    /*! \brief Special multiplication.
    *
    * This function computes the product of a diagonal and a symmetric matrix
-   * according to \f[ \boldsymbol{A}^T\,\boldsymbol{B}\,\boldsymbol{A} \f]. 
+   * according to \f[ \boldsymbol{A}^T\,\boldsymbol{B}\,\boldsymbol{A} \f]
    * \param A A general matrix. 
    * \param B A diagonal matrix. 
    * \return A new symmetric matrix containig the result.
@@ -263,7 +264,7 @@ namespace fmatvec {
  /*! \brief Matrix-matrix addition.
    *
    * This function adds a diagonal matrix to a diagonal matrix. 
-   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}+\boldsymbol{B} \f]. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}+\boldsymbol{B} \f]
    * \param A A diagonal matrix. 
    * \param B A diagonal matrix. 
    * \return A reference to the first diagonal matrix. 
@@ -273,7 +274,7 @@ namespace fmatvec {
  /*! \brief Matrix-matrix subtraction.
    *
    * This function subtracts a diagonal matrix from a diagonal matrix. 
-   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}-\boldsymbol{B} \f]. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}-\boldsymbol{B} \f]
    * \param A A diagonal matrix. 
    * \param B A diagonal matrix. 
    * \return A reference to the first matrix.
@@ -283,7 +284,7 @@ namespace fmatvec {
  /*! \brief Matrix-matrix addition.
    *
    * This function adds a symmetric matrix to a symmetric matrix. 
-   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}+\boldsymbol{B} \f]. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}+\boldsymbol{B} \f]
    * \param A A symmetric matrix. 
    * \param B A symmetric matrix. 
    * \return A reference to the first matrix. 
@@ -293,7 +294,7 @@ namespace fmatvec {
  /*! \brief Matrix-matrix subtraction.
    *
    * This function subtracts a symmetric matrix from a symmetric matrix. 
-   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}-\boldsymbol{B} \f]. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}-\boldsymbol{B} \f]
    * \param A A symmetric matrix. 
    * \param B A symmetric matrix. 
    * \return A reference to the first matrix.
@@ -303,7 +304,7 @@ namespace fmatvec {
  /*! \brief Matrix-matrix addition.
    *
    * This function adds a square matrix to a square matrix. 
-   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}+\boldsymbol{B} \f]. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}+\boldsymbol{B} \f]
    * \param A A square matrix. 
    * \param B A square matrix. 
    * \return A reference to the first matrix. 
@@ -313,7 +314,7 @@ namespace fmatvec {
  /*! \brief Matrix-matrix subtraction.
    *
    * This function subtracts a square matrix from a square matrix. 
-   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}-\boldsymbol{B} \f]. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}-\boldsymbol{B} \f]
    * \param A A square matrix. 
    * \param B A square matrix. 
    * \return A reference to the first matrix.
@@ -323,7 +324,7 @@ namespace fmatvec {
  /*! \brief Matrix-matrix addition.
    *
    * This function adds a general matrix to a general matrix. 
-   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}+\boldsymbol{B} \f]. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}+\boldsymbol{B} \f]
    * \param A A general matrix. 
    * \param B A general matrix. 
    * \return A reference to the first matrix. 
@@ -333,7 +334,7 @@ namespace fmatvec {
  /*! \brief Matrix-matrix subtraction.
    *
    * This function subtracts a general matrix from a general matrix
-   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}-\boldsymbol{B} \f]. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}-\boldsymbol{B} \f]
    * \param A A general matrix. 
    * \param B A general matrix. 
    * \return A reference to the first matrix.
@@ -343,7 +344,7 @@ namespace fmatvec {
   /*! \brief Matrix-matrix multiplication.
    *
    * This function computes the product of two general matrices
-   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}\,\boldsymbol{B} \f]. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}\,\boldsymbol{B} \f]
    * \param A A general matrix. 
    * \param B A general matrix. 
    * \return A new general matrix containig the result.
@@ -353,7 +354,7 @@ namespace fmatvec {
   /*! \brief Matrix-matrix multiplication.
    *
    * This function computes the product of two square matrices
-   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}\,\boldsymbol{B} \f]. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}\,\boldsymbol{B} \f]
    * \param A A square matrix. 
    * \param B A square matrix. 
    * \return A new square matrix containig the result.
@@ -363,7 +364,7 @@ namespace fmatvec {
   /*! \brief Matrix-matrix multiplication.
    *
    * This function computes the product of a general and a symmetric matrix.
-   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}\,\boldsymbol{B} \f]. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}\,\boldsymbol{B} \f]
    * \param A A general matrix. 
    * \param B A symmetric matrix. 
    * \return A new general matrix containig the result.
@@ -379,7 +380,7 @@ namespace fmatvec {
   /*! \brief Matrix-matrix multiplication.
    *
    * This function computes the product of a general and a diagonal matrix.
-   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}\,\boldsymbol{B} \f]. 
+   * according to \f[\boldsymbol{A} \rightarrow \boldsymbol{A}\,\boldsymbol{B} \f]
    * \param A A general matrix. 
    * \param B A diagonal matrix. 
    * \return A new general matrix containig the result.
@@ -410,7 +411,7 @@ namespace fmatvec {
    * */
   Vector<double> operator*(const Vector<double> &x, double alpha);
 
-  /*! \brief Scalar-matrix multiplication.
+  /*! \brief Scalar-vector multiplication.
    *
    * \see operator*(const Vector<double> &x, double alpha)
    * */
@@ -437,7 +438,7 @@ namespace fmatvec {
   /*! \brief Vector-vector addition.
    *
    * This function adds two vectors 
-   * according to \f[\boldsymbol{x} \rightarrow \boldsymbol{x}+\boldsymbol{y} \f]. 
+   * according to \f[\boldsymbol{x} \rightarrow \boldsymbol{x}+\boldsymbol{y} \f]
    * \param x A vector.
    * \param y A vector.
    * \return A reference to the first vector.
@@ -447,7 +448,7 @@ namespace fmatvec {
   /*! \brief Vector-vector subtraction.
    *
    * This function subtracts two vectors 
-   * according to \f[\boldsymbol{x} \rightarrow \boldsymbol{x}-\boldsymbol{y} \f]. 
+   * according to \f[\boldsymbol{x} \rightarrow \boldsymbol{x}-\boldsymbol{y} \f]
    * \param x A vector.
    * \param y A vector.
    * \return A reference to the first vector.
@@ -457,7 +458,7 @@ namespace fmatvec {
   /*! \brief Vector-vector addition.
    *
    * This function computes the sum of two vectors
-   * according to \f[\boldsymbol{x}+\boldsymbol{y} \f]. 
+   * according to \f[\boldsymbol{x}+\boldsymbol{y} \f]
    * \param A A vector.
    * \param y A vector.
    * \return A new vector containig the result.
@@ -467,141 +468,417 @@ namespace fmatvec {
   /*! \brief Vector-vector subtraction.
    *
    * This function computes the difference of two vectors
-   * according to \f[\boldsymbol{x}-\boldsymbol{y} \f]. 
+   * according to \f[\boldsymbol{x}-\boldsymbol{y} \f]
    * \param A A vector.
    * \param y A vector.
    * \return A new vector containig the result.
    * */
   Vector<double> operator-(const Vector<double> &x, const Vector<double> &y);
 
-
-  //-------------------------------------
-  // RowVector operations
-  //-------------------------------------
-
-  /*! \brief RowVector multiplying.
+/*! \brief vector-scalar multiplication.
    *
-   * Multiplies the calling vectortor by the scalar a. This is equivalent to x<<x*a but may be slightly faster.
-   * \param a The scalar the calling vectortor will be multiplied by. 
-   * \return The calling vectortor.
+   * This function multiplies a row vector by a scalar. 
+   * \param A A row vector.
+   * \param alpha A scalar. 
+   * \return A reference to the row vector.
    * */
   RowVector<double>& operator*=(const RowVector<double> &x, const double& a);
 
-  /*! \brief RowVector division.
+  /*! \brief Vector-scalar division.
    *
-   * Divides the calling vectortor by the scalar a. This is equivalent to A<<A/a but may be slightly faster.
-   * \param a The scalar the calling vectortor will be divided by.
-   * \return The calling vectortor.
+   * This function divides a row vector by a scalar. 
+   * \param A A row vector.
+   * \param alpha A scalar. 
+   * \return A reference to the vector.
    * */
   RowVector<double>& operator/=(const RowVector<double> &x, const double &a);
 
+  /*! \brief Vector-scalar multiplication.
+   *
+   * This function computes the product of a vector and a scalar. 
+   * \param A A row vector.
+   * \param alpha A scalar. 
+   * \return A new row vector containig the result.
+   * */
   RowVector<double> operator*(double alpha, const RowVector<double> &x);
 
+  /*! \brief Scalar-vector multiplication.
+   *
+   * \see operator*(const RowVector<double> &x, double alpha)
+   * */
   RowVector<double> operator*(const RowVector<double> &x, double alpha);
 
+  /*! \brief Vector-scalar division.
+   *
+   * This function computes the division of a row vector and a scalar. 
+   * \param A A row vector.
+   * \param alpha A scalar. 
+   * \return A new row vector containig the result.
+   * */
   RowVector<double> operator/(const RowVector<double> &x, double alpha);
 
-  //-------------------------------------
-  // RowVector/RowVector operations
-  //-------------------------------------
-
-  /*! \brief RowVector addition.
+  /*! \brief Vector-vector addition.
    *
-   * Adds the vectortor x on the calling vectortor. This is equivalent to a<<a+x but may be slightly faster.
-   * \param x The vectortor, that will be added on the calling vectortor. 
-   * \return The calling vectortor.
+   * This function adds two row vectors 
+   * according to \f[\boldsymbol{x} \rightarrow \boldsymbol{x}+\boldsymbol{y} \f]
+   * \param x A row vector.
+   * \param y A row vector.
+   * \return A reference to the first row vector.
    * */
   RowVector<double>& operator+=(const RowVector<double> &x, const RowVector<double> &x);
 
-  /*! \brief RowVector subtraction.
+  /*! \brief Vector-vector subtraction.
    *
-   * Subtracts the vectortor x from the calling vectortor. This is equivalent to a<<a-x but may be slightly faster.
-   * \param x The vectortor, that will be subtracted from the calling vectortor. 
-   * \return The calling vectortor.
+   * This function subtracts two row vectors 
+   * according to \f[\boldsymbol{x} \rightarrow \boldsymbol{x}-\boldsymbol{y} \f]
+   * \param x A row vector.
+   * \param y A row vector.
+   * \return A reference to the first row vector.
    * */
   RowVector<double>& operator-=(const RowVector<double> &x, const RowVector<double> &x);
 
+  /*! \brief Vector-vector addition.
+   *
+   * This function computes the sum of two row vectors
+   * according to \f[\boldsymbol{x}+\boldsymbol{y} \f]
+   * \param A A row vector.
+   * \param y A row vector.
+   * \return A new vector containig the result.
+   * */
   RowVector<double> operator+(const RowVector<double> &x, const RowVector<double> &y);
 
+  /*! \brief Vector-vector subtraction.
+   *
+   * This function computes the difference of two row vectors
+   * according to \f[\boldsymbol{x}-\boldsymbol{y} \f]
+   * \param A A row vector.
+   * \param y A row vector.
+   * \return A new vector containig the result.
+   * */
   RowVector<double> operator-(const RowVector<double> &x, const RowVector<double> &y);
 
-  //-------------------------------------
-  // Matrix/Vector operations
-  //-------------------------------------
-
+  /*! \brief Matrix-vector multiplication.
+   *
+   * This function computes the product of a general matrix and a vector
+   * according to \f[\boldsymbol{A}\,\boldsymbol{x} \f]
+   * \param A A general matrix.
+   * \param x A vector. 
+   * \return A new vector containig the result.
+   * */
   Vector<double> operator*(const Matrix<General, double> &A, const Vector<double> &x);
 
+  /*! \brief Matrix-vector multiplication.
+   *
+   * This function computes the product of a symmetric matrix and a vector
+   * according to \f[\boldsymbol{A}\,\boldsymbol{x} \f]
+   * \param A A symmetric matrix.
+   * \param x A vector. 
+   * \return A new vector containig the result.
+   * */
   Vector<double> operator*(const Matrix<Symmetric, double> &A, const Vector<double> &x);
 
-  Vector<double> operator*(const Matrix<Diagonal, double> &D, const Vector<double> &x);
+  /*! \brief Matrix-vector multiplication.
+   *
+   * This function computes the product of a diagonal matrix and a vector
+   * according to \f[\boldsymbol{A}\,\boldsymbol{x} \f]
+   * \param A A diagonal matrix.
+   * \param x A vector. 
+   * \return A new vector containig the result.
+   * */
+  Vector<double> operator*(const Matrix<Diagonal, double> &A, const Vector<double> &x);
 
-  //-------------------------------------
-  // RowVector/Matrix operations
-  //-------------------------------------
-
+  /*! \brief Vector-matrix multiplication.
+   *
+   * This function computes the product of a row vector and a general matrix
+   * according to \f[\boldsymbol{x}\,\boldsymbol{A} \f]
+   * \param x A row vector. 
+   * \param A A general matrix.
+   * \return A new row vector containig the result.
+   * */
   RowVector<double> operator*(const RowVector<double> &x, const Matrix<General, double> &A); 
 
-  RowVector<double> operator*(const RowVector<double> &x, const Matrix<Diagonal, double> &D);
-
+  /*! \brief Vector-matrix multiplication.
+   *
+   * This function computes the product of a row vector and a symmetric matrix
+   * according to \f[\boldsymbol{x}\,\boldsymbol{A} \f]
+   * \param x A row vector. 
+   * \param A A symmetric matrix.
+   * \return A new row vector containig the result.
+   * */
   RowVector<double> operator*(const RowVector<double> &x, const Matrix<Symmetric, double> &A);
 
-  //-------------------------------------
-  // RowVector/Vector operations
-  //-------------------------------------
+  /*! \brief Vector-matrix multiplication.
+   *
+   * This function computes the product of a row vector and a diagonal matrix
+   * according to \f[\boldsymbol{x}\,\boldsymbol{A} \f]
+   * \param x A row vector. 
+   * \param A A diagonal matrix.
+   * \return A new row vector containig the result.
+   * */
+  RowVector<double> operator*(const RowVector<double> &x, const Matrix<Diagonal, double> &D);
 
+  /*! \brief Vector-vector multiplication.
+   *
+   * This function computes the product of a row vector and a vector 
+   * according to \f[\boldsymbol{x}\,\boldsymbol{y} \f]
+   * \param x A row vector. 
+   * \param y A vector. 
+   * \return A scalar containig the result.
+   * */
   double operator*(const RowVector<double> &x, const Vector<double> &y); 
 
-  //-------------------------------------
-  // operations
-  //-------------------------------------
+  /*! \brief Eigenvalues
+   *
+   * This function computes the complex eigenvalues of a square matrix.
+   * \param A A square matrix. 
+   * \return A vector containig the eigenvalues.
+   * */
   Vector<complex<double> > eigval(const SquareMatrix<double> &A); 
 
+  /*! \brief Eigenvalues
+   *
+   * This function computes the eigenvalues of a symmetric matrix.
+   * \param A A symmetric matrix. 
+   * \return A vector containig the eigenvalues.
+   * */
   Vector<double> eigval(const Matrix<Symmetric, double> &A); 
 
-  Matrix<General, double> slvLU(const SquareMatrix<double> &A, const Matrix<General, double> &X);
+  /*! \brief Eigenvalues
+   *
+   * This function computes selected eigenvalues of a symmetric matrix.
+   * The eigenvalues can be selected by specifying either a range of values or a 
+   * range of indices for the desired eigenvalues.
+   * \param A A symmetric matrix. 
+   * \param il The index of the smallest eigenvalue to be returned
+   * \param iu The index of the largest eigenvalue to be returned
+   * \param abstol The absolute error tolerance for the eigenvalues
+   * \return A vector containig the eigenvalues.
+   * */
+  Vector<double> eseigval(const Matrix<Symmetric, double> &A, int il, int iu, double abstol=0);
 
-  Vector<double> slvLU(const SquareMatrix<double> &A, const Vector<double> &x);
+  /*! \brief Systems of linear equations
+   *
+   * This function solves systems of linear equations 
+   * according to \f[\boldsymbol{A}\,\boldsymbol{X}=\boldsymbol{B} \f]
+   * by a LU decompostion.
+   * \param A A square matrix. 
+   * \param B A general matrix containing the right hand sides.
+   * \return A general matrix containig the solution.
+   * */
+  Matrix<General, double> slvLU(const SquareMatrix<double> &A, const Matrix<General, double> &B);
 
-  Matrix<General, double> slvLU(const SquareMatrix<double> &A, const Matrix<General, double> &X, const Vector<int> &ipiv);
+  /*! \brief System of linear equations
+   *
+   * This function solves a system of linear equations 
+   * according to \f[\boldsymbol{A}\,\boldsymbol{x}=\boldsymbol{b} \f]
+   * by a LU decompostion.
+   * \param A A square matrix. 
+   * \param b A vector containing the right hand side.
+   * \return A vector containig the solution.
+   * */
+  Vector<double> slvLU(const SquareMatrix<double> &A, const Vector<double> &b);
 
-  Vector<double> slvLU(const SquareMatrix<double> &A, const Vector<double> &x, const Vector<int> &ipiv);
+  /*! \brief Systems of linear equations
+   *
+   * This function solves systems of linear equations 
+   * according to \f[\boldsymbol{A}\,\boldsymbol{X}=\boldsymbol{B} \f]. 
+   * The matrix is already decomposed by a LU decompostion.
+   * \param A A square matrix decomposed by a LU decompostion. 
+   * \param B A general matrix containing the right hand sides.
+   * \param ipiv A vector of integers containing the pivot indices.
+   * \return A general matrix containig the solution.
+   * */
+  Matrix<General, double> slvLU(const SquareMatrix<double> &A, const Matrix<General, double> &B, const Vector<int> &ipiv);
 
-  //Matrix<General, double> slvLU(CBLAS_SIDE side, CBLAS_UPLO uplo, const SquareMatrix<double> &A, const Matrix<General, double> &X, const Vector<int> &ipiv );
-  Matrix<General, double> slvLU(CBLAS_SIDE side, CBLAS_UPLO uplo, CBLAS_DIAG unit, const SquareMatrix<double> &A, const Matrix<General, double> &X, const Vector<int> &ipiv );
+  /*! \brief System of linear equations
+   *
+   * This function solves a system of linear equations 
+   * according to \f[\boldsymbol{A}\,\boldsymbol{x}=\boldsymbol{b} \f]. 
+   * The matrix is already decomposed by a LU decompostion.
+   * \param A A square matrix decomposed by a LU decompostion. 
+   * \param b A vector containing the right hand side.
+   * \param ipiv A vector of integers containing the pivot indices.
+   * \return A vector containig the solution.
+   * */
+  Vector<double> slvLU(const SquareMatrix<double> &A, const Vector<double> &b, const Vector<int> &ipiv);
 
-  Vector<double> slvLL(const Matrix<Symmetric, double> &A, const Vector<double> &x);
+  /*! \brief Systems of linear equations
+   *
+   * This function solves systems of linear equations 
+   * according to \f[\boldsymbol{A}\,\boldsymbol{X}=\boldsymbol{B} \f]
+   * by a LL decompostion.
+   * \param A A symmetric matrix. 
+   * \param b A general matrix containing the right hand sides.
+   * \return A general matrix containig the solution.
+   * */
+  Matrix<General, double> slvLL(const Matrix<Symmetric, double> &A, const Matrix<General, double> &B);
 
-  Matrix<General, double> slvLL(const Matrix<Symmetric, double> &A, const Matrix<General, double> &X);
-  
-  Matrix<General, double> swap(const Matrix<General, double> &X, const Vector<int> &ipiv );
+  /*! \brief System of linear equations
+   *
+   * This function solves a system of linear equations 
+   * according to \f[\boldsymbol{A}\,\boldsymbol{x}=\boldsymbol{b} \f]
+   * by a LL decompostion.
+   * \param A A symmetric matrix. 
+   * \param b A vector containing the right hand side.
+   * \return A vector containig the solution.
+   * */
+  Vector<double> slvLL(const Matrix<Symmetric, double> &A, const Vector<double> &b);
 
-  Matrix<General, double> slvQR(const SquareMatrix<double> &A, const Matrix<General, double> &X);
+  /*! \brief Row interchanges
+   *
+   * This function performs a series of row interchanges on a general matrix.
+   * \param A A general matrix. 
+   * \param ipiv A vector of integers containing the pivot indices.
+   * \return A Matrix containig the result.
+   * */
+  Matrix<General, double> swap(const Matrix<General, double> &A, const Vector<int> &ipiv );
 
+  /*! \brief Systems of linear equations
+   *
+   * This function solves systems of linear equations 
+   * according to \f[\boldsymbol{A}\,\boldsymbol{X}=\boldsymbol{B} \f]
+   * by a QR decompostion.
+   * \param A A square matrix. 
+   * \param b A general matrix containing the right hand sides.
+   * \return A general matrix containig the solution.
+   * */
+  Matrix<General, double> slvQR(const SquareMatrix<double> &A, const Matrix<General, double> &B);
+
+  /*! \brief System of linear equations
+   *
+   * This function solves a system of linear equations 
+   * according to \f[\boldsymbol{A}\,\boldsymbol{x}=\boldsymbol{b} \f]
+   * by a QR decompostion.
+   * \param A A symmetric matrix. 
+   * \param b A vector containing the right hand side.
+   * \return A vector containig the solution.
+   * */
   Vector<double> slvQR(const SquareMatrix<double> &A, const Vector<double> &x);
 
+  /*! \brief Inverse
+   *
+   * This function computes the inverse of a general matrix 
+   * according to \f[\boldsymbol{A}^{-1} \f]
+   * \param A A square matrix. 
+   * \return A square matrix containig the result.
+   * */
   SquareMatrix<double> inv(const SquareMatrix<double> &A);
 
+  /*! \brief Inverse
+   *
+   * This function computes the inverse of a symmetric matrix 
+   * according to \f[\boldsymbol{A}^{-1} \f]
+   * \param A A symmetric matrix. 
+   * \return A symmetric matrix containig the result.
+   * */
   Matrix<Symmetric, double> inv(const Matrix<Symmetric, double> &A);
 
+  /*! \brief Inverse
+   *
+   * This function computes the inverse of a diagonal matrix 
+   * according to \f[\boldsymbol{A}^{-1} \f]
+   * \param A A diagonal matrix. 
+   * \return A diagonal matrix containig the result.
+   * */
   Matrix<Diagonal, double> inv(const Matrix<Diagonal, double> &A);
 
+  /*! \brief LU decomposition
+   *
+   * This function computes the LU decomposition of a general matrix 
+   * according to \f[\boldsymbol{A}=\boldsymbol{P}\,\boldsymbol{L}\,\boldsymbol{U} \f]
+   * \param A A general matrix. 
+   * \param ipiv A vector of integers containing the pivot indices.
+   * \return A general matrix containig the result.
+   * */
   Matrix<General, double> lu(const Matrix<General, double> &A, Vector<int> &ipiv);
+
+  /*! \brief LU decomposition
+   *
+   * This function computes the LU decomposition of a square matrix 
+   * according to \f[\boldsymbol{A}=\boldsymbol{P}\,\boldsymbol{L}\,\boldsymbol{U} \f]
+   * \param A A square matrix. 
+   * \param ipiv A vector of integers containing the pivot indices.
+   * \return A square matrix containig the result.
+   * */
   SquareMatrix<double> lu(const SquareMatrix<double> &A, Vector<int> &ipiv);
 
+  /*! \brief 1-norm
+   *
+   * This function computes the sum of the absolute values of a vector.
+   * \param x A vector.
+   * \return A scalar containig the result.
+   * */
   double nrm1(const Vector<double> &x);
+
+  /*! \brief 2-norm
+   *
+   * This function computes the the Euclidean norm of a vector.
+   * \param x A vector.
+   * \return A scalar containig the result.
+   * */
   double nrm2(const Vector<double> &x);
+
+  /*! \brief Infinity-norm
+   *
+   * This function computes the the largest absolute value of a vector.
+   * \param x A vector.
+   * \return A scalar containig the result.
+   * */
   double nrmInf(const Vector<double> &x);
 
-  double nrmInf(const Matrix<General,double> &A);
+  /*! \brief 1-norm
+   *
+   * This function computes the largest column sum of the absolute 
+   * values of a general matrix.
+   * \param A A general matrix.
+   * \return A scalar containig the result.
+   * */
   double nrm1(const Matrix<General,double> &A);
+
+  /*! \brief 2-norm
+   *
+   * This function computes the largest singular value of a general matrix.
+   * \param A A general matrix.
+   * \return A scalar containig the result.
+   * */
   double nrm2(const Matrix<General,double> &A);
+
+  /*! \brief Infinity-norm
+   *
+   * This function computes the largest row sum of the absolute 
+   * values of a general matrix.
+   * \param A A general matrix.
+   * \return A scalar containig the result.
+   * */
+  double nrmInf(const Matrix<General,double> &A);
+
+  /*! \brief Frobenius-norm
+   *
+   * This function computes the Frobenius norm of a general matrix.
+   * \param A A general matrix.
+   * \return A scalar containig the result.
+   * */
   double nrmFro(const Matrix<General,double> &A);
 
+  /*! \brief Spectral radius
+   *
+   * This function computes the spectral radius of a square matrix.
+   * \param A A square matrix.
+   * \return A scalar containig the result.
+   * */
   double rho(const SquareMatrix<double> &A);
+
+  /*! \brief Spectral radius
+   *
+   * This function computes the spectral radius of a symmetric matrix.
+   * \param A A symmetric matrix.
+   * \return A scalar containig the result.
+   * */
   double rho(const Matrix<Symmetric, double> &A);
 
-  Vector<double> eseigval(const Matrix<Symmetric, double> &A, int il, int iu, double abstol=0);
   Vector<double> gelss(const Matrix<General,double> &A, const Vector<double> &b, double rcond=-1);
+
+  Matrix<General, double> slvLU(CBLAS_SIDE side, CBLAS_UPLO uplo, CBLAS_DIAG unit, const SquareMatrix<double> &A, const Matrix<General, double> &X, const Vector<int> &ipiv );
 
 }
 
