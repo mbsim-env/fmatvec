@@ -55,7 +55,7 @@
 namespace fmatvec {
 
   /*! 
-   *  \brief This is the basic shape class for matrices.
+   *  \brief Basic shape class for matrices.
    *
    * Class BasicType is the basic shape type.
    * */
@@ -63,7 +63,7 @@ namespace fmatvec {
   };
 
   /*! 
-   *  \brief This the shape class for general matrices.
+   *  \brief Shape class for general matrices.
    *
    * Class General is a shape class for general matrices.
    * */
@@ -71,7 +71,7 @@ namespace fmatvec {
   };
 
   /*! 
-   *  \brief This the shape class for general band matrices.
+   *  \brief Shape class for general band matrices.
    *
    * Class GeneralBand is a shape class for general band matrices.
    * */
@@ -79,7 +79,7 @@ namespace fmatvec {
   };
 
   /*! 
-   *  \brief This the shape class for symmetric matrices.
+   *  \brief Shape class for symmetric matrices.
    *
    * Class Symmetric is a shape class for symmetric matrices.
    * */
@@ -87,7 +87,7 @@ namespace fmatvec {
   };
 
   /*! 
-   *  \brief This the shape class for diagonal matrices.
+   *  \brief Shape class for diagonal matrices.
    *
    * Class Diagonal is a shape class for diagonal matrices.
    * */
@@ -95,7 +95,7 @@ namespace fmatvec {
   };
 
   /*! 
-   *  \brief This the shape class for sparse matrices.
+   *  \brief Shape class for sparse matrices.
    *
    * Class Sparse is a shape class for sparse matrices.
    * */

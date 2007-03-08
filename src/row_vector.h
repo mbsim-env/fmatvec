@@ -41,63 +41,38 @@ namespace fmatvec {
     using Matrix<General, AT>::tp;
     using Matrix<General, AT>::memory;
     using Matrix<General, AT>::elePtr;
+
     public:
 
-    /*! \brief Rowvector transposing. 
-     *
-     * Returns the transpose of the rowvector \em x. 
-     \param x The rowvector, that will be transposed.
-     \return The transpose of rowvector \em x.
-     * */
+    /// @cond NO_SHOW
+    
     template <class T> friend const Vector<T> trans(const RowVector<T> &x); 
 
-    /*! \brief Rowvector transposing. 
-     *
-     * See trans(const RowVector<T> &)
-     * */
     template <class T> friend Vector<T> trans(RowVector<T> &x); 
 
-    /*! \brief Vector transposing. 
-     *
-     * Returns the transpose of the vector \em x. 
-     \param x The vector, that will be transposed.
-     \return The transpose of vector \em x.
-     * */
     template <class T> friend RowVector<T> trans(Vector<T> &x);
 
-    /*! \brief Vector transposing. 
-     *
-     * See trans(const Vector<T> &)
-     * */
     template <class T> friend const RowVector<T> trans(const Vector<T> &x);
 
-    /// @cond NO_SHOW
     friend RowVector<AT> Matrix<General, AT>::row(int i);
     friend const RowVector<AT> Matrix<General, AT>::row(int i) const;
-    /// @endcond
 
     protected:
 
-    /*! \internal 
-     * */
     void deepCopy(const RowVector<AT> &x);
 
-    /*! \internal 
-     * */
     const AT* elePtr(int i) const {
       return tp ? ele+i : ele+lda*i;
     };
 
-    /*! \internal 
-     * */
     AT* elePtr(int i) {
       return tp ? ele+i : ele+lda*i;
     };
 
-    /*! \internal 
-     * */
     RowVector(int n_, int lda_, bool tp, Memory<AT> memory, const AT* ele_) : Matrix<General, AT>(1,n_, lda_, tp, memory, ele_) {
     }
+
+    /// @endcond
 
     public:
 
@@ -158,7 +133,7 @@ namespace fmatvec {
        * zero by default. To change this behavior, define
        * FMATVEC_NO_INITIALIZATION.
        * */
-      RowVector& resize(int n_) {
+      RowVector& resize(int n) {
 	Matrix<General, AT>::resize(1,n);
 	return *this;
       }
@@ -192,7 +167,7 @@ namespace fmatvec {
       /*! \brief Copy operator
        *
        * Copies the rowvector given by \em x.
-       * \param A The rowvector to be copied. 
+       * \param x The rowvector to be copied. 
        * \return A reference to the calling rowvector.
        * */
       RowVector<AT>& operator<<(const RowVector<AT> &x);
@@ -200,7 +175,7 @@ namespace fmatvec {
       /*! \brief Reference operator
        *
        * References the rowvector given by \em x.
-       * \param A The rowvector to be referenced. 
+       * \param x The rowvector to be referenced. 
        * \return A reference to the calling rowvector.
        * */
       RowVector<AT>& operator>>(const RowVector<AT> &x);
@@ -258,7 +233,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling rowvector.
        * */
-      RowVector<AT>& init(const AT& val);
+      RowVector<AT>& init(const AT& a);
 
       /*! \brief Size.
        *

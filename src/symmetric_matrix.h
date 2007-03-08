@@ -38,9 +38,15 @@ namespace fmatvec {
    * */
   template <class AT> class Matrix<Symmetric, AT> {
 
-    private:
-
     protected:
+
+    /// @cond NO_SHOW
+
+      Memory<AT> memory;
+      AT *ele;
+      int n;
+      int lda;
+
       void deepCopy(const Matrix<Symmetric, AT> &A); 
 
       const AT* elePtr(int i, int j) const {
@@ -51,13 +57,10 @@ namespace fmatvec {
 	return  j > i ? ele+i*lda+j : ele+i+j*lda; 
       };
 
-      Memory<AT> memory;
-      AT *ele;
-      int n;
-      int lda;
-
       Matrix(int n_, int lda_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_), lda(lda_) {
       }
+
+    /// @endcond
 
     public:
 

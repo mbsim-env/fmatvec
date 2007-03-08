@@ -44,6 +44,9 @@ namespace fmatvec {
   template <class AT> class Matrix<General, AT> {
 
     public:
+
+ /// @cond NO_SHOW
+
       friend class Matrix<Symmetric, AT>;
       
       template <class T> friend const Matrix<General, T>  trans(const Matrix<General, T> &A);
@@ -51,22 +54,6 @@ namespace fmatvec {
       template <class T> friend Matrix<General, T>  trans(Matrix<General, T> &A);
 
     protected:
-      /*!
-       * \internal
-       * */
-      template <class Type> void deepCopy(const Matrix<Type, AT> &A); 
-
-      /*! \internal 
-       * */
-      const AT* elePtr(int i, int j) const {
-	return tp ? ele+i*lda+j : ele+i+j*lda; 
-      };
-
-      /*! \internal 
-       * */
-      AT* elePtr(int i, int j) {
-	return tp ? ele+i*lda+j : ele+i+j*lda; 
-      };
 
       Memory<AT> memory;
       AT *ele;
@@ -75,9 +62,21 @@ namespace fmatvec {
       int lda;
       bool tp;
 
+      template <class Type> void deepCopy(const Matrix<Type, AT> &A); 
+
+      const AT* elePtr(int i, int j) const {
+	return tp ? ele+i*lda+j : ele+i+j*lda; 
+      };
+
+      AT* elePtr(int i, int j) {
+	return tp ? ele+i*lda+j : ele+i+j*lda; 
+      };
+
       Matrix(int m_, int n_, int lda_, bool tp_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), m(m_), n(n_), lda(lda_), tp(tp_) {
       }
 
+ /// @endcond
+ 
     public:
 
       /*! \brief Standard constructor
@@ -617,12 +616,15 @@ namespace fmatvec {
 	  operator()(i,j) = A.operator()(i,j);
     }
 
+   /// @cond NO_SHOW
+   
   template<> template<>
   extern void Matrix<General, double>::deepCopy(const Matrix<General, double> &A);
 
   template<> template<>
     extern void Matrix<General, double>::deepCopy(const Matrix<Symmetric, double> &A);
 
+   /// @endcond
 
 }
 

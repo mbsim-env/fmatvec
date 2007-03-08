@@ -45,63 +45,35 @@ namespace fmatvec {
 
     public:
 
-    /*! \brief Vector transposing. 
-     *
-     * Returns the transpose of the vector \em x. 
-     \param x The vector, that will be transposed.
-     \return The transpose of vector \em x.
-     * */
+    /// @cond NO_SHOW
+
     template <class T> friend const RowVector<T> trans(const Vector<T> &x); 
-
-    /*! \brief Vector transposing. 
-     *
-     * See trans(const Vector<T> &)
-     * */
     template <class T> friend RowVector<T> trans(Vector<T> &x); 
-
-    /*! \brief Rowvector transposing. 
-     *
-     * Returns the transpose of the rowvector \em x. 
-     \param x The rowvector, that will be transposed.
-     \return The transpose of rowvector \em x.
-     * */
+    
     template <class T> friend const Vector<T> trans(const RowVector<T> &x); 
-
-    /*! \brief Rowvector transposing. 
-     *
-     * See trans(const RowVector<T> &)
-     * */
     template <class T> friend Vector<T> trans(RowVector<T> &x); 
 
-    /// @cond NO_SHOW
     friend Vector<AT> Matrix<General, AT>::col(int i);
     friend const Vector<AT> Matrix<General, AT>::col(int i) const;
     //friend const Vector<AT> Matrix<GeneralBand, AT>::diag(int i) const;
-    /// @endcond
 
     protected:
 
-    /*! \internal 
-     * */
     void deepCopy(const Vector<AT> &x);
 
-    /*! \internal 
-     * */
     AT* elePtr(int i) {
       return tp ? ele+lda*i : ele+i;
     };
 
-    /*! \internal 
-     * */
     const AT* elePtr(int i) const {
       return tp ? ele+lda*i : ele+i;
     };
 
-    /*! \internal 
-     * */
     Vector(int n_, int lda_, bool tp, Memory<AT> memory, const AT* ele_) : Matrix<General, AT>(n_, 1, lda_, tp, memory, ele_) {
     }
 
+    /// @endcond
+    
     public:
 
       /*! \brief Standard constructor
@@ -181,7 +153,7 @@ namespace fmatvec {
       /*! \brief Copy operator
        *
        * Copies the vector given by \em x.
-       * \param A The vector to be copied. 
+       * \param x The vector to be copied. 
        * \return A reference to the calling vector.
        * */
       Vector<AT>& operator<<(const Vector<AT> &x);
@@ -189,7 +161,7 @@ namespace fmatvec {
       /*! \brief Reference operator
        *
        * References the vector given by \em x.
-       * \param A The vector to be referenced. 
+       * \param x The vector to be referenced. 
        * \return A reference to the calling vector.
        * */
       Vector<AT>& operator>>(const Vector<AT> &x);

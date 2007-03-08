@@ -33,7 +33,13 @@ namespace fmatvec {
    * */
   class Index {
     private:
-      int i1, i2;
+      
+   /// @cond NO_SHOW
+
+    int i1, i2;
+
+   /// @endcond
+
     public:
 
       /*! \brief Standard constructor

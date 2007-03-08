@@ -108,6 +108,7 @@ namespace fmatvec {
    *
    * This function computes the transpose of a rowvector.
    * The result is a vector.
+   * \param x A vector.
    * \return The transpose.
    * */
   template <class AT>
@@ -293,24 +294,49 @@ namespace fmatvec {
   /*! \brief Transpose of a matrix.
    *
    * This function computes the transpose of a matrix.
-   * \f[ A \rightarrow A^T  \f]
+   * \f[ \boldsymbol{A} \rightarrow \boldsymbol{A}^T  \f]
    * The result is a matrix.
+   * \param A A general matrix.
    * \return The transpose.
    * */
   template <class AT>
-    Matrix<General, AT>  trans(Matrix<General, AT> &A) {
+    Matrix<General, AT> trans(Matrix<General, AT> &A) {
 
       return Matrix<General, AT>(A.n,A.m,A.lda,A.tp?false:true,A.memory,A.ele);
     }
 
-  /*! \brief Matrix transposing. 
+  /*! \brief Transpose of a matrix.
    *
    * See trans(Matrix<General, AT>&)
    * */
   template <class AT>
-    const Matrix<General, AT>  trans(const Matrix<General, AT> &A) {
+    const Matrix<General, AT> trans(const Matrix<General, AT> &A) {
 
       return Matrix<General, AT>(A.n,A.m,A.lda,A.tp?false:true,A.memory,A.ele);
+    }
+
+  /*! \brief Transpose of a matrix.
+   *
+   * This function computes the transpose of a square matrix.
+   * \f[ \boldsymbol{A} \rightarrow \boldsymbol{A}^T  \f]
+   * The result is a square matrix.
+   * \param A A square matrix.
+   * \return The transpose.
+   * */
+  template <class AT>
+    SquareMatrix<AT>  trans(SquareMatrix<AT> &A) {
+
+      return SquareMatrix<AT>(A.n, A.lda, A.tp?false:true, A.memory, A.ele);
+    }
+
+  /*! \brief Transpose of a matrix.
+   *
+   * See trans(const SquareMatrix<AT>&)
+   * */
+  template <class AT>
+    const SquareMatrix<AT> trans(const SquareMatrix<AT> &A) {
+
+      return SquareMatrix<AT>(A.n, A.lda, A.tp?false:true, A.memory, A.ele);
     }
 
   /*! \brief Negation.
@@ -639,7 +665,7 @@ namespace fmatvec {
   /*! \brief Bubble Sort Algorithm (stable sorting Algorithm )
    *
    * Values of rowvectors of Matrix A are sorted in ascending order 
-   * \param A Matrix to be sorted
+   * \param A_ Matrix to be sorted
    * \param PivotCol Column of A used as sorting index 
    */
   template <class AT>
@@ -709,7 +735,7 @@ namespace fmatvec {
    * Values of rowvectors of Matrix A are sorted in ascending order 
    * unstabel but very quick sorting Algorithm
    * Pivot Elements as 'Median of three'
-   * \param A Matrix to be sorted
+   * \param A_ Matrix to be sorted
    * \param PivotCol Column of A used as sorting index 
    */
   template <class AT>
