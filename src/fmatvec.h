@@ -26,12 +26,54 @@
 #include "linear_algebra_double.h"
 
 namespace fmatvec {
+
+  /*! 
+   *  \brief General matrix
+   *  
+   *  Mat is an abbreviation for general matrices of type double.
+   * */
   typedef  Matrix<General, double> Mat;
+
+  /*! 
+   *  \brief Vector
+   *  
+   *  Vec is an abbreviation for vectors of type double.
+   * */
   typedef  Vector<double> Vec;
+
+  /*! 
+   *  \brief Row vector
+   *  
+   *  RowVec is an abbreviation for row vectors of type double.
+   * */
   typedef  RowVector<double> RowVec;
+
+  /*! 
+   *  \brief Square matrix
+   *  
+   *  SqrMat is an abbreviation for square matrices of type double.
+   * */
   typedef  SquareMatrix<double> SqrMat;
+
+  /*! 
+   *  \brief Diagonal matrix
+   *  
+   *  DiagMat is an abbreviation for diagonal matrices of type double.
+   * */
   typedef  Matrix<Diagonal, double> DiagMat;
+
+  /*! 
+   *  \brief Symmetric matrix
+   *  
+   *  SymMat is an abbreviation for symmetric matrices of type double.
+   * */
   typedef  Matrix<Symmetric, double> SymMat;
+
+  /*! 
+   *  \brief Band matrix
+   *  
+   *  BandMat is an abbreviation for band matrices of type double.
+   * */
   typedef  Matrix<GeneralBand, double> BandMat;
 }
 

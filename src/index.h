@@ -24,10 +24,6 @@
 
 #include "matrix.h"
 
-/*! 
- * \brief Namespace fmatvec.
- *
- * */
 namespace fmatvec {
 
   /*! 

@@ -30,8 +30,8 @@
 using namespace std;
 
 namespace fmatvec {
-  template <class AT>
-    class MemoryStack {
+
+  template <class AT> class MemoryStack {
       private:
 	AT ***ele;
       public:
@@ -104,8 +104,7 @@ namespace fmatvec {
 	}
     };
 
-  template <class AT>
-    class Memory {
+  template <class AT> class Memory {
       private:
 	size_t sz;
 	AT *ele0;
