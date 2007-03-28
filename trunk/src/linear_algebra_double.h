@@ -802,6 +802,15 @@ namespace fmatvec {
    * */
   SquareMatrix<double> lu(const SquareMatrix<double> &A, Vector<int> &ipiv);
 
+  /*! \brief LL decomposition
+   *
+   * This function computes the Cholesky decomposition of a symmetric matrix 
+   * according to \f[\boldsymbol{A}=\boldsymbol{L}\,\boldsymbol{L} \f]
+   * \param A A symmetric matrix. 
+   * \return A symmetric matrix containig the result.
+   * */
+  Matrix<Symmetric, double> ll(const Matrix<Symmetric, double> &A);
+
   /*! \brief 1-norm
    *
    * This function computes the sum of the absolute values of a vector.

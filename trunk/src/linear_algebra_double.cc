@@ -1618,6 +1618,22 @@ namespace fmatvec {
     return B;
   }
 
+  Matrix<Symmetric, double> ll(const Matrix<Symmetric, double> &A) {
+
+    Matrix<Symmetric, double> B=A.copy();
+
+#ifdef FMATVEC_VOID_CHECK
+    if(A.size() == 0)
+      return B;
+#endif
+
+    int info = clapack_dpotrf(B.blasOrder(), B.blasUplo(), B.size(), B(), B.ldim());
+
+    assert(info==0);
+
+    return B;
+  }
+
    double nrm1(const Vector<double> &x) {
 
 #ifdef FMATVEC_VOID_CHECK
