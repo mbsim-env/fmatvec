@@ -1769,7 +1769,7 @@ namespace fmatvec {
 
   }
 
-  Vector<double> eseigval(const Matrix<Symmetric, double> &A, int il, int iu, double abstol) {
+  Vector<double> eigvalSel(const Matrix<Symmetric, double> &A, int il, int iu, double abstol) {
 
     int n = A.size();
     assert(il>=1);
