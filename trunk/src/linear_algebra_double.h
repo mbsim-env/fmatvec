@@ -688,7 +688,7 @@ namespace fmatvec {
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General, double> slvLU(const SquareMatrix<double> &A, const Matrix<General, double> &B, const Vector<int> &ipiv);
+  Matrix<General, double> slvLUFac(const SquareMatrix<double> &A, const Matrix<General, double> &B, const Vector<int> &ipiv);
 
   /*! \brief System of linear equations
    *
@@ -700,7 +700,7 @@ namespace fmatvec {
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A vector containig the solution.
    * */
-  Vector<double> slvLU(const SquareMatrix<double> &A, const Vector<double> &b, const Vector<int> &ipiv);
+  Vector<double> slvLUFac(const SquareMatrix<double> &A, const Vector<double> &b, const Vector<int> &ipiv);
 
   /*! \brief Systems of linear equations
    *
@@ -724,14 +724,6 @@ namespace fmatvec {
    * */
   Vector<double> slvLL(const Matrix<Symmetric, double> &A, const Vector<double> &b);
 
-  /*! \brief Row interchanges
-   *
-   * This function performs a series of row interchanges on a general matrix.
-   * \param A A general matrix. 
-   * \param ipiv A vector of integers containing the pivot indices.
-   * \return A Matrix containig the result.
-   * */
-  Matrix<General, double> swap(const Matrix<General, double> &A, const Vector<int> &ipiv );
 
   /*! \brief Systems of linear equations
    *
@@ -790,7 +782,7 @@ namespace fmatvec {
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A general matrix containig the result.
    * */
-  Matrix<General, double> lu(const Matrix<General, double> &A, Vector<int> &ipiv);
+  Matrix<General, double> facLU(const Matrix<General, double> &A, Vector<int> &ipiv);
 
   /*! \brief LU decomposition
    *
@@ -800,7 +792,7 @@ namespace fmatvec {
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A square matrix containig the result.
    * */
-  SquareMatrix<double> lu(const SquareMatrix<double> &A, Vector<int> &ipiv);
+  SquareMatrix<double> facLU(const SquareMatrix<double> &A, Vector<int> &ipiv);
 
   /*! \brief LL decomposition
    *
@@ -809,7 +801,7 @@ namespace fmatvec {
    * \param A A symmetric matrix. 
    * \return A symmetric matrix containig the result.
    * */
-  Matrix<Symmetric, double> ll(const Matrix<Symmetric, double> &A);
+  Matrix<Symmetric, double> facLL(const Matrix<Symmetric, double> &A);
 
   /*! \brief 1-norm
    *
@@ -884,11 +876,23 @@ namespace fmatvec {
    * \return A scalar containig the result.
    * */
   double rho(const Matrix<Symmetric, double> &A);
+  
+  Vector<double> slvLLFac(const Matrix<Symmetric, double> &A, const Vector<double> &x);
 
-  Vector<double> gelss(const Matrix<General,double> &A, const Vector<double> &b, double rcond=-1);
+  Matrix<General, double> slvLLFac(const Matrix<Symmetric, double> &A, const Matrix<General, double> &X);
 
-  Matrix<General, double> slvLU(CBLAS_SIDE side, CBLAS_UPLO uplo, CBLAS_DIAG unit, const SquareMatrix<double> &A, const Matrix<General, double> &X, const Vector<int> &ipiv );
+  Vector<double> slvLS(const Matrix<General,double> &A, const Vector<double> &b, double rcond=-1);
 
+  //Matrix<General, double> slvLU(CBLAS_SIDE side, CBLAS_UPLO uplo, CBLAS_DIAG unit, const SquareMatrix<double> &A, const Matrix<General, double> &X, const Vector<int> &ipiv );
+
+  /*! \brief Row interchanges
+   *
+   * This function performs a series of row interchanges on a general matrix.
+   * \param A A general matrix. 
+   * \param ipiv A vector of integers containing the pivot indices.
+   * \return A Matrix containig the result.
+   * */
+  //Matrix<General, double> swap(const Matrix<General, double> &A, const Vector<int> &ipiv );
 }
 
 #endif
