@@ -654,7 +654,7 @@ namespace fmatvec {
    * \param abstol The absolute error tolerance for the eigenvalues
    * \return A vector containig the eigenvalues.
    * */
-  Vector<double> eseigval(const Matrix<Symmetric, double> &A, int il, int iu, double abstol=0);
+  Vector<double> eigvalSel(const Matrix<Symmetric, double> &A, int il, int iu, double abstol=0);
 
   /*! \brief Systems of linear equations
    *
