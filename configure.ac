@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(fmatvec, 0.9.0, mfoerg@users.berlios.de)
+AC_INIT(fmatvec, 0.9.1, mfoerg@users.berlios.de)
 AC_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([src/fmatvec.h])
@@ -19,7 +19,7 @@ dnl		this library implements. In other words, the library implements all the
 dnl 		interface numbers in the range from number current (age<=current).
 LIBFMATVEC_CURRENT=0
 LIBFMATVEC_REVISION=0
-LIBFMATVEC_AGE=0
+LIBFMATVEC_AGE=1
 AC_SUBST([LIBFMATVEC_CURRENT])
 AC_SUBST([LIBFMATVEC_REVISION])
 AC_SUBST([LIBFMATVEC_AGE])

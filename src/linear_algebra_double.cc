@@ -38,7 +38,7 @@ extern "C" {
   void dlaswp_( int *n,double * a,int * lda,int * k1,int * k2,const int * ipiv,int * incx);
   double dlange_( char *norm , int *m, int *n, const double* A, int* lda , double* work );
   void dsyevx_(char *jobz, char *range, char *uplo, int *n, double *a, int *lda, double *vl, double *vu, int *il, int *iu, double *abstol, int* m, double *w, double *z, int *ldz, double *work, int *lwork, int *iwork, int *ifail, int *info );
- void dgelss_( int *m, int *n, int *nrhs, double *A, int *lda, double *b, int *ldb, double *s, double *rcond, int *rank, double *work, int *lwork, int *info );
+  void dgelss_( int *m, int *n, int *nrhs, double *A, int *lda, double *b, int *ldb, double *s, double *rcond, int *rank, double *work, int *lwork, int *info );
 }
 
 
@@ -1322,42 +1322,6 @@ namespace fmatvec {
   //-------------------------------------
   // operations
   //-------------------------------------
-   Matrix<General, double> swap(const Matrix<General, double> &X, const Vector<int> &ipiv ) {
-
-//#ifdef FMATVEC_SIZE_CHECK 
-//    assert(A.size() == X.rows());
-//#endif
-
-    Matrix<General, double> Y = X.copy();
-
-    ATL_dlaswp( Y.cols(), Y(), Y.ldim(), 0, Y.rows(), ipiv(), 1 );
-
-    return Y;
-   }
-
-    
- Matrix<General, double> slvLU(CBLAS_SIDE side, CBLAS_UPLO uplo, CBLAS_DIAG unit, const SquareMatrix<double> &A, const Matrix<General, double> &X, const Vector<int> &ipiv ) {
-
-//#ifdef FMATVEC_SIZE_CHECK 
-//    assert(A.size() == X.rows());
-//#endif
-
-    Matrix<General, double> Y = X.copy();
-
-//#ifdef FMATVEC_VOID_CHECK
-//    if(X.rows() == 0 || X.cols() == 0)
-//      return Y;
-//#endif
-
-    
-    ATL_dlaswp( Y.cols(), Y(), Y.ldim(), 0, Y.rows(), ipiv(), 1 );
-
-    SquareMatrix<double> B = A.copy();
-
-    cblas_dtrsm(CblasColMajor,side,uplo,B.blasTrans(),unit,Y.rows(), Y.cols(), 1, A(),A.ldim(), Y(), Y.ldim());
-
-    return Y;  
-  }
 
   Matrix<General, double> slvLU(const SquareMatrix<double> &A, const Matrix<General, double> &X) {
 
@@ -1385,7 +1349,7 @@ namespace fmatvec {
     return Y;  
   }
 
-  Matrix<General, double> slvLU(const SquareMatrix<double> &A, const Matrix<General, double> &X, const Vector<int> &ipiv) {
+  Matrix<General, double> slvLUFac(const SquareMatrix<double> &A, const Matrix<General, double> &X, const Vector<int> &ipiv) {
 
 #ifdef FMATVEC_SIZE_CHECK 
     assert(A.size() == X.rows());
@@ -1407,38 +1371,38 @@ namespace fmatvec {
     return Y;  
   }
 
- Matrix<General, double> slvQR(const SquareMatrix<double> &A, const Matrix<General, double> &X) {
+  Matrix<General, double> slvQR(const SquareMatrix<double> &A, const Matrix<General, double> &X) {
 
 #ifdef FMATVEC_SIZE_CHECK 
-   assert(A.size() == X.rows());
+    assert(A.size() == X.rows());
 #endif
 
-   Matrix<General, double> Y = X.copy();
+    Matrix<General, double> Y = X.copy();
 
 #ifdef FMATVEC_VOID_CHECK
-   if(X.rows() == 0 || X.cols() == 0)
-     return Y;
+    if(X.rows() == 0 || X.cols() == 0)
+      return Y;
 #endif
 
-   SquareMatrix<double> B = A.copy();
+    SquareMatrix<double> B = A.copy();
 
-   char tr=B.transposed()?'T':'N';
-   int m=B.rows();
-   int n=B.cols();
-   int lda=B.ldim();
-   int nrhs = Y.cols();
-   int ldb = Y.ldim();
-   int lwork =  m*10;
-   double *work = new double[lwork];
-   int info;
-   dgels_( &tr, &m, &n, &nrhs, B(), &lda, Y(), &ldb, work, &lwork, &info );
+    char tr=B.transposed()?'T':'N';
+    int m=B.rows();
+    int n=B.cols();
+    int lda=B.ldim();
+    int nrhs = Y.cols();
+    int ldb = Y.ldim();
+    int lwork =  m*10;
+    double *work = new double[lwork];
+    int info;
+    dgels_( &tr, &m, &n, &nrhs, B(), &lda, Y(), &ldb, work, &lwork, &info );
 
-   assert(info==0);
+    assert(info==0);
 
-   delete [] work;
+    delete [] work;
 
-   return Y;
- }
+    return Y;
+  }
 
   Vector<double> slvLU(const SquareMatrix<double> &A, const Vector<double> &x) {
 
@@ -1466,7 +1430,7 @@ namespace fmatvec {
     return y;  
   }
 
-  Vector<double> slvLU(const SquareMatrix<double> &A, const Vector<double> &x, const Vector<int> &ipiv) {
+  Vector<double> slvLUFac(const SquareMatrix<double> &A, const Vector<double> &x, const Vector<int> &ipiv) {
 
 #ifdef FMATVEC_SIZE_CHECK 
     assert(A.size() == x.size());
@@ -1576,7 +1540,7 @@ namespace fmatvec {
     return B;
   }
 
-  Matrix<General, double> lu(const Matrix<General, double> &A, Vector<int> &ipiv) {
+  Matrix<General, double> facLU(const Matrix<General, double> &A, Vector<int> &ipiv) {
 
     Matrix<General, double> B=A.copy();
 
@@ -1597,7 +1561,7 @@ namespace fmatvec {
     return B;
   }
 
-  SquareMatrix<double> lu(const SquareMatrix<double> &A, Vector<int> &ipiv) {
+  SquareMatrix<double> facLU(const SquareMatrix<double> &A, Vector<int> &ipiv) {
 
     SquareMatrix<double> B=A.copy();
 
@@ -1618,7 +1582,7 @@ namespace fmatvec {
     return B;
   }
 
-  Matrix<Symmetric, double> ll(const Matrix<Symmetric, double> &A) {
+  Matrix<Symmetric, double> facLL(const Matrix<Symmetric, double> &A) {
 
     Matrix<Symmetric, double> B=A.copy();
 
@@ -1634,7 +1598,7 @@ namespace fmatvec {
     return B;
   }
 
-   double nrm1(const Vector<double> &x) {
+  double nrm1(const Vector<double> &x) {
 
 #ifdef FMATVEC_VOID_CHECK
     if(x.size() == 0)
@@ -1643,16 +1607,16 @@ namespace fmatvec {
 
     return cblas_dasum(x.size(), x(), x.inc());
   }
-  
-double nrmInf(const Vector<double> &x) {
+
+  double nrmInf(const Vector<double> &x) {
 
 #ifdef FMATVEC_VOID_CHECK
     if(x.size() == 0)
       return 0.0;
 #endif
 
-   int id = cblas_idamax(x.size(), x(), x.inc());
-   return fabs(x(id));
+    int id = cblas_idamax(x.size(), x(), x.inc());
+    return fabs(x(id));
   }
 
   double nrm2(const Vector<double> &x) {
@@ -1709,6 +1673,49 @@ double nrmInf(const Vector<double> &x) {
     return Y;  
   }
 
+  Vector<double> slvLLFac(const Matrix<Symmetric, double> &A, const Vector<double> &x) {
+
+#ifdef FMATVEC_SIZE_CHECK 
+    assert(A.size() == x.size());
+#endif
+
+    Vector<double> y = x.copy();
+
+#ifdef FMATVEC_VOID_CHECK
+    if(x.size() == 0)
+      return y;
+#endif
+
+    Matrix<Symmetric, double> B = A.copy();
+
+    int info = clapack_dpotrs(B.blasOrder(), B.blasUplo(), B.size(), 1, B(), B.ldim(), y(), y.size());
+
+    assert(info==0);
+
+    return y;  
+  }
+
+  Matrix<General, double> slvLLFac(const Matrix<Symmetric, double> &A, const Matrix<General, double> &X) {
+
+#ifdef FMATVEC_SIZE_CHECK 
+    assert(A.size() == X.rows());
+#endif
+
+    Matrix<General, double> Y = X.copy();
+
+#ifdef FMATVEC_VOID_CHECK
+    if(X.rows() == 0 || X.cols() == 0)
+      return Y;
+#endif
+
+    Matrix<Symmetric, double> B = A.copy();
+
+    int info = clapack_dpotrs(B.blasOrder(), B.blasUplo(), B.size(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
+
+    assert(info==0);
+
+    return Y;  
+  }
 
   Vector<complex<double> > eigval(const SquareMatrix<double> &A) {
 
@@ -1839,7 +1846,7 @@ double nrmInf(const Vector<double> &x) {
       return 0.0;
 #endif
     char norm ='I';
-   
+
     int m= A.rows();
     int n= A.cols();
     int lda = A.ldim();
@@ -1848,15 +1855,15 @@ double nrmInf(const Vector<double> &x) {
     delete [] work;
     return res;
   }
-  
-   double nrm1(const Matrix<General,double> &A) {
+
+  double nrm1(const Matrix<General,double> &A) {
 
 #ifdef FMATVEC_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0)
       return 0.0;
 #endif
     char norm ='1';
-   
+
     int m= A.rows();
     int n= A.cols();
     int lda = A.ldim();
@@ -1865,15 +1872,15 @@ double nrmInf(const Vector<double> &x) {
     delete [] work;
     return res;
   }
-  
-    double nrmFro(const Matrix<General,double> &A) {
+
+  double nrmFro(const Matrix<General,double> &A) {
 
 #ifdef FMATVEC_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0)
       return 0.0;
 #endif
     char norm ='F';
-   
+
     int m= A.rows();
     int n= A.cols();
     int lda = A.ldim();
@@ -1882,7 +1889,7 @@ double nrmInf(const Vector<double> &x) {
     delete [] work;
     return res;
   }
-  
+
   double nrm2(const Matrix<General,double> &A) {
 
 #ifdef FMATVEC_VOID_CHECK
@@ -1894,27 +1901,61 @@ double nrmInf(const Vector<double> &x) {
   }
 
 
-Vector<double> gelss(const Matrix<General,double> &A, const Vector<double> &b, double rcond) {
+  Vector<double> slvLS(const Matrix<General,double> &A, const Vector<double> &b, double rcond) {
 
-  int m = A.rows();
-  int n = A.cols();
-  int nrhs = 1;
-  Matrix<General,double> A_ = A.copy();
-  int lda = A_.ldim();
-  Vector<double> b_ = b.copy();
-  int ldb = b_.ldim();
-  int minmn = m<n?m:n;
-  double *s = new double[minmn]; 
-  int rank;
-  int lwork = 2*(3*minmn + m+n);
-  double *work = new double[lwork];
-  int info;
+    int m = A.rows();
+    int n = A.cols();
+    int nrhs = 1;
+    Matrix<General,double> A_ = A.copy();
+    int lda = A_.ldim();
+    Vector<double> b_ = b.copy();
+    int ldb = b_.ldim();
+    int minmn = m<n?m:n;
+    double *s = new double[minmn]; 
+    int rank;
+    int lwork = 2*(3*minmn + m+n);
+    double *work = new double[lwork];
+    int info;
 
-  dgelss_( &m, &n, &nrhs, A_(), &lda, b_(), &ldb, s, &rcond, &rank, work, &lwork, &info );
-  delete [] s;
-  delete [] work;
-  assert(info == 0);
-  return b_(0,n-1);
-}
+    dgelss_( &m, &n, &nrhs, A_(), &lda, b_(), &ldb, s, &rcond, &rank, work, &lwork, &info );
+    delete [] s;
+    delete [] work;
+    assert(info == 0);
+    return b_(0,n-1);
+  }
 
+//  Matrix<General, double> swap(const Matrix<General, double> &X, const Vector<int> &ipiv ) {
+//
+//    //#ifdef FMATVEC_SIZE_CHECK 
+//    //    assert(A.size() == X.rows());
+//    //#endif
+//
+//    Matrix<General, double> Y = X.copy();
+//
+//    ATL_dlaswp( Y.cols(), Y(), Y.ldim(), 0, Y.rows(), ipiv(), 1 );
+//
+//    return Y;
+//  }
+//  Matrix<General, double> slvLU(CBLAS_SIDE side, CBLAS_UPLO uplo, CBLAS_DIAG unit, const SquareMatrix<double> &A, const Matrix<General, double> &X, const Vector<int> &ipiv ) {
+//
+//    //#ifdef FMATVEC_SIZE_CHECK 
+//    //    assert(A.size() == X.rows());
+//    //#endif
+//
+//    Matrix<General, double> Y = X.copy();
+//
+//    //#ifdef FMATVEC_VOID_CHECK
+//    //    if(X.rows() == 0 || X.cols() == 0)
+//    //      return Y;
+//    //#endif
+//
+//
+//    ATL_dlaswp( Y.cols(), Y(), Y.ldim(), 0, Y.rows(), ipiv(), 1 );
+//
+//    SquareMatrix<double> B = A.copy();
+//
+//    cblas_dtrsm(CblasColMajor,side,uplo,B.blasTrans(),unit,Y.rows(), Y.cols(), 1, A(),A.ldim(), Y(), Y.ldim());
+//
+//    return Y;  
+//  }
 }
