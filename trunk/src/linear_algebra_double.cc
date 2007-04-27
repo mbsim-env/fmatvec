@@ -23,6 +23,7 @@
 #include "linear_algebra.h"
 #include "linear_algebra_double.h"
 #include "blas_extensions_double.h"
+#include "wrapper.h"
 
 #define FMATVEC_NO_INITIALIZATION
 #define FMATVEC_NO_BOUNDS_CHECK
@@ -30,15 +31,6 @@
 extern "C" {
 #include "cblas.h"
 #include "clapack.h"
-  void ATL_dlaswp(const int N, double *A, const int lda0, const int K1,
-      const int K2, const int *ipiv, const int inci);
-  void dgeev_( char* jobvl, char* jobvr, int *n, double *a, int *lda,double * wr,double * wi,double * vl, int *ldvl,double* vr,int * ldvr,double* work,int * lwork, int *info );
-  void dsyev_( char* jobz, char*, int *n, double *a, int *lda,double * w, double* work,int * lwork, int *info );
-  void dgels_( char*, int*, int*, int*,double* a, int*,double* b, int*, double*, int*, int*);
-  void dlaswp_( int *n,double * a,int * lda,int * k1,int * k2,const int * ipiv,int * incx);
-  double dlange_( char *norm , int *m, int *n, const double* A, int* lda , double* work );
-  void dsyevx_(char *jobz, char *range, char *uplo, int *n, double *a, int *lda, double *vl, double *vu, int *il, int *iu, double *abstol, int* m, double *w, double *z, int *ldz, double *work, int *lwork, int *iwork, int *ifail, int *info );
-  void dgelss_( int *m, int *n, int *nrhs, double *A, int *lda, double *b, int *ldb, double *s, double *rcond, int *rank, double *work, int *lwork, int *info );
 }
 
 
@@ -1386,20 +1378,9 @@ namespace fmatvec {
 
     SquareMatrix<double> B = A.copy();
 
-    char tr=B.transposed()?'T':'N';
-    int m=B.rows();
-    int n=B.cols();
-    int lda=B.ldim();
-    int nrhs = Y.cols();
-    int ldb = Y.ldim();
-    int lwork =  m*10;
-    double *work = new double[lwork];
-    int info;
-    dgels_( &tr, &m, &n, &nrhs, B(), &lda, Y(), &ldb, work, &lwork, &info );
+    int info = clapack_dgels( B.blasTrans(), B.rows(), B.cols(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
 
     assert(info==0);
-
-    delete [] work;
 
     return Y;
   }
@@ -1467,20 +1448,9 @@ namespace fmatvec {
 
     SquareMatrix<double> B = A.copy();
 
-    char tr=B.transposed()?'T':'N';
-    int m=B.rows();
-    int n=B.cols();
-    int lda=B.ldim();
-    int nrhs = y.cols();
-    int ldb = y.size();
-    int lwork =  m*10;
-    double *work = new double[lwork];
-    int info;
-    dgels_( &tr, &m, &n, &nrhs, B(), &lda, y(), &ldb, work, &lwork, &info );
+    int info = clapack_dgels( B.blasTrans(), B.rows(), B.cols(), y.cols(), B(), B.ldim(), y(), y.size());
 
     assert(info==0);
-
-    delete [] work;
 
     return y;  
   }
@@ -1719,25 +1689,18 @@ namespace fmatvec {
 
   Vector<complex<double> > eigval(const SquareMatrix<double> &A) {
 
-    char jobvl = 'N';
-    char jobvr = 'N';
-    int n = A.size();
-    int lda = A.ldim();
     double *vl, *vr;
-    int lwork = 10*n;
-    double *work = new double[lwork];
-    double *wr = new double[n];
-    double *wi = new double[n];
-    int info;
+    double *wr = new double[A.size()];
+    double *wi = new double[A.size()];
+
     SquareMatrix<double> B = A.copy();
 
-    dgeev_(&jobvl, &jobvr, &n, B(), &lda, wr, wi, vl, &n, vr, &n, work, &lwork, &info);
+    int info = clapack_dgeev('N','N', A.size(), B(), B.ldim(), wr, wi, vl, B.size(), vr, B.size());
 
-    Vector<complex<double> > w(n);
-    for(int i=0; i<n; i++)
+    Vector<complex<double> > w(A.size());
+    for(int i=0; i<A.size(); i++)
       w(i)=complex<double>(wr[i],wi[i]);
 
-    delete [] work;
     delete [] wr;
     delete [] wi;
 
@@ -1747,23 +1710,10 @@ namespace fmatvec {
 
   Vector<double> eigval(const Matrix<Symmetric, double> &A) {
 
-    char jobz = 'N';
-    int n = A.size();
-    int lwork = 10*n;
-    double *work = new double[lwork];
-    Vector<double> w(n,NONINIT);
-    int info;
+    Vector<double> w(A.size(),NONINIT);
     Matrix<Symmetric, double> B = A.copy();
-    int lda = B.ldim();
-    char ul = 'L';
 
-    dsyev_(&jobz, &ul, &n, B(), &lda, w(), work, &lwork, &info);
-
-    //Vector<complex<double> > w(n);
-    //for(int i=0; i<n; i++)
-    //  w(i)=complex<double>(wr[i],wi[i]);
-
-    delete [] work;
+    int info = clapack_dsyev('N', 'L', B.size(), B(), B.ldim(), w());
 
     return w;
 
@@ -1771,36 +1721,19 @@ namespace fmatvec {
 
   Vector<double> eigvalSel(const Matrix<Symmetric, double> &A, int il, int iu, double abstol) {
 
-    int n = A.size();
     assert(il>=1);
     assert(iu>=il);
-    assert(iu<=n);
-    char jobz = 'N';
-    char range = 'I';
-    char ul = 'L';
-    int lwork = 8*n;  // opt(NB+3)*N
-    double *work = new double[lwork];
-    int *iwork = new int[5*n];
-    int info;
+    assert(iu<=A.size());
+
     Matrix<Symmetric, double> B = A.copy();
     int ldb = B.ldim();
     double vl,vu;
     int m;
-    Vector<double> w(n);
-    int *ifail = new int[n];
-    //Vector<double> z(n,NONINIT);
+    Vector<double> w(A.size());
     double* z;
     int ldz = 1;
 
-    dsyevx_(&jobz, &range, &ul, &n, B(), &ldb, &vl, &vu, &il, &iu, &abstol, &m, w(), z, &ldz, work, &lwork, iwork, ifail, &info );
-
-    //Vector<complex<double> > w(n);
-    //for(int i=0; i<n; i++)
-    //  w(i)=complex<double>(wr[i],wi[i]);
-
-    delete [] work;
-    delete [] iwork;
-    delete [] ifail;
+    int info = clapack_dsyevx('N', 'I', B.blasUplo(), B.size(), B(), B.ldim(), vl, vu, il, iu, abstol, m, w(), z, ldz);
 
     return w(0,m-1);
 
@@ -1845,15 +1778,8 @@ namespace fmatvec {
     if(A.rows() == 0 || A.cols() == 0)
       return 0.0;
 #endif
-    char norm ='I';
 
-    int m= A.rows();
-    int n= A.cols();
-    int lda = A.ldim();
-    double *work = new double[2*m];
-    double res = dlange_(&norm , &m, &n, A(), &lda , work );
-    delete [] work;
-    return res;
+    return clapack_dlange('I' , A.rows(), A.cols(), A(), A.ldim());
   }
 
   double nrm1(const Matrix<General,double> &A) {
@@ -1862,15 +1788,8 @@ namespace fmatvec {
     if(A.rows() == 0 || A.cols() == 0)
       return 0.0;
 #endif
-    char norm ='1';
 
-    int m= A.rows();
-    int n= A.cols();
-    int lda = A.ldim();
-    double *work = new double[2*m];
-    double res = dlange_(&norm , &m, &n, A(), &lda , work );
-    delete [] work;
-    return res;
+    return clapack_dlange('1' , A.rows(), A.cols(), A(), A.ldim());
   }
 
   double nrmFro(const Matrix<General,double> &A) {
@@ -1879,15 +1798,8 @@ namespace fmatvec {
     if(A.rows() == 0 || A.cols() == 0)
       return 0.0;
 #endif
-    char norm ='F';
 
-    int m= A.rows();
-    int n= A.cols();
-    int lda = A.ldim();
-    double *work = new double[2*m];
-    double res = dlange_(&norm , &m, &n, A(), &lda , work );
-    delete [] work;
-    return res;
+    return clapack_dlange('F' , A.rows(), A.cols(), A(), A.ldim());
   }
 
   double nrm2(const Matrix<General,double> &A) {
@@ -1903,25 +1815,14 @@ namespace fmatvec {
 
   Vector<double> slvLS(const Matrix<General,double> &A, const Vector<double> &b, double rcond) {
 
-    int m = A.rows();
-    int n = A.cols();
-    int nrhs = 1;
     Matrix<General,double> A_ = A.copy();
-    int lda = A_.ldim();
     Vector<double> b_ = b.copy();
-    int ldb = b_.ldim();
-    int minmn = m<n?m:n;
-    double *s = new double[minmn]; 
-    int rank;
-    int lwork = 2*(3*minmn + m+n);
-    double *work = new double[lwork];
-    int info;
 
-    dgelss_( &m, &n, &nrhs, A_(), &lda, b_(), &ldb, s, &rcond, &rank, work, &lwork, &info );
-    delete [] s;
-    delete [] work;
+    int info = clapack_dgelss( A.rows(), A.cols(), 1, A_(), A_.ldim(), b_(), b_.size(), rcond);
+
     assert(info == 0);
-    return b_(0,n-1);
+
+    return b_(0,A.cols()-1);
   }
 
 //  Matrix<General, double> swap(const Matrix<General, double> &X, const Vector<int> &ipiv ) {

@@ -11,7 +11,8 @@ libfmatvec_la_SOURCES = blas_extensions_double.cc \
 			vector_double.cc \
 			band_matrix_double.cc\
 			sparse_matrix_double.cc\
-			index.cc
+			index.cc\
+			wrapper.cc
 
 fmatvecincludedir=$(includedir)/fmatvec
 fmatvecinclude_HEADERS = blas_extensions_double.h \
