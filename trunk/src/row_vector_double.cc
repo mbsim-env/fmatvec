@@ -25,15 +25,13 @@
 #define FMATVEC_NO_INITIALIZATION
 #define FMATVEC_NO_BOUNDS_CHECK
 
-extern "C" {
-#include "cblas.h"
-}
+#include "wrapper.h"
 
 namespace fmatvec {
 
   template <>
   void RowVector<double>::deepCopy(const RowVector<double> &x) { 
-    cblas_dcopy(n, x.ele, x.inc(), ele,inc());
+    dcopy(n, x.ele, x.inc(), ele,inc());
   }
 
 }

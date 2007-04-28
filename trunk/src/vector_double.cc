@@ -25,9 +25,7 @@
 #define FMATVEC_NO_INITIALIZATION
 #define FMATVEC_NO_BOUNDS_CHECK
 
-extern "C" {
-#include "cblas.h"
-}
+#include "wrapper.h"
 
 namespace fmatvec {
 
@@ -40,7 +38,7 @@ namespace fmatvec {
 
   template <>
   void Vector<double>::deepCopy(const Vector<double> &x) { 
-    cblas_dcopy(m, x.ele, x.inc(), ele, inc());
+    dcopy(m, x.ele, x.inc(), ele, inc());
   }
 
 }

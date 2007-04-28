@@ -21,17 +21,14 @@
 
 #include "config.h"
 #include "diagonal_matrix.h"
-
-extern "C" {
-#include "cblas.h"
-}
+#include "wrapper.h"
 
 namespace fmatvec {
 //const double Matrix<Diagonal, double>::zero = 0;
 
   template <>
   void Matrix<Diagonal, double>::deepCopy(const Matrix<Diagonal, double> &A) { 
-    cblas_dcopy(n, A.ele,1, ele,1);
+    dcopy(n, A.ele,1, ele,1);
   }
 
 }

@@ -28,12 +28,6 @@
 #define FMATVEC_NO_INITIALIZATION
 #define FMATVEC_NO_BOUNDS_CHECK
 
-extern "C" {
-#include "cblas.h"
-#include "clapack.h"
-}
-
-
 //-------------------------------------
 // Matrix operations
 //-------------------------------------
@@ -49,7 +43,7 @@ namespace fmatvec {
     }
 #endif
 
-    dscal(A.blasTrans(),A.rows(),A.cols(),alpha,A(),A.ldim(),B(),
+    myblas_dscal(A.blasTrans(),A.rows(),A.cols(),alpha,A(),A.ldim(),B(),
 	B.ldim());
 
     return B;
@@ -65,7 +59,7 @@ namespace fmatvec {
     }
 #endif
 
-    dscal(A.blasTrans(),A.rows(),A.cols(),1./alpha,A(),A.ldim(),
+    myblas_dscal(A.blasTrans(),A.rows(),A.cols(),1./alpha,A(),A.ldim(),
 	B(),B.ldim());
 
     return B;
@@ -81,7 +75,7 @@ namespace fmatvec {
     }
 #endif
 
-    dscal(A.blasTrans(),A.rows(),A.cols(),alpha,A(),A.ldim(),B(),
+    myblas_dscal(A.blasTrans(),A.rows(),A.cols(),alpha,A(),A.ldim(),B(),
 	B.ldim());
 
     return B;
@@ -97,7 +91,7 @@ namespace fmatvec {
     }
 #endif
 
-    dscal(A.blasTrans(),A.rows(),A.cols(),alpha,A(),A.ldim(),B(),
+    myblas_dscal(A.blasTrans(),A.rows(),A.cols(),alpha,A(),A.ldim(),B(),
 	B.ldim());
 
     return B;
@@ -113,7 +107,7 @@ namespace fmatvec {
     }
 #endif
 
-    dscal(A.blasTrans(),A.rows(),A.cols(),1./alpha,A(),A.ldim(),
+    myblas_dscal(A.blasTrans(),A.rows(),A.cols(),1./alpha,A(),A.ldim(),
 	B(), B.ldim());
 
     return B;
@@ -129,7 +123,7 @@ namespace fmatvec {
     }
 #endif
 
-    dscal(A.blasTrans(),A.rows(),A.cols(),alpha,A(),A.ldim(),B(),
+    myblas_dscal(A.blasTrans(),A.rows(),A.cols(),alpha,A(),A.ldim(),B(),
 	B.ldim());
 
     return B;
@@ -196,7 +190,7 @@ namespace fmatvec {
     }
 #endif
 
-    dscal(A.size(),alpha,A(),1,B());
+    myblas_dscal(A.size(),alpha,A(),1,B());
 
     return B;
 
@@ -212,7 +206,7 @@ namespace fmatvec {
     }
 #endif
 
-    dscal(A.size(),alpha,A(),1,B());
+    myblas_dscal(A.size(),alpha,A(),1,B());
 
     return B;
 
@@ -228,7 +222,7 @@ namespace fmatvec {
     }
 #endif
 
-    dscal(A.size(),1./alpha,A(),1,B());
+    myblas_dscal(A.size(),1./alpha,A(),1,B());
 
     return B;
 
@@ -244,7 +238,7 @@ namespace fmatvec {
     }
 #endif
 
-    cblas_dscal(A.size(), 1./alpha, A(),1);
+    dscal(A.size(), 1./alpha, A(),1);
 
     return A;
   }
@@ -259,7 +253,7 @@ namespace fmatvec {
     }
 #endif
 
-    cblas_dscal(A.size(), alpha, A(),1);
+    dscal(A.size(), alpha, A(),1);
 
     return A;
   }
@@ -274,7 +268,7 @@ namespace fmatvec {
     }
 #endif
 
-    dscal(A.blasTrans(),A.rows(),A.cols(),alpha,A(),A.ldim());
+    myblas_dscal(A.blasTrans(),A.rows(),A.cols(),alpha,A(),A.ldim());
 
     return A;
   }
@@ -289,7 +283,7 @@ namespace fmatvec {
     }
 #endif
 
-    dscal(A.blasTrans(),A.rows(),A.cols(),1./alpha,A(),A.ldim());
+    myblas_dscal(A.blasTrans(),A.rows(),A.cols(),1./alpha,A(),A.ldim());
 
     return A;
   }
@@ -304,7 +298,7 @@ namespace fmatvec {
     }
 #endif
 
-    dscal(A.blasTrans(),A.rows(),A.cols(),alpha,A(),A.ldim());
+    myblas_dscal(A.blasTrans(),A.rows(),A.cols(),alpha,A(),A.ldim());
 
     return A;
   }
@@ -319,7 +313,7 @@ namespace fmatvec {
     }
 #endif
 
-    dscal(A.blasTrans(),A.rows(),A.cols(),1./alpha,A(),A.ldim());
+    myblas_dscal(A.blasTrans(),A.rows(),A.cols(),1./alpha,A(),A.ldim());
 
     return A;
   }
@@ -362,9 +356,9 @@ namespace fmatvec {
     }
 #endif
 
-    dcopy(A.blasTrans(), C.blasTrans(), A.rows(), A.cols(), A(), A.ldim(),
+    myblas_dcopy(A.blasTrans(), C.blasTrans(), A.rows(), A.cols(), A(), A.ldim(),
 	C(),C.ldim());
-    daxpy(B.blasTrans(), C.blasTrans(), B.rows(), B.cols(),1., B(),
+    myblas_daxpy(B.blasTrans(), C.blasTrans(), B.rows(), B.cols(),1., B(),
 	B.ldim(), C(),C.ldim());
 
     return C;
@@ -384,9 +378,9 @@ namespace fmatvec {
     }
 #endif
 
-    dcopy(A.blasTrans(), C.blasTrans(), A.rows(), A.cols(), A(), A.ldim(),
+    myblas_dcopy(A.blasTrans(), C.blasTrans(), A.rows(), A.cols(), A(), A.ldim(),
 	C(),C.ldim());
-    daxpy(B.blasTrans(), C.blasTrans(), B.rows(), B.cols(),-1., B(),
+    myblas_daxpy(B.blasTrans(), C.blasTrans(), B.rows(), B.cols(),-1., B(),
 	B.ldim(), C(),C.ldim());
 
     return C;
@@ -406,7 +400,7 @@ namespace fmatvec {
     }
 #endif
 
-    cblas_dgemm(A.blasOrder(),A.blasTrans(),B.blasTrans(),A.rows(),B.cols(),
+    dgemm(A.blasOrder(),A.blasTrans(),B.blasTrans(),A.rows(),B.cols(),
 	A.cols(),1.,A(),A.ldim(),B(),B.ldim(),0.,
 	C(),C.ldim());
 
@@ -471,7 +465,7 @@ namespace fmatvec {
     }
 #endif
 
-    daxpy(B.blasTrans(), A.blasTrans(), A.rows(), A.cols(),1., B(),
+    myblas_daxpy(B.blasTrans(), A.blasTrans(), A.rows(), A.cols(),1., B(),
 	B.ldim(), A(), A.ldim());
 
     return A;
@@ -492,7 +486,7 @@ namespace fmatvec {
     }
 #endif
 
-    daxpy(B.blasTrans(), A.blasTrans(), A.rows(), A.cols(),-1., B(),
+    myblas_daxpy(B.blasTrans(), A.blasTrans(), A.rows(), A.cols(),-1., B(),
 	B.ldim(), A(), A.ldim());
 
     return A;
@@ -513,7 +507,7 @@ namespace fmatvec {
     }
 #endif
 
-    daxpy(A.blasTrans(), B.blasTrans(), A.rows(), A.cols(),1., A(), A.ldim(), B(),B.ldim(),C(),C.ldim());
+    myblas_daxpy(A.blasTrans(), B.blasTrans(), A.rows(), A.cols(),1., A(), A.ldim(), B(),B.ldim(),C(),C.ldim());
     return C;
   }
 
@@ -532,9 +526,9 @@ namespace fmatvec {
     }
 #endif
 
-    dcopy(A.blasTrans(), C.blasTrans(), A.rows(), A.cols(), A(), A.ldim(),
+    myblas_dcopy(A.blasTrans(), C.blasTrans(), A.rows(), A.cols(), A(), A.ldim(),
 	C(),C.ldim());
-    daxpy(B.blasTrans(), C.blasTrans(), B.rows(), B.cols(),-1., B(),
+    myblas_daxpy(B.blasTrans(), C.blasTrans(), B.rows(), B.cols(),-1., B(),
 	B.ldim(), C(),C.ldim());
 
     return C;
@@ -558,7 +552,7 @@ namespace fmatvec {
     }
 #endif
 
-    cblas_dgemm(A.blasOrder(), A.blasTrans(), B.blasTrans(), A.rows() ,B.cols(), A.cols(), 1., A(), A.ldim(), B(), B.ldim(), 0., C(),C.ldim());
+    dgemm(A.blasOrder(), A.blasTrans(), B.blasTrans(), A.rows() ,B.cols(), A.cols(), 1., A(), A.ldim(), B(), B.ldim(), 0., C(),C.ldim());
 
     return C;
   }
@@ -588,7 +582,7 @@ namespace fmatvec {
       return A.transposed() ? trans(C) : C;
 #endif
 
-    cblas_dsymm(A.blasOrder(), side, B.blasUplo(), C.rows() , C.cols(), 1., B(), B.ldim(), A(), A.ldim(), 0., C(), C.ldim());
+    dsymm(A.blasOrder(), side, B.blasUplo(), C.rows() , C.cols(), 1., B(), B.ldim(), A(), A.ldim(), 0., C(), C.ldim());
     return A.transposed() ? trans(C) : C;
   }
 
@@ -616,7 +610,7 @@ namespace fmatvec {
       return B.transposed() ? trans(C) : C;
 #endif
 
-    cblas_dsymm(A.blasOrder(), side, A.blasUplo(), C.rows() , C.cols(), 1., A(), A.ldim(), B(), B.ldim(), 0., C(), C.ldim());
+    dsymm(A.blasOrder(), side, A.blasUplo(), C.rows() , C.cols(), 1., A(), A.ldim(), B(), B.ldim(), 0., C(), C.ldim());
     return B.transposed() ? trans(C) : C;
   }
 
@@ -635,7 +629,7 @@ namespace fmatvec {
 
     CBLAS_TRANSPOSE jtt = J.transposed() ? CblasNoTrans : CblasTrans;
 
-    cblas_dgemm(J.blasOrder(), jtt, J.blasTrans(), J.cols() ,J.cols(), J.rows(), 1., J(), J.ldim(), J(), J.ldim(), 0., R(),R.ldim());
+    dgemm(J.blasOrder(), jtt, J.blasTrans(), J.cols() ,J.cols(), J.rows(), 1., J(), J.ldim(), J(), J.ldim(), 0., R(),R.ldim());
 
     return R;
   }
@@ -679,9 +673,9 @@ namespace fmatvec {
 
     double *C = new double[m*n];
 
-    cblas_dsymm(M.blasOrder(), side, M.blasUplo(), m , n, 1., M(), M.ldim(), J(), J.ldim(), 0., C, m);
+    dsymm(M.blasOrder(), side, M.blasUplo(), m , n, 1., M(), M.ldim(), J(), J.ldim(), 0., C, m);
 
-    cblas_dgemm(J.blasOrder(), jtt , ct, J.cols() ,J.cols(), J.rows(), 1., J(), J.ldim(), C, m, 0., R(),R.ldim());
+    dgemm(J.blasOrder(), jtt , ct, J.cols() ,J.cols(), J.rows(), 1., J(), J.ldim(), C, m, 0., R(),R.ldim());
 
     delete [] C;
 
@@ -708,7 +702,7 @@ namespace fmatvec {
     CBLAS_TRANSPOSE jtt = J.transposed() ? CblasNoTrans : CblasTrans;
     Matrix<General, double> MJ = M * J;
 
-    cblas_dgemm(J.blasOrder(), jtt, J.blasTrans(), J.cols() ,MJ.cols(), J.rows(), 1., J(), J.ldim(), MJ(), MJ.ldim(), 0., R(),R.ldim());
+    dgemm(J.blasOrder(), jtt, J.blasTrans(), J.cols() ,MJ.cols(), J.rows(), 1., J(), J.ldim(), MJ(), MJ.ldim(), 0., R(),R.ldim());
 
     return R;
 
@@ -727,7 +721,7 @@ namespace fmatvec {
       return A;
 #endif
 
-    cblas_daxpy(B.size(), 1., B(), 1, A(), 1);
+    daxpy(B.size(), 1., B(), 1, A(), 1);
 
     return A;
   }
@@ -745,7 +739,7 @@ namespace fmatvec {
       return A;
 #endif
 
-    cblas_daxpy(B.size(), -1., B(), 1, A(),1);
+    daxpy(B.size(), -1., B(), 1, A(),1);
 
     return A;
   }
@@ -764,7 +758,7 @@ namespace fmatvec {
       return A;
 #endif
 
-    daxpy(B.blasTrans(), A.blasTrans(), A.rows(), A.cols(), 1., B(), B.ldim(), A(), A.ldim());
+    myblas_daxpy(B.blasTrans(), A.blasTrans(), A.rows(), A.cols(), 1., B(), B.ldim(), A(), A.ldim());
 
     return A;
   }
@@ -824,7 +818,7 @@ namespace fmatvec {
       return A;
 #endif
 
-    daxpy(B.blasTrans(), A.blasTrans(), A.rows(), A.cols(), -1., B(), B.ldim(), A(), A.ldim());
+    myblas_daxpy(B.blasTrans(), A.blasTrans(), A.rows(), A.cols(), -1., B(), B.ldim(), A(), A.ldim());
 
     return A;
   }
@@ -842,7 +836,7 @@ namespace fmatvec {
       return x;
 #endif
 
-    cblas_dscal(x.size(), 1./alpha, x(), x.inc());
+    dscal(x.size(), 1./alpha, x(), x.inc());
 
     return x;
   }
@@ -856,7 +850,7 @@ namespace fmatvec {
       return x;
 #endif
 
-    cblas_dscal(x.size(), alpha, x(), x.inc());
+    dscal(x.size(), alpha, x(), x.inc());
 
     return x;
   }
@@ -871,8 +865,7 @@ namespace fmatvec {
       return y;
 #endif
 
-    //  cblas_dscal(x.size(),alpha,y(),y.inc());
-    dscal(x.size(),alpha,x(),x.inc(),y());
+    myblas_dscal(x.size(),alpha,x(),x.inc(),y());
 
     return y;
   }
@@ -886,7 +879,7 @@ namespace fmatvec {
       return y;
 #endif
 
-    dscal(x.size(),alpha,x(),x.inc(),y());
+    myblas_dscal(x.size(),alpha,x(),x.inc(),y());
 
     return y;
   }
@@ -900,7 +893,7 @@ namespace fmatvec {
       return y;
 #endif
 
-    dscal(x.size(),1./alpha,x(),x.inc(),y());
+    myblas_dscal(x.size(),1./alpha,x(),x.inc(),y());
 
     return y;
   }
@@ -923,7 +916,7 @@ namespace fmatvec {
       return x;
 #endif
 
-    cblas_daxpy(y.size(), 1., y(), y.inc(), x(), x.inc());
+    daxpy(y.size(), 1., y(), y.inc(), x(), x.inc());
 
     return x;
   }
@@ -941,7 +934,7 @@ namespace fmatvec {
       return x;
 #endif
 
-    cblas_daxpy(y.size(), -1., y(), y.inc(), x(), x.inc());
+    daxpy(y.size(), -1., y(), y.inc(), x(), x.inc());
 
     return x;
   }
@@ -959,10 +952,10 @@ namespace fmatvec {
       return z;
 #endif
 
-    daxpy(x.size(),1, x(), x.inc(), y(), y.inc(), z());
+    myblas_daxpy(x.size(),1, x(), x.inc(), y(), y.inc(), z());
 
-    /* cblas_dcopy(x.size(), x(), x.inc(), z(),z.inc());
-       cblas_daxpy(y.size(), 1., y(), y.inc(), z(),z.inc());
+    /* dcopy(x.size(), x(), x.inc(), z(),z.inc());
+       daxpy(y.size(), 1., y(), y.inc(), z(),z.inc());
        */
     return z;
   }
@@ -980,8 +973,8 @@ namespace fmatvec {
       return z;
 #endif
 
-    cblas_dcopy(x.size(), x(), x.inc(), z(),z.inc());
-    cblas_daxpy(y.size(), -1., y(), y.inc(), z(),z.inc());
+    dcopy(x.size(), x(), x.inc(), z(),z.inc());
+    daxpy(y.size(), -1., y(), y.inc(), z(),z.inc());
 
     return z;
   }
@@ -999,7 +992,7 @@ namespace fmatvec {
       return x;
 #endif
 
-    cblas_dscal(x.size(), 1./alpha, x(), x.inc());
+    dscal(x.size(), 1./alpha, x(), x.inc());
 
     return x;
   }
@@ -1013,7 +1006,7 @@ namespace fmatvec {
       return x;
 #endif
 
-    cblas_dscal(x.size(), alpha, x(), x.inc());
+    dscal(x.size(), alpha, x(), x.inc());
 
     return x;
   }
@@ -1027,10 +1020,7 @@ namespace fmatvec {
       return y;
 #endif
 
-    //RowVector<double> y=x.copy();
-
-    //  cblas_dscal(x.size(),alpha,y(),y.inc());
-    dscal(x.size(),alpha,x(),x.inc(),y());
+    myblas_dscal(x.size(),alpha,x(),x.inc(),y());
 
     return y;
   }
@@ -1044,7 +1034,7 @@ namespace fmatvec {
       return y;
 #endif
 
-    dscal(x.size(),alpha,x(),x.inc(),y());
+    myblas_dscal(x.size(),alpha,x(),x.inc(),y());
 
     return y;
   }
@@ -1058,7 +1048,7 @@ namespace fmatvec {
       return y;
 #endif
 
-    dscal(x.size(),1./alpha,x(),x.inc(),y());
+    myblas_dscal(x.size(),1./alpha,x(),x.inc(),y());
 
     return y;
   }
@@ -1081,7 +1071,7 @@ namespace fmatvec {
       return x;
 #endif
 
-    cblas_daxpy(y.size(), 1., y(), y.inc(), x(), x.inc());
+    daxpy(y.size(), 1., y(), y.inc(), x(), x.inc());
 
     return x;
   }
@@ -1099,7 +1089,7 @@ namespace fmatvec {
       return x;
 #endif
 
-    cblas_daxpy(y.size(), -1., y(), y.inc(), x(), x.inc());
+    daxpy(y.size(), -1., y(), y.inc(), x(), x.inc());
 
     return x;
   }
@@ -1117,10 +1107,10 @@ namespace fmatvec {
       return z;
 #endif
 
-    daxpy(x.size(),1, x(), x.inc(), y(), y.inc(), z());
+    myblas_daxpy(x.size(),1, x(), x.inc(), y(), y.inc(), z());
 
-    /* cblas_dcopy(x.size(), x(), x.inc(), z(),z.inc());
-       cblas_daxpy(y.size(), 1., y(), y.inc(), z(),z.inc());
+    /* dcopy(x.size(), x(), x.inc(), z(),z.inc());
+       daxpy(y.size(), 1., y(), y.inc(), z(),z.inc());
        */
     return z;
   }
@@ -1139,8 +1129,8 @@ namespace fmatvec {
       return z;
 #endif
 
-    cblas_dcopy(x.size(), x(), x.inc(), z(),z.inc());
-    cblas_daxpy(y.size(), -1., y(), y.inc(), z(),z.inc());
+    dcopy(x.size(), x(), x.inc(), z(),z.inc());
+    daxpy(y.size(), -1., y(), y.inc(), z(),z.inc());
 
     return z;
   }
@@ -1177,7 +1167,7 @@ namespace fmatvec {
       n=A.cols();
     }
 
-    cblas_dgemv(A.blasOrder(),A.blasTrans(),m,n, 1 ,A(), A.ldim(),x(),x.inc(),0, y(), y.inc());
+    dgemv(A.blasOrder(),A.blasTrans(),m,n, 1 ,A(), A.ldim(),x(),x.inc(),0, y(), y.inc());
 
     return y;
   }
@@ -1195,7 +1185,7 @@ namespace fmatvec {
       return y;
 #endif
 
-    cblas_dsymv(A.blasOrder(),A.blasUplo(),A.size(), 1.0 ,A(), A.ldim(),x(),x.inc(),0, y(), y.inc());
+    dsymv(A.blasOrder(),A.blasUplo(),A.size(), 1.0 ,A(), A.ldim(),x(),x.inc(),0, y(), y.inc());
 
     return y;
   }
@@ -1252,7 +1242,7 @@ namespace fmatvec {
       n=A.cols();
     }
 
-    cblas_dgemv(A.blasOrder(),transa,m,n, 1 ,A(), A.ldim(),x(),x.inc(),0, y(), y.inc());
+    dgemv(A.blasOrder(),transa,m,n, 1 ,A(), A.ldim(),x(),x.inc(),0, y(), y.inc());
 
     return y;
   }
@@ -1270,7 +1260,7 @@ namespace fmatvec {
       return y;
 #endif
 
-    cblas_dsymv(A.blasOrder(),A.blasUplo(),A.size(), 1.0 ,A(), A.ldim(),x(),x.inc(),0, y(), y.inc());
+    dsymv(A.blasOrder(),A.blasUplo(),A.size(), 1.0 ,A(), A.ldim(),x(),x.inc(),0, y(), y.inc());
 
     return y;
   }
@@ -1308,7 +1298,7 @@ namespace fmatvec {
       return 0.0;
 #endif
 
-    return cblas_ddot(x.size(), x(), x.inc(), y(),y.inc());
+    return ddot(x.size(), x(), x.inc(), y(),y.inc());
   }
 
   //-------------------------------------
@@ -1332,7 +1322,7 @@ namespace fmatvec {
 
     int *ipiv = new int[A.size()];
 
-    int info = clapack_dgesv(B.blasOrder(), B.size(), Y.cols(), B(), B.ldim(), ipiv, Y(), Y.ldim());
+    int info = dgesv(B.blasOrder(), B.size(), Y.cols(), B(), B.ldim(), ipiv, Y(), Y.ldim());
 
     delete [] ipiv;
 
@@ -1356,7 +1346,7 @@ namespace fmatvec {
 
     SquareMatrix<double> B = A.copy();
 
-    int info = clapack_dgetrs(B.blasOrder(), B.blasTrans(), B.size(), Y.cols(), B(), B.ldim(), ipiv(), Y(), Y.ldim());
+    int info = dgetrs(B.blasOrder(), B.blasTrans(), B.size(), Y.cols(), B(), B.ldim(), ipiv(), Y(), Y.ldim());
 
     assert(info==0);
 
@@ -1378,7 +1368,7 @@ namespace fmatvec {
 
     SquareMatrix<double> B = A.copy();
 
-    int info = clapack_dgels( B.blasTrans(), B.rows(), B.cols(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
+    int info = dgels( B.blasTrans(), B.rows(), B.cols(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
 
     assert(info==0);
 
@@ -1402,7 +1392,7 @@ namespace fmatvec {
 
     int *ipiv = new int[A.size()];
 
-    int info = clapack_dgesv(B.blasOrder(), B.size(), 1, B(), B.ldim(), ipiv, y(), y.size());
+    int info = dgesv(B.blasOrder(), B.size(), 1, B(), B.ldim(), ipiv, y(), y.size());
 
     delete [] ipiv;
 
@@ -1426,7 +1416,7 @@ namespace fmatvec {
 
     SquareMatrix<double> B = A.copy();
 
-    int info = clapack_dgetrs(B.blasOrder(), B.blasTrans(), B.size(), 1, B(), B.ldim(), ipiv(), y(), y.size());
+    int info = dgetrs(B.blasOrder(), B.blasTrans(), B.size(), 1, B(), B.ldim(), ipiv(), y(), y.size());
 
     assert(info==0);
 
@@ -1448,7 +1438,7 @@ namespace fmatvec {
 
     SquareMatrix<double> B = A.copy();
 
-    int info = clapack_dgels( B.blasTrans(), B.rows(), B.cols(), y.cols(), B(), B.ldim(), y(), y.size());
+    int info = dgels( B.blasTrans(), B.rows(), B.cols(), y.cols(), B(), B.ldim(), y(), y.size());
 
     assert(info==0);
 
@@ -1466,11 +1456,11 @@ namespace fmatvec {
 
     int *ipiv = new int[A.size()];
 
-    int info = clapack_dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv);
+    int info = dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv);
 
     assert(info==0);
 
-    clapack_dgetri( B.blasOrder(), B.size(), B(), B.ldim(), ipiv);
+    dgetri( B.blasOrder(), B.size(), B(), B.ldim(), ipiv);
 
     delete [] ipiv;
 
@@ -1486,11 +1476,11 @@ namespace fmatvec {
       return B;
 #endif
 
-    int info = clapack_dpotrf(B.blasOrder(), B.blasUplo(), B.size(), B(), B.ldim());
+    int info = dpotrf(B.blasOrder(), B.blasUplo(), B.size(), B(), B.ldim());
 
     assert(info==0);
 
-    clapack_dpotri( B.blasOrder(), B.blasUplo(), B.rows(), B(), B.ldim());
+    dpotri( B.blasOrder(), B.blasUplo(), B.rows(), B(), B.ldim());
 
     return B;
   }
@@ -1524,7 +1514,7 @@ namespace fmatvec {
       ipiv.resize(is);
     }
 
-    int info = clapack_dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv());
+    int info = dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv());
 
     assert(info==0);
 
@@ -1545,7 +1535,7 @@ namespace fmatvec {
       ipiv.resize(is);
     }
 
-    int info = clapack_dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv());
+    int info = dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv());
 
     assert(info==0);
 
@@ -1561,7 +1551,7 @@ namespace fmatvec {
       return B;
 #endif
 
-    int info = clapack_dpotrf(B.blasOrder(), B.blasUplo(), B.size(), B(), B.ldim());
+    int info = dpotrf(B.blasOrder(), B.blasUplo(), B.size(), B(), B.ldim());
 
     assert(info==0);
 
@@ -1575,7 +1565,7 @@ namespace fmatvec {
       return 0.0;
 #endif
 
-    return cblas_dasum(x.size(), x(), x.inc());
+    return dasum(x.size(), x(), x.inc());
   }
 
   double nrmInf(const Vector<double> &x) {
@@ -1585,7 +1575,7 @@ namespace fmatvec {
       return 0.0;
 #endif
 
-    int id = cblas_idamax(x.size(), x(), x.inc());
+    int id = idamax(x.size(), x(), x.inc());
     return fabs(x(id));
   }
 
@@ -1596,7 +1586,7 @@ namespace fmatvec {
       return 0.0;
 #endif
 
-    return cblas_dnrm2(x.size(), x(), x.inc());
+    return dnrm2(x.size(), x(), x.inc());
   }
 
   Vector<double> slvLL(const Matrix<Symmetric, double> &A, const Vector<double> &x) {
@@ -1614,7 +1604,7 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> B = A.copy();
 
-    int info = clapack_dposv(B.blasOrder(), B.blasUplo(), B.size(), 1, B(), B.ldim(), y(), y.size());
+    int info = dposv(B.blasOrder(), B.blasUplo(), B.size(), 1, B(), B.ldim(), y(), y.size());
 
     assert(info==0);
 
@@ -1636,7 +1626,7 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> B = A.copy();
 
-    int info = clapack_dposv(B.blasOrder(), B.blasUplo(), B.size(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
+    int info = dposv(B.blasOrder(), B.blasUplo(), B.size(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
 
     assert(info==0);
 
@@ -1658,7 +1648,7 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> B = A.copy();
 
-    int info = clapack_dpotrs(B.blasOrder(), B.blasUplo(), B.size(), 1, B(), B.ldim(), y(), y.size());
+    int info = dpotrs(B.blasOrder(), B.blasUplo(), B.size(), 1, B(), B.ldim(), y(), y.size());
 
     assert(info==0);
 
@@ -1680,7 +1670,7 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> B = A.copy();
 
-    int info = clapack_dpotrs(B.blasOrder(), B.blasUplo(), B.size(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
+    int info = dpotrs(B.blasOrder(), B.blasUplo(), B.size(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
 
     assert(info==0);
 
@@ -1695,7 +1685,7 @@ namespace fmatvec {
 
     SquareMatrix<double> B = A.copy();
 
-    int info = clapack_dgeev('N','N', A.size(), B(), B.ldim(), wr, wi, vl, B.size(), vr, B.size());
+    int info = dgeev('N','N', A.size(), B(), B.ldim(), wr, wi, vl, B.size(), vr, B.size());
 
     Vector<complex<double> > w(A.size());
     for(int i=0; i<A.size(); i++)
@@ -1713,7 +1703,7 @@ namespace fmatvec {
     Vector<double> w(A.size(),NONINIT);
     Matrix<Symmetric, double> B = A.copy();
 
-    int info = clapack_dsyev('N', 'L', B.size(), B(), B.ldim(), w());
+    int info = dsyev('N', 'L', B.size(), B(), B.ldim(), w());
 
     return w;
 
@@ -1733,7 +1723,7 @@ namespace fmatvec {
     double* z;
     int ldz = 1;
 
-    int info = clapack_dsyevx('N', 'I', B.blasUplo(), B.size(), B(), B.ldim(), vl, vu, il, iu, abstol, m, w(), z, ldz);
+    int info = dsyevx('N', 'I', B.blasUplo(), B.size(), B(), B.ldim(), vl, vu, il, iu, abstol, &m, w(), z, ldz);
 
     return w(0,m-1);
 
@@ -1779,7 +1769,7 @@ namespace fmatvec {
       return 0.0;
 #endif
 
-    return clapack_dlange('I' , A.rows(), A.cols(), A(), A.ldim());
+    return dlange('I' , A.rows(), A.cols(), A(), A.ldim());
   }
 
   double nrm1(const Matrix<General,double> &A) {
@@ -1789,7 +1779,7 @@ namespace fmatvec {
       return 0.0;
 #endif
 
-    return clapack_dlange('1' , A.rows(), A.cols(), A(), A.ldim());
+    return dlange('1' , A.rows(), A.cols(), A(), A.ldim());
   }
 
   double nrmFro(const Matrix<General,double> &A) {
@@ -1799,7 +1789,7 @@ namespace fmatvec {
       return 0.0;
 #endif
 
-    return clapack_dlange('F' , A.rows(), A.cols(), A(), A.ldim());
+    return dlange('F' , A.rows(), A.cols(), A(), A.ldim());
   }
 
   double nrm2(const Matrix<General,double> &A) {
@@ -1818,7 +1808,7 @@ namespace fmatvec {
     Matrix<General,double> A_ = A.copy();
     Vector<double> b_ = b.copy();
 
-    int info = clapack_dgelss( A.rows(), A.cols(), 1, A_(), A_.ldim(), b_(), b_.size(), rcond);
+    int info = dgelss( A.rows(), A.cols(), 1, A_(), A_.ldim(), b_(), b_.size(), rcond);
 
     assert(info == 0);
 
@@ -1855,7 +1845,7 @@ namespace fmatvec {
 //
 //    SquareMatrix<double> B = A.copy();
 //
-//    cblas_dtrsm(CblasColMajor,side,uplo,B.blasTrans(),unit,Y.rows(), Y.cols(), 1, A(),A.ldim(), Y(), Y.ldim());
+//    dtrsm(CblasColMajor,side,uplo,B.blasTrans(),unit,Y.rows(), Y.cols(), 1, A(),A.ldim(), Y(), Y.ldim());
 //
 //    return Y;  
 //  }
