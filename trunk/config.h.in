@@ -1,5 +1,8 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Use Cosimulation Interface */
+#undef COSIM
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
@@ -8,6 +11,12 @@
 
 /* Define to 1 if you have the `atlas' library (-latlas). */
 #undef HAVE_LIBATLAS
+
+/* Define to 1 if you have the `blas' library (-lblas). */
+#undef HAVE_LIBBLAS
+
+/* Define to 1 if you have the `lapack' library (-llapack). */
+#undef HAVE_LIBLAPACK
 
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #undef HAVE_LIBPTHREAD
