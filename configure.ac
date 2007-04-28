@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(fmatvec, 0.9.1, mfoerg@users.berlios.de)
+AC_INIT(fmatvec, 0.9.2, mfoerg@users.berlios.de)
 AC_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([src/fmatvec.h])
@@ -34,6 +34,10 @@ AC_ARG_WITH(atlas-inc-prefix,[  --with-atlas-inc-prefix=PFX  Prefix where atlas 
 
 AC_ARG_WITH(atlas-lib-prefix,[  --with-atlas-lib-prefix=PFX  Prefix where atlas libraries are installed], [atlas_lib_prefix="$withval"], [atlas_lib_prefix="."])
 
+AC_ARG_WITH(lapack-lib-prefix,[  --with-lapack-lib-prefix=PFX  Prefix where lapack library is installed], [lapack_lib_prefix="$withval"], [lapack_lib_prefix="."])
+
+AC_ARG_WITH(blas-lib-prefix,[  --with-blas-lib-prefix=PFX  Prefix where blas library is installed], [blas_lib_prefix="$withval"], [blas_lib_prefix="."])
+
 AC_ARG_WITH([f2c],[  --with-f2c=PFX  the path and name to the libf2c.a library(optional)],[f2c="$withval"],[f2c=""])
 
 CXXFLAGS="-O2"
@@ -52,35 +56,88 @@ if test "x$pthread_libs" = xno; then
 	AC_MSG_ERROR(pthread library needed!)
 fi
 
-dnl Add any special include directories
-#AC_MSG_CHECKING(for ATLAS CPPFLAGS)
+dnl ----------------------------------------------------------
+
+AC_ARG_ENABLE([atlas],[  --enable-atlas  Use ATLAS],[atlas="yes"],[atlas="no"])
+
+if test "$atlas" = "yes"; then
+  AC_DEFINE([COSIM],[1],[Use Cosimulation Interface])
+
 if test "$atlas_inc_prefix" != "" ; then
 	CFLAGS="$CFLAGS  -I$atlas_inc_prefix"
 	CPPFLAGS="$CPPFLAGS  -I$atlas_inc_prefix"
 fi
 
+INCDIRS="-I$atlas_inc_prefix"
+
 AC_MSG_CHECKING(for ATLAS headers)
 AC_TRY_COMPILE([#include <clapack.h>],[],[AC_MSG_RESULT(found)], [AC_MSG_ERROR(not present)])
   
-#AC_MSG_CHECKING(for ATLAS LDFLAGS)
 if test "$atlas_lib_prefix" != "" ; then
 	LDFLAGS="$LDFLAGS -L$atlas_lib_prefix"
 fi
+LIBDIRS="-L$atlas_lib_prefix"
 
 LIBS=""
-
-dnl add the alsa library
 ATLAS_LIBS="-llapack -lcblas -lblas -latlas -lpthread $FLIBS"
-
-dnl AC_MSG_RESULT($LDFLAGS)
 
 AC_CHECK_LIB(atlas,cblas_dcopy,,atlas_libs=no,$ATLAS_LIBS)
 if test "x$atlas_libs" = xno; then
 	AC_MSG_ERROR(ATLAS libraries were not found on the system. You can get the ATLAS package from http://math-atlas.sourceforge.net.)
 fi
 
-AC_SUBST([atlas_inc_prefix])
-AC_SUBST([atlas_lib_prefix])
+dnl AC_SUBST([atlas_inc_prefix])
+dnl AC_SUBST([atlas_lib_prefix])
+
+LIBS="-llapack -lcblas -latlas -lblas -lpthread $FLIBS"
+
+#COSIMDEFINE=-DCOSIM
+#AC_PATH_PROG(KETSIM_CONFIG, ketsim-config, no, $prefix/bin:$PATH)
+#KETSIM_CFLAGS=$($KETSIM_CONFIG --cflags)
+#KETSIM_LIBS=$($KETSIM_CONFIG --libs)
+#COSIMLIBS=$KETSIM_LIBS
+#CPPFLAGS="-I$(pwd)/src/integrators/atlas $CPPFLAGS $KETSIM_CFLAGS"
+#AC_CHECK_HEADERS([ketsim.h],[],[AC_MSG_ERROR([Needed header from ketsim not found.])])
+else
+	  
+	if test "$blas_lib_prefix" != "" ; then
+		LDFLAGS="$LDFLAGS -L$blas_lib_prefix"
+	fi
+	if test "$lapack_lib_prefix" != "" ; then
+		LDFLAGS="$LDFLAGS -L$lapack_lib_prefix"
+	fi
+	INCDIRS=""
+	LIBDIRS="-L$blas_lib_prefix -L$lapack_lib_prefix"
+	
+	LIBS=""
+	LAPACK_LIBS="-llapack -lblas -lpthread $FLIBS"
+	
+	AC_CHECK_LIB(blas,dcopy_,,blas_libs=no,$LAPACK_LIBS)
+	if test "x$blas_libs" = xno; then
+		AC_MSG_ERROR(LAPACK library were not found on the system. You can get the
+				LAPACK package from http://.)
+	fi
+	AC_CHECK_LIB(lapack,dgemm_,,lapack_libs=no,$LAPACK_LIBS)
+	if test "x$lapack_libs" = xno; then
+		AC_MSG_ERROR(LAPACK library were not found on the system. You can get the
+				LAPACK package from http://.)
+	fi
+	
+	LIBS="-llapack -lblas -lpthread $FLIBS"
+fi
+#AC_SUBST([KETSIM_CFLAGS])
+#AC_SUBST([KETSIM_LIBS])
+#AC_SUBST([COSIMDEFINE])
+#AC_SUBST([COSIMREQ])
+#AC_SUBST([COSIMLIBS])
+AM_CONDITIONAL([COND_ATLAS],[test "$atlas" = "yes"])
+
+
+
+dnl add the alsa library
+
+dnl AC_MSG_RESULT($LDFLAGS)
+
 
 dnl Checking for doxygen
 
@@ -90,8 +147,9 @@ if test $doxygen = "no" ; then
   AC_MSG_RESULT([can't generate documentation. 'doxygen' required.])
 fi
 
-LIBS="-llapack -lcblas -latlas -lblas -lpthread $FLIBS"
 AC_SUBST(LIBS)
+AC_SUBST([INCDIRS])
+AC_SUBST([LIBDIRS])
 AC_CONFIG_FILES([Makefile src/Makefile doc/doxyfile doc/Makefile fmatvec.pc])
 AC_OUTPUT
 

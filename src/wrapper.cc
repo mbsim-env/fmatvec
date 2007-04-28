@@ -43,10 +43,7 @@
 
 extern "C" {
 
-//#include "cblas.h"
-//#include "cblas.h"
-
-#ifndef HAVE_ATLAS
+#ifndef HAVE_LIBATLAS
 
   void dscal_(const int *n, const double *alpha, double *X, const int* incX);
   void dgemm_(const char *TransA, const char* TransB, const int *M, const int *N,
@@ -112,7 +109,7 @@ extern "C" {
 
 namespace fmatvec {
 
-#ifndef HAVE_ATLAS
+#ifndef HAVE_LIBATLAS
 
   void dscal(const int N, const double alpha, double *X, const int incX) {
     dscal_(&N, &alpha, X, &incX);
@@ -185,7 +182,7 @@ namespace fmatvec {
   }
 
   CBLAS_INDEX idamax(const int N, const double *X, const int incX) {
-    return idamax_(&N, X, &incX);
+    return idamax_(&N, X, &incX)-1;
   }
 
   double dnrm2(const int N, const double *X, const int incX) {
@@ -231,7 +228,7 @@ namespace fmatvec {
     return info;
   }
 
-  int dpotrf(const enum ATLAS_UPLO Uplo, const int N, double *A, const int lda) {
+  int dpotrf(const enum ATLAS_ORDER Order, const enum ATLAS_UPLO Uplo, const int N, double *A, const int lda) {
 
     int info;
     const char uplo = CVT_UPLO(Uplo);

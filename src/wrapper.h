@@ -55,9 +55,7 @@
 
 namespace fmatvec {
 
-#define HAVE_ATLAS
-
-#ifndef HAVE_ATLAS
+#ifndef HAVE_LIBATLAS
   void dscal(const int N, const double alpha, double *X, const int incX) ;
   void dgemm(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA,
                  const enum CBLAS_TRANSPOSE TransB, const int M, const int N,
@@ -97,7 +95,7 @@ namespace fmatvec {
                    double *A, const int lda, int *ipiv);
   int dgetri(const enum CBLAS_ORDER Order, const int N, double *A,
                    const int lda, const int *ipiv);
-  int dpotrf(const enum ATLAS_UPLO Uplo, const int N, double *A, const int lda);
+  int dpotrf(const enum ATLAS_ORDER Order, const enum ATLAS_UPLO Uplo, const int N, double *A, const int lda);
   int dpotri(const enum ATLAS_ORDER Order, const enum ATLAS_UPLO Uplo,
                    const int N, double *A, const int lda);
   int dposv(const enum ATLAS_ORDER Order, const enum ATLAS_UPLO Uplo,
