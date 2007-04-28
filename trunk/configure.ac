@@ -42,7 +42,7 @@ AC_ARG_WITH([f2c],[  --with-f2c=PFX  the path and name to the libf2c.a library(o
 
 CXXFLAGS="-O2"
 if test -n "$F77"; then
- 	AC_F77_LIBRARY_LDFLAGS
+ 	AC_FC_LIBRARY_LDFLAGS
  	if test -n "$FFLAGS"; then
  		AC_MSG_RESULT([defining FFLAGS to be $FFLAGS])
  	fi
@@ -79,25 +79,15 @@ fi
 LIBDIRS="-L$atlas_lib_prefix"
 
 LIBS=""
-ATLAS_LIBS="-llapack -lcblas -lblas -latlas -lpthread $FLIBS"
+ATLAS_LIBS="-llapack -lcblas -lblas -latlas -lpthread $FCLIBS"
 
 AC_CHECK_LIB(atlas,cblas_dcopy,,atlas_libs=no,$ATLAS_LIBS)
 if test "x$atlas_libs" = xno; then
 	AC_MSG_ERROR(ATLAS libraries were not found on the system. You can get the ATLAS package from http://math-atlas.sourceforge.net.)
 fi
 
-dnl AC_SUBST([atlas_inc_prefix])
-dnl AC_SUBST([atlas_lib_prefix])
+LIBS="-llapack -lcblas -latlas -lblas -lpthread $FCLIBS"
 
-LIBS="-llapack -lcblas -latlas -lblas -lpthread $FLIBS"
-
-#COSIMDEFINE=-DCOSIM
-#AC_PATH_PROG(KETSIM_CONFIG, ketsim-config, no, $prefix/bin:$PATH)
-#KETSIM_CFLAGS=$($KETSIM_CONFIG --cflags)
-#KETSIM_LIBS=$($KETSIM_CONFIG --libs)
-#COSIMLIBS=$KETSIM_LIBS
-#CPPFLAGS="-I$(pwd)/src/integrators/atlas $CPPFLAGS $KETSIM_CFLAGS"
-#AC_CHECK_HEADERS([ketsim.h],[],[AC_MSG_ERROR([Needed header from ketsim not found.])])
 else
 	  
 	if test "$blas_lib_prefix" != "" ; then
@@ -110,7 +100,7 @@ else
 	LIBDIRS="-L$blas_lib_prefix -L$lapack_lib_prefix"
 	
 	LIBS=""
-	LAPACK_LIBS="-llapack -lblas -lpthread $FLIBS"
+	LAPACK_LIBS="-llapack -lblas -lpthread $FCLIBS"
 	
 	AC_CHECK_LIB(blas,dcopy_,,blas_libs=no,$LAPACK_LIBS)
 	if test "x$blas_libs" = xno; then
@@ -123,23 +113,9 @@ else
 				LAPACK package from http://.)
 	fi
 	
-	LIBS="-llapack -lblas -lpthread $FLIBS"
+	LIBS="-llapack -lblas -lpthread $FCLIBS"
 fi
-#AC_SUBST([KETSIM_CFLAGS])
-#AC_SUBST([KETSIM_LIBS])
-#AC_SUBST([COSIMDEFINE])
-#AC_SUBST([COSIMREQ])
-#AC_SUBST([COSIMLIBS])
 AM_CONDITIONAL([COND_ATLAS],[test "$atlas" = "yes"])
-
-
-
-dnl add the alsa library
-
-dnl AC_MSG_RESULT($LDFLAGS)
-
-
-dnl Checking for doxygen
 
 AC_ARG_WITH([doxygenpath],[  --with-doxygenpath=PATH  The path to the 'doxygen' program.],[doxygenpath="$withval"],[doxygenpath=""])
 AC_PATH_PROG([doxygen],[doxygen],[no],[$doxygenpath:$PATH])
