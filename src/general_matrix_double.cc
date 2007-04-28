@@ -75,7 +75,7 @@ namespace fmatvec {
   template <>
   template <>
   void Matrix<General, double>::deepCopy(const Matrix<General, double> &A) { 
-    dcopy(A.blasTrans(), blasTrans(), m, n, A.ele, A.ldim(), ele,ldim());
+    myblas_dcopy(A.blasTrans(), blasTrans(), m, n, A.ele, A.ldim(), ele,ldim());
   }
 
   template <>

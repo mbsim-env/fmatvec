@@ -25,10 +25,6 @@
 #define FMATVEC_NO_INITIALIZATION
 #define FMATVEC_NO_BOUNDS_CHECK
 
-extern "C" {
-#include "cblas.h"
-}
-
 namespace fmatvec {
 
 }

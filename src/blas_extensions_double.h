@@ -32,19 +32,28 @@
    enum CBLAS_SIDE  {CblasLeft=141, CblasRight=142};
 #endif
 
-void daxpy(const enum CBLAS_TRANSPOSE  transa, const enum CBLAS_TRANSPOSE transb, int m, int n, double alpha, const double *a, int lda1, double *b, int ldb1);
+namespace fmatvec {
 
-void dcopy(const enum CBLAS_TRANSPOSE  transa, const enum CBLAS_TRANSPOSE transb, int m, int n, const double *a, int lda1, double *b, int ldb1);
+  void myblas_daxpy(const enum CBLAS_TRANSPOSE  transa, const enum CBLAS_TRANSPOSE
+      transb, int m, int n, double alpha, const double *a, int lda1, double *b,
+      int ldb1);
 
-void dscal(int n, double da, const double *dx, int incx, double *c);
+  void myblas_dcopy(const enum CBLAS_TRANSPOSE  transa, const enum CBLAS_TRANSPOSE
+      transb, int m, int n, const double *a, int lda1, double *b, int ldb1);
 
-void dscal(const enum CBLAS_TRANSPOSE  transa, int m, int n, double alpha, 
-	   const double *a, int lda1, double *c, int ldc);
+  void myblas_dscal(int n, double da, const double *dx, int incx, double *c);
 
-void dscal(char transa, int m, int n, double alpha, double *a, int lda1);
+  void myblas_dscal(const enum CBLAS_TRANSPOSE  transa, int m, int n, double alpha, const
+      double *a, int lda1, double *c, int ldc);
 
-void daxpy(int n, double da, const double *dx, int incx, const double *dy, int incy, double *c);
+  void myblas_dscal(char transa, int m, int n, double alpha, double *a, int lda1);
 
-void daxpy(const enum CBLAS_TRANSPOSE transa, const enum CBLAS_TRANSPOSE transb, int m, int n, double alpha, const double *a, int lda1, const double *b, int ldb1, double *c, int ldc);
+  void myblas_daxpy(int n, double da, const double *dx, int incx, const double *dy, int
+      incy, double *c);
 
+  void myblas_daxpy(const enum CBLAS_TRANSPOSE transa, const enum CBLAS_TRANSPOSE transb,
+      int m, int n, double alpha, const double *a, int lda1, const double *b, int
+      ldb1, double *c, int ldc);
+
+}
 #endif
