@@ -30,5 +30,6 @@ fmatvecinclude_HEADERS = blas_extensions_double.h \
 			 vector.h \
 			 band_matrix.h\
 			 sparse_matrix.h\
-			 index.h
+			 index.h\
+			 wrapper.h
 

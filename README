@@ -24,6 +24,8 @@ Installation:
 =============
 	0. Install ATLAS with full LAPACK support, if necessary. For more
 	   details see http://math-atlas.sourceforge.net/faq.html.
+	   Alternatively, use fmatvec without ATLAS and install the reference
+	   libraries of BLAS and LAPACK from http://www.netlib.org/lapack.
 
 	1. Run aclocal, autoheader, autoconf, libtoolize und automake, if
 	   necessary:
@@ -41,10 +43,15 @@ Installation:
 	   Hereby, the following options are important:
 
   		--prefix=PFX (prefix, where the library will be installed).
-		--with-atlas-inc-prefix=PFX (prefix, where ATLAS includes are
-		    installed)
-		--with-atlas-lib-prefix=PFX (prefix, where ATLAS libs are
-		    installed)
+		--enable-atlas (use ATLAS)
+		--with-blas-lib-prefix=PFX (prefix, where the BLAS lib is
+		    installed, when ATLAS is not used)
+		--with-lapack-lib-prefix=PFX (prefix, where the LAPACK lib is
+		    installed, when ATLAS is not used)
+		--with-atlas-inc-prefix=PFX (prefix, where the ATLAS includes 
+		    are installed, when ATLAS is used)
+		--with-atlas-lib-prefix=PFX (prefix, where the ATLAS libs are
+		    installed, when ATLAS is used)
     
   	3. Run make in order to build the shared library libfmatvec.so.
                   
