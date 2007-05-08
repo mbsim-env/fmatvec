@@ -26,9 +26,16 @@ AC_SUBST([LIBFMATVEC_AGE])
 LIBFMATVEC_VERSION_INFO=$LIBFMATVEC_CURRENT:$LIBFMATVEC_REVISION:$LIBFMATVEC_AGE
 AC_SUBST([LIBFMATVEC_VERSION_INFO])
 
+dnl By autoscan
+AC_CHECK_FUNCS([sqrt])
+AC_C_CONST
+AC_C_INLINE
+AC_HEADER_STDBOOL
+AC_PROG_RANLIB
+AC_TYPE_SIZE_T
+
 atlas_libs=yes
 atlas_headers=yes
-pthread_libs=yes
 
 AC_ARG_WITH(atlas-inc-prefix,[  --with-atlas-inc-prefix=PFX  Prefix where atlas includes are installed], [atlas_inc_prefix="$withval"], [atlas_inc_prefix="."])
 
@@ -51,10 +58,7 @@ fi
 
 LIBS=""
 
-AC_CHECK_LIB(pthread, pthread_mutex_init,,pthread_libs=no,"-lpthread")
-if test "x$pthread_libs" = xno; then
-	AC_MSG_ERROR(pthread library needed!)
-fi
+AC_CHECK_LIB(pthread, pthread_mutex_init,PTHREADLIB="-lpthread",PTHREADLIB="","-lpthread")
 
 dnl ----------------------------------------------------------
 
@@ -79,14 +83,14 @@ fi
 LIBDIRS="-L$atlas_lib_prefix"
 
 LIBS=""
-ATLAS_LIBS="-llapack -lcblas -lblas -latlas -lpthread $FCLIBS"
+ATLAS_LIBS="-llapack -lcblas -lblas -latlas $PTHREADLIB $FCLIBS"
 
 AC_CHECK_LIB(atlas,cblas_dcopy,,atlas_libs=no,$ATLAS_LIBS)
 if test "x$atlas_libs" = xno; then
 	AC_MSG_ERROR(ATLAS libraries were not found on the system. You can get the ATLAS package from http://math-atlas.sourceforge.net.)
 fi
 
-LIBS="-llapack -lcblas -latlas -lblas -lpthread $FCLIBS"
+LIBS="-llapack -lcblas -latlas -lblas $PTHREADLIB $FCLIBS"
 
 else
 	  
@@ -100,7 +104,7 @@ else
 	LIBDIRS="-L$blas_lib_prefix -L$lapack_lib_prefix"
 	
 	LIBS=""
-	LAPACK_LIBS="-llapack -lblas -lpthread $FCLIBS"
+	LAPACK_LIBS="-llapack -lblas $PTHREADLIB $FCLIBS"
 	
 	AC_CHECK_LIB(blas,dcopy_,,blas_libs=no,$LAPACK_LIBS)
 	if test "x$blas_libs" = xno; then
@@ -113,7 +117,7 @@ else
 				LAPACK package from http://.)
 	fi
 	
-	LIBS="-llapack -lblas -lpthread $FCLIBS"
+	LIBS="-llapack -lblas $PTHREADLIB $FCLIBS"
 fi
 AM_CONDITIONAL([COND_ATLAS],[test "$atlas" = "yes"])
 
