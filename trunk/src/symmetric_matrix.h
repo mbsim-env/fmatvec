@@ -118,8 +118,13 @@ namespace fmatvec {
 
 	if(ini == INIT)
 	  init(a);
+	else if(ini == EYE) {	 
+	  init(0);
+	  for(int i=0; i<n; i++) 
+	    operator()(i,i) = 1;
+	}
       }
-      
+
       /*! \brief Regular Constructor
        *
        * Constructs a symmetric matrix of size m x n, where m must be equal to n.
@@ -137,6 +142,12 @@ namespace fmatvec {
 
 	if(ini == INIT)
 	  init(a);
+	else if(ini == EYE) {
+	  init(0);
+          for(int i=0; i<n; i++) 
+	    operator()(i,i) = 1;
+        }
+
       }
 
       /*! \brief Copy Constructor
@@ -221,7 +232,13 @@ namespace fmatvec {
 	ele = (AT*)memory.get();
 
 	if(ini == INIT)
+	  init(a);
+	else if(ini == EYE) {
 	  init(0);
+          for(int i=0; i<n; i++) 
+	    operator()(i,i) = 1;
+        }
+
 
 	return *this;
       }
