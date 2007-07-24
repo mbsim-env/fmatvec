@@ -39,7 +39,7 @@ namespace fmatvec {
 
   /*! Enumerate for initialization of matrices
    */
-  enum Initialization{INIT,NONINIT};
+  enum Initialization{INIT,NONINIT,EYE};
 
   /*! 
    *  \brief This is the basic matrix class for arbitrary matrices.

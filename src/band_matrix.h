@@ -98,6 +98,12 @@ namespace fmatvec {
 
 	if(ini == INIT)
 	  init(a);
+	else if(ini == EYE){
+	  init(0);
+	  for(int i=0; i<n; i++)
+	    ele[ku+i+i*(kl+ku)] = 1;
+	} 
+
       }
 
       /*! \brief Copy Constructor
@@ -171,7 +177,12 @@ namespace fmatvec {
 	ele = (AT*)memory.get();
 
 	if(ini == INIT)
+	  init(a);
+	else if(ini == EYE){
 	  init(0);
+	  for(int i=0; i<n; i++)
+	    ele[ku+i+i*(kl+ku)] = 1;
+	}
 
 	return *this;
       }
@@ -228,8 +239,9 @@ namespace fmatvec {
 	//     assert(i-j<=kl);
 	//      assert(i-j>=-ku);
 #endif
+	static AT zero;
 
-	return ((i-j>kl) || (i-j<-ku)) ? 0 : ele[ku+i+j*(kl+ku)];
+	return ((i-j>kl) || (i-j<-ku)) ? zero : ele[ku+i+j*(kl+ku)];
       };
 
       /*! \brief Pointer operator.

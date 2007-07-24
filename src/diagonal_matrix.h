@@ -124,7 +124,9 @@ namespace fmatvec {
 	  ele = (AT*)memory.get();
 
 	  if(ini == INIT)
-	    init(0);
+	    init(a);
+	  else if(ini == EYE ) 
+	    init(1);
 
 	  return *this;
 	}
@@ -145,7 +147,11 @@ namespace fmatvec {
 	    AT *el=ele;
 	    for(int i=0; i<n; i++)
 	      *el++=a;
-	  }
+	  } else if(ini == EYE ) {
+	    AT *el=ele;
+	    for(int i=0; i<n; i++) 
+	      *el++= 1;
+	  }  
 	}
 
 	/*! \brief Copy Constructor
@@ -208,7 +214,7 @@ namespace fmatvec {
 	 * */
 	const AT& operator()(int i, int j) const {
 
-	  static double zero=0;
+	  static AT zero=0;
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
 	  assert(i>=0);
