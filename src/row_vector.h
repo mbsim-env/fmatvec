@@ -351,7 +351,7 @@ namespace fmatvec {
   template <class AT>
     RowVector<AT> RowVector<AT>::copy() const {
 
-      RowVector<AT> x(m);
+      RowVector<AT> x(n);
       x.deepCopy(*this);
 
       return x;
