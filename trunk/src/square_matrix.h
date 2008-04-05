@@ -210,6 +210,17 @@ namespace fmatvec {
 	return *this;
       }
 
+      /*! \brief Copy operator
+       *
+       * Copies the matrix given by \em A.
+       * \param A The matrix to be copied. 
+       * \return A reference to the calling matrix.
+       * */
+      template<class T> SquareMatrix<AT>& operator<<(const Matrix<T, AT> &A) {
+	Matrix<General,AT>::operator<<(A);
+	return *this;
+      }
+
       /*! \brief Reference operator
        *
        * References the matrix given by \em A.
