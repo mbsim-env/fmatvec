@@ -160,6 +160,15 @@ namespace fmatvec {
    * */
   SquareMatrix<double> operator-(const SquareMatrix<double> &A, const SquareMatrix<double> &B);
 
+   /*! \brief Matrix-matrix subtraction.
+   *
+   * This function computes the sum of two symmetric matrices. 
+   * \param A A symmetric matrix. 
+   * \param B A symmetric matrix. 
+   * \return A new symmetric matrix containig the result.
+   * */
+  Matrix<Symmetric, double> operator-(const Matrix<Symmetric, double > &A, const Matrix<Symmetric, double > &B);
+
   /*! \brief Matrix-scalar multiplication.
    *
    * This function computes the product of a general matrix and a scalar. 
