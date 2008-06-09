@@ -386,6 +386,26 @@ namespace fmatvec {
     return C;
   }
 
+   Matrix<Symmetric, double > operator-(const Matrix<Symmetric, double > &A, const Matrix<Symmetric, double > &B) {
+
+#ifdef FMATVEC_SIZE_CHECK 
+    assert(A.size() == B.size());
+#endif
+
+    Matrix<Symmetric, double > C(A.size());
+
+#ifdef FMATVEC_VOID_CHECK
+    if(A.size() == 0) {
+      return C;
+    }
+#endif
+
+    for(int i=0; i<A.size(); i++)
+      for(int j=0; j<=i; j++)
+	C(i,j) = A(i,j) - B(i,j);
+    return C;
+  }
+
   SquareMatrix<double> operator*(const SquareMatrix<double> &A, const SquareMatrix<double> &B) {
 
 #ifdef FMATVEC_SIZE_CHECK 
