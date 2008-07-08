@@ -3,12 +3,14 @@ libfmatvec_la_LDFLAGS = -version-info @LIBFMATVEC_VERSION_INFO@
 libfmatvec_la_SOURCES = blas_extensions_double.cc \
 			diagonal_matrix_double.cc \
 			general_matrix_double.cc \
+			general_matrix_int.cc \
 			linear_algebra_double.cc \
 			memory.cc \
 			row_vector_double.cc \
 			square_matrix_double.cc \
 			symmetric_matrix_double.cc \
 			vector_double.cc \
+			vector_int.cc \
 			band_matrix_double.cc\
 			sparse_matrix_double.cc\
 			index.cc\
