@@ -46,7 +46,19 @@ AC_ARG_WITH(blas-lib-prefix,[  --with-blas-lib-prefix=PFX  Prefix where blas lib
 
 AC_ARG_WITH([f2c],[  --with-f2c=PFX  the path and name to the libf2c.a library(optional)],[f2c="$withval"],[f2c=""])
 
-CXXFLAGS="-O2"
+dnl Define the memory allocator
+AC_ARG_WITH([allocator-header],[  --with-allocator-header=<header file>  Include <header file> defining the STL-style allocator class to use (Default: None)],[allocator_header="$withval"],[allocator_header="NONE"])
+AC_ARG_WITH([allocator-class],[  --with-allocator-class=<class>  Use <class> for STL-style allocator class name. (Default: fmatvec::MemoryStack)],[allocator_class="$withval"],[allocator_class="DEFAULT"])
+if test "_$allocator_header" != "_NONE"; then
+  CXXFLAGS="$CXXFLAGS -DALLOCATORHEADER=$allocator_header"
+  DEFINES="$DEFINES -DALLOCATORHEADER=$allocator_header"
+fi
+if test "_$allocator_class" != "_DEFAULT"; then
+  CXXFLAGS="$CXXFLAGS -DALLOCATORCLASS=$allocator_class"
+  DEFINES="$DEFINES -DALLOCATORCLASS=$allocator_class"
+fi
+AC_SUBST([DEFINES])
+
 if test -n "$F77"; then
  	AC_FC_LIBRARY_LDFLAGS
  	if test -n "$FFLAGS"; then

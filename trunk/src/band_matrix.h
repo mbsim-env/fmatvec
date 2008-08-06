@@ -239,7 +239,7 @@ namespace fmatvec {
 	//     assert(i-j<=kl);
 	//      assert(i-j>=-ku);
 #endif
-	static AT zero;
+	static AT zero=0;
 
 	return ((i-j>kl) || (i-j<-ku)) ? zero : ele[ku+i+j*(kl+ku)];
       };
