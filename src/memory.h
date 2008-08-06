@@ -27,6 +27,17 @@
 
 #include <iostream>
 
+#ifdef ALLOCATORHEADER
+#  define CPPBEGININCLUDE <
+#  define CPPENDINCLUDE >
+#  include CPPBEGININCLUDE ALLOCATORHEADER CPPENDINCLUDE
+#  undef CPPBEGININCLUDE
+#  undef CPPENDINCLUDE
+#endif
+#ifndef ALLOCATORCLASS
+#  define ALLOCATORCLASS fmatvec::MemoryStack
+#endif
+
 using namespace std;
 
 namespace fmatvec {
@@ -81,7 +92,7 @@ namespace fmatvec {
 	  return stackptr;
 	}
 
-	AT * getMemory(size_t sz) { 
+	AT * allocate(size_t sz) { 
 	  AT **&sp=ele[sz];
 	  if(sz<MAXSZ) {
 	    if(!sp)
@@ -93,7 +104,7 @@ namespace fmatvec {
 	  } else
 	    return new AT[sz];  
 	}
-	void freeMemory(size_t sz, AT *p) {
+	void deallocate(AT *p, size_t sz) {
 	  AT **&sp=ele[sz];
 	  if(sz<MAXSZ && sz) {
 	    if(*(++sp)) 
@@ -108,14 +119,15 @@ namespace fmatvec {
 
   template <class AT> class Memory {
       private:
+        typedef ALLOCATORCLASS<AT> allocator_type;
 	size_t sz;
 	AT *ele0;
-	static MemoryStack<AT> ms;
+        static allocator_type ms;
 	size_t *ref;
 	void lock() {(*ref)++;};
 	void unlock() {
 	  if(!--(*ref)) {
-	    ms.freeMemory(sz,ele0);
+            ms.deallocate(ele0, sz);
 	    delete ref;
 	  }
 	};
@@ -124,7 +136,7 @@ namespace fmatvec {
 	Memory() : sz(0), ele0(0), ref(new size_t(1)){ 
 	};
 
-	Memory(size_t n) : sz(n), ele0(ms.getMemory(sz)), ref(new size_t(1)){
+	Memory(size_t n) : sz(n), ele0(ms.allocate(sz)), ref(new size_t(1)){
 	};
 
 	Memory(const Memory &memory) : sz(memory.sz), ele0(memory.ele0), ref(memory.ref)  {
@@ -146,7 +158,7 @@ namespace fmatvec {
 	  unlock();
 	  ref=new size_t(1);
 	  sz = n;
-	  ele0 = ms.getMemory(sz); 
+	  ele0 = ms.allocate(sz);
 	};
 
 	AT* get() const {return ele0;};

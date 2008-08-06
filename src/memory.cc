@@ -25,10 +25,10 @@
 
 namespace fmatvec {
 
-  template <> MemoryStack<char> Memory<char>::ms = MemoryStack<char>();
-  template <> MemoryStack<int> Memory<int>::ms = MemoryStack<int>();
-  template <> MemoryStack<double> Memory<double>::ms = MemoryStack<double>();
-  template <> MemoryStack<complex<double> > Memory<complex<double> >::ms = MemoryStack<complex<double> >();
+  template <> Memory<char>::allocator_type Memory<char>::ms = Memory<char>::allocator_type();
+  template <> Memory<int>::allocator_type Memory<int>::ms = Memory<int>::allocator_type();
+  template <> Memory<double>::allocator_type Memory<double>::ms = Memory<double>::allocator_type();
+  template <> Memory<complex<double> >::allocator_type Memory<complex<double> >::ms = Memory<complex<double> >::allocator_type();
 
 }
 
