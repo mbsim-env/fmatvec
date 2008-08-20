@@ -93,27 +93,35 @@ namespace fmatvec {
 	}
 
 	AT * allocate(size_t sz) { 
-	  AT **&sp=ele[sz];
-	  if(sz<MAXSZ) {
-	    if(!sp)
-	      sp = newstack();
-	    if (*sp) 
-	      return *sp--;
-	    else 
-	      return new AT[sz]; 
-	  } else
-	    return new AT[sz];  
+          AT *ret;
+#         pragma omp critical (fmatvec_MemoryStack_deAllocate)
+          {
+	    AT **&sp=ele[sz];
+	    if(sz<MAXSZ) {
+	      if(!sp)
+	        sp = newstack();
+	      if (*sp) 
+	        ret=*sp--;
+	      else 
+	        ret=new AT[sz]; 
+	    } else
+	      ret=new AT[sz];  
+          }
+          return ret;
 	}
 	void deallocate(AT *p, size_t sz) {
-	  AT **&sp=ele[sz];
-	  if(sz<MAXSZ && sz) {
-	    if(*(++sp)) 
-	      *sp = p; 
-	    else {
-	      sp=renewstack(sp);
-	      *sp=p;
-	    }
-	  } else delete [] p;
+#         pragma omp critical (fmatvec_MemoryStack_deAllocate)
+          {
+	    AT **&sp=ele[sz];
+	    if(sz<MAXSZ && sz) {
+	      if(*(++sp)) 
+	        *sp = p; 
+	      else {
+	        sp=renewstack(sp);
+	        *sp=p;
+	      }
+	    } else delete [] p;
+          }
 	}
     };
 
@@ -124,9 +132,15 @@ namespace fmatvec {
 	AT *ele0;
         static allocator_type ms;
 	size_t *ref;
-	void lock() {(*ref)++;};
+	void lock() {
+#         pragma omp critical (fmatvec_Memory_ref)
+          (*ref)++;
+        };
 	void unlock() {
-	  if(!--(*ref)) {
+          size_t refLocal;
+#         pragma omp critical (fmatvec_Memory_ref)
+          refLocal=--(*ref);
+	  if(!refLocal) {
             ms.deallocate(ele0, sz);
 	    delete ref;
 	  }
