@@ -1825,8 +1825,14 @@ namespace fmatvec {
 
   Vector<double> slvLS(const Matrix<General,double> &A, const Vector<double> &b, double rcond) {
 
+#ifdef FMATVEC_SIZE_CHECK 
+    assert(A.rows() == b.size());
+#endif
+
     Matrix<General,double> A_ = A.copy();
-    Vector<double> b_ = b.copy();
+
+    Vector<double> b_(A.rows()>A.cols()?A.rows():A.cols() ,NONINIT);
+    b_(0,b.size()-1) = b;
 
     int info = dgelss( A.rows(), A.cols(), 1, A_(), A_.ldim(), b_(), b_.size(), rcond);
 
