@@ -1822,12 +1822,39 @@ namespace fmatvec {
     return sqrt(rho(JTJ(A)));
   }
 
+  Matrix<General, double> slvLS(const Matrix<General, double> &A, const Matrix<General, double> &B, double rcond) {
+
+#ifdef FMATVEC_SIZE_CHECK 
+    assert(A.rows() == B.rows());
+#endif
+
+    //#ifdef FMATVEC_VOID_CHECK
+    //    if(X.rows() == 0 || X.cols() == 0)
+    //      return Y;
+    //#endif
+
+    Matrix<General,double> A_ = A.copy();
+
+    Matrix<General, double> B_(A.rows()>A.cols()?A.rows():A.cols(), B.cols() ,NONINIT);
+    B_(Index(0,B.rows()-1),Index(0,B.cols()-1)) = B;
+
+    int info = dgelss( A.rows(), A.cols(), B_.cols(), A_(), A_.ldim(), B_(), B_.ldim(), rcond);
+
+    assert(info==0);
+
+    return B_(Index(0,A.cols()-1),Index(0,B.cols()-1));
+  }
 
   Vector<double> slvLS(const Matrix<General,double> &A, const Vector<double> &b, double rcond) {
 
 #ifdef FMATVEC_SIZE_CHECK 
     assert(A.rows() == b.size());
 #endif
+
+//#ifdef FMATVEC_VOID_CHECK
+    //if(b.size() == 0)
+      //return y;
+//#endif
 
     Matrix<General,double> A_ = A.copy();
 

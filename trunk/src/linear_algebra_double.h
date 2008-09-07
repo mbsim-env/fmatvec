@@ -890,6 +890,8 @@ namespace fmatvec {
 
   Matrix<General, double> slvLLFac(const Matrix<Symmetric, double> &A, const Matrix<General, double> &X);
 
+  Matrix<General, double> slvLS(const Matrix<General, double> &A, const Matrix<General, double> &B, double rcond=-1);
+
   Vector<double> slvLS(const Matrix<General,double> &A, const Vector<double> &b, double rcond=-1);
 
   //Matrix<General, double> slvLU(CBLAS_SIDE side, CBLAS_UPLO uplo, CBLAS_DIAG unit, const SquareMatrix<double> &A, const Matrix<General, double> &X, const Vector<int> &ipiv );
