@@ -135,13 +135,12 @@ namespace fmatvec {
   template <class ST, class AT> istream& operator>>(istream &is, Matrix<ST, AT> &A) {
       int m, n;
       char c;
-      char str[10];
       is >> m >> c >> n >> c;
       A.resize(m,n,NONINIT);
       for (int i=0; i < A.rows(); ++i) 
 	for (int j=0; j < A.cols(); ++j) 
 	  is >> A(i,j);
-      is.getline(str,10);
+      is >> c;
       return is;
     }
 
