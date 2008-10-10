@@ -358,8 +358,8 @@ namespace fmatvec {
   template <class AT>
     Matrix<Diagonal, AT>&  Matrix<Diagonal, AT>::init(const AT &val) {
 
-      for(int i=0; i<rows(); i++) 
-	operator()(i) = val;
+      for(int i=0; i<rows(); i++)
+        operator()(i) = val;
 
       return *this;
     }
@@ -377,11 +377,11 @@ namespace fmatvec {
 
   template <class AT>
     void Matrix<Diagonal, AT>::deepCopy(const Matrix<Diagonal, AT> &A) { 
-      for(int i=0; i<n; i++) 
-	operator()(i) = A(i);
+      for(int i=0; i<n; i++)
+        operator()(i) = A(i);
     }
 
-  template <> extern void Matrix<Diagonal, double>::deepCopy(const Matrix<Diagonal, double> &A);
+  template <> void Matrix<Diagonal, double>::deepCopy(const Matrix<Diagonal, double> &A);
 
 }
 
