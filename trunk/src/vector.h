@@ -377,10 +377,10 @@ namespace fmatvec {
   template <class AT>
     void Vector<AT>::deepCopy(const Vector<AT> &x) {
       for(int i=0; i<size(); i++)
-	operator()(i) = x(i);
+        operator()(i) = x(i);
     }
 
-  template <> extern  void Vector<double>::deepCopy(const Vector<double> &A);
+  template <> void Vector<double>::deepCopy(const Vector<double> &A);
 
 
   template <class AT> Vector<AT> Vector<AT>::operator()(int i1, int i2) {

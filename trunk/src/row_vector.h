@@ -360,10 +360,10 @@ namespace fmatvec {
   template <class AT>
     void RowVector<AT>::deepCopy(const RowVector<AT> &x) {
       for(int i=0; i<size(); i++)
-	operator()(i) = x(i);
+        operator()(i) = x(i);
     }
 
-  template <> extern void RowVector<double>::deepCopy(const RowVector<double> &A);
+  template <> void RowVector<double>::deepCopy(const RowVector<double> &A);
 
   template <class AT> RowVector<AT> RowVector<AT>::operator()(int i1, int i2) {
     return operator()(Index(i1,i2));

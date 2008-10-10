@@ -627,17 +627,17 @@ namespace fmatvec {
   template <class AT> template <class Type>
     void Matrix<General, AT>::deepCopy(const Matrix<Type, AT> &A) { 
       for(int i=0; i<m; i++) 
-	for(int j=0; j<n; j++) 
-	  operator()(i,j) = A.operator()(i,j);
+	for(int j=0; j<n; j++)
+          operator()(i,j) = A.operator()(i,j);
     }
 
    /// @cond NO_SHOW
    
   template<> template<>
-  extern void Matrix<General, double>::deepCopy(const Matrix<General, double> &A);
+  void Matrix<General, double>::deepCopy(const Matrix<General, double> &A);
 
   template<> template<>
-    extern void Matrix<General, double>::deepCopy(const Matrix<Symmetric, double> &A);
+  void Matrix<General, double>::deepCopy(const Matrix<Symmetric, double> &A);
 
    /// @endcond
 
