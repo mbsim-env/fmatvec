@@ -341,6 +341,23 @@ namespace fmatvec {
 
   /*! \brief Negation.
    *
+   * This function computes the negation of a vector.
+   * \return The negation.
+   * */
+  template <class AT>
+    SquareMatrix<AT> operator-(const SquareMatrix<AT> &A) {
+
+      SquareMatrix<AT> B(A.size(),NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+	for(int j=0; j<A.cols(); j++)
+	  B(i,j)=-A(i,j);
+
+      return B;
+    }
+
+  /*! \brief Negation.
+   *
    * This function computes the negation of a matrix
    * \return The negation. 
    * */
