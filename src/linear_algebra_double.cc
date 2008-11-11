@@ -1717,6 +1717,31 @@ namespace fmatvec {
     return w;
 
   }
+  
+  void eigvec(const Matrix<Symmetric, double> &A, const Matrix<Symmetric, double> &B, SquareMatrix<double> &eigenvectors, Vector<double> &eigenvalues) {
+    const int dim=A.size();
+    double *w = new double[dim];
+    SquareMatrix<double> B_(dim);
+    eigenvectors.resize(dim);
+    eigenvalues.resize(dim);
+    for (int z=0; z<dim; z++)
+      for (int s=0; s<=z; s++) {
+        eigenvectors(z,s)=A(z,s);
+        eigenvectors(s,z)=A(z,s);
+        B_(z,s)=B(z,s);
+        B_(s,z)=B(z,s);
+      }
+
+    int info = dsygv(1, 'V', 'L', dim, eigenvectors(), eigenvectors.ldim(), B_(), B_.ldim(), w);
+    printf("%d\n",info);
+
+    for (int i=0; i<dim; i++) {
+      Vector<double> evTmp=eigenvectors.col(i);
+      if (nrm2(evTmp)>0)
+        eigenvectors.col(i)=evTmp/nrm2(evTmp);
+      eigenvalues(i)=w[i];
+    }
+  }
 
   Vector<double> eigval(const Matrix<Symmetric, double> &A) {
 
