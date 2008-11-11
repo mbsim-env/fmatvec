@@ -644,6 +644,18 @@ namespace fmatvec {
    * */
   Vector<complex<double> > eigval(const SquareMatrix<double> &A); 
 
+  /*! \brief Eigenvectors and Eigenvalues
+   *
+   * This function computes all the eigenvectors and the eigenvalues of a real generalized symmetric-definite eigenproblem, of the form A*x=(lambda)*B*x.
+   * Here A and B are assumed to be symmetric and B is also positive definite.
+   * \param A A symmetric matrix. 
+   * \param B A symmetric, positive definite matrix.
+   * \param eigenvector A square matrix in the dimension of A, containing the normalized Eigenvectors at the end of the function. 
+   * \param eigenvalues A vector in the size of A, containing the Eigenvalues at the end of the function
+   * \return void
+   * */
+  void eigvec(const Matrix<Symmetric, double> &A, const Matrix<Symmetric, double> &B, SquareMatrix<double> &eigenvectors, Vector<double> &eigenvalues); 
+
   /*! \brief Eigenvalues
    *
    * This function computes the eigenvalues of a symmetric matrix.

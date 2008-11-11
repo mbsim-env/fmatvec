@@ -100,6 +100,7 @@ extern "C" {
 #endif
 
   void dgeev_(const char* jobvl, const char* jobvr, const int *n, double *a, const int *lda, double *wr, double *wi, double *vl, const int *ldvl, double* vr, const int *ldvr, double* work, const int *lwork, int *info);
+  void dsygv_( const int* itype, const char* jobz, const char* uplo, const int *n, double *a, const int *lda, double *b, const int *ldb, double *w, double *work, const int *lwork, int *info);
   void dsyev_( const char* jobz, const char*, const int *n, double *a, const int *lda, double *w, double *work, const int *lwork, int *info);
   void dgels_( const char*, const int*, const int*, const int*, double* a, const int*, double* b, const int*, double*, const int*, int*);
   double dlange_(const char *norm , const int *m, const int *n, const double* A, const int* lda , double* work);
@@ -305,6 +306,19 @@ namespace fmatvec {
 
     return info;
 
+  }
+
+  int dsygv(const int itype, const char jobz, const char uplo, const int n, double *a, const int lda, double *b, const int ldb, double *w) {
+
+    int lwork = 10*n;
+    double *work = new double[lwork];
+    int info;
+
+    dsygv_(&itype, &jobz, &uplo, &n, a, &lda, b, &ldb, w, work, &lwork, &info);
+
+    delete [] work;
+
+    return info;
   }
 
   int dsyev(const char jobz, const char ul, const int n, double *a, const int lda, double *w) {
