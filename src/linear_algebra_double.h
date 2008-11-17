@@ -654,7 +654,7 @@ namespace fmatvec {
    * \param eigenvalues A vector in the size of A, containing the Eigenvalues at the end of the function
    * \return void
    * */
-  void eigvec(const Matrix<Symmetric, double> &A, const Matrix<Symmetric, double> &B, SquareMatrix<double> &eigenvectors, Vector<double> &eigenvalues); 
+  int eigvec(const Matrix<Symmetric, double> &A, const Matrix<Symmetric, double> &B, SquareMatrix<double> &eigenvectors, Vector<double> &eigenvalues); 
 
   /*! \brief Eigenvalues
    *
