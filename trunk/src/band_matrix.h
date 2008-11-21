@@ -325,6 +325,11 @@ namespace fmatvec {
        * */
       Matrix<GeneralBand, AT>& init(const AT &a);
 
+      /*! \brief Cast to std::vector<std::vector<AT> >.
+       *
+       * \return The std::vector<std::vector<AT> > representation of the matrix
+       * */
+      operator vector<vector<AT> >();
   };
 
   template <class AT>
@@ -413,6 +418,17 @@ namespace fmatvec {
       for(int i=0; i<kl+ku+1; i++)
 	for(int j=0; j<n; j++)
 	  ele[i+j*(kl+ku+1)] = A.ele[i+j*(kl+ku+1)];
+    }
+
+  template <class AT>
+    Matrix<GeneralBand, AT>::operator vector<vector<AT> >() {
+      vector<vector<AT> > ret(rows());
+      for(int r=0; r<rows(); r++) {
+        ret[r].resize(cols());
+        for(int c=0; c<cols(); c++)
+          ret[r][c]=operator()(r,c);
+      }
+      return ret;
     }
 
   //extern void Matrix<GeneralBand, double>::deepCopy(const Matrix<GeneralBand, double> &A);

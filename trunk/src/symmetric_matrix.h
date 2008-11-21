@@ -442,6 +442,12 @@ namespace fmatvec {
        * See operator()(int,int,int,int);
        * */
       const Matrix<General, AT> operator()(int i1, int j1, int i2, int j2) const;
+
+      /*! \brief Cast to std::vector<std::vector<AT> >.
+       *
+       * \return The std::vector<std::vector<AT> > representation of the matrix
+       * */
+      operator vector<vector<AT> >();
   };
   // ------------------------- Constructors -------------------------------------
   // ----------------------------------------------------------------------------
@@ -568,6 +574,17 @@ namespace fmatvec {
 
       return Matrix<Symmetric, AT>(I.end()-I.start()+1,lda,memory,elePtr(I.start(),I.start()));
   }
+
+  template <class AT>
+    Matrix<Symmetric, AT>::operator vector<vector<AT> >() {
+      vector<vector<AT> > ret(rows());
+      for(int r=0; r<rows(); r++) {
+        ret[r].resize(cols());
+        for(int c=0; c<cols(); c++)
+          ret[r][c]=operator()(r,c);
+      }
+      return ret;
+    }
 
   //extern void Matrix<Symmetric, double>::deepCopy(const Matrix<Symmetric, double> &A);
 

@@ -23,6 +23,7 @@
 #define vector_h
 
 #include "general_matrix.h"
+#include <vector>
 
 namespace fmatvec {
 
@@ -310,6 +311,18 @@ namespace fmatvec {
 
       using Matrix<General, AT>::operator();
       using Matrix<General, AT>::resize;
+
+      /*! \brief Cast to std::vector<AT>.
+       *
+       * \return The std::vector<AT> representation of the vector
+       * */
+      operator std::vector<AT>();
+
+      /*! \brief std::vector<AT> Constructor.
+       * Constructs and initializes a vector with a std::vector<AT> object.
+       * \param v The std::vector<AT> the vector will be initialized with. 
+       * */
+      Vector(std::vector<AT> v);
   };
 
   template <class AT>
@@ -411,6 +424,17 @@ namespace fmatvec {
       return Vector<AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start()));
     }
 
+  template <class AT>
+    Vector<AT>::operator std::vector<AT>() {
+      std::vector<AT> ret(size());
+      memcpy(&ret[0], &operator()(0), sizeof(AT)*size());
+      return ret;
+    }
+
+  template <class AT>
+    Vector<AT>::Vector(std::vector<AT> v) : Matrix<General, AT>(v.size(),1) {
+      memcpy(&operator()(0), &v[0], sizeof(AT)*size());
+    }
 }
 
 #endif
