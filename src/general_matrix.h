@@ -472,6 +472,19 @@ namespace fmatvec {
        * */
       Matrix<General, AT>& init(const AT &a);
 
+      /*! \brief Cast to std::vector<std::vector<AT> >.
+       *
+       * \return The std::vector<std::vector<AT> > representation of the matrix
+       * */
+      operator vector<vector<AT> >();
+
+      /*! \brief std::vector<std::vector<AT> > Constructor.
+       * Constructs and initializes a matrix with a std::vector<std::vector<AT> > object.
+       * An assert checks for constant length of each row.
+       * \param m The std::vector<std::vector<AT> > the matrix will be initialized with. 
+       * */
+      Matrix(vector<vector<AT> > m);
+
   };
   // ------------------------- Constructors -------------------------------------
   // ----------------------------------------------------------------------------
@@ -629,6 +642,29 @@ namespace fmatvec {
       for(int i=0; i<m; i++) 
 	for(int j=0; j<n; j++)
           operator()(i,j) = A.operator()(i,j);
+    }
+
+  template <class AT>
+    Matrix<General, AT>::operator vector<vector<AT> >() {
+      vector<vector<AT> > ret(rows());
+      for(int r=0; r<rows(); r++) {
+        ret[r].resize(cols());
+        for(int c=0; c<cols(); c++)
+          ret[r][c]=operator()(r,c);
+      }
+      return ret;
+    }
+
+  template <class AT>
+    Matrix<General, AT>::Matrix(vector<vector<AT> > m) : memory(m.size()*m[0].size()), ele((AT*)memory.get()), m(m.size()), n(m[0].size()), lda(m.size()), tp(false) {
+#ifndef FMATVEC_NO_INITIALIZATION 
+      init(0);
+#endif
+      for(int r=0; r<rows(); r++) {
+        assert(m[r].size()==cols());
+        for(int c=0; c<cols(); c++)
+          operator()(r,c)=m[r][c];
+      }
     }
 
    /// @cond NO_SHOW

@@ -322,6 +322,11 @@ namespace fmatvec {
 	 * */
 	Matrix<Diagonal, AT>& init(const AT &a);
 
+        /*! \brief Cast to std::vector<std::vector<AT> >.
+         *
+         * \return The std::vector<std::vector<AT> > representation of the matrix
+         * */
+        operator vector<vector<AT> >();
     };
 
   template <class AT>
@@ -382,6 +387,17 @@ namespace fmatvec {
     }
 
   template <> void Matrix<Diagonal, double>::deepCopy(const Matrix<Diagonal, double> &A);
+
+  template <class AT>
+    Matrix<Diagonal, AT>::operator vector<vector<AT> >() {
+      vector<vector<AT> > ret(rows());
+      for(int r=0; r<rows(); r++) {
+        ret[r].resize(cols());
+        for(int c=0; c<cols(); c++)
+          ret[r][c]=operator()(r,c);
+      }
+      return ret;
+    }
 
 }
 

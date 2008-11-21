@@ -248,6 +248,11 @@ namespace fmatvec {
       using Matrix<General, AT>::operator();
       using Matrix<General, AT>::resize;
 
+      /*! \brief Cast to std::vector<std::vector<AT> >.
+       *
+       * \return The std::vector<std::vector<AT> > representation of the matrix
+       * */
+      operator vector<vector<AT> >();
   };
 
   template <class AT>
@@ -259,6 +264,16 @@ namespace fmatvec {
       return A;
     }
 
+  template <class AT>
+    SquareMatrix<AT>::operator vector<vector<AT> >() {
+      vector<vector<AT> > ret(size());
+      for(int r=0; r<size(); r++) {
+        ret[r].resize(size());
+        for(int c=0; c<size(); c++)
+          ret[r][c]=operator()(r,c);
+      }
+      return ret;
+    }
 
 }
 

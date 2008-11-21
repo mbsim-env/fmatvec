@@ -28,6 +28,7 @@
 #include <cassert>
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 using namespace std;
 
@@ -96,6 +97,12 @@ namespace fmatvec {
        * \return The number of columns of the matrix.
        * */
       int cols() const {return n;};
+
+      /*! \brief Cast to std::vector<std::vector<AT> >.
+       *
+       * \return The std::vector<std::vector<AT> > representation of the matrix
+       * */
+      operator vector<vector<AT> >();
   };
 
   template <class ST, class AT> void Matrix<ST, AT>::deepCopy(const Matrix<ST, AT> &A) { 
@@ -142,6 +149,17 @@ namespace fmatvec {
 	  is >> A(i,j);
       is >> c;
       return is;
+    }
+
+  template <class ST, class AT>
+    Matrix<ST, AT>::operator vector<vector<AT> >() {
+      vector<vector<AT> > ret(rows());
+      for(int r=0; r<rows(); r++) {
+        ret[r].resize(cols());
+        for(int c=0; c<cols(); c++)
+          ret[r][c]=operator()(r,c);
+      }
+      return ret;
     }
 
 }
