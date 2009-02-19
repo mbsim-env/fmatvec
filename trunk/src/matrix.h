@@ -28,6 +28,7 @@
 #include <cassert>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <iomanip>
 #include <vector>
 
@@ -105,6 +106,8 @@ namespace fmatvec {
        * */
       operator vector<vector<AT> >();
   };
+
+
 
   template <class ST, class AT> void Matrix<ST, AT>::deepCopy(const Matrix<ST, AT> &A) { 
     for(int i=0; i<m; i++) 

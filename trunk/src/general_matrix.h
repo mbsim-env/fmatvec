@@ -487,6 +487,44 @@ namespace fmatvec {
 
   };
   // ------------------------- Constructors -------------------------------------
+  template <class AT> 
+    Matrix<General, AT>::Matrix(const char *strs) {
+    istringstream iss(strs);
+    char c;
+    m = 0,n=0;
+    int buf=0;
+    iss >> c;
+    AT x;
+    do {
+      iss >> x;
+      iss >> c;
+      if(c==';') {
+	if(buf)
+	  assert(buf == n);
+
+	buf=n;
+	n=0;
+	m++;
+      }
+      else if(c==',')
+	n++;
+      c='0';
+    } while(iss);
+
+    n++; m++;
+    lda=m;
+    tp = false;
+    memory.resize(m*n);
+    ele = (AT*)memory.get();
+    iss.clear();
+    iss.seekg(0);
+    iss >> c;
+    for(int i=0; i<m; i++)
+      for(int j=0; j<n; j++) {
+	iss >> operator()(i,j);
+	iss >> c;
+      }
+  }
   // ----------------------------------------------------------------------------
 
   template <class AT>

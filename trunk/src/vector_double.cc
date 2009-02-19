@@ -30,13 +30,6 @@
 namespace fmatvec {
 
   template <>
-  Vector<double>::Vector(const char *strs) : Matrix<General,double>(strs) {
-#ifdef FMATVEC_SIZE_CHECK
-    assert(n==1);
-#endif
-  }
-
-  template <>
   void Vector<double>::deepCopy(const Vector<double> &x) { 
     dcopy(m, x.ele, x.inc(), ele, inc());
   }

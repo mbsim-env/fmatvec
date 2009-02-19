@@ -30,11 +30,4 @@
 
 namespace fmatvec {
 
-  template <>
-  Vector<int>::Vector(const char *strs) : Matrix<General,int>(strs) {
-#ifdef FMATVEC_SIZE_CHECK
-    assert(n==1);
-#endif
-  }
-
 }
