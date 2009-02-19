@@ -27,6 +27,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <vector>
 
@@ -39,7 +40,7 @@ using namespace std;
 namespace fmatvec {
 
   /*! Enumerate for initialization of matrices
-   */
+  */
   enum Initialization{INIT,NONINIT,EYE};
 
   /*! 
@@ -119,18 +120,18 @@ namespace fmatvec {
    * \return A reference to the output stream.
    * */
   template <class ST, class AT> ostream& operator<<(ostream &os, const Matrix<ST, AT> &A) {
-      os << A.rows() << " x " << A.cols() << endl;
-      os << "[ ";
-      for (int i=0; i < A.rows(); ++i) {
-	for (int j=0; j < A.cols(); ++j) 
-	  os << setw(14) << A(i,j);
+    os << A.rows() << " x " << A.cols() << endl;
+    os << "[ ";
+    for (int i=0; i < A.rows(); ++i) {
+      for (int j=0; j < A.cols(); ++j) 
+	os << setw(14) << A(i,j);
 
-	if (i != A.rows() - 1)
-	  os << endl  << "  ";
-      }
-      os << " ]";
-      return os;
+      if (i != A.rows() - 1)
+	os << endl  << "  ";
     }
+    os << " ]";
+    return os;
+  }
 
   /*! \brief Matrix input
    *
@@ -140,24 +141,42 @@ namespace fmatvec {
    * \return A reference to the input stream.
    * */
   template <class ST, class AT> istream& operator>>(istream &is, Matrix<ST, AT> &A) {
-      int m, n;
-      char c;
-      is >> m >> c >> n >> c;
-      A.resize(m,n,NONINIT);
-      for (int i=0; i < A.rows(); ++i) 
-	for (int j=0; j < A.cols(); ++j) 
-	  is >> A(i,j);
-      is >> c;
-      return is;
+    int m, n;
+    char c;
+    is >> m >> c >> n >> c;
+    A.resize(m,n,NONINIT);
+    for (int i=0; i < A.rows(); ++i) 
+      for (int j=0; j < A.cols(); ++j) 
+	is >> A(i,j);
+    is >> c;
+    return is;
+  }
+
+  /*! \brief Matrix dump
+   *
+   * This function dumps a matrix to a file in ASCII-format.
+   * \param is The filename.
+   * \param A A matrix of any shape and type.
+   * */
+  template <class ST, class AT> void dump(const char* str, const Matrix<ST, AT> &A) {
+    ofstream os(str);
+    for (int i=0; i < A.rows(); ++i) {
+      for (int j=0; j < A.cols(); ++j) 
+	os << setw(14) << A(i,j);
+
+      if (i != A.rows() - 1)
+	os << endl;
     }
+    os.close();
+  }
 
   template <class ST, class AT>
     Matrix<ST, AT>::operator vector<vector<AT> >() {
       vector<vector<AT> > ret(rows());
       for(int r=0; r<rows(); r++) {
-        ret[r].resize(cols());
-        for(int c=0; c<cols(); c++)
-          ret[r][c]=operator()(r,c);
+	ret[r].resize(cols());
+	for(int c=0; c<cols(); c++)
+	  ret[r][c]=operator()(r,c);
       }
       return ret;
     }
