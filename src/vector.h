@@ -128,7 +128,11 @@ namespace fmatvec {
        * \f[ x=\begin{pmatrix}3\\ 1 \\ 2\end{pmatrix}  \f]
        * \param str The string the vector will be initialized with. 
        * */
-      Vector(const char *str);
+      Vector(const char *str) : Matrix<General, AT>(str) {
+#ifdef FMATVEC_SIZE_CHECK
+	assert(n==1);
+#endif
+      }
 
       /*! \brief Copy Constructor
        *

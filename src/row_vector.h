@@ -83,6 +83,24 @@ namespace fmatvec {
       RowVector() : Matrix<General, AT>() {
       }
 
+      /*! \brief String Constructor. 
+       *
+       * Constructs and initializes a vector with a string in a matlab-like
+       * notation. The entries are seperated by semicolons.
+       * For example
+       * \code 
+       * RowVector<double> x("[3,1,2]");
+       * \endcode
+       * constructs the vector
+       * \f[ x=\begin{pmatrix}3 1 2\end{pmatrix}  \f]
+       * \param str The string the vector will be initialized with. 
+       * */
+      RowVector(const char *str) : Matrix<General, AT>(str) {
+#ifdef FMATVEC_SIZE_CHECK
+	assert(m==1);
+#endif
+      }
+
       /*! \brief Regular Constructor
        *
        * Constructs a rowvector of size n. 

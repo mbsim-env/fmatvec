@@ -31,46 +31,6 @@
 
 namespace fmatvec {
 
-  template <>
-  Matrix<General, double>::Matrix(const char *strs) {
-    istringstream iss(strs);
-    double x;
-    char c;
-    m = 0,n=0;
-    int buf=0;
-    iss >> c;
-    do {
-      iss >> c;
-      if(c==';') {
-	if(buf)
-	  assert(buf == n);
-
-	//if(buf && buf!=n)
-	//	cout << "Mist" << endl;
-	buf=n;
-	n=0;
-	m++;
-      }
-      else if(c==',')
-	n++;
-      c='0';
-    } while(iss);
-
-    n++; m++;
-    lda=m;
-    tp = false;
-    memory.resize(m*n);
-    ele = (double*)memory.get();
-    iss.clear();
-    iss.seekg(0);
-    iss >> c;
-    for(int i=0; i<m; i++)
-      for(int j=0; j<n; j++) {
-	iss >> x;
-	operator()(i,j)=x;
-	iss >> c;
-      }
-  }
 
   template <>
   template <>
