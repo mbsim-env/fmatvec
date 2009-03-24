@@ -24,6 +24,7 @@
 
 #include "general_matrix.h"
 #include <vector>
+#include <cstring>
 
 namespace fmatvec {
 
