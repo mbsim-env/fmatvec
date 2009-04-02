@@ -252,7 +252,7 @@ namespace fmatvec {
        *
        * \return The std::vector<std::vector<AT> > representation of the matrix
        * */
-      operator vector<vector<AT> >();
+      operator std::vector<std::vector<AT> >();
   };
 
   template <class AT>
@@ -265,8 +265,8 @@ namespace fmatvec {
     }
 
   template <class AT>
-    SquareMatrix<AT>::operator vector<vector<AT> >() {
-      vector<vector<AT> > ret(size());
+    SquareMatrix<AT>::operator std::vector<std::vector<AT> >() {
+      std::vector<std::vector<AT> > ret(size());
       for(int r=0; r<size(); r++) {
         ret[r].resize(size());
         for(int c=0; c<size(); c++)

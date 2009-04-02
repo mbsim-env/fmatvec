@@ -476,20 +476,20 @@ namespace fmatvec {
        *
        * \return The std::vector<std::vector<AT> > representation of the matrix
        * */
-      operator vector<vector<AT> >();
+      operator std::vector<std::vector<AT> >();
 
       /*! \brief std::vector<std::vector<AT> > Constructor.
        * Constructs and initializes a matrix with a std::vector<std::vector<AT> > object.
        * An assert checks for constant length of each row.
        * \param m The std::vector<std::vector<AT> > the matrix will be initialized with. 
        * */
-      Matrix(vector<vector<AT> > m);
+      Matrix(std::vector<std::vector<AT> > m);
 
   };
   // ------------------------- Constructors -------------------------------------
   template <class AT> 
     Matrix<General, AT>::Matrix(const char *strs) {
-    istringstream iss(strs);
+    std::istringstream iss(strs);
     char c;
     m = 0,n=0;
     int buf=0;
@@ -683,8 +683,8 @@ namespace fmatvec {
     }
 
   template <class AT>
-    Matrix<General, AT>::operator vector<vector<AT> >() {
-      vector<vector<AT> > ret(rows());
+    Matrix<General, AT>::operator std::vector<std::vector<AT> >() {
+      std::vector<std::vector<AT> > ret(rows());
       for(int r=0; r<rows(); r++) {
         ret[r].resize(cols());
         for(int c=0; c<cols(); c++)
@@ -694,7 +694,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    Matrix<General, AT>::Matrix(vector<vector<AT> > m) : memory(m.size()*m[0].size()), ele((AT*)memory.get()), m(m.size()), n(m[0].size()), lda(m.size()), tp(false) {
+    Matrix<General, AT>::Matrix(std::vector<std::vector<AT> > m) : memory(m.size()*m[0].size()), ele((AT*)memory.get()), m(m.size()), n(m[0].size()), lda(m.size()), tp(false) {
 #ifndef FMATVEC_NO_INITIALIZATION 
       init(0);
 #endif

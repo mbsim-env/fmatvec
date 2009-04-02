@@ -23,6 +23,8 @@
 #include "memory.h"
 #include <complex>
 
+using namespace std;
+
 namespace fmatvec {
 
   template <> Memory<char>::allocator_type Memory<char>::ms = Memory<char>::allocator_type();

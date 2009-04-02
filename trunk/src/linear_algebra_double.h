@@ -642,7 +642,7 @@ namespace fmatvec {
    * \param A A square matrix. 
    * \return A vector containig the eigenvalues.
    * */
-  Vector<complex<double> > eigval(const SquareMatrix<double> &A); 
+  Vector<std::complex<double> > eigval(const SquareMatrix<double> &A); 
 
   /*! \brief Eigenvectors and Eigenvalues
    *

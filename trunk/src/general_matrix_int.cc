@@ -27,6 +27,8 @@
 #include <iostream>
 #include <sstream>
 
+using namespace std;
+
 #define FMATVEC_NO_INITIALIZATION
 #define FMATVEC_NO_BOUNDS_CHECK
 

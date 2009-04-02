@@ -1697,7 +1697,7 @@ namespace fmatvec {
     return Y;  
   }
 
-  Vector<complex<double> > eigval(const SquareMatrix<double> &A) {
+  Vector<std::complex<double> > eigval(const SquareMatrix<double> &A) {
 
     double *vl, *vr;
     double *wr = new double[A.size()];
@@ -1707,9 +1707,9 @@ namespace fmatvec {
 
     int info = dgeev('N','N', A.size(), B(), B.ldim(), wr, wi, vl, B.size(), vr, B.size());
 
-    Vector<complex<double> > w(A.size());
+    Vector<std::complex<double> > w(A.size());
     for(int i=0; i<A.size(); i++)
-      w(i)=complex<double>(wr[i],wi[i]);
+      w(i)=std::complex<double>(wr[i],wi[i]);
 
     delete [] wr;
     delete [] wi;
@@ -1782,7 +1782,7 @@ namespace fmatvec {
     if(A.rows() == 0 || A.cols() == 0)
       return 0.0;
 #endif
-    Vector<complex<double> > v = eigval(A);
+    Vector<std::complex<double> > v = eigval(A);
     double buf = abs(v(0));
     for(int i=0; i<v.size(); i++) {
       double absi = abs(v(i));
