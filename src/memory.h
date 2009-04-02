@@ -38,8 +38,6 @@
 #  define ALLOCATORCLASS fmatvec::MemoryStack
 #endif
 
-using namespace std;
-
 namespace fmatvec {
 
  /// @cond NO_SHOW

@@ -329,7 +329,7 @@ namespace fmatvec {
        *
        * \return The std::vector<std::vector<AT> > representation of the matrix
        * */
-      operator vector<vector<AT> >();
+      operator std::vector<std::vector<AT> >();
   };
 
   template <class AT>
@@ -421,8 +421,8 @@ namespace fmatvec {
     }
 
   template <class AT>
-    Matrix<GeneralBand, AT>::operator vector<vector<AT> >() {
-      vector<vector<AT> > ret(rows());
+    Matrix<GeneralBand, AT>::operator std::vector<std::vector<AT> >() {
+      std::vector<std::vector<AT> > ret(rows());
       for(int r=0; r<rows(); r++) {
         ret[r].resize(cols());
         for(int c=0; c<cols(); c++)

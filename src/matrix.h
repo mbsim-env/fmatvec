@@ -32,8 +32,6 @@
 #include <iomanip>
 #include <vector>
 
-using namespace std;
-
 /*! 
  * \brief Namespace fmatvec.
  *
@@ -104,7 +102,7 @@ namespace fmatvec {
        *
        * \return The std::vector<std::vector<AT> > representation of the matrix
        * */
-      operator vector<vector<AT> >();
+      operator std::vector<std::vector<AT> >();
   };
 
 
@@ -122,15 +120,15 @@ namespace fmatvec {
    * \param A A matrix of any shape and type.
    * \return A reference to the output stream.
    * */
-  template <class ST, class AT> ostream& operator<<(ostream &os, const Matrix<ST, AT> &A) {
-    os << A.rows() << " x " << A.cols() << endl;
+  template <class ST, class AT> std::ostream& operator<<(std::ostream &os, const Matrix<ST, AT> &A) {
+    os << A.rows() << " x " << A.cols() << std::endl;
     os << "[ ";
     for (int i=0; i < A.rows(); ++i) {
       for (int j=0; j < A.cols(); ++j) 
-	os << setw(14) << A(i,j);
+	os << std::setw(14) << A(i,j);
 
       if (i != A.rows() - 1)
-	os << endl  << "  ";
+	os << std::endl  << "  ";
     }
     os << " ]";
     return os;
@@ -143,7 +141,7 @@ namespace fmatvec {
    * \param A A matrix of any shape and type.
    * \return A reference to the input stream.
    * */
-  template <class ST, class AT> istream& operator>>(istream &is, Matrix<ST, AT> &A) {
+  template <class ST, class AT> std::istream& operator>>(std::istream &is, Matrix<ST, AT> &A) {
     int m, n;
     char c;
     is >> m >> c >> n >> c;
@@ -162,20 +160,20 @@ namespace fmatvec {
    * \param A A matrix of any shape and type.
    * */
   template <class ST, class AT> void dump(const char* str, const Matrix<ST, AT> &A) {
-    ofstream os(str);
+    std::ofstream os(str);
     for (int i=0; i < A.rows(); ++i) {
       for (int j=0; j < A.cols(); ++j) 
-	os << setw(14) << A(i,j);
+	os << std::setw(14) << A(i,j);
 
       if (i != A.rows() - 1)
-	os << endl;
+	os << std::endl;
     }
     os.close();
   }
 
   template <class ST, class AT>
-    Matrix<ST, AT>::operator vector<vector<AT> >() {
-      vector<vector<AT> > ret(rows());
+    Matrix<ST, AT>::operator std::vector<std::vector<AT> >() {
+      std::vector<std::vector<AT> > ret(rows());
       for(int r=0; r<rows(); r++) {
 	ret[r].resize(cols());
 	for(int c=0; c<cols(); c++)
