@@ -25,6 +25,7 @@
 #include "memory.h"
 #include "types.h"
 #include "index.h"
+#include <stdlib.h>
 
 namespace fmatvec {
 
@@ -489,8 +490,15 @@ namespace fmatvec {
   // ------------------------- Constructors -------------------------------------
   template <class AT> 
     Matrix<General, AT>::Matrix(const char *strs) {
+    // if 'strs' is a single scalar, surround it first with '[' and ']'.
+    // This is more Matlab-like, because e.g. '5' and '[5]' is just the same.
+    // (This functionallitiy is needed e.g. by MBXMLUtils (OpenMBV,MBSim))
     std::istringstream iss(strs);
     char c;
+    iss>>c;
+    if(c=='[') iss.str(strs);
+    else iss.str(std::string("[")+strs+"]");
+
     m = 0,n=0;
     int buf=0;
     iss >> c;
