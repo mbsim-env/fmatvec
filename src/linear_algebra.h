@@ -766,14 +766,15 @@ namespace fmatvec {
 
    /*! \brief Count nonzero elements.
    *
-   * This function counts the nonzero elements of a matrix.
-   * \return The number of nonzero elemets.
+   * This function counts the nonzero elements of a matrix. ALL diagonal
+   * elements are treated as NONZERO!!! (See the storage format for sparse matrix)
+   * \return The number of nonzero or diagonal elemets.
    * */
-   template <class AT, class Type> int countElements(const Matrix<Type, AT> &A) { 
+   template <class AT> int countElements(const SquareMatrix<AT> &A) { 
     int k=0;
-    for(int i=0; i<A.rows(); i++) {
-      for(int j=0; j<A.cols(); j++) {
-	if(fabs(A(i,j))>1e-16) {
+    for(int i=0; i<A.size(); i++) {
+      for(int j=0; j<A.size(); j++) {
+	if(fabs(A(i,j))>1e-16 || i==j) {
 	  k++;
 	}
       }

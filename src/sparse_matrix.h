@@ -23,16 +23,19 @@
 #define sparse_matrix_h
 
 #include "matrix.h"
+#include "square_matrix.h"
 #include "types.h"
 #include "memory.h"
 
 namespace fmatvec {
 
   /*! 
-   *  \brief This is a matrix class for sparse matrices.
+   *  \brief This is a matrix class for sparse quadratic matrices.
    *
    * Template class Matrix with shape type Sparse and atomic type
-   * AT. The matrix ist stored in compressed skyline format.
+   * AT. The matrix ist stored in compressed row-wise skyline format, BUT the
+   * diagonal elements are ALWAYS stored (even if they are zero) as the
+   * FIRST entry of each row.
    * The template parameter AT defines the atomic type of the
    * matrix. Valid types are int, float,
    * double, complex<float> and complex<double> 
@@ -52,7 +55,7 @@ namespace fmatvec {
 
 	void deepCopy(const Matrix<Sparse, AT> &x);
 
-	template <class Type> void deepCopy(const Matrix<Type, AT> &A);
+	void deepCopy(const SquareMatrix<AT> &A);
 
     /// @endcond
 
@@ -68,14 +71,13 @@ namespace fmatvec {
 
       /*! \brief Regular Constructor
        *
-       * Constructs a matrix of size m x n.
-       * \param m_ The number of rows.
-       * \param n_ The number of columns.
+       * Constructs a matrix of size n x n.
+       * \param n_ The number of columns/rows.
        * \remark The matrix will be initialised to
        * zero by default. This default behavior can be changed by defining 
        * FMATVEC_NO_INITIALIZATION.
        * */
-	Matrix(int m_, int n_) : memEle(m_*n_), memI(m_+1), memJ(m_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(m_), n(n_), k(m_*n_) {
+	Matrix(int n_) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) {
 #ifndef FMATVEC_NO_INITIALIZATION 
 	init(0);
 #endif
@@ -83,15 +85,14 @@ namespace fmatvec {
 
 	/*! \brief Regular Constructor
        *
-       * Constructs a matrix of size m x n.
-       * \param m_ The number of rows.
-       * \param n_ The number of columns.
+       * Constructs a matrix of size n x n.
+       * \param n_ The number of columns/rows.
        * \param k_ The number of nonzero elements.
        * \remark The matrix will be initialised to
        * zero by default. This default behavior can be changed by defining 
        * FMATVEC_NO_INITIALIZATION.
        * */
-Matrix(int m_, int n_, int k_) : memEle(k_), memI(m_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(m_), n(n_), k(k_) {
+Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) {
 #ifndef FMATVEC_NO_INITIALIZATION 
 	init(0);
 #endif
@@ -132,8 +133,7 @@ Matrix(int m_, int n_, int k_) : memEle(k_), memI(m_+1), memJ(k_), ele((AT*)memE
 	 *
 	 * See operator<<(const Matrix<Sparse,AT>&) 
 	 * */
-	template<class Type>
-	Matrix<Sparse, AT>& operator<<(const Matrix<Type, AT> &A);
+	Matrix<Sparse, AT>& operator<<(const SquareMatrix<AT> &A);
 
 	/*! \brief Assignment operator
 	 *
@@ -228,16 +228,15 @@ Matrix(int m_, int n_, int k_) : memEle(k_), memI(m_+1), memJ(k_), ele((AT*)memE
 
 	/*! \brief Matrix resizing. 
 	 *
-	 * Resizes the matrix to size m x n. The matrix will be initialized to the value given by \em a
+	 * Resizes the matrix to size n x n. The matrix will be initialized to the value given by \em a
 	 * (default 0), if ini is set to INIT. If init is set to NONINIT, the
 	 * matrix will not be initialized.
-	 * \param m_ The number of rows.
-	 * \param n_ The number of columns.
+	 * \param n_ The number of columns/rows.
 	 * \param k_ The number of nonzero elements.
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Sparse, AT>& resize(int m_, int n_, int k_) {
-	  m=m_;n=n_;k=k_;
+	Matrix<Sparse, AT>& resize(int n_, int k_) {
+	  m=n_;n=n_;k=k_;
 	  memEle.resize(k);
 	  memI.resize(m+1);
 	  memJ.resize(k);
@@ -313,8 +312,8 @@ Matrix(int m_, int n_, int k_) : memEle(k_), memI(m_+1), memJ(k_), ele((AT*)memE
       return *this;
     }
 
-  template <class AT> template <class Type>
-    Matrix<Sparse, AT>& Matrix<Sparse, AT>::operator<<(const Matrix<Type, AT> &A) { 
+  template <class AT>
+    Matrix<Sparse, AT>& Matrix<Sparse, AT>::operator<<(const SquareMatrix<AT> &A) { 
 
      if(A.rows() == 0 || A.cols() == 0)
 	return *this;
@@ -351,7 +350,7 @@ Matrix(int m_, int n_, int k_) : memEle(k_), memI(m_+1), memJ(k_), ele((AT*)memE
 
   template <class AT>
     void Matrix<Sparse, AT>::deepCopy(const Matrix<Sparse, AT> &A) { 
-      for(int i=0; i<m; i++) {
+      for(int i=0; i<=m; i++) {
 	I[i] = A.I[i];
       }
       for(int i=0; i<k; i++) {
@@ -360,10 +359,10 @@ Matrix(int m_, int n_, int k_) : memEle(k_), memI(m_+1), memJ(k_), ele((AT*)memE
       }
     }
 
-  template <class AT> template <class Type> void Matrix<Sparse, AT>::deepCopy(const Matrix<Type, AT> &A) { 
+  template <class AT> void Matrix<Sparse, AT>::deepCopy(const SquareMatrix<AT> &A) { 
       int k=0;
       int i;
-      for(i=0; i<A.rows(); i++) {
+      for(i=0; i<A.size(); i++) {
 	ele[k]=A(i,i);
 	J[k]=i;
 	I[i]=k++;
@@ -374,7 +373,7 @@ Matrix(int m_, int n_, int k_) : memEle(k_), memI(m_+1), memJ(k_), ele((AT*)memE
 	    J[k++]=j;
 	  }
 	}
-	for(int j=i+1; j<A.cols(); j++) {
+	for(int j=i+1; j<A.size(); j++) {
 	  // TODO eps
 	  if(fabs(A(i,j))>1e-16) {
 	    ele[k]=A(i,j);
