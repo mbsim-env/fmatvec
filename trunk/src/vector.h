@@ -432,13 +432,13 @@ namespace fmatvec {
   template <class AT>
     Vector<AT>::operator std::vector<AT>() {
       std::vector<AT> ret(size());
-      memcpy(&ret[0], &operator()(0), sizeof(AT)*size());
+      if(size()>0) memcpy(&ret[0], &operator()(0), sizeof(AT)*size());
       return ret;
     }
 
   template <class AT>
     Vector<AT>::Vector(std::vector<AT> v) : Matrix<General, AT>(v.size(),1) {
-      memcpy(&operator()(0), &v[0], sizeof(AT)*size());
+      if(size()>0) memcpy(&operator()(0), &v[0], sizeof(AT)*size());
     }
 }
 
