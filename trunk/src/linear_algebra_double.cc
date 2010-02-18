@@ -1699,7 +1699,7 @@ namespace fmatvec {
 
   Vector<std::complex<double> > eigval(const SquareMatrix<double> &A) {
 
-    double *vl, *vr;
+    double *vl=0, *vr=0;
     double *wr = new double[A.size()];
     double *wi = new double[A.size()];
 
@@ -1763,10 +1763,10 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> B = A.copy();
     B.ldim();
-    double vl,vu;
+    double vl=0,vu=0;
     int m;
     Vector<double> w(A.size());
-    double* z;
+    double* z=0;
     int ldz = 1;
 
     dsyevx('N', 'I', B.blasUplo(), B.size(), B(), B.ldim(), vl, vu, il, iu, abstol, &m, w(), z, ldz);
