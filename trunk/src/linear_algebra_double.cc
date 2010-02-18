@@ -1251,7 +1251,7 @@ namespace fmatvec {
 #endif
 
     int m, n;
-    int incx = x.transposed()?x.ldim():1;
+    x.transposed()?x.ldim():1;
     CBLAS_TRANSPOSE transa = A.transposed()?CblasNoTrans:CblasTrans;
 
     if(A.transposed()) {
@@ -1705,7 +1705,7 @@ namespace fmatvec {
 
     SquareMatrix<double> B = A.copy();
 
-    int info = dgeev('N','N', A.size(), B(), B.ldim(), wr, wi, vl, B.size(), vr, B.size());
+    dgeev('N','N', A.size(), B(), B.ldim(), wr, wi, vl, B.size(), vr, B.size());
 
     Vector<std::complex<double> > w(A.size());
     for(int i=0; i<A.size(); i++)
@@ -1749,7 +1749,7 @@ namespace fmatvec {
     Vector<double> w(A.size(),NONINIT);
     Matrix<Symmetric, double> B = A.copy();
 
-    int info = dsyev('N', 'L', B.size(), B(), B.ldim(), w());
+    dsyev('N', 'L', B.size(), B(), B.ldim(), w());
 
     return w;
 
@@ -1762,14 +1762,14 @@ namespace fmatvec {
     assert(iu<=A.size());
 
     Matrix<Symmetric, double> B = A.copy();
-    int ldb = B.ldim();
+    B.ldim();
     double vl,vu;
     int m;
     Vector<double> w(A.size());
     double* z;
     int ldz = 1;
 
-    int info = dsyevx('N', 'I', B.blasUplo(), B.size(), B(), B.ldim(), vl, vu, il, iu, abstol, &m, w(), z, ldz);
+    dsyevx('N', 'I', B.blasUplo(), B.size(), B(), B.ldim(), vl, vu, il, iu, abstol, &m, w(), z, ldz);
 
     return w(0,m-1);
 

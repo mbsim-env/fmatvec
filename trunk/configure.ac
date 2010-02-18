@@ -132,6 +132,8 @@ else
 fi
 AM_CONDITIONAL([COND_ATLAS],[test "$atlas" = "yes"])
 
+CPPFLAGS="$CPPFLAGS -Wall -Werror -Wno-unknown-pragmas"
+
 AC_ARG_WITH([doxygenpath],[  --with-doxygenpath=PATH  The path to the 'doxygen' program.],[doxygenpath="$withval"],[doxygenpath=""])
 AC_PATH_PROG([doxygen],[doxygen],[no],[$doxygenpath:$PATH])
 if test $doxygen = "no" ; then
