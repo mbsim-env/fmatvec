@@ -49,8 +49,7 @@ namespace fmatvec {
 
     /// @cond NO_SHOW
 
-    template <class T> friend const SquareMatrix<T> trans(const SquareMatrix<T> &A);
-    template <class T> friend SquareMatrix<T> trans(SquareMatrix<T> &A);
+    template <class T> friend SquareMatrix<T> trans(const SquareMatrix<T> &A);
 
     friend const SquareMatrix<AT> Matrix<General, AT>::operator()(const Index &I) const;
     friend SquareMatrix<AT> Matrix<General, AT>::operator()(const Index &I);
@@ -253,6 +252,14 @@ namespace fmatvec {
        * \return The std::vector<std::vector<AT> > representation of the matrix
        * */
       operator std::vector<std::vector<AT> >();
+
+      SquareMatrix<AT> T() {
+	return SquareMatrix<AT>(n, lda, tp?false:true, memory, ele);
+      }
+
+      const SquareMatrix<AT> T() const {
+	return SquareMatrix<AT>(n, lda, tp?false:true, memory, ele);
+      }
   };
 
   template <class AT>

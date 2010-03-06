@@ -599,11 +599,11 @@ namespace fmatvec {
 
 #ifdef FMATVEC_VOID_CHECK
     if(m == 0 || n == 0)
-      return A.transposed() ? trans(C) : C;
+      return A.transposed() ? C.T() : C;
 #endif
 
     dsymm(A.blasOrder(), side, B.blasUplo(), C.rows() , C.cols(), 1., B(), B.ldim(), A(), A.ldim(), 0., C(), C.ldim());
-    return A.transposed() ? trans(C) : C;
+    return A.transposed() ? C.T() : C;
   }
 
   Matrix<General, double> operator*(const Matrix<Symmetric, double> &A, const Matrix<General, double> &B) {
@@ -627,11 +627,11 @@ namespace fmatvec {
 
 #ifdef FMATVEC_VOID_CHECK
     if(m == 0 || n == 0)
-      return B.transposed() ? trans(C) : C;
+      return B.transposed() ? C.T() : C;
 #endif
 
     dsymm(A.blasOrder(), side, A.blasUplo(), C.rows() , C.cols(), 1., A(), A.ldim(), B(), B.ldim(), 0., C(), C.ldim());
-    return B.transposed() ? trans(C) : C;
+    return B.transposed() ? C.T() : C;
   }
 
   Matrix<Symmetric, double> JTJ(const Matrix<General, double> &J) {

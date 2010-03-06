@@ -46,13 +46,10 @@ namespace fmatvec {
 
     /// @cond NO_SHOW
     
-    template <class T> friend const Vector<T> trans(const RowVector<T> &x); 
+    template <class T> friend Vector<T> trans(const RowVector<T> &x); 
+    template <class T> friend RowVector<T> trans(const Vector<T> &x);
 
-    template <class T> friend Vector<T> trans(RowVector<T> &x); 
-
-    template <class T> friend RowVector<T> trans(Vector<T> &x);
-
-    template <class T> friend const RowVector<T> trans(const Vector<T> &x);
+    friend class Vector<AT>;
 
     friend RowVector<AT> Matrix<General, AT>::row(int i);
     friend const RowVector<AT> Matrix<General, AT>::row(int i) const;
@@ -309,6 +306,14 @@ namespace fmatvec {
 
       using Matrix<General, AT>::operator();
       using Matrix<General, AT>::resize;
+
+      Vector<AT> T() {
+	return Vector<AT>(n,lda,tp?false:true,memory,ele);
+      }
+
+      const Vector<AT> T() const {
+	return Vector<AT>(n,lda,tp?false:true,memory,ele);
+      }
   };
 
   /////////////////////////////////////////////////////////////////////

@@ -23,7 +23,7 @@
 #define memory_h
 
 #define MSTACKSIZE  20
-#define MAXSZ 10000
+#define MAXSZ 0
 
 #include <iostream>
 

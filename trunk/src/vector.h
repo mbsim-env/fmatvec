@@ -49,15 +49,13 @@ namespace fmatvec {
 
     /// @cond NO_SHOW
 
-    template <class T> friend const RowVector<T> trans(const Vector<T> &x); 
-    template <class T> friend RowVector<T> trans(Vector<T> &x); 
+    template <class T> friend RowVector<T> trans(const Vector<T> &x); 
+    template <class T> friend Vector<T> trans(const RowVector<T> &x);     
     
-    template <class T> friend const Vector<T> trans(const RowVector<T> &x); 
-    template <class T> friend Vector<T> trans(RowVector<T> &x); 
+    friend class RowVector<AT>;
 
     friend Vector<AT> Matrix<General, AT>::col(int i);
     friend const Vector<AT> Matrix<General, AT>::col(int i) const;
-    //friend const Vector<AT> Matrix<GeneralBand, AT>::diag(int i) const;
 
     protected:
 
@@ -328,6 +326,15 @@ namespace fmatvec {
        * \param v The std::vector<AT> the vector will be initialized with. 
        * */
       Vector(std::vector<AT> v);
+
+      RowVector<AT> T() {
+	return RowVector<AT>(m,lda,tp?false:true,memory,ele);
+     };
+
+      const RowVector<AT> T() const {
+	return RowVector<AT>(m,lda,tp?false:true,memory,ele);
+      }
+
   };
 
   template <class AT>
