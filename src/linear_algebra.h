@@ -27,23 +27,13 @@ namespace fmatvec {
 
   /*! \brief Transpose of a vector.
    *
-   * \see trans(Vector<AT> &x)
-   * */
-  template <class AT>
-    const RowVector<AT> trans(const Vector<AT> &x) {
-
-      return RowVector<AT>(x.m,x.lda,x.tp?false:true,x.memory,x.ele);
-    }
-
-  /*! \brief Transpose of a vector.
-   *
    * This function computes the transpose of a vector. The result is a rowvector.
    * \return The transpose.
    * */
   template <class AT>
-    RowVector<AT> trans(Vector<AT> &x) {
+    RowVector<AT> trans(const Vector<AT> &x) {
 
-      return RowVector<AT>(x.m,x.lda,x.tp?false:true,x.memory,x.ele);
+      return RowVector<AT>(x.m,x.lda,x.tp?false:true,x.memory,x.ele).copy();
     }
 
   /*! \brief Negation.
@@ -96,25 +86,15 @@ namespace fmatvec {
 
   /*! \brief Transpose of a rowvector.
    *
-   * \see trans(RowVector<AT> &x)
-   * */
-  template <class AT>
-    const Vector<AT> trans(const RowVector<AT> &x) {
-
-      return Vector<AT>(x.n,x.lda,x.tp?false:true,x.memory,x.ele);
-    }
-
-  /*! \brief Transpose of a rowvector.
-   *
    * This function computes the transpose of a rowvector.
    * The result is a vector.
    * \param x A vector.
    * \return The transpose.
    * */
   template <class AT>
-    Vector<AT> trans(RowVector<AT> &x) {
+    Vector<AT> trans(const RowVector<AT> &x) {
 
-      return Vector<AT>(x.n,x.lda,x.tp?false:true,x.memory,x.ele);
+      return Vector<AT>(x.n,x.lda,x.tp?false:true,x.memory,x.ele).copy();
     }
 
   /*! \brief Negation.
@@ -300,19 +280,9 @@ namespace fmatvec {
    * \return The transpose.
    * */
   template <class AT>
-    Matrix<General, AT> trans(Matrix<General, AT> &A) {
+    Matrix<General, AT> trans(const Matrix<General, AT> &A) {
 
-      return Matrix<General, AT>(A.n,A.m,A.lda,A.tp?false:true,A.memory,A.ele);
-    }
-
-  /*! \brief Transpose of a matrix.
-   *
-   * See trans(Matrix<General, AT>&)
-   * */
-  template <class AT>
-    const Matrix<General, AT> trans(const Matrix<General, AT> &A) {
-
-      return Matrix<General, AT>(A.n,A.m,A.lda,A.tp?false:true,A.memory,A.ele);
+      return Matrix<General, AT>(A.n,A.m,A.lda,A.tp?false:true,A.memory,A.ele).copy();
     }
 
   /*! \brief Transpose of a matrix.
@@ -324,19 +294,9 @@ namespace fmatvec {
    * \return The transpose.
    * */
   template <class AT>
-    SquareMatrix<AT>  trans(SquareMatrix<AT> &A) {
+    SquareMatrix<AT> trans(const SquareMatrix<AT> &A) {
 
-      return SquareMatrix<AT>(A.n, A.lda, A.tp?false:true, A.memory, A.ele);
-    }
-
-  /*! \brief Transpose of a matrix.
-   *
-   * See trans(const SquareMatrix<AT>&)
-   * */
-  template <class AT>
-    const SquareMatrix<AT> trans(const SquareMatrix<AT> &A) {
-
-      return SquareMatrix<AT>(A.n, A.lda, A.tp?false:true, A.memory, A.ele);
+      return SquareMatrix<AT>(A.n, A.lda, A.tp?false:true, A.memory, A.ele).copy();
     }
 
   /*! \brief Negation.

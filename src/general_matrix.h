@@ -50,9 +50,7 @@ namespace fmatvec {
 
       friend class Matrix<Symmetric, AT>;
       
-      template <class T> friend const Matrix<General, T>  trans(const Matrix<General, T> &A);
-
-      template <class T> friend Matrix<General, T>  trans(Matrix<General, T> &A);
+      template <class T> friend Matrix<General, T>  trans(const Matrix<General, T> &A);
 
     protected:
 
@@ -486,6 +484,13 @@ namespace fmatvec {
        * */
       Matrix(std::vector<std::vector<AT> > m);
 
+      Matrix<General, AT> T() {
+	return Matrix<General, AT>(n,m,lda,tp?false:true,memory,ele);
+      };
+
+      const Matrix<General, AT> T() const {
+	return Matrix<General, AT>(n,m,lda,tp?false:true,memory,ele);
+      }
   };
   // ------------------------- Constructors -------------------------------------
   template <class AT> 
