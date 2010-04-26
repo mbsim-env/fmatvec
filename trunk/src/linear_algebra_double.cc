@@ -1741,6 +1741,8 @@ namespace fmatvec {
       eigenvalues(i)=w[i];
     }
 
+    delete [] w;
+
     return info;
   }
 
