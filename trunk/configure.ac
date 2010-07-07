@@ -140,6 +140,15 @@ if test $doxygen = "no" ; then
   AC_MSG_RESULT([can't generate documentation. 'doxygen' required.])
 fi
 
+AC_ARG_ENABLE([pragma_omp_critical],[  --disable-pragma_omp_critical reference counting without pragma omp critical],[pragma_omp_critical="$enableval" ],[pragma_omp_critical=yes])
+if test "$pragma_omp_critical" = "yes"; then
+AC_DEFINE(PRAGMA_OMP_CRITICAL,[1],pragma omp critical are used for reference counting)
+DEFINES="$DEFINES -DPRAGMA_OMP_CRITICAL"
+  echo "Pragma omp critical are used for reference counting"
+else
+  echo "Pragma omp critical are not used for reference counting"
+fi
+
 AC_SUBST(LIBS)
 AC_SUBST([INCDIRS])
 AC_SUBST([LIBDIRS])

@@ -26,7 +26,6 @@
 #define FMATVEC_VOID_CHECK
 
 #include <cassert>
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <iomanip>

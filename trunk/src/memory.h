@@ -25,8 +25,6 @@
 #define MSTACKSIZE  20
 #define MAXSZ 0
 
-#include <iostream>
-
 #ifdef ALLOCATORHEADER
 #  define CPPBEGININCLUDE <
 #  define CPPENDINCLUDE >
@@ -37,6 +35,12 @@
 #ifndef ALLOCATORCLASS
 #  define ALLOCATORCLASS fmatvec::MemoryStack
 #endif
+
+  /**
+   * \brief memory managment and reference counting 
+   * \author Martin Foerg
+   * \date 2010-07-07 pragma omp critical can be deactivated by --disable-pragma_omp_critical (Robert Huber)
+   */
 
 namespace fmatvec {
 
@@ -92,7 +96,9 @@ namespace fmatvec {
 
 	AT * allocate(size_t sz) { 
           AT *ret;
+#ifdef PRAGMA_OMP_CRITICAL         
 #         pragma omp critical (fmatvec_MemoryStack_deAllocate)
+#endif 
           {
 	    AT **&sp=ele[sz];
 	    if(sz<MAXSZ) {
@@ -108,7 +114,9 @@ namespace fmatvec {
           return ret;
 	}
 	void deallocate(AT *p, size_t sz) {
+#ifdef PRAGMA_OMP_CRITICAL         
 #         pragma omp critical (fmatvec_MemoryStack_deAllocate)
+#endif 
           {
 	    AT **&sp=ele[sz];
 	    if(sz<MAXSZ && sz) {
@@ -131,12 +139,16 @@ namespace fmatvec {
         static allocator_type ms;
 	size_t *ref;
 	void lock() {
+#ifdef PRAGMA_OMP_CRITICAL        
 #         pragma omp critical (fmatvec_Memory_ref)
+#endif
           (*ref)++;
         };
 	void unlock() {
           size_t refLocal;
+#ifdef PRAGMA_OMP_CRITICAL 
 #         pragma omp critical (fmatvec_Memory_ref)
+#endif
           refLocal=--(*ref);
 	  if(!refLocal) {
             ms.deallocate(ele0, sz);
