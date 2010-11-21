@@ -5,7 +5,7 @@ libfmatvec_la_SOURCES = blas_extensions_double.cc \
 			general_matrix_double.cc \
 			general_matrix_int.cc \
 			linear_algebra_double.cc \
-			memory.cc \
+			_memory.cc \
 			row_vector_double.cc \
 			square_matrix_double.cc \
 			symmetric_matrix_double.cc \
@@ -24,7 +24,7 @@ fmatvecinclude_HEADERS = blas_extensions_double.h \
 			 linear_algebra_double.h \
 			 linear_algebra.h \
 			 matrix.h \
-			 memory.h \
+			 _memory.h \
 			 row_vector.h \
 			 square_matrix.h \
 			 symmetric_matrix.h \

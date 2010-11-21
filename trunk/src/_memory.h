@@ -19,8 +19,10 @@
  *
  */
 
-#ifndef memory_h
-#define memory_h
+#ifndef _memory_h
+#define _memory_h
+
+#include <stdlib.h>
 
 #define MSTACKSIZE  20
 #define MAXSZ 0

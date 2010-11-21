@@ -26,6 +26,8 @@ AC_SUBST([LIBFMATVEC_AGE])
 LIBFMATVEC_VERSION_INFO=$LIBFMATVEC_CURRENT:$LIBFMATVEC_REVISION:$LIBFMATVEC_AGE
 AC_SUBST([LIBFMATVEC_VERSION_INFO])
 
+LDFLAGS="-Wl,--no-undefined"
+
 dnl By autoscan
 AC_CHECK_FUNCS([sqrt])
 AC_C_CONST
@@ -59,6 +61,7 @@ if test "_$allocator_class" != "_DEFAULT"; then
 fi
 AC_SUBST([DEFINES])
 
+AC_PROG_FC
 if test -n "$F77"; then
  	AC_FC_LIBRARY_LDFLAGS
  	if test -n "$FFLAGS"; then

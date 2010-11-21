@@ -24,7 +24,7 @@
 
 #include "vector.h"
 #include "types.h"
-#include "memory.h"
+#include "_memory.h"
 #include <cstdlib>
 
 namespace fmatvec {

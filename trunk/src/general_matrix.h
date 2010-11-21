@@ -22,7 +22,7 @@
 #ifndef general_matrix_h
 #define general_matrix_h
 
-#include "memory.h"
+#include "_memory.h"
 #include "types.h"
 #include "index.h"
 #include <stdlib.h>

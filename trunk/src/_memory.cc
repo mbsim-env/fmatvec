@@ -20,7 +20,7 @@
  */
 
 #include "config.h"
-#include "memory.h"
+#include "_memory.h"
 #include <complex>
 
 using namespace std;
