@@ -62,7 +62,7 @@ fi
 AC_SUBST([DEFINES])
 
 AC_PROG_FC
-if test -n "$F77"; then
+if test -n "$FC"; then
  	AC_FC_LIBRARY_LDFLAGS
  	if test -n "$FFLAGS"; then
  		AC_MSG_RESULT([defining FFLAGS to be $FFLAGS])
