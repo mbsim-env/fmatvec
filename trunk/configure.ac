@@ -26,7 +26,7 @@ AC_SUBST([LIBFMATVEC_AGE])
 LIBFMATVEC_VERSION_INFO=$LIBFMATVEC_CURRENT:$LIBFMATVEC_REVISION:$LIBFMATVEC_AGE
 AC_SUBST([LIBFMATVEC_VERSION_INFO])
 
-LDFLAGS="-Wl,--no-undefined"
+LDFLAGS="$LDFLAGS -Wl,--no-undefined"
 
 dnl By autoscan
 AC_CHECK_FUNCS([sqrt])
@@ -72,7 +72,10 @@ fi
 
 LIBS=""
 
-AC_CHECK_LIB(pthread, pthread_mutex_init,PTHREADLIB="-lpthread",PTHREADLIB="","-lpthread")
+AC_ARG_ENABLE([pthread],[  --disable-pthread   Disable linking against pthread],[USEPTHREAD=$enableval],[USEPTHREAD=yes])
+if [ $USEPTHREAD = "yes" ]; then
+  AC_CHECK_LIB(pthread, pthread_mutex_init,PTHREADLIB="-lpthread",PTHREADLIB="","-lpthread")
+fi
 
 dnl ----------------------------------------------------------
 
