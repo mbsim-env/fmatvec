@@ -73,7 +73,7 @@ fi
 LIBS=""
 
 AC_ARG_ENABLE([pthread],[  --disable-pthread   Disable linking against pthread],[USEPTHREAD=$enableval],[USEPTHREAD=yes])
-if [ $USEPTHREAD = "yes" ]; then
+if test "_$USEPTHREAD" = "_yes"; then
   AC_CHECK_LIB(pthread, pthread_mutex_init,PTHREADLIB="-lpthread",PTHREADLIB="","-lpthread")
 fi
 
