@@ -49,8 +49,8 @@ AC_ARG_WITH(blas-lib-prefix,[  --with-blas-lib-prefix=PFX  Prefix where blas lib
 AC_ARG_WITH([f2c],[  --with-f2c=PFX  the path and name to the libf2c.a library(optional)],[f2c="$withval"],[f2c=""])
 
 dnl Define the memory allocator
-AC_ARG_WITH([allocator-header],[  --with-allocator-header=<header file>  Include <header file> defining the STL-style allocator class to use (Default: None)],[allocator_header="$withval"],[allocator_header="NONE"])
-AC_ARG_WITH([allocator-class],[  --with-allocator-class=<class>  Use <class> for STL-style allocator class name. (Default: fmatvec::MemoryStack)],[allocator_class="$withval"],[allocator_class="DEFAULT"])
+AC_ARG_WITH([allocator-header],[  --with-allocator-header=<header file>  Include <header file> defining the STL-style allocator class to use (Default: memory)],[allocator_header="$withval"],[allocator_header="NONE"])
+AC_ARG_WITH([allocator-class],[  --with-allocator-class=<class>  Use <class> for STL-style allocator class name. (Default: std::allocator)],[allocator_class="$withval"],[allocator_class="DEFAULT"])
 if test "_$allocator_header" != "_NONE"; then
   CXXFLAGS="$CXXFLAGS -DALLOCATORHEADER=$allocator_header"
   DEFINES="$DEFINES -DALLOCATORHEADER=$allocator_header"
@@ -143,16 +143,31 @@ CPPFLAGS="$CPPFLAGS -Wall -Werror -Wno-unknown-pragmas"
 AC_ARG_WITH([doxygenpath],[  --with-doxygenpath=PATH  The path to the 'doxygen' program.],[doxygenpath="$withval"],[doxygenpath=""])
 AC_PATH_PROG([doxygen],[doxygen],[no],[$doxygenpath:$PATH])
 if test $doxygen = "no" ; then
-  AC_MSG_RESULT([can't generate documentation. 'doxygen' required.])
+  AC_MSG_RESULT(["can't generate documentation. 'doxygen' required."])
 fi
 
-AC_ARG_ENABLE([pragma_omp_critical],[  --disable-pragma_omp_critical reference counting without pragma omp critical],[pragma_omp_critical="$enableval" ],[pragma_omp_critical=yes])
-if test "$pragma_omp_critical" = "yes"; then
-AC_DEFINE(PRAGMA_OMP_CRITICAL,[1],pragma omp critical are used for reference counting)
-DEFINES="$DEFINES -DPRAGMA_OMP_CRITICAL"
-  echo "Pragma omp critical are used for reference counting"
+# thread-safe?
+AC_ARG_ENABLE([threadsafety],[  --enable-threadsafety[=TYPE]   enables thread safety for memory managment: Posible TYPE: pthread; gccbuiltin; openmp (default)],[threadsafety="$enableval" ],[threadsafety=no])
+if test $threadsafety = pthread; then
+  DEFINES="$DEFINES -DFMATVEC_THREADSAFE_PTHREAD"
+  CXXFLAGS="$CXXFLAGS -DFMATVEC_THREADSAFE_PTHREAD"
+  LDFLAGS="$LDFLAGS -lpthread"
+  LIBS="$LIBS -lpthread"
+  AC_MSG_RESULT([Use pthread for thread safety.])
+elif test $threadsafety = gccbuiltin; then
+  DEFINES="$DEFINES -DFMATVEC_THREADSAFE_GCCBUILTIN"
+  CXXFLAGS="$CXXFLAGS -DFMATVEC_THREADSAFE_GCCBUILTIN"
+  AC_MSG_RESULT([Use gcc build in atomic operations for thread safety.])
+elif test $threadsafety = yes -o $threadsafety = openmp; then
+  DEFINES="$DEFINES -DFMATVEC_THREADSAFE_OPENMP"
+  CXXFLAGS="$CXXFLAGS -fopenmp -DFMATVEC_THREADSAFE_OPENMP"
+  LDFLAGS="$LDFLAGS -fopenmp -lgomp" # remove -lgomp if libtool is fixed
+  LIBS="$LIBS -fopenmp -lgomp" # remove -lgomp if libtool is fixed
+  AC_MSG_RESULT([Use OpenMP for thread safety.])
+elif test $threadsafety = no; then
+  AC_MSG_RESULT([Thread safety is disabled.])
 else
-  echo "Pragma omp critical are not used for reference counting"
+  AC_MSG_ERROR([Unknown thread safety type specified by --enable-threadsafety.])
 fi
 
 AC_SUBST(LIBS)
