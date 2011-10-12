@@ -38,9 +38,16 @@ AC_TYPE_SIZE_T
 atlas_libs=yes
 atlas_headers=yes
 
+intelmkl_libs=yes
+intelmkl_headers=yes
+
 AC_ARG_WITH(atlas-inc-prefix,[  --with-atlas-inc-prefix=PFX  Prefix where atlas includes are installed], [atlas_inc_prefix="$withval"], [atlas_inc_prefix="."])
 
 AC_ARG_WITH(atlas-lib-prefix,[  --with-atlas-lib-prefix=PFX  Prefix where atlas libraries are installed], [atlas_lib_prefix="$withval"], [atlas_lib_prefix="."])
+
+AC_ARG_WITH(intelmkl-inc-prefix,[  --with-intelmkl-inc-prefix=PFX  Prefix where IntelMKL includes are installed], [intelmkl_inc_prefix="$withval"], [intelmkl_inc_prefix="."])
+
+AC_ARG_WITH(intelmkl-lib-prefix,[  --with-intelmkl-lib-prefix=PFX  Prefix where IntelMKL libraries are installed], [intelmkl_lib_prefix="$withval"], [intelmkl_lib_prefix="."])
 
 AC_ARG_WITH(lapack-lib-prefix,[  --with-lapack-lib-prefix=PFX  Prefix where lapack library is installed], [lapack_lib_prefix="$withval"], [lapack_lib_prefix="."])
 
@@ -80,6 +87,8 @@ fi
 dnl ----------------------------------------------------------
 
 AC_ARG_ENABLE([atlas],[  --enable-atlas  Use ATLAS],[atlas="yes"],[atlas="no"])
+AC_ARG_ENABLE([intelmkl],[  --enable-intelmkl  Use IntelMKL],[intelmkl="yes"],[intelmkl="no"])
+AC_ARG_ENABLE([parallelIntelMKL],[  --enable-parallelIntelMKL  Use parallel IntelMKL],[parallelIntelMKL="yes"],[parallelIntelMKL="no"])
 
 if test "$atlas" = "yes"; then
   AC_DEFINE([COSIM],[1],[Use Cosimulation Interface])
@@ -110,31 +119,60 @@ fi
 LIBS="-llapack -lcblas -latlas -lblas $PTHREADLIB $FCLIBS"
 
 else
-	  
-	if test "$blas_lib_prefix" != "" ; then
-		LDFLAGS="$LDFLAGS -L$blas_lib_prefix"
-	fi
-	if test "$lapack_lib_prefix" != "" ; then
-		LDFLAGS="$LDFLAGS -L$lapack_lib_prefix"
-	fi
-	INCDIRS=""
-	LIBDIRS="-L$blas_lib_prefix -L$lapack_lib_prefix"
-	
-	LIBS=""
-	LAPACK_LIBS="-llapack -lblas $PTHREADLIB $FCLIBS"
-	
-	AC_CHECK_LIB(blas,dcopy_,,blas_libs=no,$LAPACK_LIBS)
-	if test "x$blas_libs" = xno; then
-		AC_MSG_ERROR(LAPACK library were not found on the system. You can get the
-				LAPACK package from http://.)
-	fi
-	AC_CHECK_LIB(lapack,dgemm_,,lapack_libs=no,$LAPACK_LIBS)
-	if test "x$lapack_libs" = xno; then
-		AC_MSG_ERROR(LAPACK library were not found on the system. You can get the
-				LAPACK package from http://.)
-	fi
-	
-	LIBS="-llapack -lblas $PTHREADLIB $FCLIBS"
+  if test "$intelmkl" = "yes"; then
+    if test "$intelmkl_inc_prefix" != "" ; then
+	    CFLAGS="$CFLAGS  -I$intelmkl_inc_prefix"
+	    CPPFLAGS="$CPPFLAGS  -I$intelmkl_inc_prefix"
+    fi
+
+    INCDIRS="-I$atlas_inc_prefix"
+    
+    AC_MSG_CHECKING(for IntelMKL headers)
+    AC_TRY_COMPILE([#include <mkl_lapack.h>],[],[AC_MSG_RESULT(found)], [AC_MSG_ERROR(not present)])
+  
+    if test "$intelmkl_lib_prefix" != "" ; then
+    	LDFLAGS="$LDFLAGS -L$intelmkl_lib_prefix"
+    fi
+    LIBDIRS="-L$intelmkl_lib_prefix"
+    
+    LIBS=""
+    
+    if test "x$parallelIntelMKL" = xyes; then
+      AC_CHECK_LIB([mkl_intel_lp64],DftiComputeForward,, AC_MSG_ERROR([Cannot find Intel Math Kernel Library >= 6.0]),[-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread])
+      LIBS="-lmkl_intel_lp64 -lmkl_gnu_thread -lmkl_core -lgomp $LIBS"
+    else
+      AC_CHECK_LIB([mkl_intel_lp64],DftiComputeForward,, AC_MSG_ERROR([Cannot find Intel Math Kernel Library >= 6.0]),[-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread])
+      LIBS="-lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lgomp $LIBS"
+    fi
+    
+    LIBS="$LIBS $PTHREADLIB $FCLIBS"
+
+  else
+  	if test "$blas_lib_prefix" != "" ; then
+  		LDFLAGS="$LDFLAGS -L$blas_lib_prefix"
+  	fi
+  	if test "$lapack_lib_prefix" != "" ; then
+  		LDFLAGS="$LDFLAGS -L$lapack_lib_prefix"
+  	fi
+  	INCDIRS=""
+  	LIBDIRS="-L$blas_lib_prefix -L$lapack_lib_prefix"
+  	
+  	LIBS=""
+  	LAPACK_LIBS="-llapack -lblas $PTHREADLIB $FCLIBS"
+  	
+  	AC_CHECK_LIB(blas,dcopy_,,blas_libs=no,$LAPACK_LIBS)
+  	if test "x$blas_libs" = xno; then
+  		AC_MSG_ERROR(LAPACK library were not found on the system. You can get the
+  				LAPACK package from http://.)
+  	fi
+  	AC_CHECK_LIB(lapack,dgemm_,,lapack_libs=no,$LAPACK_LIBS)
+  	if test "x$lapack_libs" = xno; then
+  		AC_MSG_ERROR(LAPACK library were not found on the system. You can get the
+  				LAPACK package from http://.)
+  	fi
+  	
+  	LIBS="-llapack -lblas $PTHREADLIB $FCLIBS"
+  fi
 fi
 AM_CONDITIONAL([COND_ATLAS],[test "$atlas" = "yes"])
 

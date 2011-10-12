@@ -28,6 +28,22 @@
 #define FMATVEC_NO_INITIALIZATION
 #define FMATVEC_NO_BOUNDS_CHECK
 
+#define CVT_TRANSPOSE(c) \
+   (((c) == CblasNoTrans) ? 'N' : \
+    ((c) == CblasTrans) ? 'T' : \
+    ((c) == CblasConjTrans) ? 'C' : \
+    -1)
+
+#define CVT_UPLO(c) \
+   (((c) == CblasUpper) ? 'U' : \
+    ((c) == CblasLower) ? 'L' : \
+    -1)
+
+#define CVT_SIDE(c) \
+   (((c) == CblasLeft) ? 'L' : \
+    ((c) == CblasRight) ? 'R' : \
+    -1)
+
 //-------------------------------------
 // Matrix operations
 //-------------------------------------
@@ -1366,7 +1382,11 @@ namespace fmatvec {
 
     SquareMatrix<double> B = A.copy();
 
+#ifndef HAVE_LIBMKL_INTEL_LP64
     int info = dgetrs(B.blasOrder(), B.blasTrans(), B.size(), Y.cols(), B(), B.ldim(), ipiv(), Y(), Y.ldim());
+#else
+    int info = dgetrs(B.blasOrder(), CVT_TRANSPOSE(B.blasTrans()), B.size(), Y.cols(), B(), B.ldim(), ipiv(), Y(), Y.ldim());
+#endif
 
     assert(info==0);
 
@@ -1436,7 +1456,11 @@ namespace fmatvec {
 
     SquareMatrix<double> B = A.copy();
 
+#ifndef HAVE_LIBMKL_INTEL_LP64
     int info = dgetrs(B.blasOrder(), B.blasTrans(), B.size(), 1, B(), B.ldim(), ipiv(), y(), y.size());
+#else
+    int info = dgetrs(B.blasOrder(), CVT_TRANSPOSE(B.blasTrans()), B.size(), 1, B(), B.ldim(), ipiv(), y(), y.size());
+#endif
 
     assert(info==0);
 
@@ -1496,11 +1520,19 @@ namespace fmatvec {
       return B;
 #endif
 
+#ifndef HAVE_LIBMKL_INTEL_LP64
     int info = dpotrf(B.blasOrder(), B.blasUplo(), B.size(), B(), B.ldim());
+#else
+    int info = dpotrf(B.blasOrder(),CVT_UPLO(B.blasUplo()) , B.size(), B(), B.ldim());
+#endif
 
     assert(info==0);
 
+#ifndef HAVE_LIBMKL_INTEL_LP64
     dpotri( B.blasOrder(), B.blasUplo(), B.rows(), B(), B.ldim());
+#else
+    dpotri( B.blasOrder(),CVT_UPLO(B.blasUplo()) , B.rows(), B(), B.ldim());
+#endif
 
     return B;
   }
@@ -1571,7 +1603,11 @@ namespace fmatvec {
       return B;
 #endif
 
+#ifndef HAVE_LIBMKL_INTEL_LP64
     int info = dpotrf(B.blasOrder(), B.blasUplo(), B.size(), B(), B.ldim());
+#else
+    int info = dpotrf(B.blasOrder(), CVT_UPLO(B.blasUplo()), B.size(), B(), B.ldim());
+#endif
 
     assert(info==0);
 
@@ -1624,7 +1660,11 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> B = A.copy();
 
+#ifndef HAVE_LIBMKL_INTEL_LP64
     int info = dposv(B.blasOrder(), B.blasUplo(), B.size(), 1, B(), B.ldim(), y(), y.size());
+#else
+    int info = dposv(B.blasOrder(), CVT_UPLO(B.blasUplo()), B.size(), 1, B(), B.ldim(), y(), y.size());
+#endif
 
     assert(info==0);
 
@@ -1646,7 +1686,11 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> B = A.copy();
 
+#ifndef HAVE_LIBMKL_INTEL_LP64
     int info = dposv(B.blasOrder(), B.blasUplo(), B.size(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
+#else
+    int info = dposv(B.blasOrder(), CVT_UPLO(B.blasUplo()), B.size(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
+#endif
 
     assert(info==0);
 
@@ -1668,7 +1712,11 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> B = A.copy();
 
+#ifndef HAVE_LIBMKL_INTEL_LP64
     int info = dpotrs(B.blasOrder(), B.blasUplo(), B.size(), 1, B(), B.ldim(), y(), y.size());
+#else
+    int info = dpotrs(B.blasOrder(),CVT_UPLO(B.blasUplo()) , B.size(), 1, B(), B.ldim(), y(), y.size());
+#endif
 
     assert(info==0);
 
@@ -1690,7 +1738,11 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> B = A.copy();
 
+#ifndef HAVE_LIBMKL_INTEL_LP64
     int info = dpotrs(B.blasOrder(), B.blasUplo(), B.size(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
+#else
+    int info = dpotrs(B.blasOrder(),CVT_UPLO(B.blasUplo()) , B.size(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
+#endif
 
     assert(info==0);
 

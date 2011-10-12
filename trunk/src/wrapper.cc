@@ -1,4 +1,4 @@
-/* Copyright (C) 2007  Martin Förg
+/* Copyright (C) 2007  Martin Förg, Jan Clauberg
 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,13 +38,8 @@
     ((c) == CblasRight) ? 'R' : \
     -1)
 
-
-
-
+#if defined(HAVE_LIBBLAS)
 extern "C" {
-
-#ifndef HAVE_LIBATLAS
-
   void dscal_(const int *n, const double *alpha, double *X, const int* incX);
   void dgemm_(const char *TransA, const char* TransB, const int *M, const int *N,
                  const int *K, const double *alpha, const double *A,
@@ -96,9 +91,11 @@ extern "C" {
 
   void dpotrs_(const char *Uplo, const int *N, const int *NRHS, const double *A,
       const int *lda, double *B, const int *ldb, int *info);
-
+}
 #endif
 
+#if defined(HAVE_LIBBLAS) || defined(HAVE_LIBATLAS)
+extern "C" {
   void dgeev_(const char* jobvl, const char* jobvr, const int *n, double *a, const int *lda, double *wr, double *wi, double *vl, const int *ldvl, double* vr, const int *ldvr, double* work, const int *lwork, int *info);
   void dsygv_( const int* itype, const char* jobz, const char* uplo, const int *n, double *a, const int *lda, double *b, const int *ldb, double *w, double *work, const int *lwork, int *info);
   void dsyev_( const char* jobz, const char*, const int *n, double *a, const int *lda, double *w, double *work, const int *lwork, int *info);
@@ -107,17 +104,17 @@ extern "C" {
   void dsyevx_(const char *jobz, const char *range, const char *uplo, const int *n, double *a, const int *lda, const double *vl, const double *vu, const int *il, const int *iu, const double *abstol, const int* m, double *w, double *z, const int *ldz, double *work, const int *lwork, int *iwork, int *ifail, int *info);
   void dgelss_(const int *m, const int *n, const int *nrhs, double *A, const int *lda, double *b, const int *ldb, const double *s, const double *rcond, int *rank, double *work, const int *lwork, int *info);
 }
+#endif
 
+#if defined(HAVE_LIBBLAS)
 namespace fmatvec {
-
-#ifndef HAVE_LIBATLAS
 
   void dscal(const int N, const double alpha, double *X, const int incX) {
     dscal_(&N, &alpha, X, &incX);
   }
   
-  void dgemm(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA,
-                 const enum CBLAS_TRANSPOSE TransB, const int M, const int N,
+  void dgemm(const CBLAS_ORDER Order, const CBLAS_TRANSPOSE TransA,
+                 const CBLAS_TRANSPOSE TransB, const int M, const int N,
                  const int K, const double alpha, const double *A,
                  const int lda, const double *B, const int ldb,
                  const double beta, double *C, const int ldc) {
@@ -127,8 +124,8 @@ namespace fmatvec {
     dgemm_(&trA, &trB, &M, &N, &K, &alpha, A, &lda, B, &ldb, &beta, C, &ldc);
   }
 
-  void dsymm(const enum CBLAS_ORDER Order, const enum CBLAS_SIDE Side,
-                 const enum CBLAS_UPLO Uplo, const int M, const int N,
+  void dsymm(const CBLAS_ORDER Order, const CBLAS_SIDE Side,
+                 const CBLAS_UPLO Uplo, const int M, const int N,
                  const double alpha, const double *A, const int lda,
                  const double *B, const int ldb, const double beta,
                  double *C, const int ldc) {
@@ -150,8 +147,8 @@ namespace fmatvec {
     dcopy_(&N, X, &incX, Y, &incY);
   }
 
-  void dgemv(const enum CBLAS_ORDER Order,
-                 const enum CBLAS_TRANSPOSE TransA, const int M, const int N,
+  void dgemv(const CBLAS_ORDER Order,
+                 const CBLAS_TRANSPOSE TransA, const int M, const int N,
                  const double alpha, const double *A, const int lda,
                  const double *X, const int incX, const double beta,
                  double *Y, const int incY) {
@@ -161,7 +158,7 @@ namespace fmatvec {
     dgemv_(&trA, &M, &N, &alpha, A, &lda, X, &incX, &beta, Y, &incY);
   }
 
-  void dsymv(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo,
+  void dsymv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
                  const int N, const double alpha, const double *A,
                  const int lda, const double *X, const int incX,
                  const double beta, double *Y, const int incY) {
@@ -192,7 +189,7 @@ namespace fmatvec {
 
 
 
-  int dgesv(const enum CBLAS_ORDER Order, const int N, const int NRHS,
+  int dgesv(const CBLAS_ORDER Order, const int N, const int NRHS,
                   double *A, const int lda, int *ipiv,
                   double *B, const int ldb) {
 
@@ -202,7 +199,7 @@ namespace fmatvec {
     return info;
   }
 
-  int dgetrs(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Trans,
+  int dgetrs(const CBLAS_ORDER Order, const CBLAS_TRANSPOSE Trans,
     const int N, const int NRHS, const double *A, const int lda,
     const int *ipiv, double *B, const int ldb) {
 
@@ -212,14 +209,14 @@ namespace fmatvec {
     return info;
   }
 
-  int dgetrf(const enum CBLAS_ORDER Order, const int M, const int N,
+  int dgetrf(const CBLAS_ORDER Order, const int M, const int N,
                    double *A, const int lda, int *ipiv) {
     int info;
     dgetrf_(&M, &N, A, &lda, ipiv, &info);
     return info;
   }
 
-  int dgetri(const enum CBLAS_ORDER Order, const int N, double *A,
+  int dgetri(const CBLAS_ORDER Order, const int N, double *A,
                    const int lda, const int *ipiv) {
     int info;
     int lwork = 2*N;
@@ -229,7 +226,7 @@ namespace fmatvec {
     return info;
   }
 
-  int dpotrf(const enum ATLAS_ORDER Order, const enum ATLAS_UPLO Uplo, const int N, double *A, const int lda) {
+  int dpotrf(const ATLAS_ORDER Order, const ATLAS_UPLO Uplo, const int N, double *A, const int lda) {
 
     int info;
     const char uplo = CVT_UPLO(Uplo);
@@ -237,7 +234,7 @@ namespace fmatvec {
     return info;
   }
 
-  int dpotri(const enum ATLAS_ORDER Order, const enum ATLAS_UPLO Uplo,
+  int dpotri(const ATLAS_ORDER Order, const ATLAS_UPLO Uplo,
                    const int N, double *A, const int lda) {
     int info;
     const char uplo = CVT_UPLO(Uplo);
@@ -245,7 +242,7 @@ namespace fmatvec {
     return info;
   }
 
-  int dposv(const enum ATLAS_ORDER Order, const enum ATLAS_UPLO Uplo,
+  int dposv(const ATLAS_ORDER Order, const ATLAS_UPLO Uplo,
                   const int N, const int NRHS, double *A, const int lda,
                   double *B, const int ldb) {
     int info;
@@ -254,7 +251,7 @@ namespace fmatvec {
     return info;
   }
 
-  int dpotrs(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo,
+  int dpotrs(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
                    const int N, const int NRHS, const double *A, const int lda,
                    double *B, const int ldb) {
     int info;
@@ -262,11 +259,16 @@ namespace fmatvec {
     dpotrs_(&uplo, &N, &NRHS, A, &lda, B, &ldb, &info);
     return info;
   }
-
+}
 #endif
 
+namespace fmatvec {
 
+#ifndef HAVE_LIBMKL_INTEL_LP64
   int dgels( const enum CBLAS_TRANSPOSE ctr, const int m, const int n, const int nrhs, double* a, const int lda, double* b, const int ldb) {
+#else
+  int dgels( const CBLAS_TRANSPOSE ctr, const int m, const int n, const int nrhs, double* a, const int lda, double* b, const int ldb) {
+#endif
 
     const char tr=CVT_TRANSPOSE(ctr);
     const int lwork =  m*10;
@@ -335,7 +337,11 @@ namespace fmatvec {
 
   }
 
+#ifndef HAVE_LIBMKL_INTEL_LP64
   int dsyevx(const char jobz, const char range, const enum CBLAS_UPLO cuplo, const int n, double *a, const int lda, const double vl, const double vu, const int il, const int iu, const double abstol, const int *m, double *w, double *z, const int ldz) {
+#else
+  int dsyevx(const char jobz, const char range, const CBLAS_UPLO cuplo, const int n, double *a, const int lda, const double vl, const double vu, const int il, const int iu, const double abstol, int *m, double *w, double *z, const int ldz) {
+#endif
 
     int lwork = 8*n;  // opt(NB+3)*N
     double *work = new double[lwork];
@@ -362,6 +368,4 @@ namespace fmatvec {
     return res;
 
   }
-
-
 }

@@ -22,6 +22,7 @@
 #ifndef blas_extensions_double_h
 #define blas_extensions_double_h
 
+#ifndef HAVE_LIBMKL_INTEL_LP64
 #ifndef CBLAS_ENUM_DEFINED_H
    #define CBLAS_ENUM_DEFINED_H
    enum CBLAS_ORDER {CblasRowMajor=101, CblasColMajor=102 };
@@ -31,9 +32,33 @@
    enum CBLAS_DIAG  {CblasNonUnit=131, CblasUnit=132};
    enum CBLAS_SIDE  {CblasLeft=141, CblasRight=142};
 #endif
+#define CBLAS_INDEX int
+
+#ifndef ATLAS_ENUM_H
+   #define ATLAS_ENUM_H
+   #define ATLAS_ORDER CBLAS_ORDER
+      #define AtlasRowMajor CblasRowMajor
+      #define AtlasColMajor CblasColMajor
+   #define ATLAS_TRANS CBLAS_TRANSPOSE
+      #define AtlasNoTrans CblasNoTrans
+      #define AtlasTrans CblasTrans
+      #define AtlasConjTrans CblasConjTrans
+   #define ATLAS_UPLO CBLAS_UPLO
+      #define AtlasUpper CblasUpper
+      #define AtlasLower CblasLower
+   #define ATLAS_DIAG CBLAS_DIAG
+      #define AtlasNonUnit CblasNonUnit
+      #define AtlasUnit CblasUnit
+   #define ATLAS_SIDE CBLAS_SIDE
+      #define AtlasLeft  CblasLeft
+      #define AtlasRight CblasRight
+#endif
+#else
+#include "mkl_cblas.h"
+#endif
 
 namespace fmatvec {
-
+#ifndef HAVE_LIBMKL_INTEL_LP64
   void myblas_daxpy(const enum CBLAS_TRANSPOSE  transa, const enum CBLAS_TRANSPOSE
       transb, int m, int n, double alpha, const double *a, int lda1, double *b,
       int ldb1);
@@ -53,7 +78,28 @@ namespace fmatvec {
 
   void myblas_daxpy(const enum CBLAS_TRANSPOSE transa, const enum CBLAS_TRANSPOSE transb,
       int m, int n, double alpha, const double *a, int lda1, const double *b, int
-      ldb1, double *c, int ldc);
+      ldb1, double *c, int ldc);  
+#else
+  void myblas_daxpy(const CBLAS_TRANSPOSE  transa, const CBLAS_TRANSPOSE
+      transb, int m, int n, double alpha, const double *a, int lda1, double *b,
+      int ldb1);
 
+  void myblas_dcopy(const CBLAS_TRANSPOSE  transa, const CBLAS_TRANSPOSE
+      transb, int m, int n, const double *a, int lda1, double *b, int ldb1);
+
+  void myblas_dscal(int n, double da, const double *dx, int incx, double *c);
+
+  void myblas_dscal(const CBLAS_TRANSPOSE  transa, int m, int n, double alpha, const
+      double *a, int lda1, double *c, int ldc);
+
+  void myblas_dscal(char transa, int m, int n, double alpha, double *a, int lda1);
+
+  void myblas_daxpy(int n, double da, const double *dx, int incx, const double *dy, int
+      incy, double *c);
+
+  void myblas_daxpy(const CBLAS_TRANSPOSE transa, const CBLAS_TRANSPOSE transb,
+      int m, int n, double alpha, const double *a, int lda1, const double *b, int
+      ldb1, double *c, int ldc);
+#endif
 }
 #endif

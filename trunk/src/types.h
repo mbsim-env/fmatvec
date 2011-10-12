@@ -22,6 +22,7 @@
 #ifndef types_h
 #define types_h
 
+#ifndef HAVE_LIBMKL_INTEL_LP64
 #ifndef CBLAS_ENUM_DEFINED_H
    #define CBLAS_ENUM_DEFINED_H
    enum CBLAS_ORDER {CblasRowMajor=101, CblasColMajor=102 };
@@ -31,6 +32,7 @@
    enum CBLAS_DIAG  {CblasNonUnit=131, CblasUnit=132};
    enum CBLAS_SIDE  {CblasLeft=141, CblasRight=142};
 #endif
+#define CBLAS_INDEX int
 
 #ifndef ATLAS_ENUM_H
    #define ATLAS_ENUM_H
@@ -50,6 +52,9 @@
    #define ATLAS_SIDE CBLAS_SIDE
       #define AtlasLeft  CblasLeft
       #define AtlasRight CblasRight
+#endif
+#else
+#include "mkl_cblas.h"
 #endif
 
 namespace fmatvec {

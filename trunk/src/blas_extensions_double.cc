@@ -25,7 +25,11 @@
 
 namespace fmatvec {
 
+#ifndef HAVE_LIBMKL_INTEL_LP64
   void myblas_daxpy(const enum CBLAS_TRANSPOSE  transa, const enum CBLAS_TRANSPOSE transb, int m, int n, double alpha, const double *a, int lda1, double *b, int ldb1) {
+#else
+  void myblas_daxpy(const CBLAS_TRANSPOSE  transa, const CBLAS_TRANSPOSE transb, int m, int n, double alpha, const double *a, int lda1, double *b, int ldb1) {
+#endif
 
     int i, nn, one = 1;
     bool nota = (transa == CblasNoTrans) ? true : false;
@@ -55,8 +59,11 @@ namespace fmatvec {
     }
   }
 
+#ifndef HAVE_LIBMKL_INTEL_LP64
   void myblas_dcopy(const enum CBLAS_TRANSPOSE  transa, const enum CBLAS_TRANSPOSE transb, int m, int n, const double *a, int lda1, double *b, int ldb1) {
-
+#else
+  void myblas_dcopy(const CBLAS_TRANSPOSE  transa, const CBLAS_TRANSPOSE transb, int m, int n, const double *a, int lda1, double *b, int ldb1) {
+#endif
     bool nota = (transa == CblasNoTrans) ? true : false;
     bool notb = (transb == CblasNoTrans) ? true : false;
     int i, one = 1, nn;
@@ -113,8 +120,11 @@ namespace fmatvec {
 	c[i] =da * dx[i*incx];
   } 
 
+#ifndef HAVE_LIBMKL_INTEL_LP64
   void myblas_dscal(const enum CBLAS_TRANSPOSE  transa, int m, int n, double alpha, const double *a, int lda1, double *c, int ldc) {
-
+#else
+  void myblas_dscal(const CBLAS_TRANSPOSE  transa, int m, int n, double alpha, const double *a, int lda1, double *c, int ldc) {
+#endif
     int i, nn, one = 1;
     bool nota = (transa == CblasNoTrans) ? true : false;
 
@@ -197,7 +207,12 @@ namespace fmatvec {
       }
     }
   }
+
+#ifndef HAVE_LIBMKL_INTEL_LP64
   void myblas_daxpy(const enum CBLAS_TRANSPOSE transa, const enum CBLAS_TRANSPOSE transb, int m, int n, double alpha, const double *a, int lda1, const double *b, int ldb1, double *c, int ldc)
+#else
+  void myblas_daxpy(const CBLAS_TRANSPOSE transa, const CBLAS_TRANSPOSE transb, int m, int n, double alpha, const double *a, int lda1, const double *b, int ldb1, double *c, int ldc)
+#endif
   {
     int i, nn, one = 1;
     bool nota = (transa == CblasNoTrans) ? true : false;
