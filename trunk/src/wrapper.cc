@@ -264,11 +264,7 @@ namespace fmatvec {
 
 namespace fmatvec {
 
-#ifndef HAVE_LIBMKL_INTEL_LP64
-  int dgels( const enum CBLAS_TRANSPOSE ctr, const int m, const int n, const int nrhs, double* a, const int lda, double* b, const int ldb) {
-#else
   int dgels( const CBLAS_TRANSPOSE ctr, const int m, const int n, const int nrhs, double* a, const int lda, double* b, const int ldb) {
-#endif
 
     const char tr=CVT_TRANSPOSE(ctr);
     const int lwork =  m*10;

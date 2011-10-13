@@ -173,21 +173,13 @@ extern "C" {
 #endif
 
 namespace fmatvec {
+
 #ifndef HAVE_LIBMKL_INTEL_LP64
-  int dgels( const enum CBLAS_TRANSPOSE ctr, const int m, const int n, const int nhrs, double* a, const int lda, double* b, const int ldb);
-
-  int dgelss(const int m, const int n, const int nrhs, double *a, const int lda, double *b, const int ldb, const double rcond);
-
-  int dgeev(const char jobvl, const char jobvr, const int n, double *a, const int lda, double *wr, double *wi, double *vl, const int ldvl, double *vr, const int ldvr);
-
-  int dsygv(const int itype, const char jobz, const char uplo, const int n, double *a, const int lda, double *b, const int ldb, double *w);
-  
-  int dsyev(const char jobz, const char ul, const int n, double *a, const int lda, double *w);
-
-  int dsyevx(const char jobz, const char range, const enum CBLAS_UPLO cuplo, const int n, double *a, const int lda, const double vl, const double vu, const int il, const int iu, const double abstol, const int *m, double *w, double *z, const int ldz);
-
-  double dlange(const char norm , const int m, const int n, const double* a, const int lda); 
+  int dsyevx(const char jobz, const char range, const CBLAS_UPLO cuplo, const int n, double *a, const int lda, const double vl, const double vu, const int il, const int iu, const double abstol, const int *m, double *w, double *z, const int ldz);
 #else
+   int dsyevx(const char jobz, const char range, const CBLAS_UPLO cuplo, const int n, double *a, const int lda, const double vl, const double vu, const int il, const int iu, const double abstol, int *m, double *w, double *z, const int ldz); 
+#endif
+
   int dgels( const CBLAS_TRANSPOSE ctr, const int m, const int n, const int nhrs, double* a, const int lda, double* b, const int ldb);
 
   int dgelss(const int m, const int n, const int nrhs, double *a, const int lda, double *b, const int ldb, const double rcond);
@@ -198,9 +190,6 @@ namespace fmatvec {
   
   int dsyev(const char jobz, const char ul, const int n, double *a, const int lda, double *w);
 
-  int dsyevx(const char jobz, const char range, const CBLAS_UPLO cuplo, const int n, double *a, const int lda, const double vl, const double vu, const int il, const int iu, const double abstol, int *m, double *w, double *z, const int ldz);
-
   double dlange(const char norm , const int m, const int n, const double* a, const int lda);
-#endif
 }
 #endif

@@ -302,11 +302,7 @@ namespace fmatvec {
 	 * i.e. the elements are stored columnwise. 
 	 * \return CblasColMajor.
 	 * */
-#ifndef HAVE_LIBMKL_INTEL_LP64
-  const enum CBLAS_ORDER blasOrder() const {
-#else
   const CBLAS_ORDER blasOrder() const {
-#endif    
     return  CblasColMajor;
 	};
 
