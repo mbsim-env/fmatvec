@@ -57,7 +57,7 @@ AC_ARG_WITH([f2c],[  --with-f2c=PFX  the path and name to the libf2c.a library(o
 
 dnl Define the memory allocator
 AC_ARG_WITH([allocator-header],[  --with-allocator-header=<header file>  Include <header file> defining the STL-style allocator class to use (Default: memory)],[allocator_header="$withval"],[allocator_header="NONE"])
-AC_ARG_WITH([allocator-class],[  --with-allocator-class=<class>  Use <class> for STL-style allocator class name. (Default: std::allocator)],[allocator_class="$withval"],[allocator_class="DEFAULT"])
+AC_ARG_WITH([allocator-class],[  --with-allocator-class=<class>  Use <class> for STL-style allocator class name. (fmatvec::PoolAllocator (default), ...)],[allocator_class="$withval"],[allocator_class="DEFAULT"])
 if test "_$allocator_header" != "_NONE"; then
   CXXFLAGS="$CXXFLAGS -DALLOCATORHEADER=$allocator_header"
   DEFINES="$DEFINES -DALLOCATORHEADER=$allocator_header"
@@ -67,6 +67,21 @@ if test "_$allocator_class" != "_DEFAULT"; then
   DEFINES="$DEFINES -DALLOCATORCLASS=$allocator_class"
 fi
 AC_SUBST([DEFINES])
+
+dnl Include path for Boost
+AC_ARG_WITH([boost-inc],
+  [  --with-boost-inc=PATH  The path Boost include directory.],
+  [CPPFLAGS="$CPPFLAGS -I$withval"; DEFINES="$DEFINES -I$withval"])
+
+dnl Define the Memory class
+AC_ARG_WITH([memory-class],[  --with-memory-class=<class>  Use the defined memory management: (INTRUSIVECOUNT (default); BOOST; FMATVEC); BOOST uses boost::smart_array using new operator; INTRUSIVECOUNT uses a fmatvec builtin intrusive reference counting using new operator],[memory_class="$withval"],[memory_class="INTRUSIVECOUNT"])
+if test "_$memory_class" == "_BOOST"; then
+  CXXFLAGS="$CXXFLAGS -DMEMORYCLASS_BOOST"
+  DEFINES="$DEFINES -DMEMORYCLASS_BOOST"
+elif test "_$memory_class" == "_FMATVEC"; then
+  CXXFLAGS="$CXXFLAGS -DMEMORYCLASS_FMATVEC"
+  DEFINES="$DEFINES -DMEMORYCLASS_FMATVEC"
+fi
 
 AC_PROG_FC
 if test -n "$FC"; then
@@ -204,6 +219,10 @@ elif test $threadsafety = yes -o $threadsafety = openmp; then
   AC_MSG_RESULT([Use OpenMP for thread safety.])
 elif test $threadsafety = no; then
   AC_MSG_RESULT([Thread safety is disabled.])
+  if test "_$memory_class" == "_BOOST"; then # if boost is used disable boost threadsafy
+    CXXFLAGS="$CXXFLAGS -DBOOST_SP_DISABLE_THREADS"
+    DEFINES="$DEFINES -DBOOST_SP_DISABLE_THREADS"
+  fi
 else
   AC_MSG_ERROR([Unknown thread safety type specified by --enable-threadsafety.])
 fi

@@ -34,7 +34,7 @@
 #  undef CPPBEGININCLUDE
 #  undef CPPENDINCLUDE
 #endif
-// use fmatvec::PoolAllocator if no allocator is defined by ALLOCATORCLASS
+// use fmatvec::PoolAllocator if no allocator is defined (the default in the configure script)
 #ifndef ALLOCATORCLASS
 #  define ALLOCATORCLASS fmatvec::PoolAllocator
 #endif
@@ -97,6 +97,10 @@
   #define FMATVEC_SYNCPREDEC(ret, var, l) ret=--(var);
 #endif
 
+#if defined MEMORYCLASS_BOOST
+#  include <boost/shared_array.hpp>
+#endif
+
 /**
  * \brief memory managment and reference counting 
  * \author Martin Foerg
@@ -107,7 +111,7 @@ namespace fmatvec {
 
  /// @cond NO_SHOW
 
-  // A STL-like pool memory allocator: fast but NOT thread safe till now!
+  // A STL-like pool memory allocator (being fast)
   template <class AT>
   class PoolAllocator {
     private:
@@ -170,6 +174,13 @@ namespace fmatvec {
       }
   };
 
+
+
+
+
+#ifdef MEMORYCLASS_FMATVEC
+
+  // this is the old fmatvec Memory class which uses different allocators (using the std::allocator interface)
   template <class AT> class Memory {
       private:
         typedef ALLOCATORCLASS<AT> allocator_type;
@@ -224,6 +235,102 @@ namespace fmatvec {
 
 	AT* get() const {return ele0;};
     };
+
+#elif defined MEMORYCLASS_BOOST
+
+  // Just a wrapper class around boost::shared_array, since the Memory interface differs a little bit from the boost smart-ptr interface
+  // This wrapper is fully inlined by the compiler if optimization is used!
+  template <class AT> class Memory {
+    private:
+      boost::shared_array<AT> ele0;
+
+    public:
+      Memory() : ele0() {};
+
+      Memory(size_t n) : ele0(new AT[n]) {};
+
+      Memory(const Memory &memory) : ele0(memory.ele0) {};
+
+      ~Memory() {}; 
+
+      Memory& operator=(const Memory &memory) {
+        if(this == &memory)
+          return *this;
+        ele0=memory.ele0;
+        return *this;
+      }
+
+      void resize(size_t n) {
+        ele0.reset(new AT[n]);
+      };
+
+      AT* get() const {return ele0.get();};
+  };
+
+#else
+
+  // This class uses an "intrusive reference counting" mechanism for memory of n elements of type AT.
+  // The reference count is stored as the first element of allocate memory. The rest is used for the n element of type AT.
+  // Hence at least sizeof(size_t)+n*sizeof(AT) bytes are allocated.
+  // For correct memory alignment the memory is allocated as an array of AT.
+  template <class AT> class Memory {
+    private:
+      static const size_t ele0Start=(sizeof(size_t)-1)/sizeof(AT)+1; // the minimum number of AT elements such that one size_t fits into
+      size_t *ref; // a pointer to the reference count (this is also the address of the allocated memory)
+      AT *ele0; // a pointer to the allocated memory (this is also the address ((AT*)ref)+1)
+      FMATVEC_SYNCVAR(fmatvec_refLock)
+
+      void lock() {
+        FMATVEC_SYNCINC(*ref, fmatvec_refLock)
+      };
+
+      void unlock() {
+        size_t refLocal;
+        FMATVEC_SYNCPREDEC(refLocal, *ref, fmatvec_refLock)
+        if(!refLocal) {
+          delete[]reinterpret_cast<AT*>(ref);
+        }
+      };
+
+    public:
+      Memory() : ref(reinterpret_cast<size_t*>(new AT[ele0Start])), ele0(NULL) {
+        *ref=1; // initialize the reference count to 1
+        FMATVEC_SYNCINIT(fmatvec_refLock);
+      };
+
+      Memory(size_t n) : ref(reinterpret_cast<size_t*>(new AT[ele0Start+n])), ele0(reinterpret_cast<AT*>(ref)+1) {
+        *ref=1; // initialize the reference count to 1
+        FMATVEC_SYNCINIT(fmatvec_refLock);
+      };
+
+      Memory(const Memory &memory) : ref(memory.ref), ele0(memory.ele0) {
+        FMATVEC_SYNCINIT(fmatvec_refLock);
+        lock();
+      };
+
+      ~Memory() {
+        unlock();
+      }; 
+
+      Memory& operator=(const Memory &memory) {
+        if(this == &memory)
+          return *this;
+        unlock(); ref=memory.ref; ele0=memory.ele0; lock();
+        return *this;
+      }
+
+      void resize(size_t n) {
+        unlock();
+        ref=reinterpret_cast<size_t*>(new AT[ele0Start+n]);
+        ele0=reinterpret_cast<AT*>(ref)+1;
+        *ref=1; // initialize the reference count to 1
+	};
+
+      AT* get() const {return ele0;};
+  };
+
+#endif
+
 }
 
  /// @endcond
