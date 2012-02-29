@@ -102,6 +102,7 @@ fi
 dnl ----------------------------------------------------------
 
 AC_ARG_ENABLE([atlas],[  --enable-atlas  Use ATLAS],[atlas="yes"],[atlas="no"])
+AC_ARG_ENABLE([parallelatlas],[  --enable-parallelatlas  Use parallel ATLAS],[parallelatlas="yes"],[parallelatlas="no"])
 AC_ARG_ENABLE([intelmkl],[  --enable-intelmkl  Use IntelMKL],[intelmkl="yes"],[intelmkl="no"])
 AC_ARG_ENABLE([parallelIntelMKL],[  --enable-parallelIntelMKL  Use parallel IntelMKL],[parallelIntelMKL="yes"],[parallelIntelMKL="no"])
 
@@ -124,14 +125,23 @@ fi
 LIBDIRS="-L$atlas_lib_prefix"
 
 LIBS=""
-ATLAS_LIBS="-llapack -lcblas -lblas -latlas $PTHREADLIB $FCLIBS"
+
+if test "x$parallelatlas" = xyes; then
+  ATLAS_LIBS="-llapack -lptcblas -latlas $PTHREADLIB $FCLIBS"
+else
+  ATLAS_LIBS="-llapack -lcblas -latlas $PTHREADLIB $FCLIBS"
+fi
 
 AC_CHECK_LIB(atlas,cblas_dcopy,,atlas_libs=no,$ATLAS_LIBS)
 if test "x$atlas_libs" = xno; then
 	AC_MSG_ERROR(ATLAS libraries were not found on the system. You can get the ATLAS package from http://math-atlas.sourceforge.net.)
 fi
 
-LIBS="-llapack -lcblas -latlas -lblas $PTHREADLIB $FCLIBS"
+if test "x$parallelatlas" = xyes; then
+  LIBS="-llapack -lptcblas -latlas -lblas $PTHREADLIB $FCLIBS"
+else
+  LIBS="-llapack -lcblas -latlas -lblas $PTHREADLIB $FCLIBS"
+fi
 
 else
   if test "$intelmkl" = "yes"; then
