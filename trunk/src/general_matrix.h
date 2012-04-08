@@ -120,8 +120,8 @@ namespace fmatvec {
 	} else if(ini == EYE ) {
 	  for(int i=0; i<m; i++) {
 	    for(int j=0; j<n; j++) {
-	      if (i==j) operator()(i,i) = 1;
-	      else operator()(i,j) = 0;
+	      if (i==j) ele[i+j*lda] = 1; // operator()(i,i) = 1;
+	      else ele[i+j*lda] = 0; // operator()(i,j) = 0;
 	    }
 	  }
 	}  
@@ -212,8 +212,8 @@ namespace fmatvec {
 	else if(ini == EYE ) {
 	  for(int i=0; i<m; i++) {
 	    for(int j=0; j<n; j++) {
-	      if (i==j) operator()(i,i) = 1;
-	      else operator()(i,j) = 0;
+	      if (i==j) ele[i+j*lda] = 1; // operator()(i,i) = 1;
+	      else ele[i+j*lda] = 0; // operator()(i,j) = 0;
 	    }
 	  }
 	}
@@ -534,7 +534,7 @@ namespace fmatvec {
     iss >> c;
     for(int i=0; i<m; i++)
       for(int j=0; j<n; j++) {
-	iss >> operator()(i,j);
+	iss >> ele[i+j*lda]; //iss >> operator()(i,j);
 	iss >> c;
       }
   }
@@ -589,9 +589,16 @@ namespace fmatvec {
   template <class AT>
     Matrix<General, AT>&  Matrix<General, AT>::init(const AT& val) {
 
-      for(int i=0; i<rows(); i++) 
-	for(int j=0; j<cols(); j++) 
-	  operator()(i,j) = val;
+      if(tp) {
+	for(int i=0; i<rows(); i++) 
+	  for(int j=0; j<cols(); j++) 
+	    ele[i*lda+j] = val; // operator()(i,j) = val;
+      }
+      else {
+	for(int i=0; i<rows(); i++) 
+	  for(int j=0; j<cols(); j++) 
+	    ele[i+j*lda] = val; // operator()(i,j) = val;
+      }
 
       return *this;
     }
@@ -690,18 +697,34 @@ namespace fmatvec {
 
   template <class AT> template <class Type>
     void Matrix<General, AT>::deepCopy(const Matrix<Type, AT> &A) { 
-      for(int i=0; i<m; i++) 
-	for(int j=0; j<n; j++)
-          operator()(i,j) = A.operator()(i,j);
+      if(tp) {
+	for(int i=0; i<m; i++) 
+	  for(int j=0; j<n; j++)
+	    ele[i*lda+j] = A(i,j); //operator()(i,j) = A.operator()(i,j);
+      }
+      else {
+	for(int i=0; i<m; i++) 
+	  for(int j=0; j<n; j++)
+	    ele[i+j*lda] = A(i,j); //operator()(i,j) = A.operator()(i,j);
+      }
     }
 
   template <class AT>
     Matrix<General, AT>::operator std::vector<std::vector<AT> >() {
       std::vector<std::vector<AT> > ret(rows());
-      for(int r=0; r<rows(); r++) {
-        ret[r].resize(cols());
-        for(int c=0; c<cols(); c++)
-          ret[r][c]=operator()(r,c);
+      if(tp) {
+	for(int r=0; r<rows(); r++) {
+	  ret[r].resize(cols());
+	  for(int c=0; c<cols(); c++)
+	    ret[r][c]= ele[r*lda+c];
+	}
+      }
+      else {
+	for(int r=0; r<rows(); r++) {
+	  ret[r].resize(cols());
+	  for(int c=0; c<cols(); c++)
+	    ret[r][c]=ele[r+c*lda];
+	}
       }
       return ret;
     }
@@ -714,7 +737,7 @@ namespace fmatvec {
       for(int r=0; r<rows(); r++) {
         assert(m[r].size()==cols());
         for(int c=0; c<cols(); c++)
-          operator()(r,c)=m[r][c];
+          ele[r+c*lda]=m[r][c];
       }
     }
 

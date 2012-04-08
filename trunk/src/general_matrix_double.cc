@@ -42,9 +42,9 @@ namespace fmatvec {
   template <>
   void Matrix<General, double>::deepCopy(const Matrix<Symmetric, double> &A) { 
     for(int i=0; i<A.size(); i++) {
-      operator()(i,i) = A(i,i);
+      ele[i+i*lda] = A()[i*A.ldim()+i];
       for(int j=i+1; j<A.size(); j++)
-	operator()(i,j)=operator()(j,i)=A(i,j);
+	ele[i+j*lda] = ele[j+i*lda] = A()[i*A.ldim()+j];
     }
   }
 

@@ -321,8 +321,14 @@ namespace fmatvec {
   template <class AT>
     RowVector<AT>& RowVector<AT>::init(const AT& val) {
 
-      for(int i=0; i<n; i++) 
-	operator()(i) = val;
+      if(tp) {
+	for(int i=0; i<n; i++) 
+	  ele[i] = val; // operator()(i) = val;
+      }
+      else {
+	for(int i=0; i<n; i++) 
+	  ele[i*lda] = val;
+      }
 
       return *this;
     }
@@ -382,8 +388,26 @@ namespace fmatvec {
 
   template <class AT>
     void RowVector<AT>::deepCopy(const RowVector<AT> &x) {
-      for(int i=0; i<size(); i++)
-        operator()(i) = x(i);
+      if(tp) {
+	if(x.tp) {
+	  for(int i=0; i<size(); i++)
+	    ele[i] = x.ele[i]; // operator()(i) = x(i);
+	}
+	else {
+	  for(int i=0; i<size(); i++)
+	    ele[i] = x.ele[i*x.lda];
+	}
+      }
+      else {
+	if(x.tp) {
+	  for(int i=0; i<size(); i++)
+	    ele[i*lda] = x.ele[i]; // operator()(i) = x(i);
+	}
+	else {
+	  for(int i=0; i<size(); i++)
+	    ele[i*lda] = x.ele[i*x.lda];
+	}
+      }
     }
 
   template <> void RowVector<double>::deepCopy(const RowVector<double> &A);

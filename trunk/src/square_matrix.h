@@ -274,10 +274,19 @@ namespace fmatvec {
   template <class AT>
     SquareMatrix<AT>::operator std::vector<std::vector<AT> >() {
       std::vector<std::vector<AT> > ret(size());
-      for(int r=0; r<size(); r++) {
-        ret[r].resize(size());
-        for(int c=0; c<size(); c++)
-          ret[r][c]=operator()(r,c);
+      if(tp) {
+	for(int r=0; r<size(); r++) {
+	  ret[r].resize(size());
+	  for(int c=0; c<size(); c++)
+	    ret[r][c]= ele[r*lda+c]; // ret[r][c]=operator()(r,c);
+	}
+      }
+      else {
+	for(int r=0; r<size(); r++) {
+	  ret[r].resize(size());
+	  for(int c=0; c<size(); c++)
+	    ret[r][c]= ele[r+c*lda]; // ret[r][c]=operator()(r,c);
+	}
       }
       return ret;
     }

@@ -121,7 +121,7 @@ namespace fmatvec {
 	else if(ini == EYE) {	 
 	  init(0);
 	  for(int i=0; i<n; i++) 
-	    operator()(i,i) = 1;
+	    ele[i+i*lda] = 1; // operator()(i,i) = 1;
 	}
       }
 
@@ -145,7 +145,7 @@ namespace fmatvec {
 	else if(ini == EYE) {
 	  init(0);
           for(int i=0; i<n; i++) 
-	    operator()(i,i) = 1;
+	    ele[i+i*lda] = 1; // operator()(i,i) = 1;
         }
 
       }
@@ -236,7 +236,7 @@ namespace fmatvec {
 	else if(ini == EYE) {
 	  init(0);
           for(int i=0; i<n; i++) 
-	    operator()(i,i) = 1;
+	    ele[i+i*lda] = 1; // operator()(i,i) = 1;
         }
 
 
@@ -497,7 +497,7 @@ namespace fmatvec {
 
       for(int i=0; i<rows(); i++) 
 	for(int j=i; j<cols(); j++) 
-	  operator()(i,j) = val;
+	  ele[i*lda+j] = val; // operator()(i,j) = val;
 
       return *this;
     }
@@ -515,7 +515,7 @@ namespace fmatvec {
     void Matrix<Symmetric, AT>::deepCopy(const Matrix<Symmetric, AT> &A) { 
       for(int i=0; i<n; i++) 
 	for(int j=i; j<n; j++) 
-	  operator()(i,j) = A.operator()(i,j);
+	  ele[i*lda+j] = A.ele[i*A.lda+j];
     }
 
   

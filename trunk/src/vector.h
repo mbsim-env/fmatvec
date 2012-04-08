@@ -340,8 +340,14 @@ namespace fmatvec {
   template <class AT>
     Vector<AT>& Vector<AT>::init(const AT& val) {
 
-      for(int i=0; i<m; i++) 
-	operator()(i) = val;
+      if(tp) {
+	for(int i=0; i<m; i++) 
+	  ele[i*lda] = val; // operator()(i) = val;
+      }
+      else {
+	for(int i=0; i<m; i++) 
+	  ele[i] = val; // operator()(i) = val;
+      }
 
       return *this;
     }
@@ -401,8 +407,26 @@ namespace fmatvec {
 
   template <class AT>
     void Vector<AT>::deepCopy(const Vector<AT> &x) {
-      for(int i=0; i<size(); i++)
-        operator()(i) = x(i);
+      if(tp) {
+	if(x.tp) {
+	  for(int i=0; i<size(); i++)
+	    ele[i*lda] = x.ele[i*x.lda]; // operator()(i) = x(i);
+	}
+	else {
+	  for(int i=0; i<size(); i++)
+	    ele[i*lda] = x.ele[i];
+	}
+      }
+      else {
+	if(x.tp) {
+	  for(int i=0; i<size(); i++)
+	    ele[i] = x.ele[i*x.lda]; // operator()(i) = x(i);
+	}
+	else {
+	  for(int i=0; i<size(); i++)
+	    ele[i] = x.ele[i];
+	}
+      }
     }
 
   template <> void Vector<double>::deepCopy(const Vector<double> &A);
