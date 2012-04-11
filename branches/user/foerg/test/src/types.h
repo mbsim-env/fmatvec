@@ -107,6 +107,9 @@ namespace fmatvec {
   class Sparse : public BasicType {
   };
 
+  class ThreeByThree : public BasicType {
+  };
+
 }
 
 #endif
