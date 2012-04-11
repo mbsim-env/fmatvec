@@ -689,7 +689,7 @@ namespace fmatvec {
   template <class AT>
     Matrix<General, AT> Matrix<General, AT>::copy() const {
 
-      Matrix<General, AT> A(m,n);
+      Matrix<General, AT> A(m,n,NONINIT);
       A.deepCopy(*this);
 
       return A;
