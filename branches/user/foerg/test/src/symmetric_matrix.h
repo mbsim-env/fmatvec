@@ -505,7 +505,7 @@ namespace fmatvec {
   template <class AT>
     Matrix<Symmetric, AT> Matrix<Symmetric, AT>::copy() const {
 
-      Matrix<Symmetric, AT> A(n);
+      Matrix<Symmetric, AT> A(n,NONINIT);
       A.deepCopy(*this);
 
       return A;
