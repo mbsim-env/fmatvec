@@ -744,8 +744,8 @@ namespace fmatvec {
   }
 
   template <int M, int N, class AT>
-  inline Matrix<FixedSize<M,N>, AT> operator+(const Matrix<FixedSize<M,N>, AT> &A1, const Matrix<FixedSize<M,N>, AT> &A2) {
-    Matrix<FixedSize<M,N>, AT> A3(NONINIT);
+  inline Matrix<GeneralFixed<M,N>, AT> operator+(const Matrix<GeneralFixed<M,N>, AT> &A1, const Matrix<GeneralFixed<M,N>, AT> &A2) {
+    Matrix<GeneralFixed<M,N>, AT> A3(NONINIT);
     for(int i=0; i<M*N; i++) 
       A3()[i] = A1()[i] + A2()[i];
     return A3;
@@ -768,8 +768,8 @@ namespace fmatvec {
   }
 
   template <int M, int N, int K, class AT>
-  inline Matrix<FixedSize<M,N>, AT> operator*(const Matrix<FixedSize<M,N>, AT> &A1, const Matrix<FixedSize<N,K>, AT> &A2) {
-    Matrix<FixedSize<M,K>, AT> A3(NONINIT);
+  inline Matrix<GeneralFixed<M,N>, AT> operator*(const Matrix<GeneralFixed<M,N>, AT> &A1, const Matrix<GeneralFixed<N,K>, AT> &A2) {
+    Matrix<GeneralFixed<M,K>, AT> A3(NONINIT);
     for(int i=0; i<M; i++) {
       for(int k=0; k<K; k++) {
 	A3()[i+k*M] = 0;
@@ -781,7 +781,7 @@ namespace fmatvec {
   }
 
   template <int M, int N, class AT>
-  inline FixedVector<M, AT> operator*(const Matrix<FixedSize<M,N>, AT> &A, const FixedVector<M, AT> &x) {
+  inline FixedVector<M, AT> operator*(const Matrix<GeneralFixed<M,N>, AT> &A, const FixedVector<M, AT> &x) {
     FixedVector<M, AT> y(NONINIT);
     for(int i=0; i<M; i++) {
       y()[i] = 0;
@@ -816,8 +816,8 @@ namespace fmatvec {
   }
 
   template <int M, int N, class AT>
-  inline Matrix<FixedSize<M,N>, AT> trans(const Matrix<FixedSize<M,N>, AT> &A) {
-    Matrix<FixedSize<M,N>, AT> B(NONINIT);
+  inline Matrix<GeneralFixed<M,N>, AT> trans(const Matrix<GeneralFixed<M,N>, AT> &A) {
+    Matrix<GeneralFixed<M,N>, AT> B(NONINIT);
     for(int i=0; i<N; i++)
       for(int j=0; j<M; j++)
 	B()[i+j*M] = A()[j+i*M];

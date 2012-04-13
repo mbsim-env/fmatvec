@@ -21,6 +21,7 @@
 
 #include "config.h"
 #include "square_matrix.h"
+#include "fixed_square_matrix.h"
 
 #define FMATVEC_NO_INITIALIZATION
 #define FMATVEC_NO_BOUNDS_CHECK

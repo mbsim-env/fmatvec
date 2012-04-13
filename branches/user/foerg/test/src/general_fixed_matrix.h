@@ -40,12 +40,12 @@ namespace fmatvec {
   /*! 
    *  \brief This is a matrix class for general matrices.
    *  
-   * Template class Matrix with shape type FixedSize and atomic type AT. The
+   * Template class Matrix with shape type GeneralFixed and atomic type AT. The
    * storage form is dense. The template parameter AT defines the atomic type
    * of the matrix. Valid types are int, float, double, complex<float> and
    * complex<double> 
    * */
-  template <int M, int N, class AT> class Matrix<FixedSize<M,N>, AT> {
+  template <int M, int N, class AT> class Matrix<GeneralFixed<M,N>, AT> {
 
     public:
 
@@ -53,14 +53,14 @@ namespace fmatvec {
 
       friend class Matrix<Symmetric, AT>;
       
-//      template <class T> friend Matrix<FixedSize, T>  trans(const Matrix<FixedSize, T> &A);
+//      template <class T> friend Matrix<GeneralFixed, T>  trans(const Matrix<GeneralFixed, T> &A);
 
     protected:
 
       AT ele[M*N];
 
-      template <class Type> void deepCopy(const Matrix<Type, AT> &A); 
-      void deepCopy(const Matrix<FixedSize<M,N>, AT> &A); 
+      template <class Type> inline void deepCopy(const Matrix<Type, AT> &A); 
+      inline void deepCopy(const Matrix<GeneralFixed<M,N>, AT> &A); 
 
  /// @endcond
  
@@ -98,13 +98,12 @@ namespace fmatvec {
        * referenced.
        * \param A The matrix that will be referenced.
        * */
-      Matrix(const Matrix<FixedSize<M,N>, AT> &A) {
-	  for(int i=0; i<M*N; i++) 
-	    ele[i] = A.ele[i];
+      Matrix(const Matrix<GeneralFixed<M,N>, AT> &A) {
+	deepCopy(A);
       }
 
       template<class Type>
-      Matrix(const Matrix<Type, AT> &A) {
+      explicit Matrix(const Matrix<Type, AT> &A) {
 #ifdef FMATVEC_SIZE_CHECK
 	if(A.rows() != M || A.cols() != N)
 	  throw;
@@ -118,7 +117,7 @@ namespace fmatvec {
        * notation. The rows are seperated by semicolons, the columns by commas.
        * For example
        * \code 
-       * Matrix<FixedSize,double> A("[3,2;1,2]");
+       * Matrix<GeneralFixed,double> A("[3,2;1,2]");
        * \endcode 
        * constructs the matrix
        * \f[ A=\begin{pmatrix}3 & 2\\ 1 & 2\end{pmatrix}  \f]
@@ -139,12 +138,12 @@ namespace fmatvec {
        * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
        * \sa operator<<(), operator>>()
        * */
-      Matrix<FixedSize<M,N>, AT>& operator=(const Matrix<FixedSize<M,N>, AT> &A) {
+      Matrix<GeneralFixed<M,N>, AT>& operator=(const Matrix<GeneralFixed<M,N>, AT> &A) {
 	return operator<<(A);
       }
 
       template <class Type>
-      Matrix<FixedSize<M,N>, AT>& operator=(const Matrix<Type, AT> &A) {
+      Matrix<GeneralFixed<M,N>, AT>& operator=(const Matrix<Type, AT> &A) {
 	return operator<<(A);
       }
 
@@ -154,7 +153,7 @@ namespace fmatvec {
        * \param A The matrix to be copied. 
        * \return A reference to the calling matrix.
        * */
-      template<class T> Matrix<FixedSize<M,N>, AT>& operator<<(const Matrix<T, AT> &A);
+      template<class T> Matrix<GeneralFixed<M,N>, AT>& operator<<(const Matrix<T, AT> &A);
 
       /*! \brief Copy operator
        *
@@ -162,7 +161,7 @@ namespace fmatvec {
        * \param A The matrix to be copied. 
        * \return A reference to the calling matrix.
        * */
-      Matrix<FixedSize<M,N>, AT>& operator<<(const Matrix<FixedSize<M,N>, AT> &A);
+      Matrix<GeneralFixed<M,N>, AT>& operator<<(const Matrix<GeneralFixed<M,N>, AT> &A);
 
       /*! \brief Element operator
        *
@@ -226,12 +225,39 @@ namespace fmatvec {
        * */
       int cols() const {return N;};
 
+      /*! \brief Leading dimension.
+       *
+       * \return The leading dimension of the matrix
+       * */
+      int ldim() const {return M;};
+
+      /*! \brief Transposed status.
+       *
+       * Returns the blas-conform transposed status.
+       * \return CblasTrans if the matrix is in transposed form, CblasNoTrans
+       * otherwise. 
+       * */
+      const CBLAS_TRANSPOSE blasTrans() const {
+	return CblasNoTrans;
+      };
+
+      /*! \brief Storage convention.
+       *
+       * Returns the blas-conform storage convention. 
+       * The elements are stored in columnmajor form,
+       * i.e. the elements are stored columnwise. 
+       * \return CblasColMajor.
+       * */
+      const CBLAS_ORDER blasOrder() const {
+	return  CblasColMajor;
+      };
+
       /*! \brief Matrix duplicating.
        *
        * The calling matrix returns a \em deep copy of itself.  
        * \return The duplicate.
        * */
-      Matrix<FixedSize<M,N>, AT> copy() const;
+      Matrix<GeneralFixed<M,N>, AT> copy() const;
 
       /*! \brief Initialization.
        *
@@ -240,7 +266,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      Matrix<FixedSize<M,N>, AT>& init(const AT &a);
+      Matrix<GeneralFixed<M,N>, AT>& init(const AT &a);
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -255,16 +281,16 @@ namespace fmatvec {
        * */
       Matrix(std::vector<std::vector<AT> > m);
 
-      Matrix<FixedSize<M,N>, AT> T() {
-	Matrix<FixedSize<N,M>, AT> A(NONINIT);
+      Matrix<GeneralFixed<M,N>, AT> T() {
+	Matrix<GeneralFixed<N,M>, AT> A(NONINIT);
 	for(int i=0; i<N; i++)
 	  for(int j=0; j<M; j++)
 	    A.ele[i+j*M] = ele[j+i*M];
 	return A;
       }
 
-      const Matrix<FixedSize<M,N>, AT> T() const {
-	Matrix<FixedSize<N,M>, AT> A(NONINIT);
+      const Matrix<GeneralFixed<M,N>, AT> T() const {
+	Matrix<GeneralFixed<N,M>, AT> A(NONINIT);
 	for(int i=0; i<N; i++)
 	  for(int j=0; j<M; j++)
 	    A.ele[i+j*M] = ele[j+i*M];
@@ -279,7 +305,7 @@ namespace fmatvec {
   };
   // ------------------------- Constructors -------------------------------------
   template <int M, int N, class AT> 
-    Matrix<FixedSize<M,N>, AT>::Matrix(const char *strs) {
+    Matrix<GeneralFixed<M,N>, AT>::Matrix(const char *strs) {
     // if 'strs' is a single scalar, surround it first with '[' and ']'.
     // This is more Matlab-like, because e.g. '5' and '[5]' is just the same.
     // (This functionallitiy is needed e.g. by MBXMLUtils (OpenMBV,MBSim))
@@ -324,7 +350,7 @@ namespace fmatvec {
   // ----------------------------------------------------------------------------
 
    template <int M, int N, class AT> template< class Type>
-    Matrix<FixedSize<M,N>, AT>& Matrix<FixedSize<M,N>, AT>::operator<<(const Matrix<Type, AT> &A) { 
+    Matrix<GeneralFixed<M,N>, AT>& Matrix<GeneralFixed<M,N>, AT>::operator<<(const Matrix<Type, AT> &A) { 
 
       if(A.rows() == 0 || A.cols() == 0)
 	return *this;
@@ -342,7 +368,7 @@ namespace fmatvec {
     }
 
    template <int M, int N, class AT>
-    Matrix<FixedSize<M,N>, AT>& Matrix<FixedSize<M,N>, AT>::operator<<(const Matrix<FixedSize<M,N>, AT> &A) { 
+    Matrix<GeneralFixed<M,N>, AT>& Matrix<GeneralFixed<M,N>, AT>::operator<<(const Matrix<GeneralFixed<M,N>, AT> &A) { 
 
       deepCopy(A);
 
@@ -350,7 +376,7 @@ namespace fmatvec {
     }
 
   template <int M, int N, class AT>
-    Matrix<FixedSize<M,N>, AT>&  Matrix<FixedSize<M,N>, AT>::init(const AT& val) {
+    Matrix<GeneralFixed<M,N>, AT>&  Matrix<GeneralFixed<M,N>, AT>::init(const AT& val) {
 
       for(int i=0; i<M*N; i++) 
 	ele[i] = val;
@@ -359,23 +385,17 @@ namespace fmatvec {
     }
 
   template <int M, int N, class AT>
-    Matrix<FixedSize<M,N>, AT> Matrix<FixedSize<M,N>, AT>::copy() const {
+    Matrix<GeneralFixed<M,N>, AT> Matrix<GeneralFixed<M,N>, AT>::copy() const {
 
-      Matrix<FixedSize<M,N>, AT> A(NONINIT);
+      Matrix<GeneralFixed<M,N>, AT> A(NONINIT);
       A.deepCopy(*this);
 
       return A;
     }
 
-  template <int M, int N, class AT> template <class Type>
-    void Matrix<FixedSize<M,N>, AT>::deepCopy(const Matrix<Type, AT> &A) { 
-      for(int i=0; i<M; i++) 
-	for(int j=0; j<N; j++)
-          ele[i+j*M] = A.operator()(i,j);
-    }
 
 //  template <class AT>
-//    Matrix<FixedSize<M,N>, AT>::operator std::vector<std::vector<AT> >() {
+//    Matrix<GeneralFixed<M,N>, AT>::operator std::vector<std::vector<AT> >() {
 //      std::vector<std::vector<AT> > ret(rows());
 //      for(int r=0; r<rows(); r++) {
 //        ret[r].resize(cols());
@@ -386,7 +406,7 @@ namespace fmatvec {
 //    }
 //
 //  template <class AT>
-//    Matrix<FixedSize<M,N>, AT>::Matrix(std::vector<std::vector<AT> > m) : memory(m.size()*m[0].size()), ele((AT*)memory.get()), m(m.size()), n(m[0].size()), lda(m.size()), tp(false) {
+//    Matrix<GeneralFixed<M,N>, AT>::Matrix(std::vector<std::vector<AT> > m) : memory(m.size()*m[0].size()), ele((AT*)memory.get()), m(m.size()), n(m[0].size()), lda(m.size()), tp(false) {
 //#ifndef FMATVEC_NO_INITIALIZATION 
 //      init(0);
 //#endif
@@ -399,8 +419,15 @@ namespace fmatvec {
 
    /// @cond NO_SHOW
    
+  template <int M, int N, class AT> template <class Type>
+  inline void Matrix<GeneralFixed<M,N>, AT>::deepCopy(const Matrix<Type, AT> &A) { 
+      for(int i=0; i<M; i++) 
+	for(int j=0; j<N; j++)
+	  ele[i+j*M] = A.operator()(i,j);
+    }
+
   template<int M, int N, class AT>
-    void Matrix<FixedSize<M,N>,AT>::deepCopy(const Matrix<FixedSize<M,N>,AT> &A) {
+  inline void Matrix<GeneralFixed<M,N>,AT>::deepCopy(const Matrix<GeneralFixed<M,N>,AT> &A) {
       for(int i=0; i<M*N; i++) 
 	ele[i] = A.ele[i];
     }

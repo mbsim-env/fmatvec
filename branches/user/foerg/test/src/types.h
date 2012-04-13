@@ -108,7 +108,11 @@ namespace fmatvec {
   };
 
   template<int M, int N>
-  class FixedSize : public BasicType {
+  class GeneralFixed: public BasicType {
+  };
+
+  template<int M>
+  class SymmetricFixed: public BasicType {
   };
 
 }

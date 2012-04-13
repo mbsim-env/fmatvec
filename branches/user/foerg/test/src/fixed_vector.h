@@ -36,8 +36,8 @@ namespace fmatvec {
    * atomic type of the vector. Valid types are int, float,
    * double, complex<float> and complex<double> 
    * */
-  template <int M, class AT> class FixedVector : public Matrix<FixedSize<M,1>, AT> {
-    using Matrix<FixedSize<M,1>, AT>::ele;
+  template <int M, class AT> class FixedVector : public Matrix<GeneralFixed<M,1>, AT> {
+    using Matrix<GeneralFixed<M,1>, AT>::ele;
 
     public:
 
@@ -64,7 +64,7 @@ namespace fmatvec {
        *
        * Constructs a vector with no size. 
        * */
-      FixedVector() : Matrix<FixedSize<M,1>, AT>() {
+      FixedVector() : Matrix<GeneralFixed<M,1>, AT>() {
       }
 
       /*! \brief Regular Constructor
@@ -76,7 +76,7 @@ namespace fmatvec {
        * \param ini INIT means initialization, NONINIT means no initialization.
        * \param a The value, the vector will be initialized with (default 0)
        * */
-      FixedVector(Initialization ini, const AT &a=0) : Matrix<FixedSize<M,1>, AT>(ini,a) {
+      FixedVector(Initialization ini, const AT &a=0) : Matrix<GeneralFixed<M,1>, AT>(ini,a) {
       }
 
       /*! \brief String Constructor. 
@@ -91,7 +91,7 @@ namespace fmatvec {
        * \f[ x=\begin{pmatrix}3\\ 1 \\ 2\end{pmatrix}  \f]
        * \param str The string the vector will be initialized with. 
        * */
-      FixedVector(const char *str) : Matrix<FixedSize<M,1>, AT>(str) {
+      FixedVector(const char *str) : Matrix<GeneralFixed<M,1>, AT>(str) {
       }
 
       /*! \brief Copy Constructor
@@ -101,7 +101,7 @@ namespace fmatvec {
        * \em x will not be copied, only referenced.
        * \param x The vector that will be referenced.
        * */
-      FixedVector(const FixedVector<M,AT> &x) : Matrix<FixedSize<M,1>, AT>(x) {
+      FixedVector(const FixedVector<M,AT> &x) : Matrix<GeneralFixed<M,1>, AT>(x) {
       }
 
       /*! \brief Copy Constructor
@@ -111,21 +111,21 @@ namespace fmatvec {
        * \em x will not be copied, only referenced.
        * \param x The vector that will be referenced.
        * */
-      explicit FixedVector(const Vector<AT> &x) : Matrix<FixedSize<M,1>, AT>(x) {
+      explicit FixedVector(const Vector<AT> &x) : Matrix<GeneralFixed<M,1>, AT>(x) {
       }
 
       /*! \brief Copy Constructor
        *
        * See Vector(const Vector<AT>&) 
        * */
-      explicit FixedVector(const Matrix<FixedSize<M,1>, AT> &A) : Matrix<FixedSize<M,1>, AT>(A) {
+      explicit FixedVector(const Matrix<GeneralFixed<M,1>, AT> &A) : Matrix<GeneralFixed<M,1>, AT>(A) {
       }
 
       /*! \brief Copy Constructor
        *
        * See Vector(const Vector<AT>&) 
        * */
-      explicit FixedVector(const Matrix<General, AT> &A) : Matrix<FixedSize<M,1>, AT>(A) {
+      explicit FixedVector(const Matrix<General, AT> &A) : Matrix<GeneralFixed<M,1>, AT>(A) {
       }
 
       /*! \brief Copy operator
@@ -218,7 +218,7 @@ namespace fmatvec {
        * */
       FixedVector<M,AT> copy() const;
 
-      using Matrix<FixedSize<M,1>, AT>::operator();
+      using Matrix<GeneralFixed<M,1>, AT>::operator();
 
       /*! \brief Cast to std::vector<AT>.
        *

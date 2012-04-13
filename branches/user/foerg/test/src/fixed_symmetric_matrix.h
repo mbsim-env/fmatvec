@@ -1,0 +1,298 @@
+/* Copyright (C) 2003-2005  Martin Förg
+
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * Contact:
+ *   martin.o.foerg@googlemail.com
+ *
+ */
+
+#ifndef fixed_symmetric_matrix_h
+#define fixed_symmetric_matrix_h
+
+#include "index.h"
+#include "types.h"
+
+namespace fmatvec {
+
+  /*! 
+   *  \brief This is a matrix class for symmetric matrices.
+   *
+   * Template class Matrix of shape type SymmetricFixed. 
+   * The template parameter AT defines the
+   * atomic type of the matrix. Valid types are int, float,
+   * double, complex<float> and complex<double> 
+   * */
+  template <int M, class AT> class Matrix<SymmetricFixed<M>, AT> {
+
+    protected:
+
+    /// @cond NO_SHOW
+
+      AT ele[M*M];
+
+      void deepCopy(const Matrix<SymmetricFixed<M>, AT> &A); 
+
+    /// @endcond
+
+    public:
+
+      /*! \brief Standard constructor
+       *
+       * Constructs a matrix with no size. 
+       * */
+      Matrix() {
+#ifndef FMATVEC_NO_INITIALIZATION 
+	init(0);
+#endif
+      }
+
+      /*! \brief Regular Constructor
+       *
+       * Constructs a symmetric matrix of size n x n. The matrix will be 
+       * initialized to the value given by \em a
+       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
+       * matrix will not be initialized.
+       * \param n_ The number of rows and columns.
+       * \param ini INIT means initialization, NONINIT means no initialization.
+       * \param a The value, the matrix will be initialized with (default 0)
+       * */
+      Matrix(Initialization ini, const AT &a=0) {  
+
+	if(ini == INIT)
+	  init(a);
+	else if(ini == EYE) {	 
+	  init(0);
+	  for(int i=0; i<M; i++) 
+	    ele[i+i*M] = 1;
+	}
+      }
+
+      /*! \brief Copy Constructor
+       *
+       * Constructs a reference to the matrix \em A.
+       * \attention The physical memory of the matrix \em A will not be copied, only
+       * referenced.
+       * \param A The matrix that will be referenced.
+       * */
+      Matrix(const Matrix<SymmetricFixed<M>, AT> &A)  {
+	deepCopy(A);
+      }
+
+
+      /*! \brief Element operator
+       *
+       * See Matrix(const Matrix<SymmetricFixed<M>,AT>&) 
+       * */
+      explicit Matrix(const Matrix<GeneralFixed<M,M>, AT>&  A) {
+	deepCopy(A);
+      }
+
+      /*! \brief Destructor. 
+       * */
+      ~Matrix() {
+      }
+
+      /*! \brief Assignment operator
+       *
+       * Copies the symmetric matrix given by \em A by calling operator<<().
+       * \param A The matrix to be assigned. 
+       * \return A reference to the calling matrix.
+       * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
+       * \sa operator<<(), operator>>()
+       * */
+      Matrix<SymmetricFixed<M>, AT>& operator=(const Matrix<SymmetricFixed<M>, AT> &A) {
+	return operator<<(A);
+      }
+
+      /*! \brief Copy operator
+       *
+       * Copies the symmetric matrix given by \em A.
+       * \param A The matrix to be copied. 
+       * \return A reference to the calling matrix.
+       * */
+      Matrix<SymmetricFixed<M>, AT>& operator<<(const Matrix<SymmetricFixed<M>, AT> &A);
+
+      /*! \brief Element operator
+       *
+       * Returns a reference to the element in the i-th row and the j-th column. 
+       * \param i The i-th row of the matrix
+       * \param j The j-th column of the matrix
+       * \return A reference to the element A(i,j).
+       * \remark The bounds are checked by default. 
+       * To change this behavior, define
+       * FMATVEC_NO_BOUNDS_CHECK.
+       * \sa operator()(int,int) const
+       * */
+      AT& operator()(int i, int j) {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+	assert(i>=0);
+	assert(j>=0);
+	assert(i<M);
+	assert(j<M);
+#endif
+	return j > i ? ele[i*M+j] : ele[i+j*M];
+      };
+
+      /*! \brief Element operator
+       *
+       * See operator()(int,int) 
+       * */
+      const AT& operator()(int i, int j) const {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+	assert(i>=0);
+	assert(j>=0);
+	assert(i<M);
+	assert(j<M);
+#endif
+
+	return j > i ? ele[i*M+j] : ele[i+j*M];//  return ele[i*lda+j*ldb];
+      };
+
+      /*! \brief Pointer operator.
+       *
+       * Returns the pointer to the first element.
+       * \return The pointer to the first element.
+       * */
+      AT* operator()() {return ele;};
+
+      /*! \brief Pointer operator
+       *
+       * See operator()() 
+       * */
+      const AT* operator()() const {return ele;};
+
+      /*! \brief Size.
+       *
+       * \return The number of rows and columns of the matrix
+       * */
+      int size() const {return M;};
+
+      /*! \brief Number of rows.
+       *
+       * \return The number of rows of the matrix
+       * */
+      int rows() const {return M;};
+
+      /*! \brief Number of columns.
+       *
+       * \return The number of columns of the matrix
+       * */
+      int cols() const {return M;};
+
+      /*! \brief Leading dimension.
+       *
+       * \return The leading dimension of the matrix
+       * */
+      int ldim() const {return M;};
+
+      /*! \brief Storage convention.
+       *
+       * Returns the blas-conform storage convention. 
+       * The elements are stored in columnmajor form,
+       * i.e. the elements are stored columnwise. 
+       * \return CblasColMajor.
+       * */
+      const CBLAS_ORDER blasOrder() const {
+	return  CblasColMajor;
+      };
+
+      /*! \brief Symmetry convention.
+       *
+       * Returns the blas-conform symmetry convention. 
+       * The elements are stored in the lower triangular
+       * part of the array,
+       * \return CblasLower.
+       * */
+      const CBLAS_UPLO blasUplo() const {
+	return  CblasLower;
+      };
+
+     /*! \brief Matrix duplicating.
+       *
+       * The calling matrix returns a \em deep copy of itself.  
+       * \return The duplicate.
+       * */
+      Matrix<SymmetricFixed<M>, AT> copy() const;
+
+      /*! \brief Initialization.
+       *
+       * Initializes all elements of the calling matrix with 
+       * the value given by \em a.
+       * \param a Value all elements will be initialized with.
+       * \return A reference to the calling matrix.
+       * */
+      Matrix<SymmetricFixed<M>, AT>& init(const AT &a);
+
+      /*! \brief Cast to std::vector<std::vector<AT> >.
+       *
+       * \return The std::vector<std::vector<AT> > representation of the matrix
+       * */
+      operator std::vector<std::vector<AT> >();
+  };
+  // ------------------------- Constructors -------------------------------------
+  // ----------------------------------------------------------------------------
+
+  template <int M, class AT>
+    Matrix<SymmetricFixed<M>, AT>& Matrix<SymmetricFixed<M>, AT>::operator<<(const Matrix<SymmetricFixed<M>, AT> &A) { 
+      
+      deepCopy(A);
+
+      return *this;
+    }
+
+  template <int M, class AT>
+    Matrix<SymmetricFixed<M>, AT>&  Matrix<SymmetricFixed<M>, AT>::init(const AT& val) {
+
+      for(int i=0; i<M; i++) 
+	for(int j=i; j<M; j++) 
+	  ele[i*M+j] = val; 
+
+      return *this;
+    }
+
+  template <int M, class AT>
+    Matrix<SymmetricFixed<M>, AT> Matrix<SymmetricFixed<M>, AT>::copy() const {
+
+      Matrix<SymmetricFixed<M>, AT> A(NONINIT);
+      A.deepCopy(*this);
+
+      return A;
+    }
+
+  template <int M, class AT>
+    void Matrix<SymmetricFixed<M>, AT>::deepCopy(const Matrix<SymmetricFixed<M>, AT> &A) { 
+      for(int i=0; i<M; i++) 
+	for(int j=i; j<M; j++) 
+	  ele[i*M+j] = A.ele[i*M+j];
+    }
+
+
+  template <int M, class AT>
+    Matrix<SymmetricFixed<M>, AT>::operator std::vector<std::vector<AT> >() {
+      std::vector<std::vector<AT> > ret(rows());
+      for(int r=0; r<rows(); r++) {
+        ret[r].resize(cols());
+        for(int c=0; c<cols(); c++)
+          ret[r][c]=operator()(r,c);
+      }
+      return ret;
+    }
+
+  //extern void Matrix<SymmetricFixed<M>, double>::deepCopy(const Matrix<SymmetricFixed<M>, double> &A);
+
+}
+
+#endif
