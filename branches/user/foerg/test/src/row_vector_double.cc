@@ -21,6 +21,7 @@
 
 #include "config.h"
 #include "row_vector.h"
+#include "fixed_row_vector.h"
 
 #define FMATVEC_NO_INITIALIZATION
 #define FMATVEC_NO_BOUNDS_CHECK

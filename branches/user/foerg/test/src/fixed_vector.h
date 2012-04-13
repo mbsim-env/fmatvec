@@ -28,6 +28,8 @@
 
 namespace fmatvec {
 
+  template <int N, class AT> class FixedRowVector;
+
   /*! 
    *  \brief This is a vector class of general shape in dense storage format.
    *
@@ -232,13 +234,19 @@ namespace fmatvec {
        * */
       FixedVector(std::vector<AT> v);
 
-//      RowVector<AT> T() {
-//	return RowVector<AT>(m,lda,tp?false:true,memory,ele);
-//     };
-//
-//      const RowVector<AT> T() const {
-//	return RowVector<AT>(m,lda,tp?false:true,memory,ele);
-//      }
+      FixedRowVector<M,AT> T() {
+	FixedRowVector<M,AT> x(NONINIT);
+	for(int i=0; i<M; i++)
+	  x()[i] = ele[i];
+	return x;
+      };
+
+      const FixedRowVector<M,AT> T() const {
+	FixedRowVector<M,AT> x(NONINIT);
+	for(int i=0; i<M; i++)
+	  x()[i] = ele[i];
+	return x;
+      }
 
   };
 

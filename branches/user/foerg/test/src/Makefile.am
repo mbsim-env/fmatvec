@@ -37,5 +37,6 @@ fmatvecinclude_HEADERS = blas_extensions_double.h \
 			 fixed_square_matrix.h\
 			 fixed_symmetric_matrix.h\
 			 fixed_vector.h\
+			 fixed_row_vector.h\
 			 wrapper.h
 
