@@ -30,6 +30,8 @@
 
 namespace fmatvec {
 
+  template <int M, class AT> class FixedVector;
+
 //  template <class AT> class Vector;
 //  template <class AT> class RowVector;
 //  template <class AT> class SquareMatrix;
@@ -99,6 +101,15 @@ namespace fmatvec {
       Matrix(const Matrix<FixedSize<M,N>, AT> &A) {
 	  for(int i=0; i<M*N; i++) 
 	    ele[i] = A.ele[i];
+      }
+
+      template<class Type>
+      Matrix(const Matrix<Type, AT> &A) {
+#ifdef FMATVEC_SIZE_CHECK
+	if(A.rows() != M || A.cols() != N)
+	  throw;
+#endif
+	deepCopy(A);
       }
 
       /*! \brief String Constructor. 
@@ -259,6 +270,12 @@ namespace fmatvec {
 	    A.ele[i+j*M] = ele[j+i*M];
 	return A;
       }
+
+      void setCol(int j, FixedVector<M,AT> &x) {
+	for(int i=0; i<M; i++)
+	  ele[i+j*M] = x()[i];
+      }
+
   };
   // ------------------------- Constructors -------------------------------------
   template <int M, int N, class AT> 

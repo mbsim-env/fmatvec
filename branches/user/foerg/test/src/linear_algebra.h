@@ -759,6 +759,27 @@ namespace fmatvec {
     return y;
   }
 
+  template <int M, class AT>
+  inline FixedVector<M, AT> operator-(const FixedVector<M, AT> &x1, const FixedVector<M, AT> &x2) {
+    FixedVector<M, AT> y(NONINIT);
+    for(int i=0; i<M; i++) 
+      y()[i] = x1()[i] - x2()[i];
+    return y;
+  }
+
+  template <int M, int N, int K, class AT>
+  inline Matrix<FixedSize<M,N>, AT> operator*(const Matrix<FixedSize<M,N>, AT> &A1, const Matrix<FixedSize<N,K>, AT> &A2) {
+    Matrix<FixedSize<M,K>, AT> A3(NONINIT);
+    for(int i=0; i<M; i++) {
+      for(int k=0; k<K; k++) {
+	A3()[i+k*M] = 0;
+	for(int j=0; j<N; j++) 
+	  A3()[i+k*M] += A1()[i+j*M]*A2()[j+k*N];
+      }
+    }
+    return A3;
+  }
+
   template <int M, int N, class AT>
   inline FixedVector<M, AT> operator*(const Matrix<FixedSize<M,N>, AT> &A, const FixedVector<M, AT> &x) {
     FixedVector<M, AT> y(NONINIT);
@@ -767,6 +788,30 @@ namespace fmatvec {
       for(int j=0; j<M; j++) 
 	y()[i] += A()[i+j*M]*x()[j];
     }
+    return y;
+  }
+
+  template <int M, class AT>
+  inline FixedVector<M, AT> operator*(double a, const FixedVector<M, AT> &x) {
+    FixedVector<M, AT> y(NONINIT);
+    for(int i=0; i<M; i++)
+      y()[i] = a*x()[i];
+    return y;
+  }
+
+  template <int M, class AT>
+  inline FixedVector<M, AT> operator*(const FixedVector<M, AT> &x, double a) {
+    FixedVector<M, AT> y(NONINIT);
+    for(int i=0; i<M; i++)
+      y()[i] = a*x()[i];
+    return y;
+  }
+
+  template <int M, class AT>
+  inline FixedVector<M, AT> operator/(const FixedVector<M, AT> &x, double a) {
+    FixedVector<M, AT> y(NONINIT);
+    for(int i=0; i<M; i++)
+      y()[i] = x()[i]/a;
     return y;
   }
 
@@ -779,6 +824,34 @@ namespace fmatvec {
     return B;
   }
 
+  template <int M, class AT>
+  inline FixedVector<M, AT>& operator+=(const FixedVector<M, AT> &x_, const FixedVector<M, AT> &y) {
+
+   FixedVector<M, AT> &x = const_cast<FixedVector<M, AT> &>(x_);
+    for(int i=0; i<M; i++) 
+      x()[i] += y()[i];
+   return x;
+  }
+
+  template <int M, class AT>
+  inline FixedVector<M, AT> operator*=(const FixedVector<M, AT> &x_, double a) {
+    FixedVector<M, AT> &x = const_cast<FixedVector<M, AT> &>(x_);
+    for(int i=0; i<M; i++)
+      x()[i] *= a;
+    return x;
+  }
+
+  template <class AT>
+    FixedVector<3,AT> crossProduct(const FixedVector<3,AT> &x, const FixedVector<3,AT> &y) {
+
+      FixedVector<3,AT> z(NONINIT);
+
+      z()[0] = x()[1]*y()[2] - x()[2]*y()[1];
+      z()[1] = x()[2]*y()[0] - x()[0]*y()[2];
+      z()[2] = x()[0]*y()[1] - x()[1]*y()[0];
+
+      return z;
+    }
 
 }
 
