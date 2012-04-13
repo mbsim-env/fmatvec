@@ -25,6 +25,9 @@
 #include "types.h"
 #include <stdlib.h>
 
+#define FMATVEC_SIZE_CHECK
+#define FMATVEC_VOID_CHECK
+
 namespace fmatvec {
 
 //  template <class AT> class Vector;
@@ -35,12 +38,12 @@ namespace fmatvec {
   /*! 
    *  \brief This is a matrix class for general matrices.
    *  
-   * Template class Matrix with shape type ThreeByThree and atomic type AT. The
+   * Template class Matrix with shape type FixedSize and atomic type AT. The
    * storage form is dense. The template parameter AT defines the atomic type
    * of the matrix. Valid types are int, float, double, complex<float> and
    * complex<double> 
    * */
-  template <class AT> class Matrix<ThreeByThree, AT> {
+  template <int M, int N, class AT> class Matrix<FixedSize<M,N>, AT> {
 
     public:
 
@@ -48,13 +51,14 @@ namespace fmatvec {
 
       friend class Matrix<Symmetric, AT>;
       
-      template <class T> friend Matrix<ThreeByThree, T>  trans(const Matrix<ThreeByThree, T> &A);
+//      template <class T> friend Matrix<FixedSize, T>  trans(const Matrix<FixedSize, T> &A);
 
     protected:
 
-      AT ele[9];
+      AT ele[M*N];
 
       template <class Type> void deepCopy(const Matrix<Type, AT> &A); 
+      void deepCopy(const Matrix<FixedSize<M,N>, AT> &A); 
 
  /// @endcond
  
@@ -73,9 +77,15 @@ namespace fmatvec {
       Matrix(Initialization ini, const AT &a=0) {  
 
 	if(ini == INIT) {
-	  ele[0] = a; ele[1] = a; ele[2] = a; ele[3] = a; ele[4] = a; ele[5] = a; ele[6] = a; ele[7] = a; ele[8] = a;
+	  for(int i=0; i<M*N; i++) 
+	    ele[i] = a;
 	} else if(ini == EYE ) {
-	  ele[0] = 1; ele[1] = 0; ele[2] = 0; ele[3] = 0; ele[4] = 1; ele[5] = 0; ele[6] = 0; ele[7] = 0; ele[8] = 1;
+	  for(int i=0; i<M; i++) {
+	    for(int j=0; j<N; j++) {
+	      if (i==j) ele[i+j*M] = 1; // operator()(i,i) = 1;
+	      else ele[i+j*M] = 0; // operator()(i,j) = 0;
+	    }
+	  }
 	}
       }
 
@@ -86,8 +96,9 @@ namespace fmatvec {
        * referenced.
        * \param A The matrix that will be referenced.
        * */
-      Matrix(const Matrix<ThreeByThree, AT> &A) {
-	ele[0] =  A.ele[0] ; ele[1] =  A.ele[1] ; ele[2] =  A.ele[2] ; ele[3] =  A.ele[3] ; ele[4] =  A.ele[4] ; ele[5] =  A.ele[5] ; ele[6] =  A.ele[6] ; ele[7] =  A.ele[7] ; ele[8] =  A.ele[8] ;
+      Matrix(const Matrix<FixedSize<M,N>, AT> &A) {
+	  for(int i=0; i<M*N; i++) 
+	    ele[i] = A.ele[i];
       }
 
       /*! \brief String Constructor. 
@@ -96,7 +107,7 @@ namespace fmatvec {
        * notation. The rows are seperated by semicolons, the columns by commas.
        * For example
        * \code 
-       * Matrix<ThreeByThree,double> A("[3,2;1,2]");
+       * Matrix<FixedSize,double> A("[3,2;1,2]");
        * \endcode 
        * constructs the matrix
        * \f[ A=\begin{pmatrix}3 & 2\\ 1 & 2\end{pmatrix}  \f]
@@ -117,12 +128,12 @@ namespace fmatvec {
        * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
        * \sa operator<<(), operator>>()
        * */
-      Matrix<ThreeByThree, AT>& operator=(const Matrix<ThreeByThree, AT> &A) {
+      Matrix<FixedSize<M,N>, AT>& operator=(const Matrix<FixedSize<M,N>, AT> &A) {
 	return operator<<(A);
       }
 
       template <class Type>
-      Matrix<ThreeByThree, AT>& operator=(const Matrix<Type, AT> &A) {
+      Matrix<FixedSize<M,N>, AT>& operator=(const Matrix<Type, AT> &A) {
 	return operator<<(A);
       }
 
@@ -132,7 +143,7 @@ namespace fmatvec {
        * \param A The matrix to be copied. 
        * \return A reference to the calling matrix.
        * */
-      template<class T> Matrix<ThreeByThree, AT>& operator<<(const Matrix<T, AT> &A);
+      template<class T> Matrix<FixedSize<M,N>, AT>& operator<<(const Matrix<T, AT> &A);
 
       /*! \brief Copy operator
        *
@@ -140,7 +151,7 @@ namespace fmatvec {
        * \param A The matrix to be copied. 
        * \return A reference to the calling matrix.
        * */
-      Matrix<ThreeByThree, AT>& operator<<(const Matrix<ThreeByThree, AT> &A);
+      Matrix<FixedSize<M,N>, AT>& operator<<(const Matrix<FixedSize<M,N>, AT> &A);
 
       /*! \brief Element operator
        *
@@ -157,11 +168,11 @@ namespace fmatvec {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(j>=0);
-	assert(i<3);
-	assert(j<3);
+	assert(i<M);
+	assert(j<N);
 #endif
 
-	return ele[i+j*3];
+	return ele[i+j*M];
       };
 
       /*! \brief Element operator
@@ -172,11 +183,11 @@ namespace fmatvec {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(j>=0);
-	assert(i<3);
-	assert(j<3);
+	assert(i<M);
+	assert(j<N);
 #endif
 
-	return ele[i+j*3];//  return ele[i*lda+j*ldb];
+	return ele[i+j*M];//  return ele[i*lda+j*ldb];
       };
 
       /*! \brief Pointer operator.
@@ -196,20 +207,20 @@ namespace fmatvec {
        *
        * \return The number of rows of the matrix.
        * */
-      int rows() const {return 3;};
+      int rows() const {return M;};
 
       /*! \brief Number of columns.
        *
        * \return The number of columns of the matrix.
        * */
-      int cols() const {return 3;};
+      int cols() const {return N;};
 
       /*! \brief Matrix duplicating.
        *
        * The calling matrix returns a \em deep copy of itself.  
        * \return The duplicate.
        * */
-      Matrix<ThreeByThree, AT> copy() const;
+      Matrix<FixedSize<M,N>, AT> copy() const;
 
       /*! \brief Initialization.
        *
@@ -218,7 +229,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      Matrix<ThreeByThree, AT>& init(const AT &a);
+      Matrix<FixedSize<M,N>, AT>& init(const AT &a);
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -233,21 +244,25 @@ namespace fmatvec {
        * */
       Matrix(std::vector<std::vector<AT> > m);
 
-      Matrix<ThreeByThree, AT> T() {
-	Matrix<ThreeByThree, AT> A(NONINIT);
-	A.ele[0] = ele[0]; A.ele[1] = ele[3]; A.ele[2] = ele[6]; A.ele[3] = ele[1]; A.ele[4] = ele[4]; A.ele[5] = ele[7]; A.ele[6] = ele[2]; A.ele[7] = ele[5]; A.ele[8] = ele[8];
+      Matrix<FixedSize<M,N>, AT> T() {
+	Matrix<FixedSize<N,M>, AT> A(NONINIT);
+	for(int i=0; i<N; i++)
+	  for(int j=0; j<M; j++)
+	    A.ele[i+j*M] = ele[j+i*M];
 	return A;
       }
 
-      const Matrix<ThreeByThree, AT> T() const {
-	Matrix<ThreeByThree, AT> A(NONINIT);
-	A.ele[0] = ele[0]; A.ele[1] = ele[3]; A.ele[2] = ele[6]; A.ele[3] = ele[1]; A.ele[4] = ele[4]; A.ele[5] = ele[7]; A.ele[6] = ele[2]; A.ele[7] = ele[5]; A.ele[8] = ele[8];
+      const Matrix<FixedSize<M,N>, AT> T() const {
+	Matrix<FixedSize<N,M>, AT> A(NONINIT);
+	for(int i=0; i<N; i++)
+	  for(int j=0; j<M; j++)
+	    A.ele[i+j*M] = ele[j+i*M];
 	return A;
       }
   };
   // ------------------------- Constructors -------------------------------------
-  template <class AT> 
-    Matrix<ThreeByThree, AT>::Matrix(const char *strs) {
+  template <int M, int N, class AT> 
+    Matrix<FixedSize<M,N>, AT>::Matrix(const char *strs) {
     // if 'strs' is a single scalar, surround it first with '[' and ']'.
     // This is more Matlab-like, because e.g. '5' and '[5]' is just the same.
     // (This functionallitiy is needed e.g. by MBXMLUtils (OpenMBV,MBSim))
@@ -278,69 +293,70 @@ namespace fmatvec {
     } while(iss);
 
     n++; m++;
-    assert(m==3);
-    assert(n==3);
+    assert(m==M);
+    assert(n==N);
     iss.clear();
     iss.seekg(0);
     iss >> c;
     for(int i=0; i<m; i++)
       for(int j=0; j<n; j++) {
-	iss >> ele[i+j*3];
+	iss >> ele[i+j*M];
 	iss >> c;
       }
   }
   // ----------------------------------------------------------------------------
 
-   template <class AT> template< class Type>
-    Matrix<ThreeByThree, AT>& Matrix<ThreeByThree, AT>::operator<<(const Matrix<Type, AT> &A) { 
+   template <int M, int N, class AT> template< class Type>
+    Matrix<FixedSize<M,N>, AT>& Matrix<FixedSize<M,N>, AT>::operator<<(const Matrix<Type, AT> &A) { 
 
       if(A.rows() == 0 || A.cols() == 0)
 	return *this;
 
-#ifdef FMATVEC_SIZE_CHECK
-      assert(m == A.rows());
-      assert(n == A.cols());
-#endif
+      if(A.rows() != M || A.cols() != N)
+	throw;
+      //assert(M == A.rows()); Funktioniert nicht
+      //assert(N == A.cols());
 
       deepCopy(A);
 
       return *this;
     }
 
-   template <class AT>
-    Matrix<ThreeByThree, AT>& Matrix<ThreeByThree, AT>::operator<<(const Matrix<ThreeByThree, AT> &A) { 
+   template <int M, int N, class AT>
+    Matrix<FixedSize<M,N>, AT>& Matrix<FixedSize<M,N>, AT>::operator<<(const Matrix<FixedSize<M,N>, AT> &A) { 
 
       deepCopy(A);
 
       return *this;
     }
 
-  template <class AT>
-    Matrix<ThreeByThree, AT>&  Matrix<ThreeByThree, AT>::init(const AT& val) {
+  template <int M, int N, class AT>
+    Matrix<FixedSize<M,N>, AT>&  Matrix<FixedSize<M,N>, AT>::init(const AT& val) {
 
-      ele[0] = val; ele[1] = val; ele[2] = val; ele[3] = val; ele[4] = val; ele[5] = val; ele[6] = val; ele[7] = val; ele[8] = val;
+      for(int i=0; i<M*N; i++) 
+	ele[i] = val;
 
       return *this;
     }
 
-  template <class AT>
-    Matrix<ThreeByThree, AT> Matrix<ThreeByThree, AT>::copy() const {
+  template <int M, int N, class AT>
+    Matrix<FixedSize<M,N>, AT> Matrix<FixedSize<M,N>, AT>::copy() const {
 
-      Matrix<ThreeByThree, AT> A(NONINIT);
+      Matrix<FixedSize<M,N>, AT> A(NONINIT);
       A.deepCopy(*this);
 
       return A;
     }
 
-  template <class AT> template <class Type>
-    void Matrix<ThreeByThree, AT>::deepCopy(const Matrix<Type, AT> &A) { 
-      for(int i=0; i<3; i++) 
-	for(int j=0; j<3; j++)
-          ele[i+j*3] = A.operator()(i,j);
+  template <int M, int N, class AT> template <class Type>
+    void Matrix<FixedSize<M,N>, AT>::deepCopy(const Matrix<Type, AT> &A) { 
+      for(int i=0; i<M; i++) 
+	for(int j=0; j<N; j++)
+          ele[i+j*M] = A.operator()(i,j);
     }
 
 //  template <class AT>
-//    Matrix<ThreeByThree, AT>::operator std::vector<std::vector<AT> >() {
+//    Matrix<FixedSize<M,N>, AT>::operator std::vector<std::vector<AT> >() {
 //      std::vector<std::vector<AT> > ret(rows());
 //      for(int r=0; r<rows(); r++) {
 //        ret[r].resize(cols());
@@ -351,7 +367,7 @@ namespace fmatvec {
 //    }
 //
 //  template <class AT>
-//    Matrix<ThreeByThree, AT>::Matrix(std::vector<std::vector<AT> > m) : memory(m.size()*m[0].size()), ele((AT*)memory.get()), m(m.size()), n(m[0].size()), lda(m.size()), tp(false) {
+//    Matrix<FixedSize<M,N>, AT>::Matrix(std::vector<std::vector<AT> > m) : memory(m.size()*m[0].size()), ele((AT*)memory.get()), m(m.size()), n(m[0].size()), lda(m.size()), tp(false) {
 //#ifndef FMATVEC_NO_INITIALIZATION 
 //      init(0);
 //#endif
@@ -364,35 +380,28 @@ namespace fmatvec {
 
    /// @cond NO_SHOW
    
-  template<> template<>
-  void Matrix<ThreeByThree, double>::deepCopy(const Matrix<ThreeByThree, double> &A) {
-    ele[0] = A.ele[0]; ele[1] = A.ele[1]; ele[2] = A.ele[2]; ele[3] = A.ele[3]; ele[4] = A.ele[4]; ele[5] = A.ele[5]; ele[6] = A.ele[6]; ele[7] = A.ele[7]; ele[8] = A.ele[8];
-  }
+  template<int M, int N, class AT>
+    void Matrix<FixedSize<M,N>,AT>::deepCopy(const Matrix<FixedSize<M,N>,AT> &A) {
+      for(int i=0; i<M*N; i++) 
+	ele[i] = A.ele[i];
+    }
 
-//  template<> template<>
-//  void Matrix<ThreeByThree, double>::deepCopy(const Matrix<Symmetric, double> &A);
-//
    /// @endcond
 
-  template <class AT>
-  inline Matrix<ThreeByThree, AT> operator+(const Matrix<ThreeByThree, AT> &A1, const Matrix<ThreeByThree, AT> &A2) {
-    Matrix<ThreeByThree, AT> A3;
-    A3()[0] = A1()[0] + A2()[0];
-    A3()[1] = A1()[1] + A2()[1];
-    A3()[2] = A1()[2] + A2()[2];
-    A3()[3] = A1()[3] + A2()[3];
-    A3()[4] = A1()[4] + A2()[4];
-    A3()[5] = A1()[5] + A2()[5];
-    A3()[6] = A1()[6] + A2()[6];
-    A3()[7] = A1()[7] + A2()[7];
-    A3()[8] = A1()[8] + A2()[8];
+  template <int M, int N, class AT>
+  inline Matrix<FixedSize<M,N>, AT> operator+(const Matrix<FixedSize<M,N>, AT> &A1, const Matrix<FixedSize<M,N>, AT> &A2) {
+    Matrix<FixedSize<M,N>, AT> A3;
+    for(int i=0; i<M*N; i++) 
+      A3()[i] = A1()[i] + A2()[i];
     return A3;
   }
 
-  template <class AT>
-  inline Matrix<ThreeByThree, AT> trans(const Matrix<ThreeByThree, AT> &A) {
-    Matrix<ThreeByThree, AT> B(NONINIT);
-    B()[0] = A()[0]; B()[1] = A()[3]; B()[2] = A()[6]; B()[3] = A()[1]; B()[4] = A()[4]; B()[5] = A()[7]; B()[6] = A()[2]; B()[7] = A()[5]; B()[8] = A()[8];
+  template <int M, int N, class AT>
+  inline Matrix<FixedSize<M,N>, AT> trans(const Matrix<FixedSize<M,N>, AT> &A) {
+    Matrix<FixedSize<M,N>, AT> B(NONINIT);
+    for(int i=0; i<N; i++)
+      for(int j=0; j<M; j++)
+	B()[i+j*M] = A()[j+i*M];
     return B;
   }
 
