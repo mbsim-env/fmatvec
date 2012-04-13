@@ -21,6 +21,7 @@
 
 #include "config.h"
 #include "vector.h"
+#include "fixed_vector.h"
 
 #define FMATVEC_NO_INITIALIZATION
 #define FMATVEC_NO_BOUNDS_CHECK

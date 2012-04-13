@@ -399,7 +399,7 @@ namespace fmatvec {
   template <class AT>
     Vector<AT> Vector<AT>::copy() const {
 
-      Vector<AT> x(m);
+      Vector<AT> x(m,NONINIT);
       x.deepCopy(*this);
 
       return x;

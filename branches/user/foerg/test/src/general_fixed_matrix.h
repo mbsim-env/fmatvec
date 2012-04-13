@@ -235,7 +235,7 @@ namespace fmatvec {
        *
        * \return The std::vector<std::vector<AT> > representation of the matrix
        * */
-      // operator std::vector<std::vector<AT> >();
+      operator std::vector<std::vector<AT> >();
 
       /*! \brief std::vector<std::vector<AT> > Constructor.
        * Constructs and initializes a matrix with a std::vector<std::vector<AT> > object.
@@ -312,10 +312,12 @@ namespace fmatvec {
       if(A.rows() == 0 || A.cols() == 0)
 	return *this;
 
+#ifdef FMATVEC_SIZE_CHECK
       if(A.rows() != M || A.cols() != N)
 	throw;
       //assert(M == A.rows()); Funktioniert nicht
       //assert(N == A.cols());
+#endif
 
       deepCopy(A);
 
