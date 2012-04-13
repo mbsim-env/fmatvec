@@ -390,23 +390,6 @@ namespace fmatvec {
 
    /// @endcond
 
-  template <int M, int N, class AT>
-  inline Matrix<FixedSize<M,N>, AT> operator+(const Matrix<FixedSize<M,N>, AT> &A1, const Matrix<FixedSize<M,N>, AT> &A2) {
-    Matrix<FixedSize<M,N>, AT> A3;
-    for(int i=0; i<M*N; i++) 
-      A3()[i] = A1()[i] + A2()[i];
-    return A3;
-  }
-
-  template <int M, int N, class AT>
-  inline Matrix<FixedSize<M,N>, AT> trans(const Matrix<FixedSize<M,N>, AT> &A) {
-    Matrix<FixedSize<M,N>, AT> B(NONINIT);
-    for(int i=0; i<N; i++)
-      for(int j=0; j<M; j++)
-	B()[i+j*M] = A()[j+i*M];
-    return B;
-  }
-
 }
 
 #endif

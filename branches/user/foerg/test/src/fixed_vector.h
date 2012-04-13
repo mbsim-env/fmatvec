@@ -218,8 +218,7 @@ namespace fmatvec {
        * */
       FixedVector<M,AT> copy() const;
 
-      //using Matrix<General, AT>::operator();
-      //using Matrix<General, AT>::resize;
+      using Matrix<FixedSize<M,1>, AT>::operator();
 
       /*! \brief Cast to std::vector<AT>.
        *

@@ -22,6 +22,7 @@
 #ifndef linear_algebra_h
 #define linear_algebra_h
 #include "square_matrix.h"
+#include "fixed_vector.h"
 
 namespace fmatvec {
 
@@ -741,6 +742,44 @@ namespace fmatvec {
     }
     return k;
   }
+
+  template <int M, int N, class AT>
+  inline Matrix<FixedSize<M,N>, AT> operator+(const Matrix<FixedSize<M,N>, AT> &A1, const Matrix<FixedSize<M,N>, AT> &A2) {
+    Matrix<FixedSize<M,N>, AT> A3(NONINIT);
+    for(int i=0; i<M*N; i++) 
+      A3()[i] = A1()[i] + A2()[i];
+    return A3;
+  }
+
+  template <int M, class AT>
+  inline FixedVector<M, AT> operator+(const FixedVector<M, AT> &x1, const FixedVector<M, AT> &x2) {
+    FixedVector<M, AT> y(NONINIT);
+    for(int i=0; i<M; i++) 
+      y()[i] = x1()[i] + x2()[i];
+    return y;
+  }
+
+  template <int M, int N, class AT>
+  inline FixedVector<M, AT> operator*(const Matrix<FixedSize<M,N>, AT> &A, const FixedVector<M, AT> &x) {
+    FixedVector<M, AT> y(NONINIT);
+    for(int i=0; i<M; i++) {
+      y()[i] = 0;
+      for(int j=0; j<M; j++) 
+	y()[i] += A()[i+j*M]*x()[j];
+    }
+    return y;
+  }
+
+  template <int M, int N, class AT>
+  inline Matrix<FixedSize<M,N>, AT> trans(const Matrix<FixedSize<M,N>, AT> &A) {
+    Matrix<FixedSize<M,N>, AT> B(NONINIT);
+    for(int i=0; i<N; i++)
+      for(int j=0; j<M; j++)
+	B()[i+j*M] = A()[j+i*M];
+    return B;
+  }
+
+
 }
 
 #endif
