@@ -341,7 +341,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
   template <class AT>
     Matrix<Sparse, AT> Matrix<Sparse, AT>::copy() const {
 
-      Matrix<Sparse, AT> A(m);
+      Matrix<Sparse, AT> A(m,NONINIT);
 
       A.deepCopy(*this);
 

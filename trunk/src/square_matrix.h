@@ -265,7 +265,7 @@ namespace fmatvec {
   template <class AT>
     SquareMatrix<AT> SquareMatrix<AT>::copy() const {
 
-      SquareMatrix<AT> A(m);
+      SquareMatrix<AT> A(m,NONINIT);
       A.deepCopy(*this);
 
       return A;
