@@ -33,20 +33,5 @@
 namespace fmatvec {
 
 
-  template <>
-  template <>
-  void Matrix<General, double>::deepCopy(const Matrix<General, double> &A) { 
-    myblas_dcopy(A.blasTrans(), blasTrans(), m, n, A.ele, A.ldim(), ele,ldim());
-  }
-
-  template <>
-  template <>
-  void Matrix<General, double>::deepCopy(const Matrix<Symmetric, double> &A) { 
-    for(int i=0; i<A.size(); i++) {
-      ele[i+i*lda] = A()[i*A.ldim()+i];
-      for(int j=i+1; j<A.size(); j++)
-	ele[i+j*lda] = ele[j+i*lda] = A()[i*A.ldim()+j];
-    }
-  }
 
 }

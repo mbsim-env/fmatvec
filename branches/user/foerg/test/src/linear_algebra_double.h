@@ -472,7 +472,7 @@ namespace fmatvec {
    * \param y A vector.
    * \return A new vector containig the result.
    * */
-  Vector<double> operator+(const Vector<double> &x, const Vector<double> &y);
+  //Vector<double> operator+(const Vector<double> &x, const Vector<double> &y);
 
   /*! \brief Vector-vector subtraction.
    *
@@ -574,7 +574,7 @@ namespace fmatvec {
    * \param x A vector. 
    * \return A new vector containig the result.
    * */
-  Vector<double> operator*(const Matrix<General, double> &A, const Vector<double> &x);
+  //Vector<double> operator*(const Matrix<General, double> &A, const Vector<double> &x);
 
   /*! \brief Matrix-vector multiplication.
    *

@@ -252,6 +252,21 @@ namespace fmatvec {
 	return  CblasColMajor;
       };
 
+      /*! \brief Column operator.
+       *
+       * Returns a vector containing the i-th column of the calling matrix. 
+       * \attention The vector and the calling matrix will share the same physical memory.
+       * \param i The column, that will be returned.  
+       * \return A vector containing the i-th column of the calling matrix.
+       * */
+      FixedVector<M,AT> col(int j);
+
+      /*! \brief Column operator.
+       *
+       * see col(int)
+       * */
+      const FixedVector<M,AT> col(int j) const;
+
       /*! \brief Matrix duplicating.
        *
        * The calling matrix returns a \em deep copy of itself.  
@@ -382,6 +397,39 @@ namespace fmatvec {
 	ele[i] = val;
 
       return *this;
+    }
+
+  template <int M, int N, class AT>
+    inline FixedVector<M,AT>  Matrix<GeneralFixed<M,N>, AT>::col(int j) {
+
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(j>=0);
+      assert(j<N);
+#endif
+
+      FixedVector<M,AT> x;
+
+      for(int i=0; i<M; i++)
+	x()[i] = ele[i+j*M];
+
+      return x;
+    }
+
+  template <int M, int N, class AT>
+    inline const FixedVector<M,AT>  Matrix<GeneralFixed<M,N>, AT>::col(int j) const {
+
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(j>=0);
+      assert(j<N);
+#endif
+
+      FixedVector<M,AT> x;
+
+      for(int i=0; i<M; i++)
+	x()[i] = ele[i+j*M];
+
+      return x;
+
     }
 
   template <int M, int N, class AT>

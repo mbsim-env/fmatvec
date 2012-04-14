@@ -32,7 +32,7 @@ namespace fmatvec {
   template <class AT> class Vector;
   template <class AT> class RowVector;
   template <class AT> class SquareMatrix;
-  //template <class AT> class Matrix<Symmetric, AT>;
+  template <class AT> class Matrix<Symmetric, AT>;
 
   /*! 
    *  \brief This is a matrix class for general matrices.
@@ -61,7 +61,9 @@ namespace fmatvec {
       int lda;
       bool tp;
 
-      template <class Type> void deepCopy(const Matrix<Type, AT> &A); 
+      template <class Type> inline void deepCopy(const Matrix<Type, AT> &A); 
+      inline void deepCopy(const Matrix<General, AT> &A); 
+      inline void deepCopy(const Matrix<Symmetric, AT> &A); 
 
       const AT* elePtr(int i, int j) const {
 	return tp ? ele+i*lda+j : ele+i+j*lda; 
@@ -164,6 +166,12 @@ namespace fmatvec {
       /*! \brief Destructor. 
        * */
       ~Matrix() {
+      }
+
+      template<class Type>
+      explicit Matrix(const Matrix<Type, AT> &A) : memory(A.rows()*A.cols()), ele((AT*)memory.get()), m(A.rows()), n(A.cols()), lda(m), tp(false) {
+
+	deepCopy(A);
       }
 
       /*! \brief Matrix resizing. 
@@ -696,7 +704,7 @@ namespace fmatvec {
     }
 
   template <class AT> template <class Type>
-    void Matrix<General, AT>::deepCopy(const Matrix<Type, AT> &A) { 
+    inline void Matrix<General, AT>::deepCopy(const Matrix<Type, AT> &A) { 
       if(tp) {
 	for(int i=0; i<m; i++) 
 	  for(int j=0; j<n; j++)
@@ -708,6 +716,42 @@ namespace fmatvec {
 	    ele[i+j*lda] = A(i,j); //operator()(i,j) = A.operator()(i,j);
       }
     }
+
+  template <class AT>
+    inline void Matrix<General, AT>::deepCopy(const Matrix<General, AT> &A) { 
+      if(A.tp) {
+	if(tp) {
+	  for(int i=0; i<m; i++) 
+	    for(int j=0; j<n; j++)
+	      ele[i*lda+j] = A.ele[i*A.lda+j]; 
+	}
+	else {
+	  for(int i=0; i<m; i++) 
+	    for(int j=0; j<n; j++)
+	      ele[i+j*lda] = A.ele[i*A.lda+j]; 
+	}
+      } else {
+	if(tp) {
+	  for(int i=0; i<m; i++) 
+	    for(int j=0; j<n; j++)
+	      ele[i*lda+j] = A.ele[i+j*A.lda]; 
+	}
+	else {
+	  for(int i=0; i<m; i++) 
+	    for(int j=0; j<n; j++)
+	      ele[i+j*lda] = A.ele[i+j*A.lda]; 
+	}
+      }
+    }
+
+  template<class AT> 
+  inline void Matrix<General, AT>::deepCopy(const Matrix<Symmetric, AT> &A) {
+    for(int i=0; i<A.size(); i++) {
+      ele[i+i*lda] = A()[i*A.ldim()+i];
+      for(int j=i+1; j<A.size(); j++)
+	ele[i+j*lda] = ele[j+i*lda] = A()[i*A.ldim()+j];
+    }
+  }
 
   template <class AT>
     Matrix<General, AT>::operator std::vector<std::vector<AT> >() {
@@ -743,11 +787,9 @@ namespace fmatvec {
 
    /// @cond NO_SHOW
    
-  template<> template<>
-  void Matrix<General, double>::deepCopy(const Matrix<General, double> &A);
+  //template<> template<>
+  //void Matrix<General, double>::deepCopy(const Matrix<General, double> &A);
 
-  template<> template<>
-  void Matrix<General, double>::deepCopy(const Matrix<Symmetric, double> &A);
 
    /// @endcond
 

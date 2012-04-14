@@ -59,7 +59,7 @@ namespace fmatvec {
 
     protected:
 
-    void deepCopy(const Vector<AT> &x);
+    void inline deepCopy(const Vector<AT> &x);
 
     AT* elePtr(int i) {
       return tp ? ele+lda*i : ele+i;
@@ -428,9 +428,6 @@ namespace fmatvec {
 	}
       }
     }
-
-  template <> void Vector<double>::deepCopy(const Vector<double> &A);
-
 
   template <class AT> Vector<AT> Vector<AT>::operator()(int i1, int i2) {
     return operator()(Index(i1,i2));

@@ -152,14 +152,32 @@ namespace fmatvec {
    * \return The sum.
    * */
   template <class AT>
-    Vector<AT> operator+(const Vector<AT> &x, const Vector<AT > &y) {
+    inline Vector<AT> operator+(const Vector<AT> &x, const Vector<AT > &y) {
 
       assert(y.size() == x.size());
 
       Vector<AT> z(x.size(),NONINIT);
 
-      for(int i=0; i<x.size(); i++)
-	z(i) = x(i) + y(i);
+      if(y.transposed()) {
+	if(x.transposed()) {
+	  for(int i=0; i<x.size(); i++)
+	    z()[i] = x()[i*x.ldim()] + y()[i*y.ldim()];
+	} 
+	else {
+	  for(int i=0; i<x.size(); i++)
+	    z()[i] = x()[i] + y()[i*y.ldim()];
+	}
+      }
+      else {
+	if(x.transposed()) {
+	  for(int i=0; i<x.size(); i++)
+	    z()[i] = x()[i*x.ldim()] + y()[i];
+	} 
+	else {
+	  for(int i=0; i<x.size(); i++)
+	    z()[i] = x()[i] + y()[i];
+	}
+      } 
 
       return z;
     }
@@ -406,17 +424,44 @@ namespace fmatvec {
    * \return The product.
    * */
   template <class AT, class Type> 
-    Vector<AT> operator*(const Matrix<Type, AT> &A, const Vector<AT > &x) {
+    inline Vector<AT> operator*(const Matrix<Type, AT> &A, const Vector<AT > &x) {
 
       assert(A.cols() == x.size());
 
       Vector<AT> z(A.rows(),NONINIT);
 
-      for(int i=0; i<z.size(); i++) {
-	z(i)=0;
-	for(int j=0; j<x.size(); j++)
-	  z(i) += A(i,j) * x(j);
+      if(x.transposed()) {
+	if(A.transposed()) {
+	  for(int i=0; i<z.size(); i++) {
+	    z()[i]=0;
+	    for(int j=0; j<x.size(); j++)
+	      z()[i] += A()[j+i*A.ldim()] * x()[j*x.ldim()];
+	  }
+	} 
+	else {
+	  for(int i=0; i<z.size(); i++) {
+	    z()[i]=0;
+	    for(int j=0; j<x.size(); j++)
+	      z()[i] += A()[i+j*A.ldim()] * x()[j*x.ldim()];
+	  }
+	}
       }
+      else {
+	if(A.transposed()) {
+	  for(int i=0; i<z.size(); i++) {
+	    z()[i]=0;
+	    for(int j=0; j<x.size(); j++)
+	      z()[i] += A()[j+i*A.ldim()] * x()[j];
+	  }
+	} 
+	else {
+	  for(int i=0; i<z.size(); i++) {
+	    z()[i]=0;
+	    for(int j=0; j<x.size(); j++)
+	      z()[i] += A()[i+j*A.ldim()] * x()[j];
+	  }
+	}
+      } 
 
       return z;
     }
