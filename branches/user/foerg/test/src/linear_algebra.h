@@ -23,6 +23,7 @@
 #define linear_algebra_h
 #include "square_matrix.h"
 #include "fixed_vector.h"
+#include "fixed_square_matrix.h"
 
 namespace fmatvec {
 
@@ -887,7 +888,7 @@ namespace fmatvec {
   }
 
   template <class AT>
-    FixedVector<3,AT> crossProduct(const FixedVector<3,AT> &x, const FixedVector<3,AT> &y) {
+    inline FixedVector<3,AT> crossProduct(const FixedVector<3,AT> &x, const FixedVector<3,AT> &y) {
 
       FixedVector<3,AT> z(NONINIT);
 
@@ -897,6 +898,26 @@ namespace fmatvec {
 
       return z;
     }
+
+  template <class AT>
+    inline FixedSquareMatrix<3,AT> tilde(const FixedVector<3,AT > &x) {
+
+      FixedSquareMatrix<3,AT> B(NONINIT);
+
+      B()[0] =  0;
+      B()[4] =  0;
+      B()[8] =  0;
+      B()[3] = -x()[2];
+      B()[6] =  x()[1];
+      B()[1] =  x()[2];
+      B()[7] = -x()[0];
+      B()[2] = -x()[1];
+      B()[5] =  x()[0];
+
+      return B;
+    }
+
+
 
 }
 

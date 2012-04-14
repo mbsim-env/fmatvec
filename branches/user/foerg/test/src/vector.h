@@ -154,6 +154,10 @@ namespace fmatvec {
 #endif
       }
 
+     template<class Type>
+      explicit Vector(const Matrix<Type,AT> &x) : Matrix<General, AT>(x)  {
+      }
+
       /*! \brief Copy operator
        *
        * Copies the vector given by \em x.
