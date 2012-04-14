@@ -78,6 +78,9 @@ namespace fmatvec {
       explicit FixedSquareMatrix(const Matrix<GeneralFixed<M,M>, AT>&  A) : Matrix<GeneralFixed<M,M>, AT>(A) {
       }
 
+      explicit FixedSquareMatrix(const SquareMatrix<AT> &A) : Matrix<GeneralFixed<M,M>, AT>(A) {
+      }
+
       /*! \brief Assignment operator
        *
        * Copies the matrix given by \em A by calling operator<<().

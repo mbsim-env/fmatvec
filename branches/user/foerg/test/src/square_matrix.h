@@ -182,6 +182,10 @@ namespace fmatvec {
 #endif
       }
 
+     template<class Type>
+      explicit SquareMatrix(const Matrix<Type,AT> &x) : Matrix<General, AT>(x)  {
+      }
+
       /*! \brief Assignment operator
        *
        * Copies the matrix given by \em A by calling operator<<().
