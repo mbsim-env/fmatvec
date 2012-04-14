@@ -129,6 +129,7 @@ namespace fmatvec {
       FixedSquareMatrix<M,AT> copy() const;
 
       using Matrix<GeneralFixed<M,M>, AT>::operator();
+      using Matrix<GeneralFixed<M,M>, AT>::e;
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -136,13 +137,22 @@ namespace fmatvec {
        * */
       operator std::vector<std::vector<AT> >();
 
-  //    FixedSquareMatrix<AT> T() {
-  //      return FixedSquareMatrix<AT>(n, lda, tp?false:true, memory, ele);
-  //    }
+      FixedSquareMatrix<M,AT> T() {
+	FixedSquareMatrix<M,AT> A(NONINIT);
+	for(int i=0; i<M; i++)
+	  for(int j=0; j<M; j++)
+	    A.e(i,j) = e(j,i);
+	return A;
+      };
 
-  //    const FixedSquareMatrix<AT> T() const {
-  //      return FixedSquareMatrix<AT>(n, lda, tp?false:true, memory, ele);
-  //    }
+      const FixedSquareMatrix<M,AT> T() const {
+	FixedSquareMatrix<M,AT> A(NONINIT);
+	for(int i=0; i<M; i++)
+	  for(int j=0; j<M; j++)
+	    A.e(i,j) = e(j,i);
+	return A;
+      }
+
   };
 
   template <int M, class AT>
@@ -160,7 +170,7 @@ namespace fmatvec {
       for(int r=0; r<size(); r++) {
 	ret[r].resize(size());
 	for(int c=0; c<size(); c++)
-	  ret[r][c]= this->e(r,c); // ret[r][c]=operator()(r,c);
+	  ret[r][c]= e(r,c); // ret[r][c]=operator()(r,c);
       }
       return ret;
     }

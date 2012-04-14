@@ -214,8 +214,6 @@ namespace fmatvec {
 	 * */
 	const AT& operator()(int i, int j) const {
 
-	  static AT zero=0;
-
 #ifndef FMATVEC_NO_BOUNDS_CHECK
 	  assert(i>=0);
 	  assert(j>=0);
@@ -223,7 +221,7 @@ namespace fmatvec {
 	  assert(j<n);
 #endif
 
-	  return i==j ? ele[i] : zero;
+	  return e(i,j);
 	};
 
 	/*! \brief Element operator
@@ -237,7 +235,7 @@ namespace fmatvec {
 	  assert(i<n);
 #endif
 
-	  return ele[i];
+	  return e(i);
 	};
 
 	/*! \brief Element operator
@@ -257,6 +255,19 @@ namespace fmatvec {
 	  assert(i<n);
 #endif
 
+	  return e(i);
+	};
+
+	const AT& e(int i, int j) const {
+	  static AT zero=0;
+	  return i==j ? ele[i] : zero;
+	};
+
+	const AT& e(int i) const {
+	  return ele[i];
+	};
+
+	AT& e(int i) {
 	  return ele[i];
 	};
 
@@ -364,7 +375,7 @@ namespace fmatvec {
     Matrix<Diagonal, AT>&  Matrix<Diagonal, AT>::init(const AT &val) {
 
       for(int i=0; i<rows(); i++)
-        operator()(i) = val;
+        e(i) = val;
 
       return *this;
     }
@@ -383,7 +394,7 @@ namespace fmatvec {
   template <class AT>
     void Matrix<Diagonal, AT>::deepCopy(const Matrix<Diagonal, AT> &A) { 
       for(int i=0; i<n; i++)
-        operator()(i) = A(i);
+        e(i) = A.e(i);
     }
 
   template <> void Matrix<Diagonal, double>::deepCopy(const Matrix<Diagonal, double> &A);
@@ -394,7 +405,7 @@ namespace fmatvec {
       for(int r=0; r<rows(); r++) {
         ret[r].resize(cols());
         for(int c=0; c<cols(); c++)
-          ret[r][c]=operator()(r,c);
+          ret[r][c]=e(r,c);
       }
       return ret;
     }

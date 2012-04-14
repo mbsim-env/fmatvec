@@ -838,6 +838,24 @@ namespace fmatvec {
     }
 
   template <int M, int N, class AT>
+    inline Matrix<GeneralFixed<M,N>, AT> operator*(const Matrix<SymmetricFixed<M>, AT> &A1, const Matrix<GeneralFixed<M,N>, AT> &A2) {
+
+    Matrix<GeneralFixed<M,N>, AT> A3(NONINIT);
+
+    for(int i=0; i<M; i++) {
+	for(int k=0; k<N; k++) {
+	  A3.e(i,k) = 0;
+	  for(int j=0; j<i; j++) 
+	    A3.e(i,k) += A1.ei(i,j)*A2.e(j,k);
+	  for(int j=i; j<M; j++) 
+	    A3.e(i,k) += A1.ej(i,j)*A2.e(j,k);
+	}
+      }
+
+    return A3;
+    }
+
+  template <int M, int N, class AT>
     inline FixedVector<M, AT> operator*(const Matrix<GeneralFixed<M,N>, AT> &A, const FixedVector<N, AT> &x) {
       FixedVector<M, AT> y(NONINIT);
       for(int i=0; i<M; i++) {
@@ -978,6 +996,51 @@ namespace fmatvec {
       }
     return S;
   }
+
+  template <int M, int N, class AT>
+  inline Matrix<SymmetricFixed<N>, AT> JTMJ(const Matrix<SymmetricFixed<M>, AT> &B, const Matrix<GeneralFixed<M,N>, AT> &A) {
+
+    Matrix<SymmetricFixed<N>, AT> S(NONINIT);
+    Matrix<GeneralFixed<M,N>, AT> C = B*A;
+
+    for(int i=0; i<N; i++) {
+	for(int k=i; k<N; k++) {
+	  S.ej(i,k) = 0;
+	  for(int j=0; j<M; j++) 
+	    S.ej(i,k) += A.e(j,i)*C.e(j,k);
+	}
+      }
+    return S;
+  }
+
+  template <int M, class AT>
+    inline Matrix<SymmetricFixed<M>, AT> operator+(const Matrix<SymmetricFixed<M>, AT> &A1, const Matrix<SymmetricFixed<M>, AT> &A2) {
+      Matrix<SymmetricFixed<M>, AT> A3(NONINIT);
+      for(int i=0; i<M; i++) 
+	for(int j=i; j<M; j++) 
+	  A3.ej(i,j) = A1.ej(i,j) + A2.ej(i,j);
+      return A3;
+    }
+
+  template <int M, class AT>
+    inline Matrix<SymmetricFixed<M>, AT> operator-(const Matrix<SymmetricFixed<M>, AT> &A1, const Matrix<SymmetricFixed<M>, AT> &A2) {
+      Matrix<SymmetricFixed<M>, AT> A3(NONINIT);
+      for(int i=0; i<M; i++) 
+	for(int j=i; j<M; j++) 
+	  A3.ej(i,j) = A1.ej(i,j) - A2.ej(i,j);
+      return A3;
+    }
+
+  template <int M, class AT>
+    FixedVector<M,AT> operator-(const FixedVector<M,AT> &x) {
+
+      FixedVector<M,AT> y(NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+	y.e(i)=-x.e(i);
+
+      return y;
+    }
 
 }
 
