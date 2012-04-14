@@ -47,7 +47,8 @@ namespace fmatvec {
       int n;
       int lda;
 
-      void deepCopy(const Matrix<Symmetric, AT> &A); 
+      template <class Type> inline void deepCopy(const Matrix<Type, AT> &A); 
+      inline void deepCopy(const Matrix<Symmetric, AT> &A); 
 
       const AT* elePtr(int i, int j) const {
 	return  j > i ? ele+i*lda+j : ele+i+j*lda; 
@@ -169,6 +170,15 @@ namespace fmatvec {
 #ifdef FMATVEC_SIZE_CHECK
 	assert(A.rows() == A.cols());
 #endif
+      }
+
+      template<class Type>
+      explicit Matrix(const Matrix<Type, AT> &A) : memory(A.rows()*A.cols()), ele((AT*)memory.get()), n(A.cols()), lda(A.cols()) {
+#ifdef FMATVEC_SIZE_CHECK
+	assert(A.rows() == A.cols());
+#endif
+
+	deepCopy(A);
       }
 
       /*! \brief Regular Constructor
@@ -536,10 +546,17 @@ namespace fmatvec {
     }
 
   template <class AT>
-    void Matrix<Symmetric, AT>::deepCopy(const Matrix<Symmetric, AT> &A) { 
+    inline void Matrix<Symmetric, AT>::deepCopy(const Matrix<Symmetric, AT> &A) { 
       for(int i=0; i<n; i++) 
 	for(int j=i; j<n; j++) 
 	  ej(i,j) = A.ej(i,j);
+    }
+
+  template <class AT> template <class Type>
+    inline void Matrix<Symmetric, AT>::deepCopy(const Matrix<Type, AT> &A) { 
+      for(int i=0; i<n; i++) 
+	for(int j=i; j<n; j++) 
+	  ej(i,j) = A.e(i,j);
     }
 
   

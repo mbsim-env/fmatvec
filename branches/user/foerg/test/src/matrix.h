@@ -53,21 +53,20 @@ namespace fmatvec {
 
       /// @cond NO_SHOW
 
-      AT* ele;
-      int m, n;
+      //AT* ele;
 
       void deepCopy(const Matrix<ST, AT> &A);
 
       /// @endcond
 
     public:
-      /*! \brief Standard constructor
-       * 
-       * The standard constructor.
-       * \param m The number of rows
-       * \param n The number of columns
-       * */
-      Matrix(int m, int n) {};
+//      /*! \brief Standard constructor
+//       * 
+//       * The standard constructor.
+//       * \param m The number of rows
+//       * \param n The number of columns
+//       * */
+//      Matrix(int m, int n) {};
 
       /*! \brief Element operator
        *
@@ -77,25 +76,47 @@ namespace fmatvec {
        * \return A reference to the element A(i,j).
        * \sa operator()(int,int) const
        * */
-      AT& operator()(int i, int j);
+      AT& operator()(int i, int j) {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+	assert(i>=0);
+	assert(j>=0);
+	assert(i<rows());
+	assert(j<cols());
+#endif
+
+	return e(i,j);
+      }
 
       /*! \brief Element operator
        *
        * See operator()(int,int) 
        * */
-      const AT& operator()(int i, int j) const;
+      const AT& operator()(int i, int j) const {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+	assert(i>=0);
+	assert(j>=0);
+	assert(i<rows());
+	assert(j<cols());
+#endif
+
+	return e(i,j);
+      }
+
+      AT& e(int i, int j);
+
+      const AT& e(int i, int j) const;
 
       /*! \brief Number of rows.
        *
        * \return The number of rows of the matrix.
        * */
-      int rows() const {return m;};
+      int rows() const;
 
       /*! \brief Number of columns.
        *
        * \return The number of columns of the matrix.
        * */
-      int cols() const {return n;};
+      int cols() const;
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -107,9 +128,9 @@ namespace fmatvec {
 
 
   template <class ST, class AT> void Matrix<ST, AT>::deepCopy(const Matrix<ST, AT> &A) { 
-    for(int i=0; i<m; i++) 
-      for(int j=0; j<n; j++) 
-	operator()(i,j) = A(i,j);
+    for(int i=0; i<rows(); i++) 
+      for(int j=0; j<cols(); j++) 
+	e(i,j) = A.e(i,j);
   }
 
   /*! \brief Matrix output 
@@ -124,7 +145,7 @@ namespace fmatvec {
     os << "[ ";
     for (int i=0; i < A.rows(); ++i) {
       for (int j=0; j < A.cols(); ++j) 
-	os << std::setw(14) << A(i,j);
+	os << std::setw(14) << A.e(i,j);
 
       if (i != A.rows() - 1)
 	os << std::endl  << "  ";
@@ -147,7 +168,7 @@ namespace fmatvec {
     A.resize(m,n,NONINIT);
     for (int i=0; i < A.rows(); ++i) 
       for (int j=0; j < A.cols(); ++j) 
-	is >> A(i,j);
+	is >> A.e(i,j);
     is >> c;
     return is;
   }
@@ -162,7 +183,7 @@ namespace fmatvec {
     std::ofstream os(str);
     for (int i=0; i < A.rows(); ++i) {
       for (int j=0; j < A.cols(); ++j) 
-	os << std::setw(14) << A(i,j);
+	os << std::setw(14) << A.e(i,j);
 
       if (i != A.rows() - 1)
 	os << std::endl;
@@ -176,7 +197,7 @@ namespace fmatvec {
       for(int r=0; r<rows(); r++) {
 	ret[r].resize(cols());
 	for(int c=0; c<cols(); c++)
-	  ret[r][c]=operator()(r,c);
+	  ret[r][c]=e(r,c);
       }
       return ret;
     }

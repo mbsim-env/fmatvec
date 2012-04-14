@@ -303,7 +303,7 @@ namespace fmatvec {
   template <int M, class AT>
     void FixedVector<M,AT>::deepCopy(const Vector<AT> &x) {
       for(int i=0; i<M; i++)
-	e(i) = x.operator()(i);
+	e(i) = x.e(i);
     }
 
   template <int M, class AT>

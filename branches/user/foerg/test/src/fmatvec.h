@@ -79,6 +79,10 @@ namespace fmatvec {
   typedef  FixedSquareMatrix<3,double> FSqrMat;
 
   typedef  FixedVector<3,double> FVec;
+
+  typedef  FixedRowVector<3,double> FRowVec;
+
+  typedef  Matrix<SymmetricFixed<3>,double> FSymMat;
 }
 
 #endif

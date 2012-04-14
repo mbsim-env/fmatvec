@@ -732,12 +732,12 @@ namespace fmatvec {
       if(tp) {
 	for(int i=0; i<m; i++) 
 	  for(int j=0; j<n; j++)
-	    et(i,j) = A(i,j); 
+	    et(i,j) = A.e(i,j); 
       }
       else {
 	for(int i=0; i<m; i++) 
 	  for(int j=0; j<n; j++)
-	    er(i,j) = A(i,j); 
+	    er(i,j) = A.e(i,j); 
       }
     }
 

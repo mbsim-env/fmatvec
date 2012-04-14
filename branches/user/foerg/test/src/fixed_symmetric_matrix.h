@@ -100,6 +100,17 @@ namespace fmatvec {
 	deepCopy(A);
       }
 
+      template<class Type>
+      explicit Matrix(const Matrix<Type, AT> &A) {
+
+#ifdef FMATVEC_SIZE_CHECK
+	assert(A.rows() == M); 
+	assert(A.cols() == M);
+#endif
+
+	deepCopy(A);
+      }
+
       /*! \brief Destructor. 
        * */
       ~Matrix() {

@@ -22,8 +22,10 @@
 #ifndef linear_algebra_h
 #define linear_algebra_h
 #include "square_matrix.h"
-#include "fixed_vector.h"
 #include "fixed_square_matrix.h"
+#include "fixed_vector.h"
+#include "fixed_row_vector.h"
+#include "fixed_symmetric_matrix.h"
 
 namespace fmatvec {
 
@@ -420,8 +422,8 @@ namespace fmatvec {
    * and a vector.
    * \return The product.
    * */
-  template <class AT, class Type> 
-    inline Vector<AT> operator*(const Matrix<Type, AT> &A, const Vector<AT > &x) {
+  template <class AT>
+    inline Vector<AT> operator*(const Matrix<General, AT> &A, const Vector<AT > &x) {
 
       assert(A.cols() == x.size());
 
@@ -767,13 +769,13 @@ namespace fmatvec {
       return A;
     }
 
-   /*! \brief Count nonzero elements.
+  /*! \brief Count nonzero elements.
    *
    * This function counts the nonzero elements of a matrix. ALL diagonal
    * elements are treated as NONZERO!!! (See the storage format for sparse matrix)
    * \return The number of nonzero or diagonal elemets.
    * */
-   template <class AT> int countElements(const SquareMatrix<AT> &A) { 
+  template <class AT> int countElements(const SquareMatrix<AT> &A) { 
     int k=0;
     for(int i=0; i<A.size(); i++) {
       for(int j=0; j<A.size(); j++) {
@@ -786,111 +788,137 @@ namespace fmatvec {
   }
 
   template <int M, int N, class AT>
-  inline Matrix<GeneralFixed<M,N>, AT> operator+(const Matrix<GeneralFixed<M,N>, AT> &A1, const Matrix<GeneralFixed<M,N>, AT> &A2) {
-    Matrix<GeneralFixed<M,N>, AT> A3(NONINIT);
-    for(int i=0; i<M*N; i++) 
-      A3.e(i) = A1.e(i) + A2.e(i);
-    return A3;
-  }
+    inline Matrix<GeneralFixed<M,N>, AT> operator+(const Matrix<GeneralFixed<M,N>, AT> &A1, const Matrix<GeneralFixed<M,N>, AT> &A2) {
+      Matrix<GeneralFixed<M,N>, AT> A3(NONINIT);
+      for(int i=0; i<M*N; i++) 
+	A3.e(i) = A1.e(i) + A2.e(i);
+      return A3;
+    }
 
   template <int M, class AT>
-  inline FixedVector<M, AT> operator+(const FixedVector<M, AT> &x1, const FixedVector<M, AT> &x2) {
-    FixedVector<M, AT> y(NONINIT);
-    for(int i=0; i<M; i++) 
-      y.e(i) = x1.e(i) + x2.e(i);
-    return y;
-  }
+    inline FixedVector<M, AT> operator+(const FixedVector<M, AT> &x1, const FixedVector<M, AT> &x2) {
+      FixedVector<M, AT> y(NONINIT);
+      for(int i=0; i<M; i++) 
+	y.e(i) = x1.e(i) + x2.e(i);
+      return y;
+    }
 
   template <int M, class AT>
-  inline FixedVector<M, AT> operator-(const FixedVector<M, AT> &x1, const FixedVector<M, AT> &x2) {
-    FixedVector<M, AT> y(NONINIT);
-    for(int i=0; i<M; i++) 
-      y.e(i) = x1.e(i) - x2.e(i);
-    return y;
-  }
+    inline FixedVector<M, AT> operator-(const FixedVector<M, AT> &x1, const FixedVector<M, AT> &x2) {
+      FixedVector<M, AT> y(NONINIT);
+      for(int i=0; i<M; i++) 
+	y.e(i) = x1.e(i) - x2.e(i);
+      return y;
+    }
 
   template <int M, int N, int K, class AT>
-  inline Matrix<GeneralFixed<M,N>, AT> operator*(const Matrix<GeneralFixed<M,N>, AT> &A1, const Matrix<GeneralFixed<N,K>, AT> &A2) {
-    Matrix<GeneralFixed<M,K>, AT> A3(NONINIT);
-    for(int i=0; i<M; i++) {
-      for(int k=0; k<K; k++) {
-	A3()[i+k*M] = 0;
-	for(int j=0; j<N; j++) 
-	  A3.e(i,k) += A1.e(i,j)*A2.e(j,k);
+    inline Matrix<GeneralFixed<M,N>, AT> operator*(const Matrix<GeneralFixed<M,N>, AT> &A1, const Matrix<GeneralFixed<N,K>, AT> &A2) {
+      Matrix<GeneralFixed<M,K>, AT> A3(NONINIT);
+      for(int i=0; i<M; i++) {
+	for(int k=0; k<K; k++) {
+	  A3.e(i,k) = 0;
+	  for(int j=0; j<N; j++) 
+	    A3.e(i,k) += A1.e(i,j)*A2.e(j,k);
+	}
       }
+      return A3;
     }
-    return A3;
-  }
+
+  template <int M, class AT>
+    inline FixedSquareMatrix<M,AT> operator*(const FixedSquareMatrix<M,AT> &A1, const FixedSquareMatrix<M,AT> &A2) {
+      FixedSquareMatrix<M,AT> A3(NONINIT);
+      for(int i=0; i<M; i++) {
+        for(int k=0; k<M; k++) {
+          A3.e(i,k) = 0;
+          for(int j=0; j<M; j++) 
+            A3.e(i,k) += A1.e(i,j)*A2.e(j,k);
+        }
+      }
+      return A3;
+    }
 
   template <int M, int N, class AT>
-  inline FixedVector<M, AT> operator*(const Matrix<GeneralFixed<M,N>, AT> &A, const FixedVector<M, AT> &x) {
-    FixedVector<M, AT> y(NONINIT);
-    for(int i=0; i<M; i++) {
-      y.e(i) = 0;
-      for(int j=0; j<M; j++) 
-	y.e(i) += A.e(i,j)*x.e(j);
+    inline FixedVector<M, AT> operator*(const Matrix<GeneralFixed<M,N>, AT> &A, const FixedVector<N, AT> &x) {
+      FixedVector<M, AT> y(NONINIT);
+      for(int i=0; i<M; i++) {
+	y.e(i) = 0;
+	for(int j=0; j<N; j++) 
+	  y.e(i) += A.e(i,j)*x.e(j);
+      }
+      return y;
     }
-    return y;
-  }
 
   template <int M, class AT>
-  inline FixedVector<M, AT> operator*(double a, const FixedVector<M, AT> &x) {
-    FixedVector<M, AT> y(NONINIT);
-    for(int i=0; i<M; i++)
-      y.e(i) = a*x.e(i);
-    return y;
-  }
+    inline FixedVector<M, AT> operator*(const Matrix<SymmetricFixed<M>, AT> &A, const FixedVector<M, AT> &x) {
+      FixedVector<M, AT> y(NONINIT);
+      for(int i=0; i<M; i++) {
+	y.e(i) = 0;
+	for(int j=0; j<i; j++) 
+	  y.e(i) += A.ei(i,j)*x.e(j);
+	for(int j=i; j<M; j++) 
+	  y.e(i) += A.ej(i,j)*x.e(j);
+      }
+      return y;
+    }
 
   template <int M, class AT>
-  inline FixedVector<M, AT> operator*(const FixedVector<M, AT> &x, double a) {
-    FixedVector<M, AT> y(NONINIT);
-    for(int i=0; i<M; i++)
-      y.e(i) = a*x.e(i);
-    return y;
-  }
+    inline FixedVector<M, AT> operator*(double a, const FixedVector<M, AT> &x) {
+      FixedVector<M, AT> y(NONINIT);
+      for(int i=0; i<M; i++)
+	y.e(i) = a*x.e(i);
+      return y;
+    }
 
   template <int M, class AT>
-  inline FixedVector<M, AT> operator/(const FixedVector<M, AT> &x, double a) {
-    FixedVector<M, AT> y(NONINIT);
-    for(int i=0; i<M; i++)
-      y.e(i) = x.e(i)/a;
-    return y;
-  }
+    inline FixedVector<M, AT> operator*(const FixedVector<M, AT> &x, double a) {
+      FixedVector<M, AT> y(NONINIT);
+      for(int i=0; i<M; i++)
+	y.e(i) = a*x.e(i);
+      return y;
+    }
+
+  template <int M, class AT>
+    inline FixedVector<M, AT> operator/(const FixedVector<M, AT> &x, double a) {
+      FixedVector<M, AT> y(NONINIT);
+      for(int i=0; i<M; i++)
+	y.e(i) = x.e(i)/a;
+      return y;
+    }
 
   template <int M, int N, class AT>
-  inline Matrix<GeneralFixed<M,N>, AT> trans(const Matrix<GeneralFixed<M,N>, AT> &A) {
-    Matrix<GeneralFixed<M,N>, AT> B(NONINIT);
-    for(int i=0; i<N; i++)
-      for(int j=0; j<M; j++)
-	B.e(i,j) = A.e(j,i);
-    return B;
-  }
+    inline Matrix<GeneralFixed<M,N>, AT> trans(const Matrix<GeneralFixed<M,N>, AT> &A) {
+      Matrix<GeneralFixed<M,N>, AT> B(NONINIT);
+      for(int i=0; i<N; i++)
+	for(int j=0; j<M; j++)
+	  B.e(i,j) = A.e(j,i);
+      return B;
+    }
 
   template <int M, class AT>
-  inline FixedSquareMatrix<M, AT> trans(const FixedSquareMatrix<M, AT> &A) {
-    FixedSquareMatrix<M, AT> B(NONINIT);
-    for(int i=0; i<M; i++)
-      for(int j=0; j<M; j++)
-	B.e(i,j) = A.e(j,i);
-    return B;
-  }
+    inline FixedSquareMatrix<M, AT> trans(const FixedSquareMatrix<M, AT> &A) {
+      FixedSquareMatrix<M, AT> B(NONINIT);
+      for(int i=0; i<M; i++)
+	for(int j=0; j<M; j++)
+	  B.e(i,j) = A.e(j,i);
+      return B;
+    }
 
   template <int M, class AT>
-  inline FixedVector<M, AT>& operator+=(const FixedVector<M, AT> &x_, const FixedVector<M, AT> &y) {
+    inline FixedVector<M, AT>& operator+=(const FixedVector<M, AT> &x_, const FixedVector<M, AT> &y) {
 
-   FixedVector<M, AT> &x = const_cast<FixedVector<M, AT> &>(x_);
-    for(int i=0; i<M; i++) 
-      x.e(i) += y.e(i);
-   return x;
-  }
+      FixedVector<M, AT> &x = const_cast<FixedVector<M, AT> &>(x_);
+      for(int i=0; i<M; i++) 
+	x.e(i) += y.e(i);
+      return x;
+    }
 
   template <int M, class AT>
-  inline FixedVector<M, AT> operator*=(const FixedVector<M, AT> &x_, double a) {
-    FixedVector<M, AT> &x = const_cast<FixedVector<M, AT> &>(x_);
-    for(int i=0; i<M; i++)
-      x.e(i) *= a;
-    return x;
-  }
+    inline FixedVector<M, AT> operator*=(const FixedVector<M, AT> &x_, double a) {
+      FixedVector<M, AT> &x = const_cast<FixedVector<M, AT> &>(x_);
+      for(int i=0; i<M; i++)
+	x.e(i) *= a;
+      return x;
+    }
 
   template <class AT>
     inline FixedVector<3,AT> crossProduct(const FixedVector<3,AT> &x, const FixedVector<3,AT> &y) {
@@ -922,7 +950,21 @@ namespace fmatvec {
       return B;
     }
 
+  template <int M, class AT>
+    inline AT operator*(const FixedRowVector<M,AT> &x, const FixedVector<M,AT> &y) {
+      AT c = 0;
+      for(int i=0; i<M; i++)
+	c += x.e(i)*y.e(i);
+      return c;
+    }
 
+  template <int M, class AT>
+    inline AT nrm2(const FixedVector<M,AT> &x) {
+      AT c = 0;
+      for(int i=0; i<M; i++)
+	c += pow(x.e(i),2);
+      return sqrt(c);
+    }
 
 }
 

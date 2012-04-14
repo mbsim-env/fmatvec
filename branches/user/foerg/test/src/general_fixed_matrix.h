@@ -68,7 +68,6 @@ namespace fmatvec {
 
       /*! \brief Standard constructor
        *
-       * Constructs a matrix with no size. 
        * */
       Matrix() {
 #ifndef FMATVEC_NO_INITIALIZATION 
@@ -492,7 +491,7 @@ namespace fmatvec {
   inline void Matrix<GeneralFixed<M,N>, AT>::deepCopy(const Matrix<Type, AT> &A) { 
       for(int i=0; i<M; i++) 
 	for(int j=0; j<N; j++)
-	  e(i,j) = A.operator()(i,j);
+	  e(i,j) = A.e(i,j);
     }
 
   template<int M, int N, class AT>
