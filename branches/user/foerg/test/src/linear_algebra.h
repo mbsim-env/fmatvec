@@ -966,6 +966,19 @@ namespace fmatvec {
       return sqrt(c);
     }
 
+  template <int M, int N, class AT>
+  inline Matrix<SymmetricFixed<N>, AT> JTJ(const Matrix<GeneralFixed<M,N>, AT> &A) { 
+    Matrix<SymmetricFixed<N>, AT> S(NONINIT);
+    for(int i=0; i<N; i++) {
+	for(int k=i; k<N; k++) {
+	  S.ej(i,k) = 0;
+	  for(int j=0; j<M; j++) 
+	    S.ej(i,k) += A.e(j,i)*A.e(j,k);
+	}
+      }
+    return S;
+  }
+
 }
 
 #endif
