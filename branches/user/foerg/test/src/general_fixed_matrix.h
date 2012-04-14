@@ -80,12 +80,12 @@ namespace fmatvec {
 
 	if(ini == INIT) {
 	  for(int i=0; i<M*N; i++) 
-	    ele[i] = a;
+	    e(i) = a;
 	} else if(ini == EYE ) {
 	  for(int i=0; i<M; i++) {
 	    for(int j=0; j<N; j++) {
-	      if (i==j) ele[i+j*M] = 1; // operator()(i,i) = 1;
-	      else ele[i+j*M] = 0; // operator()(i,j) = 0;
+	      if (i==j) e(i,j) = 1; // operator()(i,i) = 1;
+	      else e(i,j) = 0; // operator()(i,j) = 0;
 	    }
 	  }
 	}
@@ -104,10 +104,12 @@ namespace fmatvec {
 
       template<class Type>
       explicit Matrix(const Matrix<Type, AT> &A) {
+
 #ifdef FMATVEC_SIZE_CHECK
-	if(A.rows() != M || A.cols() != N)
-	  throw;
+	assert(A.rows() == M); 
+	assert(A.cols() == N);
 #endif
+
 	deepCopy(A);
       }
 
@@ -182,7 +184,7 @@ namespace fmatvec {
 	assert(j<N);
 #endif
 
-	return ele[i+j*M];
+	return e(i,j);
       };
 
       /*! \brief Element operator
@@ -197,7 +199,31 @@ namespace fmatvec {
 	assert(j<N);
 #endif
 
-	return ele[i+j*M];//  return ele[i*lda+j*ldb];
+	return e(i,j);
+      };
+
+      AT& e(int i, int j) {
+	return ele[i+j*M];
+      };
+
+      /*! \brief Element operator
+       *
+       * See e(int,int) 
+       * */
+      const AT& e(int i, int j) const {
+	return ele[i+j*M];
+      };
+
+      AT& e(int i) {
+	return ele[i];
+      };
+
+      /*! \brief Element operator
+       *
+       * See e(int,int) 
+       * */
+      const AT& e(int i) const {
+	return ele[i];
       };
 
       /*! \brief Pointer operator.
@@ -300,7 +326,7 @@ namespace fmatvec {
 	Matrix<GeneralFixed<N,M>, AT> A(NONINIT);
 	for(int i=0; i<N; i++)
 	  for(int j=0; j<M; j++)
-	    A.ele[i+j*M] = ele[j+i*M];
+	    A.e(i,j) = e(j,i);
 	return A;
       }
 
@@ -308,13 +334,13 @@ namespace fmatvec {
 	Matrix<GeneralFixed<N,M>, AT> A(NONINIT);
 	for(int i=0; i<N; i++)
 	  for(int j=0; j<M; j++)
-	    A.ele[i+j*M] = ele[j+i*M];
+	    A.e(i,j) = e(j,i);
 	return A;
       }
 
       void setCol(int j, FixedVector<M,AT> &x) {
 	for(int i=0; i<M; i++)
-	  ele[i+j*M] = x()[i];
+	  e(i,j) = x.e(i);
       }
 
   };
@@ -358,7 +384,7 @@ namespace fmatvec {
     iss >> c;
     for(int i=0; i<m; i++)
       for(int j=0; j<n; j++) {
-	iss >> ele[i+j*M];
+	iss >> e(i,j);
 	iss >> c;
       }
   }
@@ -367,14 +393,9 @@ namespace fmatvec {
    template <int M, int N, class AT> template< class Type>
     Matrix<GeneralFixed<M,N>, AT>& Matrix<GeneralFixed<M,N>, AT>::operator<<(const Matrix<Type, AT> &A) { 
 
-      if(A.rows() == 0 || A.cols() == 0)
-	return *this;
-
 #ifdef FMATVEC_SIZE_CHECK
-      if(A.rows() != M || A.cols() != N)
-	throw;
-      //assert(M == A.rows()); Funktioniert nicht
-      //assert(N == A.cols());
+      assert(A.rows() == M); 
+      assert(A.cols() == N);
 #endif
 
       deepCopy(A);
@@ -394,7 +415,7 @@ namespace fmatvec {
     Matrix<GeneralFixed<M,N>, AT>&  Matrix<GeneralFixed<M,N>, AT>::init(const AT& val) {
 
       for(int i=0; i<M*N; i++) 
-	ele[i] = val;
+	e(i) = val;
 
       return *this;
     }
@@ -407,10 +428,10 @@ namespace fmatvec {
       assert(j<N);
 #endif
 
-      FixedVector<M,AT> x;
+      FixedVector<M,AT> x(NONINIT);
 
       for(int i=0; i<M; i++)
-	x()[i] = ele[i+j*M];
+	x.e(i) = e(i,j);
 
       return x;
     }
@@ -423,10 +444,10 @@ namespace fmatvec {
       assert(j<N);
 #endif
 
-      FixedVector<M,AT> x;
+      FixedVector<M,AT> x(NONINIT);
 
       for(int i=0; i<M; i++)
-	x()[i] = ele[i+j*M];
+	x.e(i) = e(i,j);
 
       return x;
 
@@ -471,13 +492,13 @@ namespace fmatvec {
   inline void Matrix<GeneralFixed<M,N>, AT>::deepCopy(const Matrix<Type, AT> &A) { 
       for(int i=0; i<M; i++) 
 	for(int j=0; j<N; j++)
-	  ele[i+j*M] = A.operator()(i,j);
+	  e(i,j) = A.operator()(i,j);
     }
 
   template<int M, int N, class AT>
   inline void Matrix<GeneralFixed<M,N>,AT>::deepCopy(const Matrix<GeneralFixed<M,N>,AT> &A) {
       for(int i=0; i<M*N; i++) 
-	ele[i] = A.ele[i];
+	e(i) = A.e(i);
     }
 
    /// @endcond

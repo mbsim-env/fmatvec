@@ -173,7 +173,7 @@ namespace fmatvec {
 	assert(i<M);
 #endif
 
-	return ele[i];
+	return e(i);
       };
 
       /*! \brief Element operator
@@ -187,6 +187,18 @@ namespace fmatvec {
 	assert(i<M);
 #endif
 
+	return e(i);
+      };
+
+      AT& e(int i) {
+	return ele[i];
+      };
+
+      /*! \brief Element operator
+       *
+       * See e(int) 
+       * */
+      const AT& e(int i) const {
 	return ele[i];
       };
 
@@ -237,14 +249,14 @@ namespace fmatvec {
       FixedRowVector<M,AT> T() {
 	FixedRowVector<M,AT> x(NONINIT);
 	for(int i=0; i<M; i++)
-	  x()[i] = ele[i];
+	  x.e(i) = e(i);
 	return x;
       };
 
       const FixedRowVector<M,AT> T() const {
 	FixedRowVector<M,AT> x(NONINIT);
 	for(int i=0; i<M; i++)
-	  x()[i] = ele[i];
+	  x.e(i) = e(i);
 	return x;
       }
 
@@ -254,7 +266,7 @@ namespace fmatvec {
     FixedVector<M,AT>& FixedVector<M,AT>::init(const AT& val) {
 
       for(int i=0; i<M; i++) 
-	ele[i] = val; 
+	e(i) = val; 
 
       return *this;
     }
@@ -270,13 +282,8 @@ namespace fmatvec {
   template <int M, class AT>
     FixedVector<M,AT>& FixedVector<M,AT>::operator<<(const Vector<AT> &x) { 
 
-      if(x.size() == 0)
-	return *this;
-
 #ifdef FMATVEC_SIZE_CHECK
-       if(x.size() != M) 
-	throw;
-       //assert(m == x.m);
+       assert(x.size() == M);
 #endif
 
       deepCopy(x);
@@ -296,13 +303,13 @@ namespace fmatvec {
   template <int M, class AT>
     void FixedVector<M,AT>::deepCopy(const Vector<AT> &x) {
       for(int i=0; i<M; i++)
-	ele[i] = x.operator()(i);
+	e(i) = x.operator()(i);
     }
 
   template <int M, class AT>
     void FixedVector<M,AT>::deepCopy(const FixedVector<M,AT> &x) {
       for(int i=0; i<M; i++)
-	ele[i] = x.ele[i];
+	e(i) = x.e(i);
     }
 
 //  template <class AT>

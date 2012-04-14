@@ -293,7 +293,7 @@ namespace fmatvec {
 	assert(i<n);
 	assert(j<n);
 #endif
-	return j > i ? ele[i*lda+j] : ele[i+j*lda];
+	return e(i,j);
       };
 
       /*! \brief Element operator
@@ -308,7 +308,31 @@ namespace fmatvec {
 	assert(j<n);
 #endif
 
-	return j > i ? ele[i*lda+j] : ele[i+j*lda];//  return ele[i*lda+j*ldb];
+	return e(i,j);
+      };
+
+      AT& ei(int i, int j) {
+	return ele[i+j*lda];
+      };
+
+      const AT& ei(int i, int j) const {
+	return ele[i+j*lda];
+      };
+
+      AT& ej(int i, int j) {
+	return ele[i*lda+j];
+      };
+
+      const AT& ej(int i, int j) const {
+	return ele[i*lda+j];
+      };
+
+      AT& e(int i, int j) {
+	return j > i ? ej(i,j) : ei(i,j);
+      };
+
+      const AT& e(int i, int j) const {
+	return j > i ? ej(i,j) : ei(i,j);
       };
 
       /*! \brief Pointer operator.
@@ -497,7 +521,7 @@ namespace fmatvec {
 
       for(int i=0; i<rows(); i++) 
 	for(int j=i; j<cols(); j++) 
-	  ele[i*lda+j] = val; // operator()(i,j) = val;
+	  ej(i,j) = val;
 
       return *this;
     }
@@ -515,7 +539,7 @@ namespace fmatvec {
     void Matrix<Symmetric, AT>::deepCopy(const Matrix<Symmetric, AT> &A) { 
       for(int i=0; i<n; i++) 
 	for(int j=i; j<n; j++) 
-	  ele[i*lda+j] = A.ele[i*A.lda+j];
+	  ej(i,j) = A.ej(i,j);
     }
 
   

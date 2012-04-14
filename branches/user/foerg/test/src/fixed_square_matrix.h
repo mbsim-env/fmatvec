@@ -160,7 +160,7 @@ namespace fmatvec {
       for(int r=0; r<size(); r++) {
 	ret[r].resize(size());
 	for(int c=0; c<size(); c++)
-	  ret[r][c]= this->ele[r+c*M]; // ret[r][c]=operator()(r,c);
+	  ret[r][c]= this->e(r,c); // ret[r][c]=operator()(r,c);
       }
       return ret;
     }

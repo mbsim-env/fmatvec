@@ -75,6 +75,10 @@ namespace fmatvec {
    *  BandMat is an abbreviation for band matrices of type double.
    * */
   typedef  Matrix<GeneralBand, double> BandMat;
+
+  typedef  FixedSquareMatrix<3,double> FSqrMat;
+
+  typedef  FixedVector<3,double> FVec;
 }
 
 #endif

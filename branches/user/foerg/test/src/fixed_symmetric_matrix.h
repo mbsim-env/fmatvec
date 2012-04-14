@@ -76,7 +76,7 @@ namespace fmatvec {
 	else if(ini == EYE) {	 
 	  init(0);
 	  for(int i=0; i<M; i++) 
-	    ele[i+i*M] = 1;
+	    ej(i,i) = 1;
 	}
       }
 
@@ -143,7 +143,8 @@ namespace fmatvec {
 	assert(i<M);
 	assert(j<M);
 #endif
-	return j > i ? ele[i*M+j] : ele[i+j*M];
+
+	return e(i,j);
       };
 
       /*! \brief Element operator
@@ -158,10 +159,34 @@ namespace fmatvec {
 	assert(j<M);
 #endif
 
-	return j > i ? ele[i*M+j] : ele[i+j*M];//  return ele[i*lda+j*ldb];
+	return e(i,j);
       };
 
-      /*! \brief Pointer operator.
+      AT& ei(int i, int j) {
+	return ele[i+j*M];
+      };
+
+      const AT& ei(int i, int j) const {
+	return ele[i+j*M];
+      };
+
+      AT& ej(int i, int j) {
+	return ele[i*M+j];
+      };
+
+      const AT& ej(int i, int j) const {
+	return ele[i*M+j];
+      };
+
+       AT& e(int i, int j) {
+	return j > i ? ej(i,j) : ei(i,j);
+      };
+
+      const AT& e(int i, int j) const {
+	return j > i ? ej(i,j) : ei(i,j);
+      };
+
+     /*! \brief Pointer operator.
        *
        * Returns the pointer to the first element.
        * \return The pointer to the first element.
@@ -258,7 +283,7 @@ namespace fmatvec {
 
       for(int i=0; i<M; i++) 
 	for(int j=i; j<M; j++) 
-	  ele[i*M+j] = val; 
+	  ej(i,j) = val; 
 
       return *this;
     }
@@ -276,7 +301,7 @@ namespace fmatvec {
     void Matrix<SymmetricFixed<M>, AT>::deepCopy(const Matrix<SymmetricFixed<M>, AT> &A) { 
       for(int i=0; i<M; i++) 
 	for(int j=i; j<M; j++) 
-	  ele[i*M+j] = A.ele[i*M+j];
+	  ej(i,j) = A.ej(i,j);
     }
 
 

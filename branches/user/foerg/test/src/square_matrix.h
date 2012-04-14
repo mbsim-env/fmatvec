@@ -282,14 +282,14 @@ namespace fmatvec {
 	for(int r=0; r<size(); r++) {
 	  ret[r].resize(size());
 	  for(int c=0; c<size(); c++)
-	    ret[r][c]= ele[r*lda+c]; // ret[r][c]=operator()(r,c);
+	    ret[r][c]= this->et(r,c); 
 	}
       }
       else {
 	for(int r=0; r<size(); r++) {
 	  ret[r].resize(size());
 	  for(int c=0; c<size(); c++)
-	    ret[r][c]= ele[r+c*lda]; // ret[r][c]=operator()(r,c);
+	    ret[r][c]= this->er(r,c); 
 	}
       }
       return ret;

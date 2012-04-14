@@ -236,7 +236,7 @@ namespace fmatvec {
 	assert(i<m);
 #endif
 
-	return tp ? ele[i*lda] : ele[i];
+	return e(i);
       };
 
       /*! \brief Element operator
@@ -250,10 +250,34 @@ namespace fmatvec {
 	assert(i<m);
 #endif
 
-	return tp ? ele[i*lda] : ele[i];
+	return e(i);
       };
 
-      /*! \brief Initialization.
+      AT& er(int i) {
+	return ele[i];
+      };
+
+      const AT& er(int i) const {
+	return ele[i];
+      };
+
+      AT& et(int i) {
+	return ele[i*lda];
+      };
+
+      const AT& et(int i) const {
+	return ele[i*lda];
+      };
+
+       AT& e(int i) {
+	return tp ? et(i) : er(i);
+      };
+
+      const AT& e(int i) const {
+	return tp ? et(i) : er(i);
+      };
+
+     /*! \brief Initialization.
        *
        * Initializes all elements of the calling vector
        * with the value given by \em a.
@@ -344,14 +368,12 @@ namespace fmatvec {
   template <class AT>
     Vector<AT>& Vector<AT>::init(const AT& val) {
 
-      if(tp) {
+      if(tp) 
 	for(int i=0; i<m; i++) 
-	  ele[i*lda] = val; // operator()(i) = val;
-      }
-      else {
+	  et(i) = val;
+      else 
 	for(int i=0; i<m; i++) 
-	  ele[i] = val; // operator()(i) = val;
-      }
+	  er(i) = val;
 
       return *this;
     }
@@ -412,24 +434,20 @@ namespace fmatvec {
   template <class AT>
     void Vector<AT>::deepCopy(const Vector<AT> &x) {
       if(tp) {
-	if(x.tp) {
+	if(x.tp) 
 	  for(int i=0; i<size(); i++)
-	    ele[i*lda] = x.ele[i*x.lda]; // operator()(i) = x(i);
-	}
-	else {
+	    et(i) = x.et(i); 
+	else 
 	  for(int i=0; i<size(); i++)
-	    ele[i*lda] = x.ele[i];
-	}
+	    et(i) = x.er(i);
       }
       else {
-	if(x.tp) {
+	if(x.tp)
 	  for(int i=0; i<size(); i++)
-	    ele[i] = x.ele[i*x.lda]; // operator()(i) = x(i);
-	}
-	else {
+	    er(i) = x.et(i); 
+	else 
 	  for(int i=0; i<size(); i++)
-	    ele[i] = x.ele[i];
-	}
+	    er(i) = x.er(i);
       }
     }
 

@@ -122,8 +122,8 @@ namespace fmatvec {
 	} else if(ini == EYE ) {
 	  for(int i=0; i<m; i++) {
 	    for(int j=0; j<n; j++) {
-	      if (i==j) ele[i+j*lda] = 1; // operator()(i,i) = 1;
-	      else ele[i+j*lda] = 0; // operator()(i,j) = 0;
+	      if (i==j) er(i,j) = 1; 
+	      else er(i,j) = 0; 
 	    }
 	  }
 	}  
@@ -220,8 +220,8 @@ namespace fmatvec {
 	else if(ini == EYE ) {
 	  for(int i=0; i<m; i++) {
 	    for(int j=0; j<n; j++) {
-	      if (i==j) ele[i+j*lda] = 1; // operator()(i,i) = 1;
-	      else ele[i+j*lda] = 0; // operator()(i,j) = 0;
+	      if (i==j) er(i,j) = 1; 
+	      else er(i,j) = 0; 
 	    }
 	  }
 	}
@@ -280,7 +280,7 @@ namespace fmatvec {
 	assert(j<n);
 #endif
 
-	return tp ? ele[i*lda+j] : ele[i+j*lda];
+	return e(i,j);
       };
 
       /*! \brief Element operator
@@ -295,7 +295,31 @@ namespace fmatvec {
 	assert(j<n);
 #endif
 
-	return tp ? ele[i*lda+j] : ele[i+j*lda];//  return ele[i*lda+j*ldb];
+	return e(i,j);
+      };
+
+      AT& er(int i, int j) {
+	return ele[i+j*lda];
+      };
+
+      const AT& er(int i, int j) const {
+	return ele[i+j*lda];
+      };
+
+      AT& et(int i, int j) {
+	return ele[i*lda+j];
+      };
+
+      const AT& et(int i, int j) const {
+	return ele[i*lda+j];
+      };
+
+      AT& e(int i, int j) {
+	return tp ? et(i,j) : er(i,j);
+      };
+
+      const AT& e(int i, int j) const {
+	return tp ? et(i,j) : er(i,j);
       };
 
       /*! \brief Pointer operator.
@@ -542,7 +566,7 @@ namespace fmatvec {
     iss >> c;
     for(int i=0; i<m; i++)
       for(int j=0; j<n; j++) {
-	iss >> ele[i+j*lda]; //iss >> operator()(i,j);
+	iss >> er(i,j); 
 	iss >> c;
       }
   }
@@ -600,12 +624,12 @@ namespace fmatvec {
       if(tp) {
 	for(int i=0; i<rows(); i++) 
 	  for(int j=0; j<cols(); j++) 
-	    ele[i*lda+j] = val; // operator()(i,j) = val;
+	    et(i,j) = val; 
       }
       else {
 	for(int i=0; i<rows(); i++) 
 	  for(int j=0; j<cols(); j++) 
-	    ele[i+j*lda] = val; // operator()(i,j) = val;
+	    er(i,j) = val; 
       }
 
       return *this;
@@ -708,12 +732,12 @@ namespace fmatvec {
       if(tp) {
 	for(int i=0; i<m; i++) 
 	  for(int j=0; j<n; j++)
-	    ele[i*lda+j] = A(i,j); //operator()(i,j) = A.operator()(i,j);
+	    et(i,j) = A(i,j); 
       }
       else {
 	for(int i=0; i<m; i++) 
 	  for(int j=0; j<n; j++)
-	    ele[i+j*lda] = A(i,j); //operator()(i,j) = A.operator()(i,j);
+	    er(i,j) = A(i,j); 
       }
     }
 
@@ -723,23 +747,23 @@ namespace fmatvec {
 	if(tp) {
 	  for(int i=0; i<m; i++) 
 	    for(int j=0; j<n; j++)
-	      ele[i*lda+j] = A.ele[i*A.lda+j]; 
+	      et(i,j) = A.et(i,j); 
 	}
 	else {
 	  for(int i=0; i<m; i++) 
 	    for(int j=0; j<n; j++)
-	      ele[i+j*lda] = A.ele[i*A.lda+j]; 
+	      er(i,j) = A.et(i,j); 
 	}
       } else {
 	if(tp) {
 	  for(int i=0; i<m; i++) 
 	    for(int j=0; j<n; j++)
-	      ele[i*lda+j] = A.ele[i+j*A.lda]; 
+	      et(i,j) = A.er(i,j); 
 	}
 	else {
 	  for(int i=0; i<m; i++) 
 	    for(int j=0; j<n; j++)
-	      ele[i+j*lda] = A.ele[i+j*A.lda]; 
+	      er(i,j) = A.er(i,j); 
 	}
       }
     }
@@ -747,9 +771,9 @@ namespace fmatvec {
   template<class AT> 
   inline void Matrix<General, AT>::deepCopy(const Matrix<Symmetric, AT> &A) {
     for(int i=0; i<A.size(); i++) {
-      ele[i+i*lda] = A()[i*A.ldim()+i];
+      er(i,i) = A.er(i,i);
       for(int j=i+1; j<A.size(); j++)
-	ele[i+j*lda] = ele[j+i*lda] = A()[i*A.ldim()+j];
+	er(i,j) = et(i,j) = A.ej(i,j);
     }
   }
 
@@ -760,14 +784,14 @@ namespace fmatvec {
 	for(int r=0; r<rows(); r++) {
 	  ret[r].resize(cols());
 	  for(int c=0; c<cols(); c++)
-	    ret[r][c]= ele[r*lda+c];
+	    ret[r][c]= et(r,c);
 	}
       }
       else {
 	for(int r=0; r<rows(); r++) {
 	  ret[r].resize(cols());
 	  for(int c=0; c<cols(); c++)
-	    ret[r][c]=ele[r+c*lda];
+	    ret[r][c]= er(r,c);
 	}
       }
       return ret;
@@ -781,7 +805,7 @@ namespace fmatvec {
       for(int r=0; r<rows(); r++) {
         assert(m[r].size()==cols());
         for(int c=0; c<cols(); c++)
-          ele[r+c*lda]=m[r][c];
+          er(r,c)=m[r][c];
       }
     }
 

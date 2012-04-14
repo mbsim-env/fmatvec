@@ -160,24 +160,20 @@ namespace fmatvec {
       Vector<AT> z(x.size(),NONINIT);
 
       if(y.transposed()) {
-	if(x.transposed()) {
+	if(x.transposed())
 	  for(int i=0; i<x.size(); i++)
-	    z()[i] = x()[i*x.ldim()] + y()[i*y.ldim()];
-	} 
-	else {
+	    z.er(i) = x.et(i) + y.et(i);
+	else
 	  for(int i=0; i<x.size(); i++)
-	    z()[i] = x()[i] + y()[i*y.ldim()];
-	}
+	    z.er(i) = x.er(i) + y.et(i);
       }
       else {
-	if(x.transposed()) {
+	if(x.transposed())
 	  for(int i=0; i<x.size(); i++)
-	    z()[i] = x()[i*x.ldim()] + y()[i];
-	} 
-	else {
+	    z.er(i) = x.et(i) + y.er(i);
+	else 
 	  for(int i=0; i<x.size(); i++)
-	    z()[i] = x()[i] + y()[i];
-	}
+	    z.er(i) = x.er(i) + y.er(i);
       } 
 
       return z;
@@ -434,32 +430,32 @@ namespace fmatvec {
       if(x.transposed()) {
 	if(A.transposed()) {
 	  for(int i=0; i<z.size(); i++) {
-	    z()[i]=0;
+	    z.er(i)=0;
 	    for(int j=0; j<x.size(); j++)
-	      z()[i] += A()[j+i*A.ldim()] * x()[j*x.ldim()];
+	      z.er(i) += A.et(i,j) * x.et(j);
 	  }
 	} 
 	else {
 	  for(int i=0; i<z.size(); i++) {
-	    z()[i]=0;
+	    z.er(i)=0;
 	    for(int j=0; j<x.size(); j++)
-	      z()[i] += A()[i+j*A.ldim()] * x()[j*x.ldim()];
+	      z.er(i) += A.er(i,j) * x.et(j);
 	  }
 	}
       }
       else {
 	if(A.transposed()) {
 	  for(int i=0; i<z.size(); i++) {
-	    z()[i]=0;
+	    z.er(i)=0;
 	    for(int j=0; j<x.size(); j++)
-	      z()[i] += A()[j+i*A.ldim()] * x()[j];
+	      z.er(i) += A.et(i,j) * x.er(j);
 	  }
 	} 
 	else {
 	  for(int i=0; i<z.size(); i++) {
-	    z()[i]=0;
+	    z.er(i)=0;
 	    for(int j=0; j<x.size(); j++)
-	      z()[i] += A()[i+j*A.ldim()] * x()[j];
+	      z.er(i) += A.er(i,j) * x.er(j);
 	  }
 	}
       } 
@@ -793,7 +789,7 @@ namespace fmatvec {
   inline Matrix<GeneralFixed<M,N>, AT> operator+(const Matrix<GeneralFixed<M,N>, AT> &A1, const Matrix<GeneralFixed<M,N>, AT> &A2) {
     Matrix<GeneralFixed<M,N>, AT> A3(NONINIT);
     for(int i=0; i<M*N; i++) 
-      A3()[i] = A1()[i] + A2()[i];
+      A3.e(i) = A1.e(i) + A2.e(i);
     return A3;
   }
 
@@ -801,7 +797,7 @@ namespace fmatvec {
   inline FixedVector<M, AT> operator+(const FixedVector<M, AT> &x1, const FixedVector<M, AT> &x2) {
     FixedVector<M, AT> y(NONINIT);
     for(int i=0; i<M; i++) 
-      y()[i] = x1()[i] + x2()[i];
+      y.e(i) = x1.e(i) + x2.e(i);
     return y;
   }
 
@@ -809,7 +805,7 @@ namespace fmatvec {
   inline FixedVector<M, AT> operator-(const FixedVector<M, AT> &x1, const FixedVector<M, AT> &x2) {
     FixedVector<M, AT> y(NONINIT);
     for(int i=0; i<M; i++) 
-      y()[i] = x1()[i] - x2()[i];
+      y.e(i) = x1.e(i) - x2.e(i);
     return y;
   }
 
@@ -820,7 +816,7 @@ namespace fmatvec {
       for(int k=0; k<K; k++) {
 	A3()[i+k*M] = 0;
 	for(int j=0; j<N; j++) 
-	  A3()[i+k*M] += A1()[i+j*M]*A2()[j+k*N];
+	  A3.e(i,k) += A1.e(i,j)*A2.e(j,k);
       }
     }
     return A3;
@@ -830,9 +826,9 @@ namespace fmatvec {
   inline FixedVector<M, AT> operator*(const Matrix<GeneralFixed<M,N>, AT> &A, const FixedVector<M, AT> &x) {
     FixedVector<M, AT> y(NONINIT);
     for(int i=0; i<M; i++) {
-      y()[i] = 0;
+      y.e(i) = 0;
       for(int j=0; j<M; j++) 
-	y()[i] += A()[i+j*M]*x()[j];
+	y.e(i) += A.e(i,j)*x.e(j);
     }
     return y;
   }
@@ -841,7 +837,7 @@ namespace fmatvec {
   inline FixedVector<M, AT> operator*(double a, const FixedVector<M, AT> &x) {
     FixedVector<M, AT> y(NONINIT);
     for(int i=0; i<M; i++)
-      y()[i] = a*x()[i];
+      y.e(i) = a*x.e(i);
     return y;
   }
 
@@ -849,7 +845,7 @@ namespace fmatvec {
   inline FixedVector<M, AT> operator*(const FixedVector<M, AT> &x, double a) {
     FixedVector<M, AT> y(NONINIT);
     for(int i=0; i<M; i++)
-      y()[i] = a*x()[i];
+      y.e(i) = a*x.e(i);
     return y;
   }
 
@@ -857,7 +853,7 @@ namespace fmatvec {
   inline FixedVector<M, AT> operator/(const FixedVector<M, AT> &x, double a) {
     FixedVector<M, AT> y(NONINIT);
     for(int i=0; i<M; i++)
-      y()[i] = x()[i]/a;
+      y.e(i) = x.e(i)/a;
     return y;
   }
 
@@ -866,7 +862,16 @@ namespace fmatvec {
     Matrix<GeneralFixed<M,N>, AT> B(NONINIT);
     for(int i=0; i<N; i++)
       for(int j=0; j<M; j++)
-	B()[i+j*M] = A()[j+i*M];
+	B.e(i,j) = A.e(j,i);
+    return B;
+  }
+
+  template <int M, class AT>
+  inline FixedSquareMatrix<M, AT> trans(const FixedSquareMatrix<M, AT> &A) {
+    FixedSquareMatrix<M, AT> B(NONINIT);
+    for(int i=0; i<M; i++)
+      for(int j=0; j<M; j++)
+	B.e(i,j) = A.e(j,i);
     return B;
   }
 
@@ -875,7 +880,7 @@ namespace fmatvec {
 
    FixedVector<M, AT> &x = const_cast<FixedVector<M, AT> &>(x_);
     for(int i=0; i<M; i++) 
-      x()[i] += y()[i];
+      x.e(i) += y.e(i);
    return x;
   }
 
@@ -883,7 +888,7 @@ namespace fmatvec {
   inline FixedVector<M, AT> operator*=(const FixedVector<M, AT> &x_, double a) {
     FixedVector<M, AT> &x = const_cast<FixedVector<M, AT> &>(x_);
     for(int i=0; i<M; i++)
-      x()[i] *= a;
+      x.e(i) *= a;
     return x;
   }
 
@@ -892,9 +897,9 @@ namespace fmatvec {
 
       FixedVector<3,AT> z(NONINIT);
 
-      z()[0] = x()[1]*y()[2] - x()[2]*y()[1];
-      z()[1] = x()[2]*y()[0] - x()[0]*y()[2];
-      z()[2] = x()[0]*y()[1] - x()[1]*y()[0];
+      z.e(0) = x.e(1)*y.e(2) - x.e(2)*y.e(1);
+      z.e(1) = x.e(2)*y.e(0) - x.e(0)*y.e(2);
+      z.e(2) = x.e(0)*y.e(1) - x.e(1)*y.e(0);
 
       return z;
     }
@@ -904,15 +909,15 @@ namespace fmatvec {
 
       FixedSquareMatrix<3,AT> B(NONINIT);
 
-      B()[0] =  0;
-      B()[4] =  0;
-      B()[8] =  0;
-      B()[3] = -x()[2];
-      B()[6] =  x()[1];
-      B()[1] =  x()[2];
-      B()[7] = -x()[0];
-      B()[2] = -x()[1];
-      B()[5] =  x()[0];
+      B.e(0) =  0;
+      B.e(4) =  0;
+      B.e(8) =  0;
+      B.e(3) = -x.e(2);
+      B.e(6) =  x.e(1);
+      B.e(1) =  x.e(2);
+      B.e(7) = -x.e(0);
+      B.e(2) = -x.e(1);
+      B.e(5) =  x.e(0);
 
       return B;
     }
