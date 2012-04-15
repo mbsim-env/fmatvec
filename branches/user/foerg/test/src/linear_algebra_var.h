@@ -114,7 +114,7 @@ namespace fmatvec {
   template <class AT>
     inline VarVector<AT> operator*(const Matrix<VarGeneral, AT> &A, const VarVector<AT> &x) {
 #ifdef FMATVEC_SIZE_CHECK
-      assert(A1.cols() == x.size());
+      assert(A.cols() == x.size());
 #endif
       VarVector<AT> y(A.rows(),NONINIT);
       for(int i=0; i<y.size(); i++) {

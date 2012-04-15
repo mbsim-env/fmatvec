@@ -79,6 +79,8 @@ namespace fmatvec {
    * */
   typedef  Matrix<GeneralBand, double> BandMat;
 
+  typedef  Matrix<FixedGeneral<3,3>,double> FMat;
+
   typedef  FixedSquareMatrix<3,double> FSqrMat;
 
   typedef  FixedVector<3,double> FVec;
@@ -86,6 +88,8 @@ namespace fmatvec {
   typedef  FixedRowVector<3,double> FRowVec;
 
   typedef  Matrix<FixedSymmetric<3>,double> FSymMat;
+
+  typedef  Matrix<FixedVarGeneral<3>,double> FVMat;
 }
 
 #endif

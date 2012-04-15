@@ -92,7 +92,7 @@ namespace fmatvec {
   template <int M, class AT>
     inline FixedVector<M,AT> operator*(const Matrix<FixedVarGeneral<M>, AT> &A, const VarVector<AT> &x) {
 #ifdef FMATVEC_SIZE_CHECK
-      assert(A1.cols() == x.size());
+      assert(A.cols() == x.size());
 #endif
       FixedVector<M,AT> y(NONINIT);
       for(int i=0; i<M; i++) {
