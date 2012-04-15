@@ -62,13 +62,13 @@ namespace fmatvec {
       /*! \brief Standard constructor
        *
        * */
-      Matrix(int m, int n) : M(m), N(n), ele(new double[M*N]) {
+      Matrix(int m, int n) : M(m), N(n), ele(new AT[M*N]) {
 #ifndef FMATVEC_NO_INITIALIZATION 
 	init(0);
 #endif
       }
 
-      Matrix(int m, int n, Initialization ini, const AT &a=0) : M(m), N(n), ele(new double[M*N]) {  
+      Matrix(int m, int n, Initialization ini, const AT &a=0) : M(m), N(n), ele(new AT[M*N]) {  
 
 	if(ini == INIT) {
 	  for(int i=0; i<M*N; i++) 
@@ -90,12 +90,12 @@ namespace fmatvec {
        * referenced.
        * \param A The matrix that will be referenced.
        * */
-      Matrix(const Matrix<VarGeneral, AT> &A) : M(A.M), N(A.N), ele(new double[M*N]) {
+      Matrix(const Matrix<VarGeneral, AT> &A) : M(A.M), N(A.N), ele(new AT[M*N]) {
 	deepCopy(A);
       }
 
       template<class Type>
-      explicit Matrix(const Matrix<Type, AT> &A) : M(A.rows()), N(A.cols()), ele(new double[M*N]) {
+      explicit Matrix(const Matrix<Type, AT> &A) : M(A.rows()), N(A.cols()), ele(new AT[M*N]) {
 
 	deepCopy(A);
       }
@@ -365,7 +365,7 @@ namespace fmatvec {
     } while(iss);
 
     N++; M++;
-    ele = new double[M*N];
+    ele = new AT[M*N];
     iss.clear();
     iss.seekg(0);
     iss >> c;
@@ -462,7 +462,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    Matrix<VarGeneral, AT>::Matrix(std::vector<std::vector<AT> > m) : M(m.size()), N(m[0].size()), ele(new double[M*N]) {
+    Matrix<VarGeneral, AT>::Matrix(std::vector<std::vector<AT> > m) : M(m.size()), N(m[0].size()), ele(new AT[M*N]) {
       for(int r=0; r<rows(); r++) {
         assert(m[r].size()==cols());
         for(int c=0; c<cols(); c++)
