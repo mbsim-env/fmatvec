@@ -22,6 +22,7 @@
 #include "config.h"
 #include "symmetric_matrix.h"
 #include "fixed_symmetric_matrix.h"
+#include "var_symmetric_matrix.h"
 
 #define FMATVEC_NO_INITIALIZATION
 #define FMATVEC_NO_BOUNDS_CHECK

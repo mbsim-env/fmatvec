@@ -42,6 +42,17 @@ namespace fmatvec {
       return A3;
     }
 
+  template <int M, class AT>
+    inline Matrix<FixedVarGeneral<M>, AT> operator-(const Matrix<FixedVarGeneral<M>, AT> &A1, const Matrix<FixedVarGeneral<M>, AT> &A2) {
+#ifdef FMATVEC_SIZE_CHECK
+      assert(A1.cols() == A2.cols());
+#endif
+      Matrix<FixedVarGeneral<M>, AT> A3(A1.cols(),NONINIT);
+      for(int i=0; i<A3.rows()*A3.cols(); i++) 
+	A3.e(i) = A1.e(i) - A2.e(i);
+      return A3;
+    }
+
   template <int M, int N, class AT>
     inline Matrix<FixedVarGeneral<M>, AT> operator*(const Matrix<FixedVarGeneral<M>, AT> &A1, const Matrix<FixedVarGeneral<N>, AT> &A2) {
 #ifdef FMATVEC_SIZE_CHECK
@@ -57,6 +68,21 @@ namespace fmatvec {
       }
       return A3;
     }
+
+  template <int M, int N, class AT>
+    inline Matrix<FixedVarGeneral<M>, AT> operator*(const Matrix<FixedGeneral<M,N>, AT> &A1, const Matrix<FixedVarGeneral<N>, AT> &A2) {
+
+      Matrix<FixedVarGeneral<M>, AT> A3(A2.cols(),NONINIT);
+      for(int i=0; i<M; i++) {
+	for(int k=0; k<A3.cols(); k++) {
+	  A3.e(i,k) = 0;
+	  for(int j=0; j<N; j++) 
+	    A3.e(i,k) += A1.e(i,j)*A2.e(j,k);
+	}
+      }
+      return A3;
+    }
+
 
 //  template <class AT>
 //    inline FixedSquareMatrix<M,AT> operator*(const FixedSquareMatrix<M,AT> &A1, const FixedSquareMatrix<M,AT> &A2) {
@@ -235,34 +261,34 @@ namespace fmatvec {
 //      return sqrt(c);
 //    }
 //
-//  template <int N, class AT>
-//  inline Matrix<FixedSymmetric<N>, AT> JTJ(const Matrix<VarGeneral, AT> &A) { 
-//    Matrix<FixedSymmetric<N>, AT> S(NONINIT);
-//    for(int i=0; i<N; i++) {
-//	for(int k=i; k<N; k++) {
-//	  S.ej(i,k) = 0;
-//	  for(int j=0; j<M; j++) 
-//	    S.ej(i,k) += A.e(j,i)*A.e(j,k);
-//	}
-//      }
-//    return S;
-//  }
-//
-//  template <int N, class AT>
-//  inline Matrix<FixedSymmetric<N>, AT> JTMJ(const Matrix<FixedSymmetric<M>, AT> &B, const Matrix<VarGeneral, AT> &A) {
-//
-//    Matrix<FixedSymmetric<N>, AT> S(NONINIT);
-//    Matrix<VarGeneral, AT> C = B*A;
-//
-//    for(int i=0; i<N; i++) {
-//	for(int k=i; k<N; k++) {
-//	  S.ej(i,k) = 0;
-//	  for(int j=0; j<M; j++) 
-//	    S.ej(i,k) += A.e(j,i)*C.e(j,k);
-//	}
-//      }
-//    return S;
-//  }
+  template <int M, class AT>
+    inline Matrix<VarSymmetric, AT> JTJ(const Matrix<FixedVarGeneral<M>, AT> &A) { 
+      Matrix<VarSymmetric, AT> S(A.cols(),NONINIT);
+      for(int i=0; i<A.cols(); i++) {
+	for(int k=i; k<A.cols(); k++) {
+	  S.ej(i,k) = 0;
+	  for(int j=0; j<M; j++) 
+	    S.ej(i,k) += A.e(j,i)*A.e(j,k);
+	}
+      }
+      return S;
+    }
+
+  template <int M, class AT>
+  inline Matrix<VarSymmetric, AT> JTMJ(const Matrix<FixedSymmetric<M>, AT> &B, const Matrix<FixedVarGeneral<M>, AT> &A) {
+
+    Matrix<VarSymmetric, AT> S(A.cols(),NONINIT);
+    Matrix<FixedVarGeneral<M>, AT> C = B*A;
+
+    for(int i=0; i<A.cols(); i++) {
+	for(int k=i; k<A.cols(); k++) {
+	  S.ej(i,k) = 0;
+	  for(int j=0; j<M; j++) 
+	    S.ej(i,k) += A.e(j,i)*C.e(j,k);
+	}
+      }
+    return S;
+  }
 //
 //  template <class AT>
 //    inline Matrix<FixedSymmetric<M>, AT> operator+(const Matrix<FixedSymmetric<M>, AT> &A1, const Matrix<FixedSymmetric<M>, AT> &A2) {

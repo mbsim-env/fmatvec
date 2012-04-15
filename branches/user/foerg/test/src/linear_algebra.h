@@ -23,6 +23,7 @@
 #define linear_algebra_h
 
 #include "square_matrix.h"
+#include "fixed_vector.h"
 
 namespace fmatvec {
 
@@ -783,6 +784,31 @@ namespace fmatvec {
     }
     return k;
   }
+
+  template <int M, class AT>
+    inline Vector<AT>& operator+=(const Vector<AT> &x_, const FixedVector<M, AT> &y) {
+#ifdef FMATVEC_SIZE_CHECK
+      assert(x_.size() == M);
+#endif
+      Vector<AT> &x = const_cast<Vector<AT> &>(x_);
+      for(int i=0; i<M; i++) 
+	x.e(i) += y.e(i);
+      return x;
+    }
+
+  template <int M, class AT>
+    inline FixedVector<M,AT> operator*(const Matrix<FixedVarGeneral<M>, AT> &A, const Vector<AT> &x) {
+#ifdef FMATVEC_SIZE_CHECK
+      assert(A.cols() == x.size());
+#endif
+      FixedVector<M,AT> y(NONINIT);
+      for(int i=0; i<M; i++) {
+	y.e(i) = 0;
+	for(int j=0; j<A.cols(); j++) 
+	  y.e(i) += A.e(i,j)*x.e(j);
+      }
+      return y;
+    }
 
 }
 

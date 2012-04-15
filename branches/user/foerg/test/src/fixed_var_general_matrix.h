@@ -62,7 +62,7 @@ namespace fmatvec {
       /*! \brief Standard constructor
        *
        * */
-      Matrix(int n) : N(n), ele(new AT[M*N]) {
+      Matrix(int n=0) : N(n), ele(new AT[M*N]) {
 #ifndef FMATVEC_NO_INITIALIZATION 
 	init(0);
 #endif

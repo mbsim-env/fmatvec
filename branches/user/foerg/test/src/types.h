@@ -118,6 +118,9 @@ namespace fmatvec {
   class VarGeneral: public BasicType {
   };
 
+  class VarSymmetric: public BasicType {
+  };
+
   template<int M>
   class FixedVarGeneral: public BasicType {
   };
