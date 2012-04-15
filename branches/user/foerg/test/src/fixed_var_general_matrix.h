@@ -134,7 +134,7 @@ namespace fmatvec {
        * zero by default. To change this behavior, define
        * FMATVEC_NO_INITIALIZATION.
        * */
-      Matrix<FixedVarGeneral, AT>& resize(int n) {
+      Matrix<FixedVarGeneral<M>, AT>& resize(int n) {
 	delete[] ele;
 	N=n;
 	ele = new AT[M*N];
