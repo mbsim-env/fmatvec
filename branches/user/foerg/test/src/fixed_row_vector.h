@@ -22,7 +22,7 @@
 #ifndef fixed_row_vector_h
 #define fixed_row_vector_h
 
-#include "general_fixed_matrix.h"
+#include "fixed_general_matrix.h"
 
 namespace fmatvec {
 
@@ -31,14 +31,14 @@ namespace fmatvec {
   /*! 
    *  \brief This is a rowvector class of general shape in dense storage format.
    *
-   * Template class FixedRowVector of type GeneralFixed<1,N>, id. shape is general
+   * Template class FixedRowVector of type FixedGeneral<1,N>, id. shape is general
    * and storage form is dense. The template parameter AT defines the
    * atomic type of the rowvector. Valid types are int, float,
    * double, complex<float> and complex<double> 
    * */
-  template <int N, class AT> class FixedRowVector : public Matrix<GeneralFixed<1,N>, AT> {
+  template <int N, class AT> class FixedRowVector : public Matrix<FixedGeneral<1,N>, AT> {
 
-    using Matrix<GeneralFixed<1,N>, AT>::ele;
+    using Matrix<FixedGeneral<1,N>, AT>::ele;
 
     public:
 
@@ -62,7 +62,7 @@ namespace fmatvec {
        *
        * Constructs a rowvector with no size. 
        * */
-      FixedRowVector() : Matrix<GeneralFixed<1,N>, AT>() {
+      FixedRowVector() : Matrix<FixedGeneral<1,N>, AT>() {
       }
 
       /*! \brief String Constructor. 
@@ -77,7 +77,7 @@ namespace fmatvec {
        * \f[ x=\begin{pmatrix}3 1 2\end{pmatrix}  \f]
        * \param str The string the vector will be initialized with. 
        * */
-      FixedRowVector(const char *str) : Matrix<GeneralFixed<1,N>, AT>(str) {
+      FixedRowVector(const char *str) : Matrix<FixedGeneral<1,N>, AT>(str) {
       }
 
       /*! \brief Regular Constructor
@@ -90,14 +90,14 @@ namespace fmatvec {
        * \param ini INIT means initialization, NONINIT means no initialization.
        * \param a The value, the rowvector will be initialized with (default 0)
        * */
-      FixedRowVector(Initialization ini, const AT &a=0) : Matrix<GeneralFixed<1,N>, AT>(ini,a) {
+      FixedRowVector(Initialization ini, const AT &a=0) : Matrix<FixedGeneral<1,N>, AT>(ini,a) {
       }
 
       /*! \brief Copy Constructor
        *
        * See FixedRowVector(const FixedRowVector<AT>&) 
        * */
-      explicit FixedRowVector(const Matrix<GeneralFixed<1,N>, AT> &A) : Matrix<GeneralFixed<1,N>, AT>(A) {
+      explicit FixedRowVector(const Matrix<FixedGeneral<1,N>, AT> &A) : Matrix<FixedGeneral<1,N>, AT>(A) {
       }
 
       /*! \brief Copy Constructor
@@ -107,7 +107,7 @@ namespace fmatvec {
        * \em x will not be copied, only referenced.
        * \param x The rowvector that will be referenced.
        * */
-      FixedRowVector(const FixedRowVector<N,AT> &x) : Matrix<GeneralFixed<1,N>, AT>(x) {
+      FixedRowVector(const FixedRowVector<N,AT> &x) : Matrix<FixedGeneral<1,N>, AT>(x) {
       }
 
       /*! \brief Copy operator
@@ -190,7 +190,7 @@ namespace fmatvec {
        * */
       FixedRowVector<N,AT> copy() const;
 
-      using Matrix<GeneralFixed<1,N>, AT>::operator();
+      using Matrix<FixedGeneral<1,N>, AT>::operator();
 
       FixedVector<N,AT> T() {
 	FixedVector<N,AT> x(NONINIT);

@@ -21,7 +21,9 @@
 
 #include "config.h"
 #include "general_matrix.h"
-#include "general_fixed_matrix.h"
+#include "fixed_general_matrix.h"
+#include "var_general_matrix.h"
+#include "fixed_var_general_matrix.h"
 #include "symmetric_matrix.h"
 #include "blas_extensions_double.h"
 #include <iostream>

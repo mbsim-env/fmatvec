@@ -19,16 +19,16 @@
  *
  */
 
-#ifndef fixed_vector_h
-#define fixed_vector_h
+#ifndef var_vector_h
+#define var_vector_h
 
-#include "fixed_general_matrix.h"
+#include "var_general_matrix.h"
 #include <vector>
 #include <cstring>
 
 namespace fmatvec {
 
-  template <int N, class AT> class FixedRowVector;
+  template <class AT> class VarRowVector;
 
   /*! 
    *  \brief This is a vector class of general shape in dense storage format.
@@ -38,8 +38,9 @@ namespace fmatvec {
    * atomic type of the vector. Valid types are int, float,
    * double, complex<float> and complex<double> 
    * */
-  template <int M, class AT> class FixedVector : public Matrix<FixedGeneral<M,1>, AT> {
-    using Matrix<FixedGeneral<M,1>, AT>::ele;
+  template <class AT> class VarVector : public Matrix<VarGeneral, AT> {
+    using Matrix<VarGeneral, AT>::M;
+    using Matrix<VarGeneral, AT>::ele;
 
     public:
 
@@ -55,7 +56,7 @@ namespace fmatvec {
 
     protected:
 
-    void deepCopy(const FixedVector<M,AT> &x);
+    void deepCopy(const VarVector<AT> &x);
     void deepCopy(const Vector<AT> &x);
 
     /// @endcond
@@ -66,7 +67,7 @@ namespace fmatvec {
        *
        * Constructs a vector with no size. 
        * */
-      FixedVector() : Matrix<FixedGeneral<M,1>, AT>() {
+      VarVector(int M) : Matrix<VarGeneral, AT>(M,1) {
       }
 
       /*! \brief Regular Constructor
@@ -78,7 +79,7 @@ namespace fmatvec {
        * \param ini INIT means initialization, NONINIT means no initialization.
        * \param a The value, the vector will be initialized with (default 0)
        * */
-      FixedVector(Initialization ini, const AT &a=0) : Matrix<FixedGeneral<M,1>, AT>(ini,a) {
+      VarVector(int M, Initialization ini, const AT &a=0) : Matrix<VarGeneral, AT>(M,1,ini,a) {
       }
 
       /*! \brief String Constructor. 
@@ -93,7 +94,7 @@ namespace fmatvec {
        * \f[ x=\begin{pmatrix}3\\ 1 \\ 2\end{pmatrix}  \f]
        * \param str The string the vector will be initialized with. 
        * */
-      FixedVector(const char *str) : Matrix<FixedGeneral<M,1>, AT>(str) {
+      VarVector(const char *str) : Matrix<VarGeneral, AT>(str) {
       }
 
       /*! \brief Copy Constructor
@@ -103,7 +104,7 @@ namespace fmatvec {
        * \em x will not be copied, only referenced.
        * \param x The vector that will be referenced.
        * */
-      FixedVector(const FixedVector<M,AT> &x) : Matrix<FixedGeneral<M,1>, AT>(x) {
+      VarVector(const VarVector<AT> &x) : Matrix<VarGeneral, AT>(x) {
       }
 
       /*! \brief Copy Constructor
@@ -113,21 +114,21 @@ namespace fmatvec {
        * \em x will not be copied, only referenced.
        * \param x The vector that will be referenced.
        * */
-      explicit FixedVector(const Vector<AT> &x) : Matrix<FixedGeneral<M,1>, AT>(x) {
+      explicit VarVector(const Vector<AT> &x) : Matrix<VarGeneral, AT>(x) {
       }
 
       /*! \brief Copy Constructor
        *
        * See Vector(const Vector<AT>&) 
        * */
-      explicit FixedVector(const Matrix<FixedGeneral<M,1>, AT> &A) : Matrix<FixedGeneral<M,1>, AT>(A) {
+      explicit VarVector(const Matrix<VarGeneral, AT> &A) : Matrix<VarGeneral, AT>(A) {
       }
 
       /*! \brief Copy Constructor
        *
        * See Vector(const Vector<AT>&) 
        * */
-      explicit FixedVector(const Matrix<General, AT> &A) : Matrix<FixedGeneral<M,1>, AT>(A) {
+      explicit VarVector(const Matrix<General, AT> &A) : Matrix<VarGeneral, AT>(A) {
       }
 
       /*! \brief Copy operator
@@ -136,9 +137,9 @@ namespace fmatvec {
        * \param x The vector to be copied. 
        * \return A reference to the calling vector.
        * */
-      FixedVector<M,AT>& operator<<(const FixedVector<M,AT> &x);
+      VarVector<AT>& operator<<(const VarVector<AT> &x);
 
-      FixedVector<M,AT>& operator<<(const Vector<AT> &x);
+      VarVector<AT>& operator<<(const Vector<AT> &x);
 
       /*! \brief Assignment operator
        *
@@ -148,11 +149,11 @@ namespace fmatvec {
        * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
        * \sa operator<<(), operator>>()
        * */
-      FixedVector<M,AT>& operator=(const FixedVector<M,AT> &x) {
+      VarVector<AT>& operator=(const VarVector<AT> &x) {
 	return operator<<(x);
       }
 
-      FixedVector<M,AT>& operator=(const Vector<AT> &x) {
+      VarVector<AT>& operator=(const Vector<AT> &x) {
 	return operator<<(x);
       }
 
@@ -209,7 +210,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling vector.
        * */
-      FixedVector<M,AT>& init(const AT& a); 
+      VarVector<AT>& init(const AT& a); 
 
       /*! \brief Size.
        *
@@ -230,9 +231,9 @@ namespace fmatvec {
        * The calling vector returns a \em deep copy of itself.  
        * \return The duplicate of the calling vector.
        * */
-      FixedVector<M,AT> copy() const;
+      VarVector<AT> copy() const;
 
-      using Matrix<FixedGeneral<M,1>, AT>::operator();
+      using Matrix<VarGeneral, AT>::operator();
 
       /*! \brief Cast to std::vector<AT>.
        *
@@ -244,17 +245,17 @@ namespace fmatvec {
        * Constructs and initializes a vector with a std::vector<AT> object.
        * \param v The std::vector<AT> the vector will be initialized with. 
        * */
-      FixedVector(std::vector<AT> v);
+      VarVector(std::vector<AT> v);
 
-      FixedRowVector<M,AT> T() {
-	FixedRowVector<M,AT> x(NONINIT);
+      VarRowVector<AT> T() {
+	VarRowVector<AT> x(NONINIT);
 	for(int i=0; i<M; i++)
 	  x.e(i) = e(i);
 	return x;
       };
 
-      const FixedRowVector<M,AT> T() const {
-	FixedRowVector<M,AT> x(NONINIT);
+      const VarRowVector<AT> T() const {
+	VarRowVector<AT> x(NONINIT);
 	for(int i=0; i<M; i++)
 	  x.e(i) = e(i);
 	return x;
@@ -262,8 +263,8 @@ namespace fmatvec {
 
   };
 
-  template <int M, class AT>
-    FixedVector<M,AT>& FixedVector<M,AT>::init(const AT& val) {
+  template <class AT>
+    VarVector<AT>& VarVector<AT>::init(const AT& val) {
 
       for(int i=0; i<M; i++) 
 	e(i) = val; 
@@ -271,16 +272,16 @@ namespace fmatvec {
       return *this;
     }
 
-  template <int M, class AT>
-    FixedVector<M,AT>& FixedVector<M,AT>::operator<<(const FixedVector<M,AT> &x) { 
+  template <class AT>
+    VarVector<AT>& VarVector<AT>::operator<<(const VarVector<AT> &x) { 
 
       deepCopy(x);
 
       return *this;
     }
 
-  template <int M, class AT>
-    FixedVector<M,AT>& FixedVector<M,AT>::operator<<(const Vector<AT> &x) { 
+  template <class AT>
+    VarVector<AT>& VarVector<AT>::operator<<(const Vector<AT> &x) { 
 
 #ifdef FMATVEC_SIZE_CHECK
        assert(x.size() == M);
@@ -291,23 +292,23 @@ namespace fmatvec {
       return *this;
     }
 
-  template <int M, class AT>
-    FixedVector<M,AT> FixedVector<M,AT>::copy() const {
+  template <class AT>
+    VarVector<AT> VarVector<AT>::copy() const {
 
-      FixedVector<M,AT> x(NONINIT);
+      VarVector<AT> x(NONINIT);
       x.deepCopy(*this);
 
       return x;
     }
 
-  template <int M, class AT>
-    void FixedVector<M,AT>::deepCopy(const Vector<AT> &x) {
+  template <class AT>
+    void VarVector<AT>::deepCopy(const Vector<AT> &x) {
       for(int i=0; i<M; i++)
 	e(i) = x.e(i);
     }
 
-  template <int M, class AT>
-    void FixedVector<M,AT>::deepCopy(const FixedVector<M,AT> &x) {
+  template <class AT>
+    void VarVector<AT>::deepCopy(const VarVector<AT> &x) {
       for(int i=0; i<M; i++)
 	e(i) = x.e(i);
     }
