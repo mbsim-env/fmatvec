@@ -122,36 +122,23 @@ namespace fmatvec {
     }
 
 
-//  template <class AT>
-//    inline FixedSquareMatrix<M,AT> operator*(const FixedSquareMatrix<M,AT> &A1, const FixedSquareMatrix<M,AT> &A2) {
-//      FixedSquareMatrix<M,AT> A3(NONINIT);
-//      for(int i=0; i<A3.size(); i++) {
-//        for(int k=0; k<A3.size(); k++) {
-//          A3.e(i,k) = 0;
-//          for(int j=0; j<A1.size(); j++) 
-//            A3.e(i,k) += A1.e(i,j)*A2.e(j,k);
-//        }
-//      }
-//      return A3;
-//    }
+  template <int M, class AT>
+    inline Matrix<FixedVarGeneral<M>, AT> operator*(const Matrix<FixedSymmetric<M>, AT> &A1, const Matrix<FixedVarGeneral<M>, AT> &A2) {
 
-//  template <class AT>
-//    inline Matrix<VarGeneral, AT> operator*(const Matrix<FixedSymmetric<M>, AT> &A1, const Matrix<VarGeneral, AT> &A2) {
-//
-//    Matrix<VarGeneral, AT> A3(NONINIT);
-//
-//    for(int i=0; i<A.rows(); i++) {
-//	for(int k=0; k<A.cols(); k++) {
-//	  A3.e(i,k) = 0;
-//	  for(int j=0; j<i; j++) 
-//	    A3.e(i,k) += A1.ei(i,j)*A2.e(j,k);
-//	  for(int j=i; j<A1.cols(); j++) 
-//	    A3.e(i,k) += A1.ej(i,j)*A2.e(j,k);
-//	}
-//      }
-//
-//    return A3;
-//    }
+    Matrix<FixedVarGeneral<M>, AT> A3(A2.cols(),NONINIT);
+
+    for(int i=0; i<M; i++) {
+	for(int k=0; k<A3.cols(); k++) {
+	  A3.e(i,k) = 0;
+	  for(int j=0; j<i; j++) 
+	    A3.e(i,k) += A1.ei(i,j)*A2.e(j,k);
+	  for(int j=i; j<A1.cols(); j++) 
+	    A3.e(i,k) += A1.ej(i,j)*A2.e(j,k);
+	}
+      }
+
+    return A3;
+    }
 
   template <int M, class AT>
     inline FixedVector<M,AT> operator*(const Matrix<FixedVarGeneral<M>, AT> &A, const VarVector<AT> &x) {

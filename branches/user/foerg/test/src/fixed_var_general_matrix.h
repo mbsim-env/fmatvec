@@ -341,6 +341,8 @@ namespace fmatvec {
       template<int K> 
 	inline void add(const Index &I, const Index &J, const Matrix<FixedVarGeneral<K>, AT> &A);
 
+      template<class Type>
+      inline void assign(const Matrix<Type,AT> &A);
 
   };
   // ------------------------- Constructors -------------------------------------
@@ -532,6 +534,19 @@ namespace fmatvec {
 	 for(int c=0; c<cols(); c++)
 	   e(r,c)=m[r][c];
        }
+     }
+
+   template <int M, class AT> template <class Type>
+     inline void Matrix<FixedVarGeneral<M>, AT>::assign(const Matrix<Type,AT> &A) {
+#ifdef FMATVEC_SIZE_CHECK
+       assert(A.rows() == M);
+#endif
+       if(A.cols() != N) {
+	 delete[] ele;
+	 N = A.cols();
+	 ele = new AT[M*N];
+       }
+       deepCopy(A);
      }
 
    /// @cond NO_SHOW
