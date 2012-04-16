@@ -122,7 +122,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline FixedVector<M, AT> operator*(AT a, const FixedVector<M, AT> &x) {
+    inline FixedVector<M, AT> operator*(const AT &a, const FixedVector<M, AT> &x) {
       FixedVector<M, AT> y(NONINIT);
       for(int i=0; i<M; i++)
 	y.e(i) = a*x.e(i);
@@ -130,7 +130,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline FixedVector<M, AT> operator*(const FixedVector<M, AT> &x, AT a) {
+    inline FixedVector<M, AT> operator*(const FixedVector<M, AT> &x, const AT &a) {
       FixedVector<M, AT> y(NONINIT);
       for(int i=0; i<M; i++)
 	y.e(i) = a*x.e(i);
@@ -138,7 +138,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline FixedVector<M, AT> operator/(const FixedVector<M, AT> &x, AT a) {
+    inline FixedVector<M, AT> operator/(const FixedVector<M, AT> &x, const AT &a) {
       FixedVector<M, AT> y(NONINIT);
       for(int i=0; i<M; i++)
 	y.e(i) = x.e(i)/a;
@@ -146,7 +146,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline Matrix<FixedSymmetric<M>, AT> operator*(AT a, const Matrix<FixedSymmetric<M>,AT> &A) {
+    inline Matrix<FixedSymmetric<M>, AT> operator*(const AT &a, const Matrix<FixedSymmetric<M>,AT> &A) {
       Matrix<FixedSymmetric<M>, AT> B(NONINIT);
       for(int i=0; i<M; i++)
 	for(int j=i; j<M; j++)
@@ -155,7 +155,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline Matrix<FixedSymmetric<M>, AT> operator*(const Matrix<FixedSymmetric<M>,AT> &A, AT a) {
+    inline Matrix<FixedSymmetric<M>, AT> operator*(const Matrix<FixedSymmetric<M>,AT> &A, const AT &a) {
       Matrix<FixedSymmetric<M>, AT> B(NONINIT);
       for(int i=0; i<M; i++)
 	for(int j=i; j<M; j++)
@@ -191,7 +191,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline FixedVector<M, AT> operator*=(const FixedVector<M, AT> &x_, AT a) {
+    inline FixedVector<M, AT> operator*=(const FixedVector<M, AT> &x_, const AT &a) {
       FixedVector<M, AT> &x = const_cast<FixedVector<M, AT> &>(x_);
       for(int i=0; i<M; i++)
 	x.e(i) *= a;
