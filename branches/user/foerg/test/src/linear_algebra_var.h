@@ -43,6 +43,18 @@ namespace fmatvec {
     }
 
   template <class AT>
+    inline Matrix<VarSymmetric, AT> operator+(const Matrix<VarSymmetric, AT> &A1, const Matrix<VarSymmetric, AT> &A2) {
+#ifdef FMATVEC_SIZE_CHECK
+      assert(A1.size() == A2.size());
+#endif
+      Matrix<VarSymmetric, AT> A3(A1.size(),NONINIT);
+      for(int i=0; i<A3.size(); i++) 
+	for(int j=i; j<A3.size(); j++) 
+	  A3.ej(i,j) = A1.ej(i,j) + A2.ej(i,j);
+      return A3;
+    }
+
+  template <class AT>
     inline VarVector<AT> operator+(const VarVector<AT> &x1, const VarVector<AT> &x2) {
 #ifdef FMATVEC_SIZE_CHECK
       assert(x1.size() == x2.size());

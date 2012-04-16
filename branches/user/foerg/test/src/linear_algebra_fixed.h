@@ -307,7 +307,6 @@ namespace fmatvec {
     return S;
   }
 
-
   template <int M, class AT>
     inline Matrix<FixedSymmetric<M>, AT> operator+(const Matrix<FixedSymmetric<M>, AT> &A1, const Matrix<FixedSymmetric<M>, AT> &A2) {
       Matrix<FixedSymmetric<M>, AT> A3(NONINIT);
