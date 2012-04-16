@@ -26,6 +26,7 @@
 #include "linear_algebra_fixed.h"
 #include "linear_algebra_var.h"
 #include "linear_algebra_fixed_var.h"
+#include "linear_algebra_var_fixed.h"
 #include "linear_algebra_double.h"
 
 namespace fmatvec {

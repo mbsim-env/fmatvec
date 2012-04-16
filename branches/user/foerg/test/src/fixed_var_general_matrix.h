@@ -329,9 +329,9 @@ namespace fmatvec {
        * */
       inline Matrix(std::vector<std::vector<AT> > m);
 
-      inline Matrix<FixedVarGeneral<M>, AT> T();
+      inline Matrix<VarFixedGeneral<M>, AT> T();
 
-      inline const Matrix<FixedVarGeneral<M>, AT> T() const;
+      inline const Matrix<VarFixedGeneral<M>, AT> T() const;
 
       inline void set(int j, const FixedVector<M,AT> &x);
 
@@ -457,8 +457,8 @@ namespace fmatvec {
      }
 
    template <int M, class AT>
-     inline Matrix<FixedVarGeneral<M>, AT> Matrix<FixedVarGeneral<M>, AT>::T() {
-       Matrix<FixedVarGeneral<M>, AT> A(NONINIT);
+     inline Matrix<VarFixedGeneral<M>, AT> Matrix<FixedVarGeneral<M>, AT>::T() {
+       Matrix<VarFixedGeneral<M>, AT> A(cols(),NONINIT);
        for(int i=0; i<N; i++)
 	 for(int j=0; j<M; j++)
 	   A.e(i,j) = e(j,i);
@@ -466,8 +466,8 @@ namespace fmatvec {
      }
 
    template <int M, class AT>
-     inline const Matrix<FixedVarGeneral<M>, AT> Matrix<FixedVarGeneral<M>, AT>::T() const {
-       Matrix<FixedVarGeneral<M>, AT> A(NONINIT);
+     inline const Matrix<VarFixedGeneral<M>, AT> Matrix<FixedVarGeneral<M>, AT>::T() const {
+       Matrix<VarFixedGeneral<M>, AT> A(cols(),NONINIT);
        for(int i=0; i<N; i++)
 	 for(int j=0; j<M; j++)
 	   A.e(i,j) = e(j,i);

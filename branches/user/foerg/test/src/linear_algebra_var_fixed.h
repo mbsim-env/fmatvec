@@ -19,22 +19,41 @@
  *
  */
 
-#include "config.h"
-#include "general_matrix.h"
-#include "fixed_general_matrix.h"
-#include "var_general_matrix.h"
-#include "fixed_var_general_matrix.h"
-#include "var_fixed_general_matrix.h"
-#include "symmetric_matrix.h"
-#include "blas_extensions_double.h"
-#include <iostream>
-#include <sstream>
+#ifndef linear_algebra_var_fixed_h
+#define linear_algebra_var_fixed_h
 
-#define FMATVEC_NO_INITIALIZATION
-#define FMATVEC_NO_BOUNDS_CHECK
+#include "var_fixed_general_matrix.h"
+#include "fixed_vector.h"
+#include "var_vector.h"
 
 namespace fmatvec {
 
+  template <int N, class AT>
+    inline VarVector<AT> operator*(const Matrix<VarFixedGeneral<N>, AT> &A, const VarVector<AT> &x) {
+#ifdef FMATVEC_SIZE_CHECK
+      assert(N == x.size());
+#endif
+      VarVector<AT> y(A.rows(),NONINIT);
+      for(int i=0; i<A.rows(); i++) {
+	y.e(i) = 0;
+	for(int j=0; j<N; j++) 
+	  y.e(i) += A.e(i,j)*x.e(j);
+      }
+      return y;
+    }
+
+  template <int N, class AT>
+    inline VarVector<AT> operator*(const Matrix<VarFixedGeneral<N>, AT> &A, const FixedVector<N,AT> &x) {
+      VarVector<AT> y(A.rows(),NONINIT);
+      for(int i=0; i<A.rows(); i++) {
+	y.e(i) = 0;
+	for(int j=0; j<N; j++) 
+	  y.e(i) += A.e(i,j)*x.e(j);
+      }
+      return y;
+    }
 
 
 }
+
+#endif

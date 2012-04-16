@@ -125,6 +125,10 @@ namespace fmatvec {
   class FixedVarGeneral: public BasicType {
   };
 
+  template<int N>
+  class VarFixedGeneral: public BasicType {
+  };
+
 }
 
 #endif
