@@ -59,7 +59,7 @@ namespace fmatvec {
        *
        * Constructs a vector with no size. 
        * */
-      VarVector(int M) : Matrix<VarGeneral, AT>(M,1) {
+      VarVector(int m=0) : Matrix<VarGeneral, AT>(m,1) {
       }
 
       /*! \brief Regular Constructor
@@ -121,6 +121,11 @@ namespace fmatvec {
        * See Vector(const Vector<AT>&) 
        * */
       explicit VarVector(const Matrix<General, AT> &A) : Matrix<VarGeneral, AT>(A) {
+      }
+
+      VarVector<AT>& resize(int n) {
+	Matrix<VarGeneral, AT>::resize(n,1);
+	return *this;
       }
 
       /*! \brief Copy operator

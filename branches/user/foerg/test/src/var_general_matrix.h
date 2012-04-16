@@ -120,6 +120,18 @@ namespace fmatvec {
 	delete[] ele;
       }
 
+      Matrix<VarGeneral, AT>& resize(int m, int n) {
+	delete[] ele;
+	M=m;
+	N=n;
+	ele = new AT[M*N];
+
+#ifndef FMATVEC_NO_INITIALIZATION 
+	init(0);
+#endif
+	return *this;
+      }
+
       /*! \brief Assignment operator
        *
        * Copies the matrix given by \em A by calling operator<<().

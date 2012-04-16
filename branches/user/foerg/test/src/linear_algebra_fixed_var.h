@@ -53,6 +53,28 @@ namespace fmatvec {
       return A3;
     }
 
+  template <int M, class AT>
+    inline Matrix<FixedVarGeneral<M>, AT>& operator+=(const Matrix<FixedVarGeneral<M>, AT> &A1_, const Matrix<FixedVarGeneral<M>, AT> &A2) {
+#ifdef FMATVEC_SIZE_CHECK
+      assert(A1_.cols() == A2.cols());
+#endif
+      Matrix<FixedVarGeneral<M>, AT> &A1 = const_cast<Matrix<FixedVarGeneral<M>, AT> &>(A1_);
+      for(int i=0; i<A1.rows()*A1.cols(); i++) 
+	A1.e(i) += A2.e(i);
+      return A1;
+    }
+
+  template <int M, class AT>
+    inline Matrix<FixedVarGeneral<M>, AT>& operator-=(const Matrix<FixedVarGeneral<M>, AT> &A1_, const Matrix<FixedVarGeneral<M>, AT> &A2) {
+#ifdef FMATVEC_SIZE_CHECK
+      assert(A1_.cols() == A2.cols());
+#endif
+      Matrix<FixedVarGeneral<M>, AT> &A1 = const_cast<Matrix<FixedVarGeneral<M>, AT> &>(A1_);
+      for(int i=0; i<A1.rows()*A1.cols(); i++) 
+	A1.e(i) -= A2.e(i);
+      return A1;
+    }
+
   template <int M, int N, class AT>
     inline Matrix<FixedVarGeneral<M>, AT> operator*(const Matrix<FixedVarGeneral<M>, AT> &A1, const Matrix<FixedVarGeneral<N>, AT> &A2) {
 #ifdef FMATVEC_SIZE_CHECK
@@ -63,6 +85,22 @@ namespace fmatvec {
 	for(int k=0; k<A3.cols(); k++) {
 	  A3.e(i,k) = 0;
 	  for(int j=0; j<N; j++) 
+	    A3.e(i,k) += A1.e(i,j)*A2.e(j,k);
+	}
+      }
+      return A3;
+    }
+
+  template <int M, class AT>
+    inline Matrix<FixedVarGeneral<M>, AT> operator*(const Matrix<FixedVarGeneral<M>, AT> &A1, const Matrix<VarGeneral, AT> &A2) {
+#ifdef FMATVEC_SIZE_CHECK
+      assert(A1.cols() == A2.rows());
+#endif
+      Matrix<FixedVarGeneral<M>, AT> A3(A2.cols(),NONINIT);
+      for(int i=0; i<M; i++) {
+	for(int k=0; k<A3.cols(); k++) {
+	  A3.e(i,k) = 0;
+	  for(int j=0; j<A2.rows(); j++) 
 	    A3.e(i,k) += A1.e(i,j)*A2.e(j,k);
 	}
       }
