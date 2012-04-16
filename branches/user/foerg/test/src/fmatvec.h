@@ -91,6 +91,10 @@ namespace fmatvec {
 
   typedef  Matrix<VarSymmetric,double> VSymMat;
 
+  typedef  Matrix<VarGeneral,double> VMat;
+
+  typedef  VarVector<double> VVec;
+
   typedef  Matrix<FixedVarGeneral<3>,double> FVMat;
 }
 

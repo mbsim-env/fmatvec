@@ -121,13 +121,6 @@ namespace fmatvec {
        * */
       int size() const {return M;};
 
-      /*! \brief Matrix duplicating.
-       *
-       * The calling matrix returns a \em deep copy of itself.  
-       * \return The duplicate.
-       * */
-      FixedSquareMatrix<M,AT> copy() const;
-
       using Matrix<FixedGeneral<M,M>, AT>::operator();
       using Matrix<FixedGeneral<M,M>, AT>::e;
 
@@ -135,37 +128,34 @@ namespace fmatvec {
        *
        * \return The std::vector<std::vector<AT> > representation of the matrix
        * */
-      operator std::vector<std::vector<AT> >();
+      inline operator std::vector<std::vector<AT> >();
 
-      FixedSquareMatrix<M,AT> T() {
-	FixedSquareMatrix<M,AT> A(NONINIT);
-	for(int i=0; i<M; i++)
-	  for(int j=0; j<M; j++)
-	    A.e(i,j) = e(j,i);
-	return A;
-      };
+      inline FixedSquareMatrix<M,AT> T();
 
-      const FixedSquareMatrix<M,AT> T() const {
-	FixedSquareMatrix<M,AT> A(NONINIT);
-	for(int i=0; i<M; i++)
-	  for(int j=0; j<M; j++)
-	    A.e(i,j) = e(j,i);
-	return A;
-      }
+      inline const FixedSquareMatrix<M,AT> T() const;
 
   };
 
   template <int M, class AT>
-    FixedSquareMatrix<M,AT> FixedSquareMatrix<M,AT>::copy() const {
-
+    inline FixedSquareMatrix<M,AT> FixedSquareMatrix<M,AT>::T() {
       FixedSquareMatrix<M,AT> A(NONINIT);
-      A.deepCopy(*this);
-
+      for(int i=0; i<M; i++)
+	for(int j=0; j<M; j++)
+	  A.e(i,j) = e(j,i);
       return A;
     }
 
   template <int M, class AT>
-    FixedSquareMatrix<M,AT>::operator std::vector<std::vector<AT> >() {
+    inline const FixedSquareMatrix<M,AT> FixedSquareMatrix<M,AT>::T() const {
+      FixedSquareMatrix<M,AT> A(NONINIT);
+      for(int i=0; i<M; i++)
+	for(int j=0; j<M; j++)
+	  A.e(i,j) = e(j,i);
+      return A;
+    }
+
+  template <int M, class AT>
+    inline FixedSquareMatrix<M,AT>::operator std::vector<std::vector<AT> >() {
       std::vector<std::vector<AT> > ret(size());
       for(int r=0; r<size(); r++) {
 	ret[r].resize(size());

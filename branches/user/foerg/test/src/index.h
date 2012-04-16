@@ -83,6 +83,12 @@ namespace fmatvec {
        * \return Returns the last element. 
        */
       int end() const {return i2;}
+
+      /*! \brief Size
+       *
+       * \return Returns the Size. 
+       */
+      int size() const {return i2-i1+1;}
   };
 
   /*! \brief Equality operator for indices.
