@@ -27,7 +27,7 @@
 #include "fixed_vector.h"
 #include "var_vector.h"
 //#include "var_row_vector.h"
-//#include "var_symmetric_matrix.h"
+#include "var_symmetric_matrix.h"
 
 namespace fmatvec {
 
@@ -195,7 +195,7 @@ namespace fmatvec {
 //    }
 //
 //  template <class AT>
-//    inline VarVector<AT> operator*(double a, const VarVector<AT> &x) {
+//    inline VarVector<AT> operator*(const AT &a, const VarVector<AT> &x) {
 //      VarVector<AT> y(NONINIT);
 //      for(int i=0; i<M; i++)
 //	y.e(i) = a*x.e(i);
@@ -203,7 +203,7 @@ namespace fmatvec {
 //    }
 //
 //  template <class AT>
-//    inline VarVector<AT> operator*(const VarVector<AT> &x, double a) {
+//    inline VarVector<AT> operator*(const VarVector<AT> &x, const AT &a) {
 //      VarVector<AT> y(NONINIT);
 //      for(int i=0; i<M; i++)
 //	y.e(i) = a*x.e(i);
@@ -211,7 +211,7 @@ namespace fmatvec {
 //    }
 //
 //  template <class AT>
-//    inline VarVector<AT> operator/(const VarVector<AT> &x, double a) {
+//    inline VarVector<AT> operator/(const VarVector<AT> &x, const AT &a) {
 //      VarVector<AT> y(NONINIT);
 //      for(int i=0; i<M; i++)
 //	y.e(i) = x.e(i)/a;
@@ -246,7 +246,7 @@ namespace fmatvec {
 //    }
 //
 //  template <class AT>
-//    inline VarVector<AT> operator*=(const VarVector<AT> &x_, double a) {
+//    inline VarVector<AT> operator*=(const VarVector<AT> &x_, const AT &a) {
 //      VarVector<AT> &x = const_cast<VarVector<AT> &>(x_);
 //      for(int i=0; i<M; i++)
 //	x.e(i) *= a;

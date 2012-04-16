@@ -138,21 +138,40 @@ namespace fmatvec {
 //      return y;
 //    }
 //
-//  template <class AT>
-//    inline VarVector<AT> operator*(double a, const VarVector<AT> &x) {
-//      VarVector<AT> y(NONINIT);
-//      for(int i=0; i<M; i++)
-//	y.e(i) = a*x.e(i);
-//      return y;
-//    }
-//
-//  template <class AT>
-//    inline VarVector<AT> operator*(const VarVector<AT> &x, double a) {
-//      VarVector<AT> y(NONINIT);
-//      for(int i=0; i<M; i++)
-//	y.e(i) = a*x.e(i);
-//      return y;
-//    }
+  template <class AT>
+    inline VarVector<AT> operator*(const AT &a, const VarVector<AT> &x) {
+      VarVector<AT> y(x.size(),NONINIT);
+      for(int i=0; i<x.size(); i++)
+	y.e(i) = a*x.e(i);
+      return y;
+    }
+
+  template <class AT>
+    inline VarVector<AT> operator*(const VarVector<AT> &x, const AT &a) {
+      VarVector<AT> y(x.size(),NONINIT);
+      for(int i=0; i<x.size(); i++)
+	y.e(i) = a*x.e(i);
+      return y;
+    }
+
+  template <class AT>
+    inline Matrix<VarSymmetric,AT> operator*(const AT &a, const Matrix<VarSymmetric,AT> &A) {
+      Matrix<VarSymmetric,AT> B(A.size(),NONINIT);
+      for(int i=0; i<A.size(); i++)
+	for(int j=i; j<A.size(); j++)
+	  B.ej(i,j) = a*A.ej(i,j);
+      return B;
+    }
+
+  template <class AT>
+    inline Matrix<VarSymmetric,AT> operator*(const Matrix<VarSymmetric,AT> &A, const AT &a) {
+      Matrix<VarSymmetric,AT> B(A.size(),NONINIT);
+      for(int i=0; i<A.size(); i++)
+	for(int j=i; j<A.size(); j++)
+	  B.ej(i,j) = a*A.ej(i,j);
+      return B;
+    }
+
 //
 //  template <class AT>
 //    inline VarVector<AT> operator/(const VarVector<AT> &x, double a) {
