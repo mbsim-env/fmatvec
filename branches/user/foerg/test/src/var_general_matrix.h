@@ -73,8 +73,8 @@ namespace fmatvec {
 	} else if(ini == EYE ) {
 	  for(int i=0; i<M; i++) {
 	    for(int j=0; j<N; j++) {
-	      if (i==j) e(i,j) = 1; // operator()(i,i) = 1;
-	      else e(i,j) = 0; // operator()(i,j) = 0;
+	      if (i==j) e(i,j) = 1;
+	      else e(i,j) = 0;
 	    }
 	  }
 	}
@@ -320,7 +320,7 @@ namespace fmatvec {
       inline void set(int j, VarVector<AT> &x);
 
   };
-  // ------------------------- Constructors -------------------------------------
+
   template <class AT> 
     Matrix<VarGeneral, AT>::Matrix(const char *strs) {
     // if 'strs' is a single scalar, surround it first with '[' and ']'.
@@ -363,9 +363,8 @@ namespace fmatvec {
 	iss >> c;
       }
   }
-  // ----------------------------------------------------------------------------
 
-   template <class AT> template< class Type>
+  template <class AT> template< class Type>
     inline Matrix<VarGeneral, AT>& Matrix<VarGeneral, AT>::operator<<(const Matrix<Type, AT> &A) { 
 
 #ifndef FMATVEC_NO_SIZE_CHECK
@@ -378,7 +377,7 @@ namespace fmatvec {
       return *this;
     }
 
-   template <class AT>
+  template <class AT>
     inline Matrix<VarGeneral, AT>& Matrix<VarGeneral, AT>::operator<<(const Matrix<VarGeneral, AT> &A) { 
 
       deepCopy(A);
@@ -390,7 +389,7 @@ namespace fmatvec {
     inline Matrix<VarGeneral, AT>& Matrix<VarGeneral, AT>::init(const AT& val) {
 
       for(int i=0; i<M*N; i++) 
-	e(i) = val;
+        e(i) = val;
 
       return *this;
     }
@@ -406,7 +405,7 @@ namespace fmatvec {
       VarVector<AT> x(M,NONINIT);
 
       for(int i=0; i<M; i++)
-	x.e(i) = e(i,j);
+        x.e(i) = e(i,j);
 
       return x;
     }
@@ -422,7 +421,7 @@ namespace fmatvec {
       VarVector<AT> x(M,NONINIT);
 
       for(int i=0; i<M; i++)
-	x.e(i) = e(i,j);
+        x.e(i) = e(i,j);
 
       return x;
 
@@ -432,8 +431,8 @@ namespace fmatvec {
     inline Matrix<VarGeneral, AT> Matrix<VarGeneral, AT>::T() {
       Matrix<VarGeneral, AT> A(N,M,NONINIT);
       for(int i=0; i<N; i++)
-	for(int j=0; j<M; j++)
-	  A.e(i,j) = e(j,i);
+        for(int j=0; j<M; j++)
+          A.e(i,j) = e(j,i);
       return A;
     }
 
@@ -441,15 +440,15 @@ namespace fmatvec {
     inline const Matrix<VarGeneral, AT> Matrix<VarGeneral, AT>::T() const {
       Matrix<VarGeneral, AT> A(N,M,NONINIT);
       for(int i=0; i<N; i++)
-	for(int j=0; j<M; j++)
-	  A.e(i,j) = e(j,i);
+        for(int j=0; j<M; j++)
+          A.e(i,j) = e(j,i);
       return A;
     }
 
   template <class AT>
     inline void Matrix<VarGeneral, AT>::set(int j, VarVector<AT> &x) {
       for(int i=0; i<M; i++)
-	e(i,j) = x.e(i);
+        e(i,j) = x.e(i);
     }
 
   template <class AT>
@@ -472,22 +471,22 @@ namespace fmatvec {
       }
     }
 
-   /// @cond NO_SHOW
-   
+  /// @cond NO_SHOW
+
   template <class AT> template <class Type>
-  inline void Matrix<VarGeneral, AT>::deepCopy(const Matrix<Type, AT> &A) { 
+    inline void Matrix<VarGeneral, AT>::deepCopy(const Matrix<Type, AT> &A) { 
       for(int i=0; i<M; i++) 
-	for(int j=0; j<N; j++)
-	  e(i,j) = A.e(i,j);
+        for(int j=0; j<N; j++)
+          e(i,j) = A.e(i,j);
     }
 
   template<class AT>
-  inline void Matrix<VarGeneral,AT>::deepCopy(const Matrix<VarGeneral,AT> &A) {
+    inline void Matrix<VarGeneral,AT>::deepCopy(const Matrix<VarGeneral,AT> &A) {
       for(int i=0; i<M*N; i++) 
-	e(i) = A.e(i);
+        e(i) = A.e(i);
     }
 
-   /// @endcond
+  /// @endcond
 
 }
 
