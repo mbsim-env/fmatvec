@@ -30,11 +30,6 @@
 
 namespace fmatvec {
 
-  template <>
-  void RowVector<double>::deepCopy(const RowVector<double> &x) { 
-    dcopy(n, x.ele, x.inc(), ele,inc());
-  }
-
 }
 
 

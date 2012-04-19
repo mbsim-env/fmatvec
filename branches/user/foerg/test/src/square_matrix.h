@@ -246,7 +246,7 @@ namespace fmatvec {
        * The calling matrix returns a \em deep copy of itself.  
        * \return The duplicate.
        * */
-      SquareMatrix<AT> copy() const;
+      inline SquareMatrix<AT> copy() const;
 
       using Matrix<General, AT>::operator();
       using Matrix<General, AT>::resize;
@@ -255,7 +255,7 @@ namespace fmatvec {
        *
        * \return The std::vector<std::vector<AT> > representation of the matrix
        * */
-      operator std::vector<std::vector<AT> >();
+      inline operator std::vector<std::vector<AT> >();
 
       SquareMatrix<AT> T() {
 	return SquareMatrix<AT>(n, lda, tp?false:true, memory, ele);
@@ -267,7 +267,7 @@ namespace fmatvec {
   };
 
   template <class AT>
-    SquareMatrix<AT> SquareMatrix<AT>::copy() const {
+    inline SquareMatrix<AT> SquareMatrix<AT>::copy() const {
 
       SquareMatrix<AT> A(m,NONINIT);
       A.deepCopy(*this);
@@ -276,7 +276,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    SquareMatrix<AT>::operator std::vector<std::vector<AT> >() {
+    inline SquareMatrix<AT>::operator std::vector<std::vector<AT> >() {
       std::vector<std::vector<AT> > ret(size());
       if(tp) {
 	for(int r=0; r<size(); r++) {

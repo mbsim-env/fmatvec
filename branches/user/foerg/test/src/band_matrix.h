@@ -49,7 +49,7 @@ namespace fmatvec {
       int kl;
       int ku;
 
-      void deepCopy(const Matrix<GeneralBand, AT> &A); 
+      inline void deepCopy(const Matrix<GeneralBand, AT> &A); 
 
       Matrix(int n_, int kl_, int ku_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_), kl(kl_), ku(ku_) {
       }
@@ -210,7 +210,7 @@ namespace fmatvec {
        * \param A The matrix to be copied. 
        * \return A reference to the calling matrix.
        * */
-      Matrix<GeneralBand, AT>& operator<<(const Matrix<GeneralBand, AT> &A);
+      inline Matrix<GeneralBand, AT>& operator<<(const Matrix<GeneralBand, AT> &A);
 
       /*! \brief Reference operator
        *
@@ -218,7 +218,7 @@ namespace fmatvec {
        * \param A The matrix to be referenced. 
        * \return A reference to the calling matrix.
        * */
-      Matrix<GeneralBand, AT>& operator>>(const Matrix<GeneralBand, AT> &A);
+      inline Matrix<GeneralBand, AT>& operator>>(const Matrix<GeneralBand, AT> &A);
 
       /*! \brief Element operator
        *
@@ -291,7 +291,7 @@ namespace fmatvec {
        *
        * See operator()(int) 
        * */
-      const Vector<AT> operator()(int i) const;
+      inline const Vector<AT> operator()(int i) const;
 
       /*! \brief Diagonal operator
        *
@@ -300,7 +300,7 @@ namespace fmatvec {
        * \param i The i-th super- and subdiagonal,
        * respectively.
        * */
-      Vector<AT> operator()(int i);
+      inline Vector<AT> operator()(int i);
 
       /*! \brief Matrix unsizing.
        *
@@ -314,7 +314,7 @@ namespace fmatvec {
        * The calling matrix returns a \em deep copy of itself.  
        * \return The duplicate.
        * */
-      Matrix<GeneralBand, AT> copy() const;
+      inline Matrix<GeneralBand, AT> copy() const;
 
       /*! \brief Initialization.
        *
@@ -323,17 +323,17 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      Matrix<GeneralBand, AT>& init(const AT &a);
+      inline Matrix<GeneralBand, AT>& init(const AT &a);
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
        * \return The std::vector<std::vector<AT> > representation of the matrix
        * */
-      operator std::vector<std::vector<AT> >();
+      inline operator std::vector<std::vector<AT> >();
   };
 
   template <class AT>
-    Matrix<GeneralBand, AT>& Matrix<GeneralBand, AT>::operator>>(const Matrix<GeneralBand, AT> &A) { 
+    inline Matrix<GeneralBand, AT>& Matrix<GeneralBand, AT>::operator>>(const Matrix<GeneralBand, AT> &A) { 
 
       if(n==0) {
 	n=A.n;
@@ -350,7 +350,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    Matrix<GeneralBand, AT>& Matrix<GeneralBand, AT>::operator<<(const Matrix<GeneralBand, AT> &A) { 
+    inline Matrix<GeneralBand, AT>& Matrix<GeneralBand, AT>::operator<<(const Matrix<GeneralBand, AT> &A) { 
 
       if(A.rows() == 0 || A.cols() == 0)
 	return *this;
@@ -371,7 +371,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    Matrix<GeneralBand, AT>&  Matrix<GeneralBand, AT>::init(const AT& val) {
+    inline Matrix<GeneralBand, AT>&  Matrix<GeneralBand, AT>::init(const AT& val) {
 
       for(int i=0; i<kl+ku+1; i++)
 	for(int j=0; j<n; j++)
@@ -381,7 +381,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    Vector<AT> Matrix<GeneralBand, AT>::operator()(int i) {
+    inline Vector<AT> Matrix<GeneralBand, AT>::operator()(int i) {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i<=ku);
       assert(i>=-kl);
@@ -393,7 +393,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    const Vector<AT> Matrix<GeneralBand, AT>::operator()(int i) const {
+    inline const Vector<AT> Matrix<GeneralBand, AT>::operator()(int i) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i<=ku);
       assert(i>=-kl);
@@ -404,7 +404,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    Matrix<GeneralBand, AT> Matrix<GeneralBand, AT>::copy() const {
+    inline Matrix<GeneralBand, AT> Matrix<GeneralBand, AT>::copy() const {
 
       Matrix<GeneralBand, AT> A(n,kl,ku);
       A.deepCopy(*this);
@@ -413,15 +413,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    void Matrix<GeneralBand, AT>::deepCopy(const Matrix<GeneralBand, AT> &A) { 
-
-      for(int i=0; i<kl+ku+1; i++)
-	for(int j=0; j<n; j++)
-	  ele[i+j*(kl+ku+1)] = A.ele[i+j*(kl+ku+1)];
-    }
-
-  template <class AT>
-    Matrix<GeneralBand, AT>::operator std::vector<std::vector<AT> >() {
+    inline Matrix<GeneralBand, AT>::operator std::vector<std::vector<AT> >() {
       std::vector<std::vector<AT> > ret(rows());
       for(int r=0; r<rows(); r++) {
         ret[r].resize(cols());
@@ -431,7 +423,18 @@ namespace fmatvec {
       return ret;
     }
 
-  //extern void Matrix<GeneralBand, double>::deepCopy(const Matrix<GeneralBand, double> &A);
+  /// @cond NO_SHOW
+
+  template <class AT>
+    inline void Matrix<GeneralBand, AT>::deepCopy(const Matrix<GeneralBand, AT> &A) { 
+
+      for(int i=0; i<kl+ku+1; i++)
+	for(int j=0; j<n; j++)
+	  ele[i+j*(kl+ku+1)] = A.ele[i+j*(kl+ku+1)];
+    }
+
+  /// @endcond
+
 }
 
 #endif

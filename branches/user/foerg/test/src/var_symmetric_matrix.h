@@ -275,8 +275,6 @@ namespace fmatvec {
        * */
       inline operator std::vector<std::vector<AT> >();
   };
-  // ------------------------- Constructors -------------------------------------
-  // ----------------------------------------------------------------------------
 
   template <class AT>
     inline Matrix<VarSymmetric, AT>& Matrix<VarSymmetric, AT>::operator<<(const Matrix<VarSymmetric, AT> &A) { 
@@ -297,14 +295,6 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline void Matrix<VarSymmetric, AT>::deepCopy(const Matrix<VarSymmetric, AT> &A) { 
-      for(int i=0; i<M; i++) 
-	for(int j=i; j<M; j++) 
-	  ej(i,j) = A.ej(i,j);
-    }
-
-
-  template <class AT>
     inline Matrix<VarSymmetric, AT>::operator std::vector<std::vector<AT> >() {
       std::vector<std::vector<AT> > ret(rows());
       for(int r=0; r<rows(); r++) {
@@ -314,6 +304,17 @@ namespace fmatvec {
       }
       return ret;
     }
+
+  /// @cond NO_SHOW
+
+  template <class AT>
+    inline void Matrix<VarSymmetric, AT>::deepCopy(const Matrix<VarSymmetric, AT> &A) { 
+      for(int i=0; i<M; i++) 
+	for(int j=i; j<M; j++) 
+	  ej(i,j) = A.ej(i,j);
+    }
+
+  /// @endcond
 
 }
 
