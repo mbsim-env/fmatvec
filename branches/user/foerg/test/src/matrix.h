@@ -22,9 +22,6 @@
 #ifndef matrix_h
 #define matrix_h
 
-#define FMATVEC_SIZE_CHECK
-#define FMATVEC_VOID_CHECK
-
 #include <cassert>
 #include <fstream>
 #include <sstream>

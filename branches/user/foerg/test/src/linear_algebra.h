@@ -787,7 +787,7 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline Vector<AT>& operator+=(const Vector<AT> &x_, const FixedVector<M, AT> &y) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(x_.size() == M);
 #endif
       Vector<AT> &x = const_cast<Vector<AT> &>(x_);
@@ -798,7 +798,7 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline FixedVector<M,AT> operator*(const Matrix<FixedVarGeneral<M>, AT> &A, const Vector<AT> &x) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.cols() == x.size());
 #endif
       FixedVector<M,AT> y(NONINIT);

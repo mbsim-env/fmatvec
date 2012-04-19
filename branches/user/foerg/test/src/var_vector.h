@@ -263,7 +263,7 @@ namespace fmatvec {
   template <class AT>
     inline VarVector<AT>& VarVector<AT>::operator<<(const Vector<AT> &x) { 
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
        assert(x.size() == M);
 #endif
 

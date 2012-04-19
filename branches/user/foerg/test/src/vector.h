@@ -128,7 +128,7 @@ namespace fmatvec {
        * \param str The string the vector will be initialized with. 
        * */
       Vector(const char *str) : Matrix<General, AT>(str) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(n==1);
 #endif
       }
@@ -149,7 +149,7 @@ namespace fmatvec {
        * */
       explicit Vector(const Matrix<General, AT> &x) : Matrix<General, AT>(x) {
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(x.cols()==1);
 #endif
       }
@@ -392,7 +392,7 @@ namespace fmatvec {
 	memory.resize(m);
 	ele = (AT*)memory.get();
       } else {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(m == x.m);
 #endif
       }
@@ -409,7 +409,7 @@ namespace fmatvec {
 	m = x.m; 
 	n = x.n;
       } else {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(m == x.m);
 #endif
       }

@@ -30,7 +30,7 @@ namespace fmatvec {
 
   template <int N, class AT>
     inline VarVector<AT> operator*(const Matrix<VarFixedGeneral<N>, AT> &A, const VarVector<AT> &x) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(N == x.size());
 #endif
       VarVector<AT> y(A.rows(),NONINIT);

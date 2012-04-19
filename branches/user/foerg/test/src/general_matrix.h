@@ -579,7 +579,7 @@ namespace fmatvec {
 	m=A.m; 
 	n=A.n;
       } else {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(m == A.m);
 	assert(n == A.n);
 #endif
@@ -607,7 +607,7 @@ namespace fmatvec {
 	memory.resize(m*n);
 	ele = (AT*)memory.get();
       } else {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(m == A.rows());
 	assert(n == A.cols());
 #endif

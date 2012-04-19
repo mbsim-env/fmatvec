@@ -25,9 +25,6 @@
 #include "types.h"
 #include <stdlib.h>
 
-#define FMATVEC_SIZE_CHECK
-#define FMATVEC_VOID_CHECK
-
 namespace fmatvec {
 
   template <class AT> class VarVector;
@@ -371,7 +368,7 @@ namespace fmatvec {
    template <class AT> template< class Type>
     inline Matrix<VarGeneral, AT>& Matrix<VarGeneral, AT>::operator<<(const Matrix<Type, AT> &A) { 
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.rows() == M); 
       assert(A.cols() == N);
 #endif

@@ -177,7 +177,7 @@ namespace fmatvec {
        * See SquareMatrix(const SquareMatrix<AT>&) 
        * */
       explicit SquareMatrix(const Matrix<General, AT>&  A) : Matrix<General, AT>(A) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(A.rows() == A.cols());
 #endif
       }

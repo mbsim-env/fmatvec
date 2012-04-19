@@ -93,7 +93,7 @@ namespace fmatvec {
        * \param str The string the vector will be initialized with. 
        * */
       RowVector(const char *str) : Matrix<General, AT>(str) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(m==1);
 #endif
       }
@@ -347,7 +347,7 @@ namespace fmatvec {
 	memory.resize(n);
 	ele = (AT*)memory.get();
       } else {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(n == x.n);
 #endif
       }
@@ -364,7 +364,7 @@ namespace fmatvec {
 	m = x.m; 
 	n = x.n;
       } else {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(n == x.n);
 #endif
       }

@@ -267,7 +267,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 	n=A.n;
 	k=A.k;
       } else {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(m == A.m);
 	assert(n == A.n);
 	assert(k == A.k);

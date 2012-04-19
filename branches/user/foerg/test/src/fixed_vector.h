@@ -257,7 +257,7 @@ namespace fmatvec {
   template <int M, class AT>
     inline FixedVector<M,AT>& FixedVector<M,AT>::operator<<(const Vector<AT> &x) { 
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
        assert(x.size() == M);
 #endif
 

@@ -103,7 +103,7 @@ namespace fmatvec {
       template<class Type>
       explicit Matrix(const Matrix<Type, AT> &A) {
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(A.rows() == M); 
 	assert(A.cols() == M);
 #endif

@@ -32,7 +32,7 @@ namespace fmatvec {
 
   template <class AT>
     inline Matrix<VarGeneral, AT> operator+(const Matrix<VarGeneral, AT> &A1, const Matrix<VarGeneral, AT> &A2) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A1.rows() == A2.rows());
       assert(A1.cols() == A2.cols());
 #endif
@@ -44,7 +44,7 @@ namespace fmatvec {
 
   template <class AT>
     inline Matrix<VarSymmetric, AT> operator+(const Matrix<VarSymmetric, AT> &A1, const Matrix<VarSymmetric, AT> &A2) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A1.size() == A2.size());
 #endif
       Matrix<VarSymmetric, AT> A3(A1.size(),NONINIT);
@@ -56,7 +56,7 @@ namespace fmatvec {
 
   template <class AT>
     inline VarVector<AT> operator+(const VarVector<AT> &x1, const VarVector<AT> &x2) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(x1.size() == x2.size());
 #endif
       VarVector<AT> y(x1.size(),NONINIT);
@@ -67,7 +67,7 @@ namespace fmatvec {
 
   template <class AT>
     inline VarVector<AT> operator-(const VarVector<AT> &x1, const VarVector<AT> &x2) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(x1.size() == x2.size());
 #endif
       VarVector<AT> y(x1.size(),NONINIT);
@@ -78,7 +78,7 @@ namespace fmatvec {
 
   template <class AT>
     inline Matrix<VarGeneral, AT> operator*(const Matrix<VarGeneral, AT> &A1, const Matrix<VarGeneral, AT> &A2) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A1.cols() == A2.rows());
 #endif
       Matrix<VarGeneral, AT> A3(A1.rows(),A2.cols(),NONINIT);
@@ -125,7 +125,7 @@ namespace fmatvec {
 
   template <class AT>
     inline VarVector<AT> operator*(const Matrix<VarGeneral, AT> &A, const VarVector<AT> &x) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.cols() == x.size());
 #endif
       VarVector<AT> y(A.rows(),NONINIT);

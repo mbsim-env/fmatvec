@@ -33,7 +33,7 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline Matrix<FixedVarGeneral<M>, AT> operator+(const Matrix<FixedVarGeneral<M>, AT> &A1, const Matrix<FixedVarGeneral<M>, AT> &A2) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A1.cols() == A2.cols());
 #endif
       Matrix<FixedVarGeneral<M>, AT> A3(A1.cols(),NONINIT);
@@ -44,7 +44,7 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline Matrix<FixedVarGeneral<M>, AT> operator-(const Matrix<FixedVarGeneral<M>, AT> &A1, const Matrix<FixedVarGeneral<M>, AT> &A2) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A1.cols() == A2.cols());
 #endif
       Matrix<FixedVarGeneral<M>, AT> A3(A1.cols(),NONINIT);
@@ -55,7 +55,7 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline Matrix<FixedVarGeneral<M>, AT>& operator+=(const Matrix<FixedVarGeneral<M>, AT> &A1_, const Matrix<FixedVarGeneral<M>, AT> &A2) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A1_.cols() == A2.cols());
 #endif
       Matrix<FixedVarGeneral<M>, AT> &A1 = const_cast<Matrix<FixedVarGeneral<M>, AT> &>(A1_);
@@ -66,7 +66,7 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline Matrix<FixedVarGeneral<M>, AT>& operator-=(const Matrix<FixedVarGeneral<M>, AT> &A1_, const Matrix<FixedVarGeneral<M>, AT> &A2) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A1_.cols() == A2.cols());
 #endif
       Matrix<FixedVarGeneral<M>, AT> &A1 = const_cast<Matrix<FixedVarGeneral<M>, AT> &>(A1_);
@@ -77,7 +77,7 @@ namespace fmatvec {
 
   template <int M, int N, class AT>
     inline Matrix<FixedVarGeneral<M>, AT> operator*(const Matrix<FixedVarGeneral<M>, AT> &A1, const Matrix<FixedVarGeneral<N>, AT> &A2) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A1.cols() == N);
 #endif
       Matrix<FixedVarGeneral<M>, AT> A3(A2.cols(),NONINIT);
@@ -93,7 +93,7 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline Matrix<FixedVarGeneral<M>, AT> operator*(const Matrix<FixedVarGeneral<M>, AT> &A1, const Matrix<VarGeneral, AT> &A2) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A1.cols() == A2.rows());
 #endif
       Matrix<FixedVarGeneral<M>, AT> A3(A2.cols(),NONINIT);
@@ -142,7 +142,7 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline FixedVector<M,AT> operator*(const Matrix<FixedVarGeneral<M>, AT> &A, const VarVector<AT> &x) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.cols() == x.size());
 #endif
       FixedVector<M,AT> y(NONINIT);
@@ -156,7 +156,7 @@ namespace fmatvec {
 
   template <int M, int N, class AT>
     inline FixedVector<M,AT> operator*(const Matrix<FixedVarGeneral<M>, AT> &A, const FixedVector<N,AT> &x) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.cols() == N);
 #endif
       FixedVector<M,AT> y(NONINIT);

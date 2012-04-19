@@ -167,14 +167,14 @@ namespace fmatvec {
        * See Matrix(const Matrix<Symmetric,AT>&) 
        * */
       explicit Matrix(const Matrix<General, AT>&  A) : memory(A.memory), ele(A.ele) , n(A.n), lda(A.lda) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(A.rows() == A.cols());
 #endif
       }
 
       template<class Type>
       explicit Matrix(const Matrix<Type, AT> &A) : memory(A.rows()*A.cols()), ele((AT*)memory.get()), n(A.cols()), lda(A.cols()) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(A.rows() == A.cols());
 #endif
 
@@ -492,7 +492,7 @@ namespace fmatvec {
       if(n==0) {
 	n=A.n;
       } else {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(n == A.n);
 #endif
       }
@@ -516,7 +516,7 @@ namespace fmatvec {
 	memory.resize(n*n);
 	ele = (AT*)memory.get();
       } else {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(n == A.n);
 #endif
       }

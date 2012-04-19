@@ -338,7 +338,7 @@ namespace fmatvec {
       if(n==0) {
 	n=A.n;
       } else {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(n == A.n);
 #endif
       }
@@ -360,7 +360,7 @@ namespace fmatvec {
 	memory.resize(n*n);
 	ele = (AT*)memory.get();
       } else {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(n == A.n);
 #endif
       }

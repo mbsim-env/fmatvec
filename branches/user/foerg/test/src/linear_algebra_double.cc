@@ -53,7 +53,7 @@ namespace fmatvec {
 
     Matrix<General, double> B(A.rows(),A.cols());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0) {
       return B;
     }
@@ -69,7 +69,7 @@ namespace fmatvec {
 
     Matrix<General, double> B(A.rows(),A.cols());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0) {
       return B;
     }
@@ -85,7 +85,7 @@ namespace fmatvec {
 
     Matrix<General, double> B(A.rows(),A.cols());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0) {
       return B;
     }
@@ -101,7 +101,7 @@ namespace fmatvec {
 
     SquareMatrix<double> B(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return B;
     }
@@ -117,7 +117,7 @@ namespace fmatvec {
 
     SquareMatrix<double> B(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return B;
     }
@@ -133,7 +133,7 @@ namespace fmatvec {
 
     SquareMatrix<double> B(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return B;
     }
@@ -149,7 +149,7 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> B(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return B;
     }
@@ -166,7 +166,7 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> B(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return B;
     }
@@ -183,7 +183,7 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> B(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return B;
     }
@@ -200,7 +200,7 @@ namespace fmatvec {
 
     Matrix<Diagonal, double> B(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return B;
     }
@@ -216,7 +216,7 @@ namespace fmatvec {
 
     Matrix<Diagonal, double> B(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return B;
     }
@@ -232,7 +232,7 @@ namespace fmatvec {
 
     Matrix<Diagonal, double> B(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return B;
     }
@@ -248,7 +248,7 @@ namespace fmatvec {
 
     Matrix<Diagonal, double> &A = const_cast<Matrix<Diagonal, double> &>(A_);
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return A;
     }
@@ -263,7 +263,7 @@ namespace fmatvec {
 
     Matrix<Diagonal, double> &A = const_cast<Matrix<Diagonal, double> &>(A_);
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return A;
     }
@@ -278,7 +278,7 @@ namespace fmatvec {
 
     SquareMatrix<double> &A = const_cast<SquareMatrix<double> &>(A_);
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return A;
     }
@@ -293,7 +293,7 @@ namespace fmatvec {
 
     SquareMatrix<double> &A = const_cast<SquareMatrix<double> &>(A_);
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return A;
     }
@@ -308,7 +308,7 @@ namespace fmatvec {
 
     Matrix<General, double> &A = const_cast<Matrix<General, double> &>(A_);
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0) {
       return A;
     }
@@ -323,7 +323,7 @@ namespace fmatvec {
 
     Matrix<General, double> &A = const_cast<Matrix<General, double> &>(A_);
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0) {
       return A;
     }
@@ -340,13 +340,13 @@ namespace fmatvec {
 
   Matrix<Symmetric, double > operator+(const Matrix<Symmetric, double > &A, const Matrix<Symmetric, double > &B) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == B.size());
 #endif
 
     Matrix<Symmetric, double > C(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return C;
     }
@@ -360,13 +360,13 @@ namespace fmatvec {
 
   SquareMatrix<double> operator+(const SquareMatrix<double> &A, const SquareMatrix<double> &B) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == B.size());
 #endif
 
     SquareMatrix<double> C(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return C;
     }
@@ -382,13 +382,13 @@ namespace fmatvec {
 
   SquareMatrix<double> operator-(const SquareMatrix<double> &A, const SquareMatrix<double> &B) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == B.size());
 #endif
 
     SquareMatrix<double> C(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return C;
     }
@@ -404,13 +404,13 @@ namespace fmatvec {
 
    Matrix<Symmetric, double > operator-(const Matrix<Symmetric, double > &A, const Matrix<Symmetric, double > &B) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == B.size());
 #endif
 
     Matrix<Symmetric, double > C(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return C;
     }
@@ -424,13 +424,13 @@ namespace fmatvec {
 
   SquareMatrix<double> operator*(const SquareMatrix<double> &A, const SquareMatrix<double> &B) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == B.size());
 #endif
 
     SquareMatrix<double> C(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
       return C;
     }
@@ -445,13 +445,13 @@ namespace fmatvec {
 
   Matrix<General, double> operator*(const Matrix<General, double> &A,const Matrix<Diagonal, double> &B) { 
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.cols() == B.rows());
 #endif
 
     Matrix<General, double> C(A.rows(),B.cols());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0) {
       return C;
     }
@@ -466,13 +466,13 @@ namespace fmatvec {
 
   Matrix<General, double> operator*(const Matrix<Diagonal, double> &A, const Matrix<General, double> &B) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.cols() == B.rows());
 #endif
 
     Matrix<General, double> C(A.rows(),B.cols());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0) {
       return C;
     }
@@ -490,12 +490,12 @@ namespace fmatvec {
 
     Matrix<General, double> &A = const_cast<Matrix<General, double> &>(A_);
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.rows() == B.rows());
     assert(A.cols() == B.cols());
 #endif
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0) {
       return A;
     }
@@ -511,12 +511,12 @@ namespace fmatvec {
 
     Matrix<General, double> &A = const_cast<Matrix<General, double> &>(A_);
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.rows() == B.rows());
     assert(A.cols() == B.cols());
 #endif
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0) {
       return A;
     }
@@ -530,14 +530,14 @@ namespace fmatvec {
 
   Matrix<General, double > operator+(const Matrix<General, double > &A, const Matrix<General, double > &B) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.rows() == B.rows());
     assert(A.cols() == B.cols()); 
 #endif
 
     Matrix<General, double > C(A.rows(),A.cols());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0) {
       return C;
     }
@@ -549,14 +549,14 @@ namespace fmatvec {
 
   Matrix<General, double> operator-(const Matrix<General, double> &A, const Matrix<General, double> &B) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.rows() == B.rows());
     assert(A.cols() == B.cols());
 #endif
 
     Matrix<General, double> C(A.rows(),A.cols());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0) {
       return C;
     }
@@ -573,13 +573,13 @@ namespace fmatvec {
   Matrix<General, double> operator*(const Matrix<General, double> &A, 
       const Matrix<General, double> &B) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.cols() == B.rows());
 #endif
 
     Matrix<General, double> C(A.rows(),B.cols());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || B.cols() == 0)
       return C;
     else if(A.cols() == 0) {
@@ -595,7 +595,7 @@ namespace fmatvec {
 
   Matrix<General, double> operator*(const Matrix<General, double> &A, const Matrix<Symmetric, double> &B) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.cols() == B.rows());
 #endif
 
@@ -613,7 +613,7 @@ namespace fmatvec {
 
     Matrix<General, double> C(m,n);
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(m == 0 || n == 0)
       return A.transposed() ? C.T() : C;
 #endif
@@ -624,7 +624,7 @@ namespace fmatvec {
 
   Matrix<General, double> operator*(const Matrix<Symmetric, double> &A, const Matrix<General, double> &B) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.cols() == B.rows());
 #endif
 
@@ -641,7 +641,7 @@ namespace fmatvec {
     }
     Matrix<General, double> C(m,n);
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(m == 0 || n == 0)
       return B.transposed() ? C.T() : C;
 #endif
@@ -654,7 +654,7 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> R(J.cols());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(J.cols() == 0)
       return R;
     else if(J.rows() == 0) {
@@ -672,7 +672,7 @@ namespace fmatvec {
 
   Matrix<Symmetric, double> JTMJ(const Matrix<Symmetric, double> &M, const Matrix<General, double> &J) {
 
-#ifdef FMMTVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(M.cols() == J.rows());
 #endif
 
@@ -698,7 +698,7 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> R(J.cols());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(J.cols() == 0)
       return R;
     else if(J.rows() == 0) {
@@ -720,13 +720,13 @@ namespace fmatvec {
 
   Matrix<Symmetric, double> JTMJ(const Matrix<Diagonal, double> &M, const Matrix<General, double> &J) {
 
-#ifdef FMMTVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(M.size() == J.rows());
 #endif
 
     Matrix<Symmetric, double> R(J.cols());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(J.cols() == 0)
       return R;
     else if(J.rows() == 0) {
@@ -748,11 +748,11 @@ namespace fmatvec {
 
     Matrix<Diagonal, double> &A = const_cast<Matrix<Diagonal, double> &>(A_);
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == B.size()); 
 #endif
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
       return A;
 #endif
@@ -766,11 +766,11 @@ namespace fmatvec {
 
     Matrix<Diagonal, double> &A = const_cast<Matrix<Diagonal, double> &>(A_);
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == B.size());
 #endif
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
       return A;
 #endif
@@ -785,11 +785,11 @@ namespace fmatvec {
 
     SquareMatrix<double> &A = const_cast<SquareMatrix<double> &>(A_);
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == B.size());
 #endif
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
       return A;
 #endif
@@ -803,11 +803,11 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> &A = const_cast<Matrix<Symmetric, double> &>(A_);
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == B.size()); 
 #endif
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
       return A;
 #endif
@@ -824,11 +824,11 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> &A = const_cast<Matrix<Symmetric, double> &>(A_);
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == B.size()); 
 #endif
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
       return A;
 #endif
@@ -845,11 +845,11 @@ namespace fmatvec {
 
     SquareMatrix<double> &A = const_cast<SquareMatrix<double> &>(A_);
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == B.size());
 #endif
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
       return A;
 #endif
@@ -867,7 +867,7 @@ namespace fmatvec {
 
     Vector<double> &x = const_cast<Vector<double> &>(x_);
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return x;
 #endif
@@ -881,7 +881,7 @@ namespace fmatvec {
 
     Vector<double> &x = const_cast<Vector<double> &>(x_);
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return x;
 #endif
@@ -896,7 +896,7 @@ namespace fmatvec {
     Vector<double> y(x.size());//=x.copy();
     //Vector<double> y=x.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return y;
 #endif
@@ -910,7 +910,7 @@ namespace fmatvec {
 
     Vector<double> y(x.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return y;
 #endif
@@ -924,7 +924,7 @@ namespace fmatvec {
 
     Vector<double> y(x.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return y;
 #endif
@@ -943,11 +943,11 @@ namespace fmatvec {
 
     Vector<double> &x = const_cast<Vector<double> &>(x_);
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
 #endif
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return x;
 #endif
@@ -961,11 +961,11 @@ namespace fmatvec {
 
     Vector<double> &x = const_cast<Vector<double> &>(x_);
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
 #endif
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return x;
 #endif
@@ -977,13 +977,13 @@ namespace fmatvec {
 
   Vector<double> operator+(const Vector<double> &x, const Vector<double> &y) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
 #endif
 
     Vector<double> z(x.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return z;
 #endif
@@ -998,13 +998,13 @@ namespace fmatvec {
 
   Vector<double> operator-(const Vector<double> &x, const Vector<double> &y) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
 #endif
 
     Vector<double> z(x.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return z;
 #endif
@@ -1023,7 +1023,7 @@ namespace fmatvec {
 
     RowVector<double> &x = const_cast<RowVector<double> &>(x_);
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return x;
 #endif
@@ -1037,7 +1037,7 @@ namespace fmatvec {
 
     RowVector<double> &x = const_cast<RowVector<double> &>(x_);
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return x;
 #endif
@@ -1051,7 +1051,7 @@ namespace fmatvec {
 
     RowVector<double> y(x.size());//=x.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return y;
 #endif
@@ -1065,7 +1065,7 @@ namespace fmatvec {
 
     RowVector<double> y(x.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return y;
 #endif
@@ -1079,7 +1079,7 @@ namespace fmatvec {
 
     RowVector<double> y(x.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return y;
 #endif
@@ -1098,11 +1098,11 @@ namespace fmatvec {
 
     RowVector<double> &x = const_cast<RowVector<double> &>(x_);
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
 #endif
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return x;
 #endif
@@ -1116,11 +1116,11 @@ namespace fmatvec {
 
     RowVector<double> &x = const_cast<RowVector<double> &>(x_);
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
 #endif
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return x;
 #endif
@@ -1132,13 +1132,13 @@ namespace fmatvec {
 
   RowVector<double> operator+(const RowVector<double> &x, const RowVector<double> &y) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
 #endif 
 
     RowVector<double> z(x.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return z;
 #endif
@@ -1154,13 +1154,13 @@ namespace fmatvec {
   RowVector<double> operator-(const RowVector<double> &x, const RowVector<double> &y) {
 
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
 #endif
 
     RowVector<double> z(x.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return z;
 #endif
@@ -1178,13 +1178,13 @@ namespace fmatvec {
 
   Vector<double> operator*(const Matrix<General, double> &A, const Vector<double> &x) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.cols() == x.size());
 #endif
 
     Vector<double> y(A.rows());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0)
       return y;
     else if(A.cols() == 0) {
@@ -1210,13 +1210,13 @@ namespace fmatvec {
 
   Vector<double> operator*(const Matrix<Symmetric, double> &A, const Vector<double> &x) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
 #endif
 
     Vector<double> y(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
       return y;
 #endif
@@ -1228,13 +1228,13 @@ namespace fmatvec {
 
   Vector<double> operator*(const Matrix<Diagonal, double> &A, const Vector<double> &x) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
 #endif
 
     Vector<double> y(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
       return y;
 #endif
@@ -1251,13 +1251,13 @@ namespace fmatvec {
 
   RowVector<double> operator*(const RowVector<double> &x, const Matrix<General, double> &A) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.rows() == x.size());
 #endif
 
     RowVector<double> y(A.cols());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.cols() == 0)
       return y;
     else if(A.rows() == 0) {
@@ -1285,13 +1285,13 @@ namespace fmatvec {
 
   RowVector<double> operator*(const RowVector<double> &x, const Matrix<Symmetric, double> &A) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
 #endif
 
     RowVector<double> y(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
       return y;
 #endif
@@ -1303,13 +1303,13 @@ namespace fmatvec {
 
   RowVector<double> operator*(const RowVector<double> &x, const Matrix<Diagonal, double> &A) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.rows() == x.size());
 #endif
 
     RowVector<double> y(A.cols());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
       return y;
 #endif
@@ -1325,11 +1325,11 @@ namespace fmatvec {
 
   double operator*(const RowVector<double> &x, const Vector<double> &y) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
 #endif
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return 0.0;
 #endif
@@ -1343,13 +1343,13 @@ namespace fmatvec {
 
   Matrix<General, double> slvLU(const SquareMatrix<double> &A, const Matrix<General, double> &X) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == X.rows());
 #endif
 
     Matrix<General, double> Y = X.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(X.rows() == 0 || X.cols() == 0)
       return Y;
 #endif
@@ -1369,13 +1369,13 @@ namespace fmatvec {
 
   Matrix<General, double> slvLUFac(const SquareMatrix<double> &A, const Matrix<General, double> &X, const Vector<int> &ipiv) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == X.rows());
 #endif
 
     Matrix<General, double> Y = X.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(X.rows() == 0 || X.cols() == 0)
       return Y;
 #endif
@@ -1395,13 +1395,13 @@ namespace fmatvec {
 
   Matrix<General, double> slvQR(const SquareMatrix<double> &A, const Matrix<General, double> &X) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == X.rows());
 #endif
 
     Matrix<General, double> Y = X.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(X.rows() == 0 || X.cols() == 0)
       return Y;
 #endif
@@ -1417,13 +1417,13 @@ namespace fmatvec {
 
   Vector<double> slvLU(const SquareMatrix<double> &A, const Vector<double> &x) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
 #endif
 
     Vector<double> y = x.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return y;
 #endif
@@ -1443,13 +1443,13 @@ namespace fmatvec {
 
   Vector<double> slvLUFac(const SquareMatrix<double> &A, const Vector<double> &x, const Vector<int> &ipiv) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
 #endif
 
     Vector<double> y = x.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return y;
 #endif
@@ -1469,13 +1469,13 @@ namespace fmatvec {
 
   Vector<double> slvQR(const SquareMatrix<double> &A, const Vector<double> &x) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
 #endif
 
     Vector<double> y = x.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return y;
 #endif
@@ -1493,7 +1493,7 @@ namespace fmatvec {
 
     SquareMatrix<double> B=A.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
       return B;
 #endif
@@ -1515,7 +1515,7 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> B=A.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
       return B;
 #endif
@@ -1541,7 +1541,7 @@ namespace fmatvec {
 
     Matrix<Diagonal, double> B(A.size());
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
       return B;
 #endif
@@ -1556,7 +1556,7 @@ namespace fmatvec {
 
     Matrix<General, double> B=A.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0)
       return B;
 #endif
@@ -1577,7 +1577,7 @@ namespace fmatvec {
 
     SquareMatrix<double> B=A.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
       return B;
 #endif
@@ -1598,7 +1598,7 @@ namespace fmatvec {
 
     Matrix<Symmetric, double> B=A.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
       return B;
 #endif
@@ -1616,7 +1616,7 @@ namespace fmatvec {
 
   double nrm1(const Vector<double> &x) {
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return 0.0;
 #endif
@@ -1626,7 +1626,7 @@ namespace fmatvec {
 
   double nrmInf(const Vector<double> &x) {
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return 0.0;
 #endif
@@ -1637,7 +1637,7 @@ namespace fmatvec {
 
   double nrm2(const Vector<double> &x) {
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return 0.0;
 #endif
@@ -1647,13 +1647,13 @@ namespace fmatvec {
 
   Vector<double> slvLL(const Matrix<Symmetric, double> &A, const Vector<double> &x) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
 #endif
 
     Vector<double> y = x.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return y;
 #endif
@@ -1673,13 +1673,13 @@ namespace fmatvec {
 
   Matrix<General, double> slvLL(const Matrix<Symmetric, double> &A, const Matrix<General, double> &X) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == X.rows());
 #endif
 
     Matrix<General, double> Y = X.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(X.rows() == 0 || X.cols() == 0)
       return Y;
 #endif
@@ -1699,13 +1699,13 @@ namespace fmatvec {
 
   Vector<double> slvLLFac(const Matrix<Symmetric, double> &A, const Vector<double> &x) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
 #endif
 
     Vector<double> y = x.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return y;
 #endif
@@ -1725,13 +1725,13 @@ namespace fmatvec {
 
   Matrix<General, double> slvLLFac(const Matrix<Symmetric, double> &A, const Matrix<General, double> &X) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == X.rows());
 #endif
 
     Matrix<General, double> Y = X.copy();
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(X.rows() == 0 || X.cols() == 0)
       return Y;
 #endif
@@ -1832,7 +1832,7 @@ namespace fmatvec {
 
   double rho(const SquareMatrix<double> &A) {
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0)
       return 0.0;
 #endif
@@ -1848,7 +1848,7 @@ namespace fmatvec {
 
   double rho(const Matrix<Symmetric, double> &A) {
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0)
       return 0.0;
 #endif
@@ -1864,7 +1864,7 @@ namespace fmatvec {
 
   double nrmInf(const Matrix<General,double> &A) {
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0)
       return 0.0;
 #endif
@@ -1874,7 +1874,7 @@ namespace fmatvec {
 
   double nrm1(const Matrix<General,double> &A) {
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0)
       return 0.0;
 #endif
@@ -1884,7 +1884,7 @@ namespace fmatvec {
 
   double nrmFro(const Matrix<General,double> &A) {
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0)
       return 0.0;
 #endif
@@ -1894,7 +1894,7 @@ namespace fmatvec {
 
   double nrm2(const Matrix<General,double> &A) {
 
-#ifdef FMATVEC_VOID_CHECK
+#ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0)
       return 0.0;
 #endif
@@ -1904,11 +1904,11 @@ namespace fmatvec {
 
   Matrix<General, double> slvLS(const Matrix<General, double> &A, const Matrix<General, double> &B, double rcond) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.rows() == B.rows());
 #endif
 
-    //#ifdef FMATVEC_VOID_CHECK
+    //#ifndef FMATVEC_NO_VOID_CHECK
     //    if(X.rows() == 0 || X.cols() == 0)
     //      return Y;
     //#endif
@@ -1927,11 +1927,11 @@ namespace fmatvec {
 
   Vector<double> slvLS(const Matrix<General,double> &A, const Vector<double> &b, double rcond) {
 
-#ifdef FMATVEC_SIZE_CHECK 
+#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.rows() == b.size());
 #endif
 
-//#ifdef FMATVEC_VOID_CHECK
+//#ifndef FMATVEC_NO_VOID_CHECK
     //if(b.size() == 0)
       //return y;
 //#endif
@@ -1950,7 +1950,7 @@ namespace fmatvec {
 
 //  Matrix<General, double> swap(const Matrix<General, double> &X, const Vector<int> &ipiv ) {
 //
-//    //#ifdef FMATVEC_SIZE_CHECK 
+//    //#ifndef FMATVEC_NO_SIZE_CHECK 
 //    //    assert(A.size() == X.rows());
 //    //#endif
 //
@@ -1962,13 +1962,13 @@ namespace fmatvec {
 //  }
 //  Matrix<General, double> slvLU(CBLAS_SIDE side, CBLAS_UPLO uplo, CBLAS_DIAG unit, const SquareMatrix<double> &A, const Matrix<General, double> &X, const Vector<int> &ipiv ) {
 //
-//    //#ifdef FMATVEC_SIZE_CHECK 
+//    //#ifndef FMATVEC_NO_SIZE_CHECK 
 //    //    assert(A.size() == X.rows());
 //    //#endif
 //
 //    Matrix<General, double> Y = X.copy();
 //
-//    //#ifdef FMATVEC_VOID_CHECK
+//    //#ifndef FMATVEC_NO_VOID_CHECK
 //    //    if(X.rows() == 0 || X.cols() == 0)
 //    //      return Y;
 //    //#endif

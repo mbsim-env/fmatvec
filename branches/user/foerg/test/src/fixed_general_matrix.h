@@ -25,9 +25,6 @@
 #include "types.h"
 #include <stdlib.h>
 
-#define FMATVEC_SIZE_CHECK
-#define FMATVEC_VOID_CHECK
-
 namespace fmatvec {
 
   template <int M, class AT> class FixedVector;
@@ -95,7 +92,7 @@ namespace fmatvec {
       template<class Type>
       explicit Matrix(const Matrix<Type, AT> &A) {
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(A.rows() == M); 
 	assert(A.cols() == N);
 #endif
@@ -362,7 +359,7 @@ namespace fmatvec {
    template <int M, int N, class AT> template< class Type>
     inline Matrix<FixedGeneral<M,N>, AT>& Matrix<FixedGeneral<M,N>, AT>::operator<<(const Matrix<Type, AT> &A) { 
 
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.rows() == M); 
       assert(A.cols() == N);
 #endif
@@ -459,7 +456,7 @@ namespace fmatvec {
 
   template <int M, int N, class AT>
     inline Matrix<FixedGeneral<M,N>, AT>::Matrix(std::vector<std::vector<AT> > m) {
-#ifdef FMATVEC_SIZE_CHECK
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(m.size() == M);
       assert(m[0].size() == N);
 #endif
