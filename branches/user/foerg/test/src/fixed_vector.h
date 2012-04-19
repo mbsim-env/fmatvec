@@ -201,7 +201,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling vector.
        * */
-      FixedVector<M,AT>& init(const AT& a); 
+      inline FixedVector<M,AT>& init(const AT& a); 
 
       /*! \brief Size.
        *
@@ -283,6 +283,20 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
+   inline FixedVector<M,AT>::operator std::vector<AT>() {
+      std::vector<AT> ret(size());
+      if(size()>0) memcpy(&ret[0], &operator()(0), sizeof(AT)*size());
+      return ret;
+    }
+
+  template <int M, class AT>
+    inline FixedVector<M,AT>::FixedVector(std::vector<AT> v) : Matrix<FixedGeneral<M,1>, AT>() {
+      if(size()>0) memcpy(&operator()(0), &v[0], sizeof(AT)*size());
+    }
+
+  /// @cond NO_SHOW
+
+  template <int M, class AT>
     inline void FixedVector<M,AT>::deepCopy(const Vector<AT> &x) {
       for(int i=0; i<M; i++)
 	e(i) = x.e(i);
@@ -294,17 +308,7 @@ namespace fmatvec {
 	e(i) = x.e(i);
     }
 
-  template <int M, class AT>
-   inline FixedVector<M,AT>::operator std::vector<AT>() {
-      std::vector<AT> ret(size());
-      if(size()>0) memcpy(&ret[0], &operator()(0), sizeof(AT)*size());
-      return ret;
-    }
-
-  template <int M, class AT>
-    inline FixedVector<M,AT>::FixedVector(std::vector<AT> v) : Matrix<FixedGeneral<M,1>, AT>() {
-      if(size()>0) memcpy(&operator()(0), &v[0], sizeof(AT)*size());
-    }
+  /// @endcond
 
 }
 

@@ -323,46 +323,46 @@ namespace fmatvec {
 
   template <class AT> 
     Matrix<VarGeneral, AT>::Matrix(const char *strs) {
-    // if 'strs' is a single scalar, surround it first with '[' and ']'.
-    // This is more Matlab-like, because e.g. '5' and '[5]' is just the same.
-    // (This functionallitiy is needed e.g. by MBXMLUtils (OpenMBV,MBSim))
-    std::istringstream iss(strs);
-    char c;
-    iss>>c;
-    if(c=='[') iss.str(strs);
-    else iss.str(std::string("[")+strs+"]");
+      // if 'strs' is a single scalar, surround it first with '[' and ']'.
+      // This is more Matlab-like, because e.g. '5' and '[5]' is just the same.
+      // (This functionallitiy is needed e.g. by MBXMLUtils (OpenMBV,MBSim))
+      std::istringstream iss(strs);
+      char c;
+      iss>>c;
+      if(c=='[') iss.str(strs);
+      else iss.str(std::string("[")+strs+"]");
 
-    int M=0, N=0;
-    int buf=0;
-    iss >> c;
-    AT x;
-    do {
-      iss >> x;
+      int M=0, N=0;
+      int buf=0;
       iss >> c;
-      if(c==';') {
-	if(buf)
-	  assert(buf == N);
+      AT x;
+      do {
+        iss >> x;
+        iss >> c;
+        if(c==';') {
+          if(buf)
+            assert(buf == N);
 
-	buf=N;
-	N=0;
-	M++;
-      }
-      else if(c==',')
-	N++;
-      c='0';
-    } while(iss);
+          buf=N;
+          N=0;
+          M++;
+        }
+        else if(c==',')
+          N++;
+        c='0';
+      } while(iss);
 
-    N++; M++;
-    ele = new AT[M*N];
-    iss.clear();
-    iss.seekg(0);
-    iss >> c;
-    for(int i=0; i<M; i++)
-      for(int j=0; j<N; j++) {
-	iss >> e(i,j);
-	iss >> c;
-      }
-  }
+      N++; M++;
+      ele = new AT[M*N];
+      iss.clear();
+      iss.seekg(0);
+      iss >> c;
+      for(int i=0; i<M; i++)
+        for(int j=0; j<N; j++) {
+          iss >> e(i,j);
+          iss >> c;
+        }
+    }
 
   template <class AT> template< class Type>
     inline Matrix<VarGeneral, AT>& Matrix<VarGeneral, AT>::operator<<(const Matrix<Type, AT> &A) { 

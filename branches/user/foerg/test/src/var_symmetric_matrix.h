@@ -278,7 +278,7 @@ namespace fmatvec {
 
   template <class AT>
     inline Matrix<VarSymmetric, AT>& Matrix<VarSymmetric, AT>::operator<<(const Matrix<VarSymmetric, AT> &A) { 
-      
+
       deepCopy(A);
 
       return *this;
@@ -288,8 +288,8 @@ namespace fmatvec {
     inline Matrix<VarSymmetric, AT>&  Matrix<VarSymmetric, AT>::init(const AT& val) {
 
       for(int i=0; i<M; i++) 
-	for(int j=i; j<M; j++) 
-	  ej(i,j) = val; 
+        for(int j=i; j<M; j++) 
+          ej(i,j) = val; 
 
       return *this;
     }
@@ -310,8 +310,8 @@ namespace fmatvec {
   template <class AT>
     inline void Matrix<VarSymmetric, AT>::deepCopy(const Matrix<VarSymmetric, AT> &A) { 
       for(int i=0; i<M; i++) 
-	for(int j=i; j<M; j++) 
-	  ej(i,j) = A.ej(i,j);
+        for(int j=i; j<M; j++) 
+          ej(i,j) = A.ej(i,j);
     }
 
   /// @endcond

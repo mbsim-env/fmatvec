@@ -247,7 +247,7 @@ namespace fmatvec {
     inline VarVector<AT>& VarVector<AT>::init(const AT& val) {
 
       for(int i=0; i<M; i++) 
-	e(i) = val; 
+        e(i) = val; 
 
       return *this;
     }
@@ -264,7 +264,7 @@ namespace fmatvec {
     inline VarVector<AT>& VarVector<AT>::operator<<(const Vector<AT> &x) { 
 
 #ifndef FMATVEC_NO_SIZE_CHECK
-       assert(x.size() == M);
+      assert(x.size() == M);
 #endif
 
       deepCopy(x);
@@ -276,7 +276,7 @@ namespace fmatvec {
     inline VarRowVector<AT> VarVector<AT>::T() {
       VarRowVector<AT> x(NONINIT);
       for(int i=0; i<M; i++)
-	x.e(i) = e(i);
+        x.e(i) = e(i);
       return x;
     }
 
@@ -284,20 +284,8 @@ namespace fmatvec {
     inline const VarRowVector<AT> VarVector<AT>::T() const {
       VarRowVector<AT> x(NONINIT);
       for(int i=0; i<M; i++)
-	x.e(i) = e(i);
+        x.e(i) = e(i);
       return x;
-    }
-
-  template <class AT>
-    inline void VarVector<AT>::deepCopy(const Vector<AT> &x) {
-      for(int i=0; i<M; i++)
-	e(i) = x.e(i);
-    }
-
-  template <class AT>
-    inline void VarVector<AT>::deepCopy(const VarVector<AT> &x) {
-      for(int i=0; i<M; i++)
-	e(i) = x.e(i);
     }
 
   template <class AT>
@@ -311,6 +299,23 @@ namespace fmatvec {
     inline VarVector<AT>::VarVector(std::vector<AT> v) : Matrix<VarGeneral, AT>(v.size(),1) {
       if(size()>0) memcpy(&operator()(0), &v[0], sizeof(AT)*size());
     }
+
+  /// @cond NO_SHOW
+
+  template <class AT>
+    inline void VarVector<AT>::deepCopy(const Vector<AT> &x) {
+      for(int i=0; i<M; i++)
+        e(i) = x.e(i);
+    }
+
+  template <class AT>
+    inline void VarVector<AT>::deepCopy(const VarVector<AT> &x) {
+      for(int i=0; i<M; i++)
+        e(i) = x.e(i);
+    }
+
+  /// @endcond
+
 }
 
 #endif

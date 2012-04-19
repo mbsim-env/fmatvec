@@ -310,53 +310,52 @@ namespace fmatvec {
       inline void set(int j, FixedVector<M,AT> &x);
 
   };
-  // ------------------------- Constructors -------------------------------------
+
   template <int M, int N, class AT> 
     Matrix<FixedGeneral<M,N>, AT>::Matrix(const char *strs) {
-    // if 'strs' is a single scalar, surround it first with '[' and ']'.
-    // This is more Matlab-like, because e.g. '5' and '[5]' is just the same.
-    // (This functionallitiy is needed e.g. by MBXMLUtils (OpenMBV,MBSim))
-    std::istringstream iss(strs);
-    char c;
-    iss>>c;
-    if(c=='[') iss.str(strs);
-    else iss.str(std::string("[")+strs+"]");
+      // if 'strs' is a single scalar, surround it first with '[' and ']'.
+      // This is more Matlab-like, because e.g. '5' and '[5]' is just the same.
+      // (This functionallitiy is needed e.g. by MBXMLUtils (OpenMBV,MBSim))
+      std::istringstream iss(strs);
+      char c;
+      iss>>c;
+      if(c=='[') iss.str(strs);
+      else iss.str(std::string("[")+strs+"]");
 
-    int m = 0,n=0;
-    int buf=0;
-    iss >> c;
-    AT x;
-    do {
-      iss >> x;
+      int m = 0,n=0;
+      int buf=0;
       iss >> c;
-      if(c==';') {
-	if(buf)
-	  assert(buf == n);
+      AT x;
+      do {
+        iss >> x;
+        iss >> c;
+        if(c==';') {
+          if(buf)
+            assert(buf == n);
 
-	buf=n;
-	n=0;
-	m++;
-      }
-      else if(c==',')
-	n++;
-      c='0';
-    } while(iss);
+          buf=n;
+          n=0;
+          m++;
+        }
+        else if(c==',')
+          n++;
+        c='0';
+      } while(iss);
 
-    n++; m++;
-    assert(m==M);
-    assert(n==N);
-    iss.clear();
-    iss.seekg(0);
-    iss >> c;
-    for(int i=0; i<M; i++)
-      for(int j=0; j<N; j++) {
-	iss >> e(i,j);
-	iss >> c;
-      }
-  }
-  // ----------------------------------------------------------------------------
+      n++; m++;
+      assert(m==M);
+      assert(n==N);
+      iss.clear();
+      iss.seekg(0);
+      iss >> c;
+      for(int i=0; i<M; i++)
+        for(int j=0; j<N; j++) {
+          iss >> e(i,j);
+          iss >> c;
+        }
+    }
 
-   template <int M, int N, class AT> template< class Type>
+  template <int M, int N, class AT> template< class Type>
     inline Matrix<FixedGeneral<M,N>, AT>& Matrix<FixedGeneral<M,N>, AT>::operator<<(const Matrix<Type, AT> &A) { 
 
 #ifndef FMATVEC_NO_SIZE_CHECK
@@ -369,7 +368,7 @@ namespace fmatvec {
       return *this;
     }
 
-   template <int M, int N, class AT>
+  template <int M, int N, class AT>
     inline Matrix<FixedGeneral<M,N>, AT>& Matrix<FixedGeneral<M,N>, AT>::operator<<(const Matrix<FixedGeneral<M,N>, AT> &A) { 
 
       deepCopy(A);
@@ -381,7 +380,7 @@ namespace fmatvec {
     inline Matrix<FixedGeneral<M,N>, AT>& Matrix<FixedGeneral<M,N>, AT>::init(const AT& val) {
 
       for(int i=0; i<M*N; i++) 
-	e(i) = val;
+        e(i) = val;
 
       return *this;
     }
@@ -397,7 +396,7 @@ namespace fmatvec {
       FixedVector<M,AT> x(NONINIT);
 
       for(int i=0; i<M; i++)
-	x.e(i) = e(i,j);
+        x.e(i) = e(i,j);
 
       return x;
     }
@@ -413,7 +412,7 @@ namespace fmatvec {
       FixedVector<M,AT> x(NONINIT);
 
       for(int i=0; i<M; i++)
-	x.e(i) = e(i,j);
+        x.e(i) = e(i,j);
 
       return x;
 
@@ -423,8 +422,8 @@ namespace fmatvec {
     inline Matrix<FixedGeneral<M,N>, AT> Matrix<FixedGeneral<M,N>, AT>::T() {
       Matrix<FixedGeneral<N,M>, AT> A(NONINIT);
       for(int i=0; i<N; i++)
-	for(int j=0; j<M; j++)
-	  A.e(i,j) = e(j,i);
+        for(int j=0; j<M; j++)
+          A.e(i,j) = e(j,i);
       return A;
     }
 
@@ -432,15 +431,15 @@ namespace fmatvec {
     inline const Matrix<FixedGeneral<M,N>, AT> Matrix<FixedGeneral<M,N>, AT>::T() const {
       Matrix<FixedGeneral<N,M>, AT> A(NONINIT);
       for(int i=0; i<N; i++)
-	for(int j=0; j<M; j++)
-	  A.e(i,j) = e(j,i);
+        for(int j=0; j<M; j++)
+          A.e(i,j) = e(j,i);
       return A;
     }
 
   template <int M, int N, class AT>
     inline void Matrix<FixedGeneral<M,N>, AT>::set(int j, FixedVector<M,AT> &x) {
       for(int i=0; i<M; i++)
-	e(i,j) = x.e(i);
+        e(i,j) = x.e(i);
     }
 
   template <int M, int N, class AT>
@@ -467,22 +466,22 @@ namespace fmatvec {
       }
     }
 
-   /// @cond NO_SHOW
-   
+  /// @cond NO_SHOW
+
   template <int M, int N, class AT> template <class Type>
-  inline void Matrix<FixedGeneral<M,N>, AT>::deepCopy(const Matrix<Type, AT> &A) { 
+    inline void Matrix<FixedGeneral<M,N>, AT>::deepCopy(const Matrix<Type, AT> &A) { 
       for(int i=0; i<M; i++) 
-	for(int j=0; j<N; j++)
-	  e(i,j) = A.e(i,j);
+        for(int j=0; j<N; j++)
+          e(i,j) = A.e(i,j);
     }
 
   template<int M, int N, class AT>
-  inline void Matrix<FixedGeneral<M,N>,AT>::deepCopy(const Matrix<FixedGeneral<M,N>,AT> &A) {
+    inline void Matrix<FixedGeneral<M,N>,AT>::deepCopy(const Matrix<FixedGeneral<M,N>,AT> &A) {
       for(int i=0; i<M*N; i++) 
-	e(i) = A.e(i);
+        e(i) = A.e(i);
     }
 
-   /// @endcond
+  /// @endcond
 
 }
 

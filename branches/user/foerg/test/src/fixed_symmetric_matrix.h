@@ -271,12 +271,10 @@ namespace fmatvec {
        * */
       inline operator std::vector<std::vector<AT> >();
   };
-  // ------------------------- Constructors -------------------------------------
-  // ----------------------------------------------------------------------------
 
   template <int M, class AT>
     inline Matrix<FixedSymmetric<M>, AT>& Matrix<FixedSymmetric<M>, AT>::operator<<(const Matrix<FixedSymmetric<M>, AT> &A) { 
-      
+
       deepCopy(A);
 
       return *this;
@@ -286,19 +284,11 @@ namespace fmatvec {
     inline Matrix<FixedSymmetric<M>, AT>&  Matrix<FixedSymmetric<M>, AT>::init(const AT& val) {
 
       for(int i=0; i<M; i++) 
-	for(int j=i; j<M; j++) 
-	  ej(i,j) = val; 
+        for(int j=i; j<M; j++) 
+          ej(i,j) = val; 
 
       return *this;
     }
-
-  template <int M, class AT>
-    inline void Matrix<FixedSymmetric<M>, AT>::deepCopy(const Matrix<FixedSymmetric<M>, AT> &A) { 
-      for(int i=0; i<M; i++) 
-	for(int j=i; j<M; j++) 
-	  ej(i,j) = A.ej(i,j);
-    }
-
 
   template <int M, class AT>
     inline Matrix<FixedSymmetric<M>, AT>::operator std::vector<std::vector<AT> >() {
@@ -310,6 +300,17 @@ namespace fmatvec {
       }
       return ret;
     }
+
+  /// @cond NO_SHOW
+
+  template <int M, class AT>
+    inline void Matrix<FixedSymmetric<M>, AT>::deepCopy(const Matrix<FixedSymmetric<M>, AT> &A) { 
+      for(int i=0; i<M; i++) 
+        for(int j=i; j<M; j++) 
+          ej(i,j) = A.ej(i,j);
+    }
+
+  /// @endcond
 
 }
 

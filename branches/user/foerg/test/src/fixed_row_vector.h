@@ -44,15 +44,9 @@ namespace fmatvec {
 
     /// @cond NO_SHOW
     
-    //friend class Vector<AT>;
-
-    //friend RowVector<AT> Matrix<General, AT>::row(int i);
-    //friend const RowVector<AT> Matrix<General, AT>::row(int i) const;
-
     protected:
 
     void deepCopy(const FixedRowVector<N,AT> &x);
-    void deepCopy(const RowVector<AT> &x);
 
     /// @endcond
 
@@ -145,7 +139,7 @@ namespace fmatvec {
 	assert(i>=0);
 	assert(i<N);
 #endif
-	return ele[i];
+	return e(i);
       };
 
      /*! \brief Element operator
@@ -157,6 +151,18 @@ namespace fmatvec {
 	assert(i>=0);
 	assert(i<N);
 #endif
+	return e(i);
+      };
+
+      AT& e(int i) {
+	return ele[i];
+      };
+
+      /*! \brief Element operator
+       *
+       * See e(int) 
+       * */
+      const AT& e(int i) const {
 	return ele[i];
       };
 
@@ -167,7 +173,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling rowvector.
        * */
-      FixedRowVector<N,AT>& init(const AT& a);
+      inline FixedRowVector<N,AT>& init(const AT& a);
 
       /*! \brief Size.
        *
@@ -183,32 +189,15 @@ namespace fmatvec {
        * */
       int inc() const {return 1;};
 
-      /*! \brief Rowvector duplicating.
-       *
-       * The calling rowvector returns a \em deep copy of itself.  
-       * \return The duplicate of the calling rowvector.
-       * */
-      FixedRowVector<N,AT> copy() const;
-
       using Matrix<FixedGeneral<1,N>, AT>::operator();
 
-      FixedVector<N,AT> T() {
-	FixedVector<N,AT> x(NONINIT);
-	for(int i=0; i<N; i++)
-	  x()[i] = ele[i];
-      };
+      inline FixedVector<N,AT> T();
 
-      const FixedVector<N,AT> T() const {
-	FixedVector<N,AT> x(NONINIT);
-	for(int i=0; i<N; i++)
-	  x()[i] = ele[i];
-      }
+      inline const FixedVector<N,AT> T() const;
   };
 
-  /////////////////////////////////////////////////////////////////////
-
   template <int N, class AT>
-    FixedRowVector<N,AT>& FixedRowVector<N,AT>::init(const AT& val) {
+    inline FixedRowVector<N,AT>& FixedRowVector<N,AT>::init(const AT& val) {
 
       for(int i=0; i<N; i++) 
 	ele[i] = val;
@@ -217,7 +206,7 @@ namespace fmatvec {
     }
 
   template <int N, class AT>
-    FixedRowVector<N,AT>& FixedRowVector<N,AT>::operator<<(const FixedRowVector<N,AT> &x) { 
+    inline FixedRowVector<N,AT>& FixedRowVector<N,AT>::operator<<(const FixedRowVector<N,AT> &x) { 
 
       deepCopy(x);
 
@@ -225,19 +214,30 @@ namespace fmatvec {
     }
 
   template <int N, class AT>
-    FixedRowVector<N,AT> FixedRowVector<N,AT>::copy() const {
-
-      FixedRowVector<N,AT> x(NONINIT);
-      x.deepCopy(*this);
-
+    inline FixedVector<N,AT> FixedRowVector<N,AT>::T() {
+      FixedVector<N,AT> x(NONINIT);
+      for(int i=0; i<N; i++)
+        x.e(i) = e(i);
       return x;
     }
 
   template <int N, class AT>
-    void FixedRowVector<N,AT>::deepCopy(const FixedRowVector<N,AT> &x) {
+    inline const FixedVector<N,AT> FixedRowVector<N,AT>::T() const {
+      FixedVector<N,AT> x(NONINIT);
       for(int i=0; i<N; i++)
-	ele[i] = x.ele[i];
+        x.e(i) = e(i);
+      return x;
     }
+
+   /// @cond NO_SHOW
+ 
+  template <int N, class AT>
+    inline void FixedRowVector<N,AT>::deepCopy(const FixedRowVector<N,AT> &x) {
+      for(int i=0; i<N; i++)
+        e(i) = x.e(i);
+    }
+
+  /// @endcond
 
 }
 #endif
