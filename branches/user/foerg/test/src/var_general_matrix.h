@@ -319,6 +319,9 @@ namespace fmatvec {
 
       inline void set(int j, VarVector<AT> &x);
 
+      template<class Type>
+      inline void assign(const Matrix<Type,AT> &A);
+
   };
 
   template <class AT> 
@@ -332,7 +335,7 @@ namespace fmatvec {
       if(c=='[') iss.str(strs);
       else iss.str(std::string("[")+strs+"]");
 
-      int M=0, N=0;
+      M=0, N=0;
       int buf=0;
       iss >> c;
       AT x;
@@ -469,6 +472,17 @@ namespace fmatvec {
         for(int c=0; c<cols(); c++)
           e(r,c)=m[r][c];
       }
+    }
+
+  template <class AT> template <class Type>
+    inline void Matrix<VarGeneral, AT>::assign(const Matrix<Type,AT> &A) {
+      if(A.rows() != M || A.cols() != N) {
+        delete[] ele;
+        M = A.rows();
+        N = A.cols();
+        ele = new AT[M*N];
+      }
+      deepCopy(A);
     }
 
   /// @cond NO_SHOW

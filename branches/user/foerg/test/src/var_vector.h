@@ -255,6 +255,10 @@ namespace fmatvec {
   template <class AT>
     inline VarVector<AT>& VarVector<AT>::operator<<(const VarVector<AT> &x) { 
 
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(M == x.M);
+#endif
+
       deepCopy(x);
 
       return *this;
