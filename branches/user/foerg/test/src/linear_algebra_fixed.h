@@ -326,7 +326,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    FixedVector<M,AT> operator-(const FixedVector<M,AT> &x) {
+    inline FixedVector<M,AT> operator-(const FixedVector<M,AT> &x) {
 
       FixedVector<M,AT> y(NONINIT);
 

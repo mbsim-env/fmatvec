@@ -322,7 +322,7 @@ namespace fmatvec {
 //    }
 //
 //  template <class AT>
-//    VarVector<AT> operator-(const VarVector<AT> &x) {
+//    inline VarVector<AT> operator-(const VarVector<AT> &x) {
 //
 //      VarVector<AT> y(NONINIT);
 //

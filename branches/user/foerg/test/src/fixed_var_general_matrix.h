@@ -354,7 +354,8 @@ namespace fmatvec {
       if(c=='[') iss.str(strs);
       else iss.str(std::string("[")+strs+"]");
 
-      int m = 0, N=0;
+      int m = 0;
+      N=0;
       int buf=0;
       iss >> c;
       AT x;

@@ -196,6 +196,17 @@ namespace fmatvec {
       }
     return S;
   }
+
+  template <int M, class AT>
+    inline Matrix<FixedVarGeneral<M>, AT> operator-(const Matrix<FixedVarGeneral<M>, AT> &A) {
+
+      Matrix<FixedVarGeneral<M>, AT> B(A.cols(),NONINIT);
+
+      for(int i=0; i<M*A.cols(); i++)
+	B.e(i)=-A.e(i);
+
+      return B;
+    }
 }
 
 #endif
