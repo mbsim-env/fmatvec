@@ -49,6 +49,7 @@ namespace fmatvec {
     protected:
 
     inline void deepCopy(const VarVector<AT> &x);
+    template<int N> inline void deepCopy(const FixedVector<N,AT> &x);
     inline void deepCopy(const Vector<AT> &x);
 
     /// @endcond
@@ -136,6 +137,9 @@ namespace fmatvec {
        * */
       inline VarVector<AT>& operator<<(const VarVector<AT> &x);
 
+      template<int N>
+      inline VarVector<AT>& operator<<(const FixedVector<N,AT> &x);
+
       inline VarVector<AT>& operator<<(const Vector<AT> &x);
 
       /*! \brief Assignment operator
@@ -147,6 +151,11 @@ namespace fmatvec {
        * \sa operator<<(), operator>>()
        * */
       VarVector<AT>& operator=(const VarVector<AT> &x) {
+	return operator<<(x);
+      }
+
+      template<int N>
+      VarVector<AT>& operator=(const FixedVector<N,AT> &x) {
 	return operator<<(x);
       }
 
@@ -264,6 +273,18 @@ namespace fmatvec {
       return *this;
     }
 
+  template <class AT> template<int N>
+    inline VarVector<AT>& VarVector<AT>::operator<<(const FixedVector<N,AT> &x) { 
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(M == N);
+#endif
+
+      deepCopy(x);
+
+      return *this;
+    }
+
   template <class AT>
     inline VarVector<AT>& VarVector<AT>::operator<<(const Vector<AT> &x) { 
 
@@ -307,13 +328,19 @@ namespace fmatvec {
   /// @cond NO_SHOW
 
   template <class AT>
-    inline void VarVector<AT>::deepCopy(const Vector<AT> &x) {
+    inline void VarVector<AT>::deepCopy(const VarVector<AT> &x) {
+      for(int i=0; i<M; i++)
+        e(i) = x.e(i);
+    }
+
+  template <class AT> template<int N>
+    inline void VarVector<AT>::deepCopy(const FixedVector<N,AT> &x) {
       for(int i=0; i<M; i++)
         e(i) = x.e(i);
     }
 
   template <class AT>
-    inline void VarVector<AT>::deepCopy(const VarVector<AT> &x) {
+    inline void VarVector<AT>::deepCopy(const Vector<AT> &x) {
       for(int i=0; i<M; i++)
         e(i) = x.e(i);
     }
