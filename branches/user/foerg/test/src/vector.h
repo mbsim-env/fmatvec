@@ -36,7 +36,7 @@ namespace fmatvec {
    * atomic type of the vector. Valid types are int, float,
    * double, complex<float> and complex<double> 
    * */
-  template <class AT> class Vector : public Matrix<General, AT> {
+  template <class AT> class Vector<General, AT> : public Matrix<General, AT> {
     using Matrix<General, AT>::m;
     using Matrix<General, AT>::n;
     using Matrix<General, AT>::lda;
@@ -49,17 +49,17 @@ namespace fmatvec {
 
     /// @cond NO_SHOW
 
-    template <class T> friend RowVector<T> trans(const Vector<T> &x); 
-    template <class T> friend Vector<T> trans(const RowVector<T> &x);     
+    template <class T> friend RowVector<General,T> trans(const Vector<General,T> &x); 
+    template <class T> friend Vector<General,T> trans(const RowVector<General,T> &x);     
     
-    friend class RowVector<AT>;
+    friend class RowVector<General, AT>;
 
-    friend Vector<AT> Matrix<General, AT>::col(int i);
-    friend const Vector<AT> Matrix<General, AT>::col(int i) const;
+    friend Vector<General, AT> Matrix<General, AT>::col(int i);
+    friend const Vector<General, AT> Matrix<General, AT>::col(int i) const;
 
     protected:
 
-    inline void deepCopy(const Vector<AT> &x);
+    inline void deepCopy(const Vector<General, AT> &x);
 
     AT* elePtr(int i) {
       return tp ? ele+lda*i : ele+i;
@@ -140,12 +140,12 @@ namespace fmatvec {
        * \em x will not be copied, only referenced.
        * \param x The vector that will be referenced.
        * */
-      Vector(const Vector<AT> &x) : Matrix<General, AT>(x) {
+      Vector(const Vector<General, AT> &x) : Matrix<General, AT>(x) {
       }
 
       /*! \brief Copy Constructor
        *
-       * See Vector(const Vector<AT>&) 
+       * See Vector(const Vector<General, AT>&) 
        * */
       explicit Vector(const Matrix<General, AT> &x) : Matrix<General, AT>(x) {
 
@@ -164,7 +164,7 @@ namespace fmatvec {
        * \param x The vector to be copied. 
        * \return A reference to the calling vector.
        * */
-      inline Vector<AT>& operator<<(const Vector<AT> &x);
+      inline Vector<General, AT>& operator<<(const Vector<General, AT> &x);
 
       /*! \brief Reference operator
        *
@@ -172,7 +172,7 @@ namespace fmatvec {
        * \param x The vector to be referenced. 
        * \return A reference to the calling vector.
        * */
-      inline Vector<AT>& operator>>(const Vector<AT> &x);
+      inline Vector<General, AT>& operator>>(const Vector<General, AT> &x);
 
       /*! \brief Vector resizing. 
        *
@@ -183,7 +183,7 @@ namespace fmatvec {
        * zero by default. To change this behavior, define
        * FMATVEC_NO_INITIALIZATION.
        * */
-      Vector<AT>& resize(int n) {
+      Vector<General, AT>& resize(int n) {
 	Matrix<General, AT>::resize(n,1);
 	return *this;
       }
@@ -198,7 +198,7 @@ namespace fmatvec {
        * \param a The value, the vector will be initialized with (default 0)
        * \return A reference to the calling vector.
        * */
-      Vector<AT>& resize(int n, Initialization ini, const AT &a=0) {
+      Vector<General, AT>& resize(int n, Initialization ini, const AT &a=0) {
 	Matrix<General, AT>::resize(n,1,ini,a);
 	return *this;
       }
@@ -211,7 +211,7 @@ namespace fmatvec {
        * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
        * \sa operator<<(), operator>>()
        * */
-      Vector<AT>& operator=(const Vector<AT> &x) {
+      Vector<General, AT>& operator=(const Vector<General, AT> &x) {
 #ifndef FMATVEC_NO_DEEP_ASSIGNMENT 
 	return operator<<(x);
 #else
@@ -284,7 +284,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling vector.
        * */
-      inline Vector<AT>& init(const AT& a); 
+      inline Vector<General, AT>& init(const AT& a); 
 
       /*! \brief Size.
        *
@@ -305,7 +305,7 @@ namespace fmatvec {
        * The calling vector returns a \em deep copy of itself.  
        * \return The duplicate of the calling vector.
        * */
-      inline Vector<AT> copy() const;
+      inline Vector<General, AT> copy() const;
 
       /*! \brief Subvector operator.
        *
@@ -316,13 +316,13 @@ namespace fmatvec {
        * \param i2 The ending element.
        * \return A subvector of the calling vector.
        * */
-      inline Vector<AT> operator()(int i1, int i2);
+      inline Vector<General, AT> operator()(int i1, int i2);
 
       /*! \brief Subvector operator.
        *
        * See operator()(int,int);
        * */
-      inline const Vector<AT> operator()(int i1, int i2) const;
+      inline const Vector<General, AT> operator()(int i1, int i2) const;
 
       /*! \brief Subvector operator.
        *
@@ -332,13 +332,13 @@ namespace fmatvec {
        * \param I Index containing the starting and the ending element. 
        * \return A subvector of the calling vector.
        * */
-      inline Vector<AT> operator()(const Index &I);
+      inline Vector<General, AT> operator()(const Index &I);
 
       /*! \brief Subvector operator.
        *
        * See operator()(const Index&)
        * */
-      inline const Vector<AT> operator()(const Index &I) const;
+      inline const Vector<General, AT> operator()(const Index &I) const;
 
       using Matrix<General, AT>::operator();
       using Matrix<General, AT>::resize;
@@ -355,18 +355,18 @@ namespace fmatvec {
        * */
       inline Vector(std::vector<AT> v);
 
-      RowVector<AT> T() {
-        return RowVector<AT>(m,lda,tp?false:true,memory,ele);
+      RowVector<General, AT> T() {
+        return RowVector<General, AT>(m,lda,tp?false:true,memory,ele);
       };
 
-      const RowVector<AT> T() const {
-        return RowVector<AT>(m,lda,tp?false:true,memory,ele);
+      const RowVector<General, AT> T() const {
+        return RowVector<General, AT>(m,lda,tp?false:true,memory,ele);
       }
 
   };
 
   template <class AT>
-    inline Vector<AT>& Vector<AT>::init(const AT& val) {
+    inline Vector<General, AT>& Vector<General, AT>::init(const AT& val) {
 
       if(tp) 
         for(int i=0; i<m; i++) 
@@ -379,7 +379,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Vector<AT>& Vector<AT>::operator<<(const Vector<AT> &x) { 
+    inline Vector<General, AT>& Vector<General, AT>::operator<<(const Vector<General, AT> &x) { 
 
       if(x.size() == 0)
         return *this;
@@ -403,7 +403,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Vector<AT>& Vector<AT>::operator>>(const Vector<AT> &x) { 
+    inline Vector<General, AT>& Vector<General, AT>::operator>>(const Vector<General, AT> &x) { 
 
       if(m==0) {
         m = x.m; 
@@ -423,60 +423,60 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Vector<AT> Vector<AT>::copy() const {
+    inline Vector<General, AT> Vector<General, AT>::copy() const {
 
-      Vector<AT> x(m,NONINIT);
+      Vector<General, AT> x(m,NONINIT);
       x.deepCopy(*this);
 
       return x;
     }
 
   template <class AT> 
-    inline Vector<AT> Vector<AT>::operator()(int i1, int i2) {
+    inline Vector<General, AT> Vector<General, AT>::operator()(int i1, int i2) {
     return operator()(Index(i1,i2));
   }
 
   template <class AT> 
-    inline const Vector<AT> Vector<AT>::operator()(int i1, int i2) const {
+    inline const Vector<General, AT> Vector<General, AT>::operator()(int i1, int i2) const {
     return operator()(Index(i1,i2));
   }
 
   template <class AT>
-    inline const Vector<AT> Vector<AT>::operator()(const Index &I) const {
+    inline const Vector<General, AT> Vector<General, AT>::operator()(const Index &I) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<m);
 #endif
 
-      return Vector<AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start()));
+      return Vector<General, AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start()));
     }
 
   template <class AT>
-    inline Vector<AT> Vector<AT>::operator()(const Index &I) {
+    inline Vector<General, AT> Vector<General, AT>::operator()(const Index &I) {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<m);
 #endif
 
-      return Vector<AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start()));
+      return Vector<General, AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start()));
     }
 
   template <class AT>
-    inline Vector<AT>::operator std::vector<AT>() {
+    inline Vector<General, AT>::operator std::vector<AT>() {
       std::vector<AT> ret(size());
       if(size()>0) memcpy(&ret[0], &operator()(0), sizeof(AT)*size());
       return ret;
     }
 
   template <class AT>
-    inline Vector<AT>::Vector(std::vector<AT> v) : Matrix<General, AT>(v.size(),1) {
+    inline Vector<General, AT>::Vector(std::vector<AT> v) : Matrix<General, AT>(v.size(),1) {
       if(size()>0) memcpy(&operator()(0), &v[0], sizeof(AT)*size());
     }
 
   /// @cond NO_SHOW
 
   template <class AT>
-    inline void Vector<AT>::deepCopy(const Vector<AT> &x) {
+    inline void Vector<General, AT>::deepCopy(const Vector<General, AT> &x) {
       if(tp) {
         if(x.tp) 
           for(int i=0; i<size(); i++)

@@ -27,8 +27,6 @@
 
 namespace fmatvec {
 
-  template <class AT> class VarVector;
-
   /*! 
    *  \brief This is a matrix class for general matrices.
    *  
@@ -131,37 +129,14 @@ namespace fmatvec {
 
       /*! \brief Assignment operator
        *
-       * Copies the matrix given by \em A by calling operator<<().
+       * Copies the matrix given by \em A.
        * \param A The matrix to be assigned. 
        * \return A reference to the calling matrix.
-       * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
-       * \sa operator<<(), operator>>()
        * */
-      Matrix<VarGeneral, AT>& operator=(const Matrix<VarGeneral, AT> &A) {
-	return operator<<(A);
-      }
+      inline Matrix<VarGeneral, AT>& operator=(const Matrix<VarGeneral, AT> &A);
 
       template <class Type>
-      Matrix<VarGeneral, AT>& operator=(const Matrix<Type, AT> &A) {
-	return operator<<(A);
-      }
-
-      /*! \brief Copy operator
-       *
-       * Copies the matrix given by \em A.
-       * \param A The matrix to be copied. 
-       * \return A reference to the calling matrix.
-       * */
-      template<class T> 
-	inline Matrix<VarGeneral, AT>& operator<<(const Matrix<T, AT> &A);
-
-      /*! \brief Copy operator
-       *
-       * Copies the matrix given by \em A.
-       * \param A The matrix to be copied. 
-       * \return A reference to the calling matrix.
-       * */
-      inline Matrix<VarGeneral, AT>& operator<<(const Matrix<VarGeneral, AT> &A);
+      inline Matrix<VarGeneral, AT>& operator=(const Matrix<Type, AT> &A);
 
       /*! \brief Element operator
        *
@@ -283,13 +258,13 @@ namespace fmatvec {
        * \param i The column, that will be returned.  
        * \return A vector containing the i-th column of the calling matrix.
        * */
-      inline VarVector<AT> col(int j);
+      inline Vector<VarGeneral, AT> col(int j);
 
       /*! \brief Column operator.
        *
        * see col(int)
        * */
-      inline const VarVector<AT> col(int j) const;
+      inline const Vector<VarGeneral, AT> col(int j) const;
 
       /*! \brief Initialization.
        *
@@ -317,7 +292,7 @@ namespace fmatvec {
 
       inline const Matrix<VarGeneral, AT> T() const;
 
-      inline void set(int j, VarVector<AT> &x);
+      inline void set(int j, Vector<VarGeneral, AT> &x);
 
       template<class Type>
       inline void assign(const Matrix<Type,AT> &A);
@@ -368,7 +343,7 @@ namespace fmatvec {
     }
 
   template <class AT> template< class Type>
-    inline Matrix<VarGeneral, AT>& Matrix<VarGeneral, AT>::operator<<(const Matrix<Type, AT> &A) { 
+    inline Matrix<VarGeneral, AT>& Matrix<VarGeneral, AT>::operator=(const Matrix<Type, AT> &A) { 
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.rows() == M); 
@@ -381,7 +356,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<VarGeneral, AT>& Matrix<VarGeneral, AT>::operator<<(const Matrix<VarGeneral, AT> &A) { 
+    inline Matrix<VarGeneral, AT>& Matrix<VarGeneral, AT>::operator=(const Matrix<VarGeneral, AT> &A) { 
 
       deepCopy(A);
 
@@ -398,14 +373,14 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline VarVector<AT> Matrix<VarGeneral, AT>::col(int j) {
+    inline Vector<VarGeneral, AT> Matrix<VarGeneral, AT>::col(int j) {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(j>=0);
       assert(j<N);
 #endif
 
-      VarVector<AT> x(M,NONINIT);
+      Vector<VarGeneral, AT> x(M,NONINIT);
 
       for(int i=0; i<M; i++)
         x.e(i) = e(i,j);
@@ -414,14 +389,14 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline const VarVector<AT> Matrix<VarGeneral, AT>::col(int j) const {
+    inline const Vector<VarGeneral, AT> Matrix<VarGeneral, AT>::col(int j) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(j>=0);
       assert(j<N);
 #endif
 
-      VarVector<AT> x(M,NONINIT);
+      Vector<VarGeneral, AT> x(M,NONINIT);
 
       for(int i=0; i<M; i++)
         x.e(i) = e(i,j);
@@ -449,7 +424,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline void Matrix<VarGeneral, AT>::set(int j, VarVector<AT> &x) {
+    inline void Matrix<VarGeneral, AT>::set(int j, Vector<VarGeneral, AT> &x) {
       for(int i=0; i<M; i++)
         e(i,j) = x.e(i);
     }

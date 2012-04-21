@@ -30,7 +30,7 @@ namespace fmatvec {
   /*! 
    *  \brief This is a matrix class for symmetric matrices.
    *
-   * Template class Matrix of shape type FixedSymmetric. 
+   * Template class Matrix of shape type VarSymmetric. 
    * The template parameter AT defines the
    * atomic type of the matrix. Valid types are int, float,
    * double, complex<float> and complex<double> 
@@ -122,23 +122,11 @@ namespace fmatvec {
 
       /*! \brief Assignment operator
        *
-       * Copies the symmetric matrix given by \em A by calling operator<<().
+       * Copies the symmetric matrix given by \em A.
        * \param A The matrix to be assigned. 
        * \return A reference to the calling matrix.
-       * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
-       * \sa operator<<(), operator>>()
        * */
-      Matrix<VarSymmetric, AT>& operator=(const Matrix<VarSymmetric, AT> &A) {
-	return operator<<(A);
-      }
-
-      /*! \brief Copy operator
-       *
-       * Copies the symmetric matrix given by \em A.
-       * \param A The matrix to be copied. 
-       * \return A reference to the calling matrix.
-       * */
-      inline Matrix<VarSymmetric, AT>& operator<<(const Matrix<VarSymmetric, AT> &A);
+      inline Matrix<VarSymmetric, AT>& operator=(const Matrix<VarSymmetric, AT> &A);
 
       /*! \brief Element operator
        *
@@ -277,7 +265,7 @@ namespace fmatvec {
   };
 
   template <class AT>
-    inline Matrix<VarSymmetric, AT>& Matrix<VarSymmetric, AT>::operator<<(const Matrix<VarSymmetric, AT> &A) { 
+    inline Matrix<VarSymmetric, AT>& Matrix<VarSymmetric, AT>::operator=(const Matrix<VarSymmetric, AT> &A) { 
 
       deepCopy(A);
 

@@ -21,6 +21,10 @@
 
 #include "config.h"
 #include "linear_algebra.h"
+#include "linear_algebra_fixed.h"
+#include "linear_algebra_var.h"
+#include "linear_algebra_fixed_var.h"
+#include "linear_algebra_var_fixed.h"
 #include "linear_algebra_double.h"
 #include "blas_extensions_double.h"
 #include "wrapper.h"
@@ -97,9 +101,9 @@ namespace fmatvec {
     return B;
   }
 
-  SquareMatrix<double> operator*(const SquareMatrix<double> &A, double alpha) {
+  SquareMatrix<General, double> operator*(const SquareMatrix<General, double> &A, double alpha) {
 
-    SquareMatrix<double> B(A.size());
+    SquareMatrix<General, double> B(A.size());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
@@ -113,9 +117,9 @@ namespace fmatvec {
     return B;
   }
 
-  SquareMatrix<double> operator/(const SquareMatrix<double> &A, double alpha) {
+  SquareMatrix<General, double> operator/(const SquareMatrix<General, double> &A, double alpha) {
 
-    SquareMatrix<double> B(A.size());
+    SquareMatrix<General, double> B(A.size());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
@@ -129,9 +133,9 @@ namespace fmatvec {
     return B;
   }
 
-  SquareMatrix<double> operator*(double alpha, const SquareMatrix<double> &A) {
+  SquareMatrix<General, double> operator*(double alpha, const SquareMatrix<General, double> &A) {
 
-    SquareMatrix<double> B(A.size());
+    SquareMatrix<General, double> B(A.size());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
@@ -274,9 +278,9 @@ namespace fmatvec {
     return A;
   }
 
-  SquareMatrix<double>& operator*=(const SquareMatrix<double>& A_, double alpha) {
+  SquareMatrix<General, double>& operator*=(const SquareMatrix<General, double>& A_, double alpha) {
 
-    SquareMatrix<double> &A = const_cast<SquareMatrix<double> &>(A_);
+    SquareMatrix<General, double> &A = const_cast<SquareMatrix<General, double> &>(A_);
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
@@ -289,9 +293,9 @@ namespace fmatvec {
     return A;
   }
 
-  SquareMatrix<double>& operator/=(const SquareMatrix<double>& A_, double alpha) {
+  SquareMatrix<General, double>& operator/=(const SquareMatrix<General, double>& A_, double alpha) {
 
-    SquareMatrix<double> &A = const_cast<SquareMatrix<double> &>(A_);
+    SquareMatrix<General, double> &A = const_cast<SquareMatrix<General, double> &>(A_);
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
@@ -358,13 +362,13 @@ namespace fmatvec {
     return C;
   }
 
-  SquareMatrix<double> operator+(const SquareMatrix<double> &A, const SquareMatrix<double> &B) {
+  SquareMatrix<General, double> operator+(const SquareMatrix<General, double> &A, const SquareMatrix<General, double> &B) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == B.size());
 #endif
 
-    SquareMatrix<double> C(A.size());
+    SquareMatrix<General, double> C(A.size());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
@@ -380,13 +384,13 @@ namespace fmatvec {
     return C;
   }
 
-  SquareMatrix<double> operator-(const SquareMatrix<double> &A, const SquareMatrix<double> &B) {
+  SquareMatrix<General, double> operator-(const SquareMatrix<General, double> &A, const SquareMatrix<General, double> &B) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == B.size());
 #endif
 
-    SquareMatrix<double> C(A.size());
+    SquareMatrix<General, double> C(A.size());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
@@ -422,13 +426,13 @@ namespace fmatvec {
     return C;
   }
 
-  SquareMatrix<double> operator*(const SquareMatrix<double> &A, const SquareMatrix<double> &B) {
+  SquareMatrix<General, double> operator*(const SquareMatrix<General, double> &A, const SquareMatrix<General, double> &B) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == B.size());
 #endif
 
-    SquareMatrix<double> C(A.size());
+    SquareMatrix<General, double> C(A.size());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0) {
@@ -781,9 +785,9 @@ namespace fmatvec {
   }
 
 
-  SquareMatrix<double>& operator+=(const SquareMatrix<double>& A_, const SquareMatrix<double> &B) {
+  SquareMatrix<General, double>& operator+=(const SquareMatrix<General, double>& A_, const SquareMatrix<General, double> &B) {
 
-    SquareMatrix<double> &A = const_cast<SquareMatrix<double> &>(A_);
+    SquareMatrix<General, double> &A = const_cast<SquareMatrix<General, double> &>(A_);
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == B.size());
@@ -841,9 +845,9 @@ namespace fmatvec {
     return A;
   }
 
-  SquareMatrix<double>& operator-=(const SquareMatrix<double>& A_, const SquareMatrix<double> &B) {
+  SquareMatrix<General, double>& operator-=(const SquareMatrix<General, double>& A_, const SquareMatrix<General, double> &B) {
 
-    SquareMatrix<double> &A = const_cast<SquareMatrix<double> &>(A_);
+    SquareMatrix<General, double> &A = const_cast<SquareMatrix<General, double> &>(A_);
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == B.size());
@@ -863,9 +867,9 @@ namespace fmatvec {
   // Vector operations
   //-------------------------------------
 
-  Vector<double>& operator/=(const Vector<double> &x_, const double &alpha) {
+  Vector<General, double>& operator/=(const Vector<General, double> &x_, const double &alpha) {
 
-    Vector<double> &x = const_cast<Vector<double> &>(x_);
+    Vector<General, double> &x = const_cast<Vector<General, double> &>(x_);
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -877,9 +881,9 @@ namespace fmatvec {
     return x;
   }
 
-  Vector<double>& operator*=(const Vector<double> &x_, const double &alpha) {
+  Vector<General, double>& operator*=(const Vector<General, double> &x_, const double &alpha) {
 
-    Vector<double> &x = const_cast<Vector<double> &>(x_);
+    Vector<General, double> &x = const_cast<Vector<General, double> &>(x_);
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -891,24 +895,10 @@ namespace fmatvec {
     return x;
   }
 
-  Vector<double> operator*(const Vector<double> &x, double alpha) {
+  Vector<General, double> operator*(const Vector<General, double> &x, double alpha) {
 
-    Vector<double> y(x.size());//=x.copy();
-    //Vector<double> y=x.copy();
-
-#ifndef FMATVEC_NO_VOID_CHECK
-    if(x.size() == 0)
-      return y;
-#endif
-
-    myblas_dscal(x.size(),alpha,x(),x.inc(),y());
-
-    return y;
-  }
-
-  Vector<double> operator*(double alpha, const Vector<double> &x) {
-
-    Vector<double> y(x.size());
+    Vector<General, double> y(x.size());//=x.copy();
+    //Vector<General, double> y=x.copy();
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -920,9 +910,23 @@ namespace fmatvec {
     return y;
   }
 
-  Vector<double> operator/(const Vector<double> &x, double alpha) {
+  Vector<General, double> operator*(double alpha, const Vector<General, double> &x) {
 
-    Vector<double> y(x.size());
+    Vector<General, double> y(x.size());
+
+#ifndef FMATVEC_NO_VOID_CHECK
+    if(x.size() == 0)
+      return y;
+#endif
+
+    myblas_dscal(x.size(),alpha,x(),x.inc(),y());
+
+    return y;
+  }
+
+  Vector<General, double> operator/(const Vector<General, double> &x, double alpha) {
+
+    Vector<General, double> y(x.size());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -939,9 +943,9 @@ namespace fmatvec {
   //-------------------------------------
 
 
-  Vector<double>& operator+=(const Vector<double> &x_, const Vector<double> &y) {
+  Vector<General, double>& operator+=(const Vector<General, double> &x_, const Vector<General, double> &y) {
 
-    Vector<double> &x = const_cast<Vector<double> &>(x_);
+    Vector<General, double> &x = const_cast<Vector<General, double> &>(x_);
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
@@ -957,9 +961,9 @@ namespace fmatvec {
     return x;
   }
 
-  Vector<double>& operator-=(const Vector<double> &x_, const Vector<double> &y) {
+  Vector<General, double>& operator-=(const Vector<General, double> &x_, const Vector<General, double> &y) {
 
-    Vector<double> &x = const_cast<Vector<double> &>(x_);
+    Vector<General, double> &x = const_cast<Vector<General, double> &>(x_);
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
@@ -975,13 +979,13 @@ namespace fmatvec {
     return x;
   }
 
-  Vector<double> operator+(const Vector<double> &x, const Vector<double> &y) {
+  Vector<General, double> operator+(const Vector<General, double> &x, const Vector<General, double> &y) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
 #endif
 
-    Vector<double> z(x.size());
+    Vector<General, double> z(x.size());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -996,13 +1000,13 @@ namespace fmatvec {
     return z;
   }
 
-  Vector<double> operator-(const Vector<double> &x, const Vector<double> &y) {
+  Vector<General, double> operator-(const Vector<General, double> &x, const Vector<General, double> &y) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
 #endif
 
-    Vector<double> z(x.size());
+    Vector<General, double> z(x.size());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -1019,9 +1023,9 @@ namespace fmatvec {
   // RowVector operations
   //-------------------------------------
 
-  RowVector<double>& operator/=(const RowVector<double> &x_, const double &alpha) {
+  RowVector<General, double>& operator/=(const RowVector<General, double> &x_, const double &alpha) {
 
-    RowVector<double> &x = const_cast<RowVector<double> &>(x_);
+    RowVector<General, double> &x = const_cast<RowVector<General, double> &>(x_);
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -1033,9 +1037,9 @@ namespace fmatvec {
     return x;
   }
 
-  RowVector<double>& operator*=(const RowVector<double> &x_, const double &alpha) {
+  RowVector<General, double>& operator*=(const RowVector<General, double> &x_, const double &alpha) {
 
-    RowVector<double> &x = const_cast<RowVector<double> &>(x_);
+    RowVector<General, double> &x = const_cast<RowVector<General, double> &>(x_);
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -1047,23 +1051,9 @@ namespace fmatvec {
     return x;
   }
 
-  RowVector<double> operator*(const RowVector<double> &x, double alpha) {
+  RowVector<General, double> operator*(const RowVector<General, double> &x, double alpha) {
 
-    RowVector<double> y(x.size());//=x.copy();
-
-#ifndef FMATVEC_NO_VOID_CHECK
-    if(x.size() == 0)
-      return y;
-#endif
-
-    myblas_dscal(x.size(),alpha,x(),x.inc(),y());
-
-    return y;
-  }
-
-  RowVector<double> operator*(double alpha, const RowVector<double> &x) {
-
-    RowVector<double> y(x.size());
+    RowVector<General, double> y(x.size());//=x.copy();
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -1075,9 +1065,23 @@ namespace fmatvec {
     return y;
   }
 
-  RowVector<double> operator/(const RowVector<double> &x, double alpha) {
+  RowVector<General, double> operator*(double alpha, const RowVector<General, double> &x) {
 
-    RowVector<double> y(x.size());
+    RowVector<General, double> y(x.size());
+
+#ifndef FMATVEC_NO_VOID_CHECK
+    if(x.size() == 0)
+      return y;
+#endif
+
+    myblas_dscal(x.size(),alpha,x(),x.inc(),y());
+
+    return y;
+  }
+
+  RowVector<General, double> operator/(const RowVector<General, double> &x, double alpha) {
+
+    RowVector<General, double> y(x.size());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -1094,9 +1098,9 @@ namespace fmatvec {
   //-------------------------------------
 
 
-  RowVector<double>& operator+=(const RowVector<double> &x_, const RowVector<double> &y) {
+  RowVector<General, double>& operator+=(const RowVector<General, double> &x_, const RowVector<General, double> &y) {
 
-    RowVector<double> &x = const_cast<RowVector<double> &>(x_);
+    RowVector<General, double> &x = const_cast<RowVector<General, double> &>(x_);
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
@@ -1112,9 +1116,9 @@ namespace fmatvec {
     return x;
   }
 
-  RowVector<double>& operator-=(const RowVector<double> &x_, const RowVector<double> &y) {
+  RowVector<General, double>& operator-=(const RowVector<General, double> &x_, const RowVector<General, double> &y) {
 
-    RowVector<double> &x = const_cast<RowVector<double> &>(x_);
+    RowVector<General, double> &x = const_cast<RowVector<General, double> &>(x_);
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
@@ -1130,13 +1134,13 @@ namespace fmatvec {
     return x;
   }
 
-  RowVector<double> operator+(const RowVector<double> &x, const RowVector<double> &y) {
+  RowVector<General, double> operator+(const RowVector<General, double> &x, const RowVector<General, double> &y) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
 #endif 
 
-    RowVector<double> z(x.size());
+    RowVector<General, double> z(x.size());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -1151,14 +1155,14 @@ namespace fmatvec {
     return z;
   }
 
-  RowVector<double> operator-(const RowVector<double> &x, const RowVector<double> &y) {
+  RowVector<General, double> operator-(const RowVector<General, double> &x, const RowVector<General, double> &y) {
 
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
 #endif
 
-    RowVector<double> z(x.size());
+    RowVector<General, double> z(x.size());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -1176,13 +1180,13 @@ namespace fmatvec {
   // Matrix/Vector operations
   //-------------------------------------
 
-  Vector<double> operator*(const Matrix<General, double> &A, const Vector<double> &x) {
+  Vector<General, double> operator*(const Matrix<General, double> &A, const Vector<General, double> &x) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.cols() == x.size());
 #endif
 
-    Vector<double> y(A.rows());
+    Vector<General, double> y(A.rows());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0)
@@ -1208,13 +1212,13 @@ namespace fmatvec {
     return y;
   }
 
-  Vector<double> operator*(const Matrix<Symmetric, double> &A, const Vector<double> &x) {
+  Vector<General, double> operator*(const Matrix<Symmetric, double> &A, const Vector<General, double> &x) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
 #endif
 
-    Vector<double> y(A.size());
+    Vector<General, double> y(A.size());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
@@ -1226,13 +1230,13 @@ namespace fmatvec {
     return y;
   }
 
-  Vector<double> operator*(const Matrix<Diagonal, double> &A, const Vector<double> &x) {
+  Vector<General, double> operator*(const Matrix<Diagonal, double> &A, const Vector<General, double> &x) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
 #endif
 
-    Vector<double> y(A.size());
+    Vector<General, double> y(A.size());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
@@ -1249,13 +1253,13 @@ namespace fmatvec {
   // RowVector/Matrix operations
   //-------------------------------------
 
-  RowVector<double> operator*(const RowVector<double> &x, const Matrix<General, double> &A) {
+  RowVector<General, double> operator*(const RowVector<General, double> &x, const Matrix<General, double> &A) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.rows() == x.size());
 #endif
 
-    RowVector<double> y(A.cols());
+    RowVector<General, double> y(A.cols());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.cols() == 0)
@@ -1283,13 +1287,13 @@ namespace fmatvec {
     return y;
   }
 
-  RowVector<double> operator*(const RowVector<double> &x, const Matrix<Symmetric, double> &A) {
+  RowVector<General, double> operator*(const RowVector<General, double> &x, const Matrix<Symmetric, double> &A) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
 #endif
 
-    RowVector<double> y(A.size());
+    RowVector<General, double> y(A.size());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
@@ -1301,13 +1305,13 @@ namespace fmatvec {
     return y;
   }
 
-  RowVector<double> operator*(const RowVector<double> &x, const Matrix<Diagonal, double> &A) {
+  RowVector<General, double> operator*(const RowVector<General, double> &x, const Matrix<Diagonal, double> &A) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.rows() == x.size());
 #endif
 
-    RowVector<double> y(A.cols());
+    RowVector<General, double> y(A.cols());
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
@@ -1323,7 +1327,7 @@ namespace fmatvec {
   // RowVector/Vector operations
   //-------------------------------------
 
-  double operator*(const RowVector<double> &x, const Vector<double> &y) {
+  double operator*(const RowVector<General, double> &x, const Vector<General, double> &y) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
@@ -1341,7 +1345,7 @@ namespace fmatvec {
   // operations
   //-------------------------------------
 
-  Matrix<General, double> slvLU(const SquareMatrix<double> &A, const Matrix<General, double> &X) {
+  Matrix<General, double> slvLU(const SquareMatrix<General, double> &A, const Matrix<General, double> &X) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == X.rows());
@@ -1354,7 +1358,7 @@ namespace fmatvec {
       return Y;
 #endif
 
-    SquareMatrix<double> B = A.copy();
+    SquareMatrix<General, double> B = A.copy();
 
     int *ipiv = new int[A.size()];
 
@@ -1367,7 +1371,7 @@ namespace fmatvec {
     return Y;  
   }
 
-  Matrix<General, double> slvLUFac(const SquareMatrix<double> &A, const Matrix<General, double> &X, const Vector<int> &ipiv) {
+  Matrix<General, double> slvLUFac(const SquareMatrix<General, double> &A, const Matrix<General, double> &X, const Vector<General, int> &ipiv) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == X.rows());
@@ -1380,7 +1384,7 @@ namespace fmatvec {
       return Y;
 #endif
 
-    SquareMatrix<double> B = A.copy();
+    SquareMatrix<General, double> B = A.copy();
 
 #ifndef HAVE_LIBMKL_INTEL_LP64
     int info = dgetrs(B.blasOrder(), B.blasTrans(), B.size(), Y.cols(), B(), B.ldim(), ipiv(), Y(), Y.ldim());
@@ -1393,7 +1397,7 @@ namespace fmatvec {
     return Y;  
   }
 
-  Matrix<General, double> slvQR(const SquareMatrix<double> &A, const Matrix<General, double> &X) {
+  Matrix<General, double> slvQR(const SquareMatrix<General, double> &A, const Matrix<General, double> &X) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == X.rows());
@@ -1406,7 +1410,7 @@ namespace fmatvec {
       return Y;
 #endif
 
-    SquareMatrix<double> B = A.copy();
+    SquareMatrix<General, double> B = A.copy();
 
     int info = dgels( B.blasTrans(), B.rows(), B.cols(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
 
@@ -1415,20 +1419,20 @@ namespace fmatvec {
     return Y;
   }
 
-  Vector<double> slvLU(const SquareMatrix<double> &A, const Vector<double> &x) {
+  Vector<General, double> slvLU(const SquareMatrix<General, double> &A, const Vector<General, double> &x) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
 #endif
 
-    Vector<double> y = x.copy();
+    Vector<General, double> y = x.copy();
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return y;
 #endif
 
-    SquareMatrix<double> B = A.copy();
+    SquareMatrix<General, double> B = A.copy();
 
     int *ipiv = new int[A.size()];
 
@@ -1441,20 +1445,20 @@ namespace fmatvec {
     return y;  
   }
 
-  Vector<double> slvLUFac(const SquareMatrix<double> &A, const Vector<double> &x, const Vector<int> &ipiv) {
+  Vector<General, double> slvLUFac(const SquareMatrix<General, double> &A, const Vector<General, double> &x, const Vector<General, int> &ipiv) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
 #endif
 
-    Vector<double> y = x.copy();
+    Vector<General, double> y = x.copy();
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return y;
 #endif
 
-    SquareMatrix<double> B = A.copy();
+    SquareMatrix<General, double> B = A.copy();
 
 #ifndef HAVE_LIBMKL_INTEL_LP64
     int info = dgetrs(B.blasOrder(), B.blasTrans(), B.size(), 1, B(), B.ldim(), ipiv(), y(), y.size());
@@ -1467,20 +1471,20 @@ namespace fmatvec {
     return y;  
   }
 
-  Vector<double> slvQR(const SquareMatrix<double> &A, const Vector<double> &x) {
+  Vector<General, double> slvQR(const SquareMatrix<General, double> &A, const Vector<General, double> &x) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
 #endif
 
-    Vector<double> y = x.copy();
+    Vector<General, double> y = x.copy();
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
       return y;
 #endif
 
-    SquareMatrix<double> B = A.copy();
+    SquareMatrix<General, double> B = A.copy();
 
     int info = dgels( B.blasTrans(), B.rows(), B.cols(), y.cols(), B(), B.ldim(), y(), y.size());
 
@@ -1489,9 +1493,9 @@ namespace fmatvec {
     return y;  
   }
 
-  SquareMatrix<double> inv(const SquareMatrix<double> &A) {
+  SquareMatrix<General, double> inv(const SquareMatrix<General, double> &A) {
 
-    SquareMatrix<double> B=A.copy();
+    SquareMatrix<General, double> B=A.copy();
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
@@ -1552,7 +1556,7 @@ namespace fmatvec {
     return B;
   }
 
-  Matrix<General, double> facLU(const Matrix<General, double> &A, Vector<int> &ipiv) {
+  Matrix<General, double> facLU(const Matrix<General, double> &A, Vector<General, int> &ipiv) {
 
     Matrix<General, double> B=A.copy();
 
@@ -1573,9 +1577,9 @@ namespace fmatvec {
     return B;
   }
 
-  SquareMatrix<double> facLU(const SquareMatrix<double> &A, Vector<int> &ipiv) {
+  SquareMatrix<General, double> facLU(const SquareMatrix<General, double> &A, Vector<General, int> &ipiv) {
 
-    SquareMatrix<double> B=A.copy();
+    SquareMatrix<General, double> B=A.copy();
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.size() == 0)
@@ -1614,7 +1618,7 @@ namespace fmatvec {
     return B;
   }
 
-  double nrm1(const Vector<double> &x) {
+  double nrm1(const Vector<General, double> &x) {
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -1624,7 +1628,7 @@ namespace fmatvec {
     return dasum(x.size(), x(), x.inc());
   }
 
-  double nrmInf(const Vector<double> &x) {
+  double nrmInf(const Vector<General, double> &x) {
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -1635,7 +1639,7 @@ namespace fmatvec {
     return fabs(x(id));
   }
 
-  double nrm2(const Vector<double> &x) {
+  double nrm2(const Vector<General, double> &x) {
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -1645,13 +1649,13 @@ namespace fmatvec {
     return dnrm2(x.size(), x(), x.inc());
   }
 
-  Vector<double> slvLL(const Matrix<Symmetric, double> &A, const Vector<double> &x) {
+  Vector<General, double> slvLL(const Matrix<Symmetric, double> &A, const Vector<General, double> &x) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
 #endif
 
-    Vector<double> y = x.copy();
+    Vector<General, double> y = x.copy();
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -1697,13 +1701,13 @@ namespace fmatvec {
     return Y;  
   }
 
-  Vector<double> slvLLFac(const Matrix<Symmetric, double> &A, const Vector<double> &x) {
+  Vector<General, double> slvLLFac(const Matrix<Symmetric, double> &A, const Vector<General, double> &x) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
 #endif
 
-    Vector<double> y = x.copy();
+    Vector<General, double> y = x.copy();
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(x.size() == 0)
@@ -1749,17 +1753,17 @@ namespace fmatvec {
     return Y;  
   }
 
-  Vector<std::complex<double> > eigval(const SquareMatrix<double> &A) {
+  Vector<General, std::complex<double> > eigval(const SquareMatrix<General, double> &A) {
 
     double *vl=0, *vr=0;
     double *wr = new double[A.size()];
     double *wi = new double[A.size()];
 
-    SquareMatrix<double> B = A.copy();
+    SquareMatrix<General, double> B = A.copy();
 
     dgeev('N','N', A.size(), B(), B.ldim(), wr, wi, vl, B.size(), vr, B.size());
 
-    Vector<std::complex<double> > w(A.size());
+    Vector<General, std::complex<double> > w(A.size());
     for(int i=0; i<A.size(); i++)
       w(i)=std::complex<double>(wr[i],wi[i]);
 
@@ -1770,10 +1774,10 @@ namespace fmatvec {
 
   }
   
-  int eigvec(const Matrix<Symmetric, double> &A, const Matrix<Symmetric, double> &B, SquareMatrix<double> &eigenvectors, Vector<double> &eigenvalues) {
+  int eigvec(const Matrix<Symmetric, double> &A, const Matrix<Symmetric, double> &B, SquareMatrix<General, double> &eigenvectors, Vector<General, double> &eigenvalues) {
     const int dim=A.size();
     double *w = new double[dim];
-    SquareMatrix<double> B_(dim);
+    SquareMatrix<General, double> B_(dim);
     eigenvectors.resize(dim);
     eigenvalues.resize(dim);
     for (int z=0; z<dim; z++)
@@ -1787,7 +1791,7 @@ namespace fmatvec {
     int info = dsygv(1, 'V', 'L', dim, eigenvectors(), eigenvectors.ldim(), B_(), B_.ldim(), w);
 
     for (int i=0; i<dim; i++) {
-      Vector<double> evTmp=eigenvectors.col(i);
+      Vector<General, double> evTmp=eigenvectors.col(i);
       if (nrm2(evTmp)>0)
         eigenvectors.col(i)=evTmp/nrm2(evTmp);
       eigenvalues(i)=w[i];
@@ -1798,9 +1802,9 @@ namespace fmatvec {
     return info;
   }
 
-  Vector<double> eigval(const Matrix<Symmetric, double> &A) {
+  Vector<General, double> eigval(const Matrix<Symmetric, double> &A) {
 
-    Vector<double> w(A.size(),NONINIT);
+    Vector<General, double> w(A.size(),NONINIT);
     Matrix<Symmetric, double> B = A.copy();
 
     dsyev('N', 'L', B.size(), B(), B.ldim(), w());
@@ -1809,7 +1813,7 @@ namespace fmatvec {
 
   }
 
-  Vector<double> eigvalSel(const Matrix<Symmetric, double> &A, int il, int iu, double abstol) {
+  Vector<General, double> eigvalSel(const Matrix<Symmetric, double> &A, int il, int iu, double abstol) {
 
     assert(il>=1);
     assert(iu>=il);
@@ -1819,7 +1823,7 @@ namespace fmatvec {
     B.ldim();
     double vl=0,vu=0;
     int m;
-    Vector<double> w(A.size());
+    Vector<General, double> w(A.size());
     double* z=0;
     int ldz = 1;
 
@@ -1830,13 +1834,13 @@ namespace fmatvec {
   }
 
 
-  double rho(const SquareMatrix<double> &A) {
+  double rho(const SquareMatrix<General, double> &A) {
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if(A.rows() == 0 || A.cols() == 0)
       return 0.0;
 #endif
-    Vector<std::complex<double> > v = eigval(A);
+    Vector<General, std::complex<double> > v = eigval(A);
     double buf = abs(v(0));
     for(int i=0; i<v.size(); i++) {
       double absi = abs(v(i));
@@ -1852,7 +1856,7 @@ namespace fmatvec {
     if(A.rows() == 0 || A.cols() == 0)
       return 0.0;
 #endif
-    Vector<double> v = eigval(A);
+    Vector<General, double> v = eigval(A);
     double buf = fabs(v(0));
     for(int i=0; i<v.size(); i++) {
       double absi = fabs(v(i));
@@ -1925,7 +1929,7 @@ namespace fmatvec {
     return B_(Index(0,A.cols()-1),Index(0,B.cols()-1));
   }
 
-  Vector<double> slvLS(const Matrix<General,double> &A, const Vector<double> &b, double rcond) {
+  Vector<General, double> slvLS(const Matrix<General,double> &A, const Vector<General, double> &b, double rcond) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.rows() == b.size());
@@ -1938,7 +1942,7 @@ namespace fmatvec {
 
     Matrix<General,double> A_ = A.copy();
 
-    Vector<double> b_(A.rows()>A.cols()?A.rows():A.cols() ,NONINIT);
+    Vector<General, double> b_(A.rows()>A.cols()?A.rows():A.cols() ,NONINIT);
     b_(0,b.size()-1) = b;
 
     int info = dgelss( A.rows(), A.cols(), 1, A_(), A_.ldim(), b_(), b_.size(), rcond);
@@ -1948,7 +1952,7 @@ namespace fmatvec {
     return b_(0,A.cols()-1);
   }
 
-//  Matrix<General, double> swap(const Matrix<General, double> &X, const Vector<int> &ipiv ) {
+//  Matrix<General, double> swap(const Matrix<General, double> &X, const Vector<General, int> &ipiv ) {
 //
 //    //#ifndef FMATVEC_NO_SIZE_CHECK 
 //    //    assert(A.size() == X.rows());
@@ -1960,7 +1964,7 @@ namespace fmatvec {
 //
 //    return Y;
 //  }
-//  Matrix<General, double> slvLU(CBLAS_SIDE side, CBLAS_UPLO uplo, CBLAS_DIAG unit, const SquareMatrix<double> &A, const Matrix<General, double> &X, const Vector<int> &ipiv ) {
+//  Matrix<General, double> slvLU(CBLAS_SIDE side, CBLAS_UPLO uplo, CBLAS_DIAG unit, const SquareMatrix<General, double> &A, const Matrix<General, double> &X, const Vector<General, int> &ipiv ) {
 //
 //    //#ifndef FMATVEC_NO_SIZE_CHECK 
 //    //    assert(A.size() == X.rows());
@@ -1976,7 +1980,7 @@ namespace fmatvec {
 //
 //    ATL_dlaswp( Y.cols(), Y(), Y.ldim(), 0, Y.rows(), ipiv(), 1 );
 //
-//    SquareMatrix<double> B = A.copy();
+//    SquareMatrix<General, double> B = A.copy();
 //
 //    dtrsm(CblasColMajor,side,uplo,B.blasTrans(),unit,Y.rows(), Y.cols(), 1, A(),A.ldim(), Y(), Y.ldim());
 //

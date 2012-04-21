@@ -33,9 +33,9 @@ namespace fmatvec {
    * \return The transpose.
    * */
   template <class AT>
-    RowVector<AT> trans(const Vector<AT> &x) {
+    RowVector<General, AT> trans(const Vector<General, AT> &x) {
 
-      return RowVector<AT>(x.m,x.lda,x.tp?false:true,x.memory,x.ele).copy();
+      return RowVector<General, AT>(x.m,x.lda,x.tp?false:true,x.memory,x.ele).copy();
     }
 
   /*! \brief Negation.
@@ -44,9 +44,9 @@ namespace fmatvec {
    * \return The negation.
    * */
   template <class AT>
-    Vector<AT> operator-(const Vector<AT> &x) {
+    Vector<General, AT> operator-(const Vector<General, AT> &x) {
 
-      Vector<AT> y(x.size(),NONINIT);
+      Vector<General, AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++)
 	y(i)=-x(i);
@@ -61,9 +61,9 @@ namespace fmatvec {
    * \return The product.
    * */
   template <class AT>
-    Vector<AT> operator*(const Vector<AT> &x, const AT& alpha) {
+    Vector<General, AT> operator*(const Vector<General, AT> &x, const AT& alpha) {
 
-      Vector<AT> y(x.size(),NONINIT);
+      Vector<General, AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++) 
 	y(i) = x(i)*alpha;
@@ -73,12 +73,12 @@ namespace fmatvec {
 
   /*! \brief Scalar-vector multiplication.
    *
-   * \see operator*(const Vector<AT>&x,const AT&).
+   * \see operator*(const Vector<General, AT>&x,const AT&).
    * */
   template <class AT>
-    Vector<AT> operator*(const AT& alpha, const Vector<AT> &x) {
+    Vector<General, AT> operator*(const AT& alpha, const Vector<General, AT> &x) {
 
-      Vector<AT> y(x.size(),NONINIT);
+      Vector<General, AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++) 
 	y(i) = x(i)*alpha;
@@ -94,9 +94,9 @@ namespace fmatvec {
    * \return The transpose.
    * */
   template <class AT>
-    Vector<AT> trans(const RowVector<AT> &x) {
+    Vector<General, AT> trans(const RowVector<General, AT> &x) {
 
-      return Vector<AT>(x.n,x.lda,x.tp?false:true,x.memory,x.ele).copy();
+      return Vector<General, AT>(x.n,x.lda,x.tp?false:true,x.memory,x.ele).copy();
     }
 
   /*! \brief Negation.
@@ -105,9 +105,9 @@ namespace fmatvec {
    * \return The negation.
    * */
   template <class AT>
-    RowVector<AT> operator-(const RowVector<AT> &a) {
+    RowVector<General, AT> operator-(const RowVector<General, AT> &a) {
 
-      RowVector<AT> c(a.size(),NONINIT);
+      RowVector<General, AT> c(a.size(),NONINIT);
 
       for(int i=0; i<a.size(); i++)
 	c(i)=-a(i);
@@ -122,9 +122,9 @@ namespace fmatvec {
    * \return The product.
    * */
   template <class AT>
-    RowVector<AT> operator*(const RowVector<AT> &x, const AT& alpha) {
+    RowVector<General, AT> operator*(const RowVector<General, AT> &x, const AT& alpha) {
 
-      RowVector<AT> y(x.size(),NONINIT);
+      RowVector<General, AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++) 
 	y(i) = x(i)*alpha;
@@ -134,12 +134,12 @@ namespace fmatvec {
 
   /*! \brief Scalar-rowvector multiplication.
    *
-   * \see operator*(const RowVector<AT>&, const AT&).
+   * \see operator*(const RowVector<General, AT>&, const AT&).
    * */
   template <class AT>
-    RowVector<AT> operator*(const AT &alpha, const RowVector<AT> &x) {
+    RowVector<General, AT> operator*(const AT &alpha, const RowVector<General, AT> &x) {
 
-      RowVector<AT> y(x.size(),NONINIT);
+      RowVector<General, AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++) 
 	y(i) = x(i)*alpha;
@@ -153,11 +153,11 @@ namespace fmatvec {
    * \return The sum.
    * */
   template <class AT>
-    inline Vector<AT> operator+(const Vector<AT> &x, const Vector<AT > &y) {
+    inline Vector<General, AT> operator+(const Vector<General, AT> &x, const Vector<General, AT> &y) {
 
       assert(y.size() == x.size());
 
-      Vector<AT> z(x.size(),NONINIT);
+      Vector<General, AT> z(x.size(),NONINIT);
 
       if(y.transposed()) {
 	if(x.transposed())
@@ -185,11 +185,11 @@ namespace fmatvec {
    * \return The difference.
    * */
   template <class AT>
-    Vector<AT> operator-(const Vector<AT> &x, const Vector<AT > &y) {
+    Vector<General, AT> operator-(const Vector<General, AT> &x, const Vector<General, AT> &y) {
 
       assert(y.size() == x.size());
 
-      Vector<AT> z(x.size(),NONINIT);
+      Vector<General, AT> z(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++)
 	z(i) = x(i) - y(i);
@@ -203,7 +203,7 @@ namespace fmatvec {
    * \return The scalar product.
    * */
   template <class AT>
-    AT scalarProduct(const Vector<AT> &x, const Vector<AT > &y) {
+    AT scalarProduct(const Vector<General, AT> &x, const Vector<General, AT> &y) {
 
       assert(x.size()==y.size());
 
@@ -221,12 +221,12 @@ namespace fmatvec {
    * \return The cross product.
    * */
   template <class AT>
-    Vector<AT> crossProduct(const Vector<AT> &x, const Vector<AT> &y) {
+    Vector<General, AT> crossProduct(const Vector<General, AT> &x, const Vector<General, AT> &y) {
 
       assert(x.size()==3);
       assert(y.size()==3);
 
-      Vector<AT> z(3,NONINIT);
+      Vector<General, AT> z(3,NONINIT);
 
       z(0) = x(1)*y(2) - x(2)*y(1);
       z(1) = x(2)*y(0) - x(0)*y(2);
@@ -241,7 +241,7 @@ namespace fmatvec {
    * \return The triple product.
    * */
   template <class AT>
-    double tripleProduct(const Vector<AT> &a, const Vector<AT> &x, const Vector<AT> &y) {
+    double tripleProduct(const Vector<General, AT> &a, const Vector<General, AT> &x, const Vector<General, AT> &y) {
 
       assert(a.size()==3);
       assert(x.size()==3);
@@ -256,11 +256,11 @@ namespace fmatvec {
    * \return The difference.
    * */
   template <class AT>
-    RowVector<AT> operator-(const RowVector<AT> &x, const RowVector<AT > &y) {
+    RowVector<General, AT> operator-(const RowVector<General, AT> &x, const RowVector<General, AT> &y) {
 
       assert(y.size() == x.size());
 
-      RowVector<AT> z(x.size(),NONINIT);
+      RowVector<General, AT> z(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++)
 	z(i) = x(i) - y(i);
@@ -275,7 +275,7 @@ namespace fmatvec {
    * \return The product.
    * */
   template <class AT> 
-    AT operator*(const RowVector<AT> &x, const Vector<AT> &y) {
+    AT operator*(const RowVector<General, AT> &x, const Vector<General, AT> &y) {
 
       assert(x.size() == y.size());
 
@@ -310,9 +310,9 @@ namespace fmatvec {
    * \return The transpose.
    * */
   template <class AT>
-    SquareMatrix<AT> trans(const SquareMatrix<AT> &A) {
+    SquareMatrix<General, AT> trans(const SquareMatrix<General, AT> &A) {
 
-      return SquareMatrix<AT>(A.n, A.lda, A.tp?false:true, A.memory, A.ele).copy();
+      return SquareMatrix<General, AT>(A.n, A.lda, A.tp?false:true, A.memory, A.ele).copy();
     }
 
   /*! \brief Negation.
@@ -321,9 +321,9 @@ namespace fmatvec {
    * \return The negation.
    * */
   template <class AT>
-    SquareMatrix<AT> operator-(const SquareMatrix<AT> &A) {
+    SquareMatrix<General, AT> operator-(const SquareMatrix<General, AT> &A) {
 
-      SquareMatrix<AT> B(A.size(),NONINIT);
+      SquareMatrix<General, AT> B(A.size(),NONINIT);
 
       for(int i=0; i<A.rows(); i++)
 	for(int j=0; j<A.cols(); j++)
@@ -397,9 +397,9 @@ namespace fmatvec {
    *  \f]
    * */
   template <class AT>
-    SquareMatrix< AT > tilde(const Vector< AT > &x) {
+    SquareMatrix<General, AT> tilde(const Vector<General, AT> &x) {
 
-      SquareMatrix< AT> B(x.size(),NONINIT);
+      SquareMatrix<General, AT> B(x.size(),NONINIT);
 
       B(0,0) =  0;
       B(1,1) =  0;
@@ -421,11 +421,11 @@ namespace fmatvec {
    * \return The product.
    * */
   template <class AT>
-    inline Vector<AT> operator*(const Matrix<General, AT> &A, const Vector<AT > &x) {
+    inline Vector<General, AT> operator*(const Matrix<General, AT> &A, const Vector<General, AT> &x) {
 
       assert(A.cols() == x.size());
 
-      Vector<AT> z(A.rows(),NONINIT);
+      Vector<General, AT> z(A.rows(),NONINIT);
 
       if(x.transposed()) {
 	if(A.transposed()) {
@@ -470,11 +470,11 @@ namespace fmatvec {
    * \return The product.
    * */
   template <class AT, class Type> 
-    RowVector<AT> operator*(const RowVector<AT > &x, const Matrix<Type, AT> &A) {
+    RowVector<General, AT> operator*(const RowVector<General, AT> &x, const Matrix<Type, AT> &A) {
 
       assert(x.size() == A.rows());
 
-      RowVector<AT> z(A.cols(),NONINIT);
+      RowVector<General, AT> z(A.cols(),NONINIT);
 
       for(int i=0; i<z.size(); i++) {
 	z(i)=0;
@@ -594,10 +594,10 @@ namespace fmatvec {
    * \return The product.
    * */
   template <class AT> 
-    Vector<AT> operator*(const Matrix<Sparse, AT> &A, const Vector<AT> &x) {
+    Vector<General, AT> operator*(const Matrix<Sparse, AT> &A, const Vector<General, AT> &x) {
       assert(A.cols() == x.size());
 
-      Vector<AT> z(A.rows(),NONINIT);
+      Vector<General, AT> z(A.rows(),NONINIT);
 
       const AT *a = A();
       const int *ia = A.Ip();
@@ -617,7 +617,7 @@ namespace fmatvec {
    * \return The maximum value.
    * */
   template <class AT>
-    AT max(const Vector<AT> &x) {
+    AT max(const Vector<General, AT> &x) {
       assert(x.size() > 0);
       AT maximum = x(0);
       for(int i=1; i<x.size(); i++) {
@@ -633,7 +633,7 @@ namespace fmatvec {
    * \return The index of the maximum value.
    * */
   template <class AT>
-    int maxIndex(const Vector<AT> &x) {
+    int maxIndex(const Vector<General, AT> &x) {
       assert(x.size() > 0);
       AT maximum = x(0);
       int index = 0;
@@ -652,7 +652,7 @@ namespace fmatvec {
    * \return The minimum value.
    * */
   template <class AT>
-    AT min(const Vector<AT> &x) {
+    AT min(const Vector<General, AT> &x) {
       assert(x.size() > 0);
       AT minimum = x(0);
       for(int i=1; i<x.size(); i++) {
@@ -668,7 +668,7 @@ namespace fmatvec {
    * \return The index of the minimum value.
    * */
   template <class AT>
-    int minIndex(const Vector<AT> &x) {
+    int minIndex(const Vector<General, AT> &x) {
       assert(x.size() > 0);
       AT minimum = x(0);
       int index = 0;
@@ -695,7 +695,7 @@ namespace fmatvec {
       assert(A_.cols()> PivotCol);
       Matrix<General, AT> A = A_.copy();
       int i,j,N;
-      RowVector<AT > tmp;
+      RowVector<General, AT> tmp;
       N = A.rows();
       for (i=1; i<= N-1; i++) {
         for (j=0; j< N-1; j++) {
@@ -712,7 +712,7 @@ namespace fmatvec {
   // HR 28.09.2006
   /*! internal function of QuickSortMedian */
   template <class AT>
-    void quicksortmedian_intern(Matrix<General, AT> &A, int PivotCol, RowVector<AT > &tmp, int l, int r){
+    void quicksortmedian_intern(Matrix<General, AT> &A, int PivotCol, RowVector<General, AT> &tmp, int l, int r){
 
       if(r>l){
 	int i=l-1, j=r;
@@ -762,7 +762,7 @@ namespace fmatvec {
     Matrix<General, AT> quickSortMedian(const Matrix<General, AT> &A_, int PivotCol) {
       Matrix<General, AT> A = A_.copy();
       int N = A.rows();
-      RowVector<AT> tmp;
+      RowVector<General, AT> tmp;
       quicksortmedian_intern(A, PivotCol,tmp, 0, N-1);
       return A;
     }
@@ -773,7 +773,7 @@ namespace fmatvec {
    * elements are treated as NONZERO!!! (See the storage format for sparse matrix)
    * \return The number of nonzero or diagonal elemets.
    * */
-  template <class AT> int countElements(const SquareMatrix<AT> &A) { 
+  template <class AT> int countElements(const SquareMatrix<General, AT> &A) { 
     int k=0;
     for(int i=0; i<A.size(); i++) {
       for(int j=0; j<A.size(); j++) {
@@ -786,22 +786,22 @@ namespace fmatvec {
   }
 
   template <int M, class AT>
-    inline Vector<AT>& operator+=(const Vector<AT> &x_, const FixedVector<M, AT> &y) {
+    inline Vector<General, AT>& operator+=(const Vector<General, AT> &x_, const Vector<FixedGeneral<M,1>, AT> &y) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(x_.size() == M);
 #endif
-      Vector<AT> &x = const_cast<Vector<AT> &>(x_);
+      Vector<General, AT> &x = const_cast<Vector<General, AT> &>(x_);
       for(int i=0; i<M; i++) 
 	x.e(i) += y.e(i);
       return x;
     }
 
   template <int M, class AT>
-    inline FixedVector<M,AT> operator*(const Matrix<FixedVarGeneral<M>, AT> &A, const Vector<AT> &x) {
+    inline Vector<FixedGeneral<M,1>, AT> operator*(const Matrix<FixedVarGeneral<M>, AT> &A, const Vector<General, AT> &x) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.cols() == x.size());
 #endif
-      FixedVector<M,AT> y(NONINIT);
+      Vector<FixedGeneral<M,1>, AT> y(NONINIT);
       for(int i=0; i<M; i++) {
 	y.e(i) = 0;
 	for(int j=0; j<A.cols(); j++) 

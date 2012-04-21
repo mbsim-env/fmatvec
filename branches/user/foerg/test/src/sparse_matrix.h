@@ -55,7 +55,7 @@ namespace fmatvec {
 
 	void deepCopy(const Matrix<Sparse, AT> &x);
 
-	void deepCopy(const SquareMatrix<AT> &A);
+	void deepCopy(const SquareMatrix<General, AT> &A);
 
     /// @endcond
 
@@ -133,7 +133,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 	 *
 	 * See operator<<(const Matrix<Sparse,AT>&) 
 	 * */
-	Matrix<Sparse, AT>& operator<<(const SquareMatrix<AT> &A);
+	Matrix<Sparse, AT>& operator<<(const SquareMatrix<General, AT> &A);
 
 	/*! \brief Assignment operator
 	 *
@@ -313,7 +313,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
     }
 
   template <class AT>
-    Matrix<Sparse, AT>& Matrix<Sparse, AT>::operator<<(const SquareMatrix<AT> &A) { 
+    Matrix<Sparse, AT>& Matrix<Sparse, AT>::operator<<(const SquareMatrix<General, AT> &A) { 
 
      if(A.rows() == 0 || A.cols() == 0)
 	return *this;
@@ -359,7 +359,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
       }
     }
 
-  template <class AT> void Matrix<Sparse, AT>::deepCopy(const SquareMatrix<AT> &A) { 
+  template <class AT> void Matrix<Sparse, AT>::deepCopy(const SquareMatrix<General, AT> &A) { 
       int k=0;
       int i;
       for(i=0; i<A.size(); i++) {

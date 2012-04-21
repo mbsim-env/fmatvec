@@ -27,8 +27,6 @@
 
 namespace fmatvec {
 
-  //template <int N, class AT> class FixedVector;
-
   /*! 
    *  \brief This is a matrix class for general matrices.
    *  
@@ -73,8 +71,8 @@ namespace fmatvec {
 	} else if(ini == EYE ) {
 	  for(int i=0; i<M; i++) {
 	    for(int j=0; j<N; j++) {
-	      if (i==j) e(i,j) = 1; // operator()(i,i) = 1;
-	      else e(i,j) = 0; // operator()(i,j) = 0;
+	      if (i==j) e(i,j) = 1;
+	      else e(i,j) = 0;
 	    }
 	  }
 	}
@@ -144,37 +142,14 @@ namespace fmatvec {
 
       /*! \brief Assignment operator
        *
-       * Copies the matrix given by \em A by calling operator<<().
+       * Copies the matrix given by \em A.
        * \param A The matrix to be assigned. 
        * \return A reference to the calling matrix.
-       * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
-       * \sa operator<<(), operator>>()
        * */
-      Matrix<VarFixedGeneral<N>, AT>& operator=(const Matrix<VarFixedGeneral<N>, AT> &A) {
-	return operator<<(A);
-      }
+      inline Matrix<VarFixedGeneral<N>, AT>& operator=(const Matrix<VarFixedGeneral<N>, AT> &A);
 
       template <class Type>
-      Matrix<VarFixedGeneral<N>, AT>& operator=(const Matrix<Type, AT> &A) {
-	return operator<<(A);
-      }
-
-      /*! \brief Copy operator
-       *
-       * Copies the matrix given by \em A.
-       * \param A The matrix to be copied. 
-       * \return A reference to the calling matrix.
-       * */
-      template<class T> 
-	inline Matrix<VarFixedGeneral<N>, AT>& operator<<(const Matrix<T, AT> &A);
-
-      /*! \brief Copy operator
-       *
-       * Copies the matrix given by \em A.
-       * \param A The matrix to be copied. 
-       * \return A reference to the calling matrix.
-       * */
-      inline Matrix<VarFixedGeneral<N>, AT>& operator<<(const Matrix<VarFixedGeneral<N>, AT> &A);
+      inline Matrix<VarFixedGeneral<N>, AT>& operator=(const Matrix<Type, AT> &A);
 
       /*! \brief Element operator
        *
@@ -296,13 +271,13 @@ namespace fmatvec {
        * \param i The column, that will be returned.  
        * \return A vector containing the i-th column of the calling matrix.
        * */
-      inline VarVector<AT> col(int j);
+      inline Vector<VarGeneral, AT> col(int j);
 
       /*! \brief Column operator.
        *
        * see col(int)
        * */
-      inline const VarVector<AT> col(int j) const;
+      inline const Vector<VarGeneral, AT> col(int j) const;
 
       /*! \brief Initialization.
        *
@@ -384,7 +359,7 @@ namespace fmatvec {
     }
 
   template <int N, class AT> template< class Type>
-    inline Matrix<VarFixedGeneral<N>, AT>& Matrix<VarFixedGeneral<N>, AT>::operator<<(const Matrix<Type, AT> &A) { 
+    inline Matrix<VarFixedGeneral<N>, AT>& Matrix<VarFixedGeneral<N>, AT>::operator=(const Matrix<Type, AT> &A) { 
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.rows() == M); 
@@ -397,7 +372,7 @@ namespace fmatvec {
     }
 
   template <int N, class AT>
-    inline Matrix<VarFixedGeneral<N>, AT>& Matrix<VarFixedGeneral<N>, AT>::operator<<(const Matrix<VarFixedGeneral<N>, AT> &A) { 
+    inline Matrix<VarFixedGeneral<N>, AT>& Matrix<VarFixedGeneral<N>, AT>::operator=(const Matrix<VarFixedGeneral<N>, AT> &A) { 
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.rows() == M);
@@ -418,14 +393,14 @@ namespace fmatvec {
     }
 
   template <int N, class AT>
-    inline VarVector<AT> Matrix<VarFixedGeneral<N>, AT>::col(int j) {
+    inline Vector<VarGeneral, AT> Matrix<VarFixedGeneral<N>, AT>::col(int j) {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(j>=0);
       assert(j<N);
 #endif
 
-      VarVector<AT> x(M,NONINIT);
+      Vector<VarGeneral, AT> x(M,NONINIT);
 
       for(int i=0; i<M; i++)
         x.e(i) = e(i,j);
@@ -434,14 +409,14 @@ namespace fmatvec {
     }
 
   template <int N, class AT>
-    inline const VarVector<AT> Matrix<VarFixedGeneral<N>, AT>::col(int j) const {
+    inline const Vector<VarGeneral, AT> Matrix<VarFixedGeneral<N>, AT>::col(int j) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(j>=0);
       assert(j<N);
 #endif
 
-      VarVector<AT> x(M,NONINIT);
+      Vector<VarGeneral, AT> x(M,NONINIT);
 
       for(int i=0; i<M; i++)
         x.e(i) = e(i,j);

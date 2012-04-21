@@ -35,7 +35,7 @@ namespace fmatvec {
    * parameter AT defines the atomic type of the vector. Valid
    * types are int, float, double, complex<float> and
    * complex<double> */
-  template <class AT> class SquareMatrix : public Matrix<General, AT> {
+  template <class AT> class SquareMatrix<General, AT> : public Matrix<General, AT> {
 
     using Matrix<General, AT>::m;
     using Matrix<General, AT>::n;
@@ -49,10 +49,10 @@ namespace fmatvec {
 
     /// @cond NO_SHOW
 
-    template <class T> friend SquareMatrix<T> trans(const SquareMatrix<T> &A);
+    template <class T> friend SquareMatrix<General,T> trans(const SquareMatrix<General,T> &A);
 
-    friend const SquareMatrix<AT> Matrix<General, AT>::operator()(const Index &I) const;
-    friend SquareMatrix<AT> Matrix<General, AT>::operator()(const Index &I);
+    friend const SquareMatrix<General, AT> Matrix<General, AT>::operator()(const Index &I) const;
+    friend SquareMatrix<General, AT> Matrix<General, AT>::operator()(const Index &I);
 
     protected:
 
@@ -141,7 +141,7 @@ namespace fmatvec {
        * zero by default. To change this behavior, define
        * FMATVEC_NO_INITIALIZATION.
        * */
-      SquareMatrix<AT>& resize(int n) {
+      SquareMatrix<General, AT>& resize(int n) {
 	Matrix<General, AT>::resize(n,n);
 	return *this;
       }
@@ -157,7 +157,7 @@ namespace fmatvec {
        * \param a The value, the matrix will be initialized with (default 0)
        * \return A reference to the calling matrix.
        * */
-      SquareMatrix<AT>& resize(int n,Initialization ini, const AT &a=0) {
+      SquareMatrix<General, AT>& resize(int n,Initialization ini, const AT &a=0) {
 	Matrix<General, AT>::resize(n,n,ini,a);
 	return *this;
       }
@@ -169,12 +169,12 @@ namespace fmatvec {
        * referenced.
        * \param A The matrix that will be referenced.
        * */
-      SquareMatrix(const SquareMatrix<AT>&  A) : Matrix<General, AT>(A) {
+      SquareMatrix(const SquareMatrix<General, AT>&  A) : Matrix<General, AT>(A) {
       }
 
       /*! \brief Copy Constructor
        *
-       * See SquareMatrix(const SquareMatrix<AT>&) 
+       * See SquareMatrix(const SquareMatrix<General, AT>&) 
        * */
       explicit SquareMatrix(const Matrix<General, AT>&  A) : Matrix<General, AT>(A) {
 #ifndef FMATVEC_NO_SIZE_CHECK
@@ -194,7 +194,7 @@ namespace fmatvec {
        * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
        * \sa operator<<(), operator>>()
        * */
-      SquareMatrix<AT>& operator=(const SquareMatrix<AT>&  A) {
+      SquareMatrix<General, AT>& operator=(const SquareMatrix<General, AT>&  A) {
 #ifndef FMATVEC_NO_DEEP_ASSIGNMENT 
 	return operator<<(A);
 #else
@@ -208,7 +208,7 @@ namespace fmatvec {
        * \param A The matrix to be copied. 
        * \return A reference to the calling matrix.
        * */
-      SquareMatrix<AT>& operator<<(const SquareMatrix<AT>&  A) {
+      SquareMatrix<General, AT>& operator<<(const SquareMatrix<General, AT>&  A) {
 	Matrix<General,AT>::operator<<(A);
 	return *this;
       }
@@ -219,7 +219,7 @@ namespace fmatvec {
        * \param A The matrix to be copied. 
        * \return A reference to the calling matrix.
        * */
-      template<class T> SquareMatrix<AT>& operator<<(const Matrix<T, AT> &A) {
+      template<class T> SquareMatrix<General, AT>& operator<<(const Matrix<T, AT> &A) {
 	Matrix<General,AT>::operator<<(A);
 	return *this;
       }
@@ -230,7 +230,7 @@ namespace fmatvec {
        * \param A The matrix to be referenced. 
        * \return A reference to the calling matrix.
        * */
-      SquareMatrix<AT>& operator>>(const SquareMatrix<AT>&  A) {
+      SquareMatrix<General, AT>& operator>>(const SquareMatrix<General, AT>&  A) {
 	Matrix<General,AT>::operator>>(A);
 	return *this;
       }
@@ -246,7 +246,7 @@ namespace fmatvec {
        * The calling matrix returns a \em deep copy of itself.  
        * \return The duplicate.
        * */
-      inline SquareMatrix<AT> copy() const;
+      inline SquareMatrix<General, AT> copy() const;
 
       using Matrix<General, AT>::operator();
       using Matrix<General, AT>::resize;
@@ -257,26 +257,26 @@ namespace fmatvec {
        * */
       inline operator std::vector<std::vector<AT> >();
 
-      SquareMatrix<AT> T() {
-	return SquareMatrix<AT>(n, lda, tp?false:true, memory, ele);
+      SquareMatrix<General, AT> T() {
+	return SquareMatrix<General, AT>(n, lda, tp?false:true, memory, ele);
       }
 
-      const SquareMatrix<AT> T() const {
-	return SquareMatrix<AT>(n, lda, tp?false:true, memory, ele);
+      const SquareMatrix<General, AT> T() const {
+	return SquareMatrix<General, AT>(n, lda, tp?false:true, memory, ele);
       }
   };
 
   template <class AT>
-    inline SquareMatrix<AT> SquareMatrix<AT>::copy() const {
+    inline SquareMatrix<General, AT> SquareMatrix<General, AT>::copy() const {
 
-      SquareMatrix<AT> A(m,NONINIT);
+      SquareMatrix<General, AT> A(m,NONINIT);
       A.deepCopy(*this);
 
       return A;
     }
 
   template <class AT>
-    inline SquareMatrix<AT>::operator std::vector<std::vector<AT> >() {
+    inline SquareMatrix<General, AT>::operator std::vector<std::vector<AT> >() {
       std::vector<std::vector<AT> > ret(size());
       if(tp) {
 	for(int r=0; r<size(); r++) {

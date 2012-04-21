@@ -43,21 +43,21 @@ namespace fmatvec {
    *  
    *  Vec is an abbreviation for vectors of type double.
    * */
-  typedef  Vector<double> Vec;
+  typedef  Vector<General, double> Vec;
 
   /*! 
    *  \brief Row vector
    *  
    *  RowVec is an abbreviation for row vectors of type double.
    * */
-  typedef  RowVector<double> RowVec;
+  typedef  RowVector<General, double> RowVec;
 
   /*! 
    *  \brief Square matrix
    *  
    *  SqrMat is an abbreviation for square matrices of type double.
    * */
-  typedef  SquareMatrix<double> SqrMat;
+  typedef  SquareMatrix<General, double> SqrMat;
 
   /*! 
    *  \brief Diagonal matrix
@@ -82,11 +82,11 @@ namespace fmatvec {
 
   typedef  Matrix<FixedGeneral<3,3>,double> FMat;
 
-  typedef  FixedSquareMatrix<3,double> FSqrMat;
+  typedef  SquareMatrix<FixedGeneral<3,3>,double> FSqrMat;
 
-  typedef  FixedVector<3,double> FVec;
+  typedef  Vector<FixedGeneral<3,1>,double> FVec;
 
-  typedef  FixedRowVector<3,double> FRowVec;
+  typedef  RowVector<FixedGeneral<1,3>,double> FRowVec;
 
   typedef  Matrix<FixedSymmetric<3>,double> FSymMat;
 
@@ -94,7 +94,7 @@ namespace fmatvec {
 
   typedef  Matrix<VarGeneral,double> VMat;
 
-  typedef  VarVector<double> VVec;
+  typedef  Vector<VarGeneral,double> VVec;
 
   typedef  Matrix<FixedVarGeneral<3>,double> FVMat;
 }

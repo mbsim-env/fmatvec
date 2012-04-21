@@ -118,23 +118,11 @@ namespace fmatvec {
 
       /*! \brief Assignment operator
        *
-       * Copies the symmetric matrix given by \em A by calling operator<<().
+       * Copies the symmetric matrix given by \em A.
        * \param A The matrix to be assigned. 
        * \return A reference to the calling matrix.
-       * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
-       * \sa operator<<(), operator>>()
        * */
-      Matrix<FixedSymmetric<M>, AT>& operator=(const Matrix<FixedSymmetric<M>, AT> &A) {
-	return operator<<(A);
-      }
-
-      /*! \brief Copy operator
-       *
-       * Copies the symmetric matrix given by \em A.
-       * \param A The matrix to be copied. 
-       * \return A reference to the calling matrix.
-       * */
-      inline Matrix<FixedSymmetric<M>, AT>& operator<<(const Matrix<FixedSymmetric<M>, AT> &A);
+      inline Matrix<FixedSymmetric<M>, AT>& operator=(const Matrix<FixedSymmetric<M>, AT> &A);
 
       /*! \brief Element operator
        *
@@ -273,7 +261,7 @@ namespace fmatvec {
   };
 
   template <int M, class AT>
-    inline Matrix<FixedSymmetric<M>, AT>& Matrix<FixedSymmetric<M>, AT>::operator<<(const Matrix<FixedSymmetric<M>, AT> &A) { 
+    inline Matrix<FixedSymmetric<M>, AT>& Matrix<FixedSymmetric<M>, AT>::operator=(const Matrix<FixedSymmetric<M>, AT> &A) { 
 
       deepCopy(A);
 
