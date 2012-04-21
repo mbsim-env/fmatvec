@@ -30,12 +30,12 @@ namespace fmatvec {
   /*! 
    *  \brief This is a matrix class for symmetric matrices.
    *
-   * Template class Matrix of shape type FixedSymmetric. 
+   * Template class Matrix of shape type SymmetricFixed. 
    * The template parameter AT defines the
    * atomic type of the matrix. Valid types are int, float,
    * double, complex<float> and complex<double> 
    * */
-  template <int M, class AT> class Matrix<FixedSymmetric<M>, AT> {
+  template <int M, class AT> class Matrix<SymmetricFixed<M>, AT> {
 
     protected:
 
@@ -43,7 +43,7 @@ namespace fmatvec {
 
       AT ele[M*M];
 
-      inline void deepCopy(const Matrix<FixedSymmetric<M>, AT> &A); 
+      inline void deepCopy(const Matrix<SymmetricFixed<M>, AT> &A); 
 
     /// @endcond
 
@@ -87,16 +87,16 @@ namespace fmatvec {
        * referenced.
        * \param A The matrix that will be referenced.
        * */
-      Matrix(const Matrix<FixedSymmetric<M>, AT> &A)  {
+      Matrix(const Matrix<SymmetricFixed<M>, AT> &A)  {
 	deepCopy(A);
       }
 
 
       /*! \brief Element operator
        *
-       * See Matrix(const Matrix<FixedSymmetric<M>,AT>&) 
+       * See Matrix(const Matrix<SymmetricFixed<M>,AT>&) 
        * */
-      explicit Matrix(const Matrix<FixedGeneral<M,M>, AT>&  A) {
+      explicit Matrix(const Matrix<GeneralFixed<M,M>, AT>&  A) {
 	deepCopy(A);
       }
 
@@ -122,7 +122,7 @@ namespace fmatvec {
        * \param A The matrix to be assigned. 
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<FixedSymmetric<M>, AT>& operator=(const Matrix<FixedSymmetric<M>, AT> &A);
+      inline Matrix<SymmetricFixed<M>, AT>& operator=(const Matrix<SymmetricFixed<M>, AT> &A);
 
       /*! \brief Element operator
        *
@@ -251,7 +251,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<FixedSymmetric<M>, AT>& init(const AT &a);
+      inline Matrix<SymmetricFixed<M>, AT>& init(const AT &a);
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -261,7 +261,7 @@ namespace fmatvec {
   };
 
   template <int M, class AT>
-    inline Matrix<FixedSymmetric<M>, AT>& Matrix<FixedSymmetric<M>, AT>::operator=(const Matrix<FixedSymmetric<M>, AT> &A) { 
+    inline Matrix<SymmetricFixed<M>, AT>& Matrix<SymmetricFixed<M>, AT>::operator=(const Matrix<SymmetricFixed<M>, AT> &A) { 
 
       deepCopy(A);
 
@@ -269,7 +269,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline Matrix<FixedSymmetric<M>, AT>&  Matrix<FixedSymmetric<M>, AT>::init(const AT& val) {
+    inline Matrix<SymmetricFixed<M>, AT>&  Matrix<SymmetricFixed<M>, AT>::init(const AT& val) {
 
       for(int i=0; i<M; i++) 
         for(int j=i; j<M; j++) 
@@ -279,7 +279,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline Matrix<FixedSymmetric<M>, AT>::operator std::vector<std::vector<AT> >() {
+    inline Matrix<SymmetricFixed<M>, AT>::operator std::vector<std::vector<AT> >() {
       std::vector<std::vector<AT> > ret(rows());
       for(int r=0; r<rows(); r++) {
         ret[r].resize(cols());
@@ -292,7 +292,7 @@ namespace fmatvec {
   /// @cond NO_SHOW
 
   template <int M, class AT>
-    inline void Matrix<FixedSymmetric<M>, AT>::deepCopy(const Matrix<FixedSymmetric<M>, AT> &A) { 
+    inline void Matrix<SymmetricFixed<M>, AT>::deepCopy(const Matrix<SymmetricFixed<M>, AT> &A) { 
       for(int i=0; i<M; i++) 
         for(int j=i; j<M; j++) 
           ej(i,j) = A.ej(i,j);

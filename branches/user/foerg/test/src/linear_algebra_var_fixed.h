@@ -29,11 +29,11 @@
 namespace fmatvec {
 
   template <int N, class AT>
-    inline Vector<VarGeneral, AT> operator*(const Matrix<VarFixedGeneral<N>, AT> &A, const Vector<VarGeneral, AT> &x) {
+    inline Vector<GeneralVar, AT> operator*(const Matrix<GeneralVarFixed<N>, AT> &A, const Vector<GeneralVar, AT> &x) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(N == x.size());
 #endif
-      Vector<VarGeneral, AT> y(A.rows(),NONINIT);
+      Vector<GeneralVar, AT> y(A.rows(),NONINIT);
       for(int i=0; i<A.rows(); i++) {
 	y.e(i) = 0;
 	for(int j=0; j<N; j++) 
@@ -43,8 +43,8 @@ namespace fmatvec {
     }
 
   template <int N, class AT>
-    inline Vector<VarGeneral, AT> operator*(const Matrix<VarFixedGeneral<N>, AT> &A, const Vector<FixedGeneral<N,1>, AT> &x) {
-      Vector<VarGeneral, AT> y(A.rows(),NONINIT);
+    inline Vector<GeneralVar, AT> operator*(const Matrix<GeneralVarFixed<N>, AT> &A, const Vector<GeneralFixed<N,1>, AT> &x) {
+      Vector<GeneralVar, AT> y(A.rows(),NONINIT);
       for(int i=0; i<A.rows(); i++) {
 	y.e(i) = 0;
 	for(int j=0; j<N; j++) 

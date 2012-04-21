@@ -80,23 +80,23 @@ namespace fmatvec {
    * */
   typedef  Matrix<GeneralBand, double> BandMat;
 
-  typedef  Matrix<FixedGeneral<3,3>,double> FMat;
+  typedef  Matrix<GeneralFixed<3,3>,double> FMat;
 
-  typedef  SquareMatrix<FixedGeneral<3,3>,double> FSqrMat;
+  typedef  SquareMatrix<GeneralFixed<3,3>,double> FSqrMat;
 
-  typedef  Vector<FixedGeneral<3,1>,double> FVec;
+  typedef  Vector<GeneralFixed<3,1>,double> FVec;
 
-  typedef  RowVector<FixedGeneral<1,3>,double> FRowVec;
+  typedef  RowVector<GeneralFixed<1,3>,double> FRowVec;
 
-  typedef  Matrix<FixedSymmetric<3>,double> FSymMat;
+  typedef  Matrix<SymmetricFixed<3>,double> FSymMat;
 
-  typedef  Matrix<VarSymmetric,double> VSymMat;
+  typedef  Matrix<SymmetricVar,double> VSymMat;
 
-  typedef  Matrix<VarGeneral,double> VMat;
+  typedef  Matrix<GeneralVar,double> VMat;
 
-  typedef  Vector<VarGeneral,double> VVec;
+  typedef  Vector<GeneralVar,double> VVec;
 
-  typedef  Matrix<FixedVarGeneral<3>,double> FVMat;
+  typedef  Matrix<GeneralFixedVar<3>,double> FVMat;
 }
 
 #endif

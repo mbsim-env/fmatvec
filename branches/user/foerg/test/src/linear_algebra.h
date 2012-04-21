@@ -786,7 +786,7 @@ namespace fmatvec {
   }
 
   template <int M, class AT>
-    inline Vector<General, AT>& operator+=(const Vector<General, AT> &x_, const Vector<FixedGeneral<M,1>, AT> &y) {
+    inline Vector<General, AT>& operator+=(const Vector<General, AT> &x_, const Vector<GeneralFixed<M,1>, AT> &y) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(x_.size() == M);
 #endif
@@ -797,11 +797,11 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline Vector<FixedGeneral<M,1>, AT> operator*(const Matrix<FixedVarGeneral<M>, AT> &A, const Vector<General, AT> &x) {
+    inline Vector<GeneralFixed<M,1>, AT> operator*(const Matrix<GeneralFixedVar<M>, AT> &A, const Vector<General, AT> &x) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.cols() == x.size());
 #endif
-      Vector<FixedGeneral<M,1>, AT> y(NONINIT);
+      Vector<GeneralFixed<M,1>, AT> y(NONINIT);
       for(int i=0; i<M; i++) {
 	y.e(i) = 0;
 	for(int j=0; j<A.cols(); j++) 
