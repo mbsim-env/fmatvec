@@ -63,33 +63,12 @@ namespace fmatvec {
 
       /*! \brief Copy Constructor
        *
-       * Constructs a reference to the matrix \em A.
-       * \attention The physical memory of the matrix \em A will not be copied, only
-       * referenced.
-       * \param A The matrix that will be referenced.
-       * */
-      SquareMatrix(const SquareMatrix<GeneralFixed<M,M>, AT>&  A) : Matrix<GeneralFixed<M,M>, AT>(A) {
-      }
-
-      /*! \brief Copy Constructor
-       *
        * See SquareMatrix(const SquareMatrix<AT>&) 
        * */
       explicit SquareMatrix(const Matrix<GeneralFixed<M,M>, AT>&  A) : Matrix<GeneralFixed<M,M>, AT>(A) {
       }
 
       explicit SquareMatrix(const SquareMatrix<General, AT> &A) : Matrix<GeneralFixed<M,M>, AT>(A) {
-      }
-
-      /*! \brief Assignment operator
-       *
-       * Copies the matrix given by \em A.
-       * \param A The matrix to be assigned. 
-       * \return A reference to the calling matrix.
-       * */
-      SquareMatrix<GeneralFixed<M,M>, AT>& operator=(const SquareMatrix<GeneralFixed<M,M>, AT>&  A) {
-	Matrix<GeneralFixed<M,M>,AT>::operator=(A);
-	return *this;
       }
 
       /*! \brief Copy operator

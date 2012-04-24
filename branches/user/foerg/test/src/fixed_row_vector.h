@@ -92,24 +92,6 @@ namespace fmatvec {
       explicit RowVector(const Matrix<GeneralFixed<1,N>, AT> &A) : Matrix<GeneralFixed<1,N>, AT>(A) {
       }
 
-      /*! \brief Copy Constructor
-       *
-       * Constructs a reference to the rowvector \em x.
-       * \attention The physical memory of the rowvector
-       * \em x will not be copied, only referenced.
-       * \param x The rowvector that will be referenced.
-       * */
-      RowVector(const RowVector<GeneralFixed<1,N>, AT> &x) : Matrix<GeneralFixed<1,N>, AT>(x) {
-      }
-
-      /*! \brief Assignment operator
-       *
-       * Copies the rowvector given by \em x:
-       * \param x The rowvector to be assigned. 
-       * \return A reference to the calling rowvector.
-       * */
-      inline RowVector<GeneralFixed<1,N>, AT>& operator=(const RowVector<GeneralFixed<1,N>, AT> &x);
-
       /*! \brief Element operator
        *
        * Returns a reference to the i-th element. 
@@ -141,7 +123,7 @@ namespace fmatvec {
       };
 
       AT& e(int i) {
-	return ele[i];
+	return ele[0][i];
       };
 
       /*! \brief Element operator
@@ -149,7 +131,7 @@ namespace fmatvec {
        * See e(int) 
        * */
       const AT& e(int i) const {
-	return ele[i];
+	return ele[0][i];
       };
 
       /*! \brief Initialization.
@@ -187,14 +169,6 @@ namespace fmatvec {
 
       for(int i=0; i<N; i++) 
 	ele[i] = val;
-
-      return *this;
-    }
-
-  template <int N, class AT>
-    inline RowVector<GeneralFixed<1,N>, AT>& RowVector<GeneralFixed<1,N>, AT>::operator=(const RowVector<GeneralFixed<1,N>, AT> &x) { 
-
-      deepCopy(x);
 
       return *this;
     }

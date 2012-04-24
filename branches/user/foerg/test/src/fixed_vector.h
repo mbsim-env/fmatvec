@@ -92,16 +92,6 @@ namespace fmatvec {
        * \em x will not be copied, only referenced.
        * \param x The vector that will be referenced.
        * */
-      Vector(const Vector<GeneralFixed<M,1>, AT> &x) : Matrix<GeneralFixed<M,1>, AT>(x) {
-      }
-
-      /*! \brief Copy Constructor
-       *
-       * Constructs a reference to the vector \em x.
-       * \attention The physical memory of the vector
-       * \em x will not be copied, only referenced.
-       * \param x The vector that will be referenced.
-       * */
       explicit Vector(const Vector<General, AT> &x) : Matrix<GeneralFixed<M,1>, AT>(x) {
       }
 
@@ -118,14 +108,6 @@ namespace fmatvec {
        * */
       explicit Vector(const Matrix<General, AT> &A) : Matrix<GeneralFixed<M,1>, AT>(A) {
       }
-
-      /*! \brief Assignment operator
-       *
-       * Copies the vector given by \em x.
-       * \param x The vector to be assigned. 
-       * \return A reference to the calling vector.
-       * */
-      inline Vector<GeneralFixed<M,1>, AT>& operator=(const Vector<GeneralFixed<M,1>, AT> &x);
 
       template <class Type>
       inline Vector<GeneralFixed<M,1>, AT>& operator=(const Vector<Type, AT> &x);
@@ -165,7 +147,7 @@ namespace fmatvec {
       };
 
       AT& e(int i) {
-	return ele[i];
+	return ele[i][0];
       };
 
       /*! \brief Element operator
@@ -173,7 +155,7 @@ namespace fmatvec {
        * See e(int) 
        * */
       const AT& e(int i) const {
-	return ele[i];
+	return ele[i][0];
       };
 
       /*! \brief Initialization.
@@ -224,14 +206,6 @@ namespace fmatvec {
 
       for(int i=0; i<M; i++) 
 	e(i) = val; 
-
-      return *this;
-    }
-
-  template <int M, class AT>
-    inline Vector<GeneralFixed<M,1>, AT>& Vector<GeneralFixed<M,1>, AT>::operator=(const Vector<GeneralFixed<M,1>, AT> &x) { 
-
-      deepCopy(x);
 
       return *this;
     }

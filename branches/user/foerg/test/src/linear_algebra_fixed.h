@@ -32,8 +32,9 @@ namespace fmatvec {
   template <int M, int N, class AT>
     inline Matrix<GeneralFixed<M,N>, AT> operator+(const Matrix<GeneralFixed<M,N>, AT> &A1, const Matrix<GeneralFixed<M,N>, AT> &A2) {
       Matrix<GeneralFixed<M,N>, AT> A3(NONINIT);
-      for(int i=0; i<M*N; i++) 
-	A3.e(i) = A1.e(i) + A2.e(i);
+      for(int i=0; i<M; i++) 
+        for(int j=0; j<N; j++) 
+          A3.e(i,j) = A1.e(i,j) + A2.e(i,j);
       return A3;
     }
 
@@ -50,6 +51,14 @@ namespace fmatvec {
       Vector<GeneralFixed<M,1>, AT> y(NONINIT);
       for(int i=0; i<M; i++) 
 	y.e(i) = x1.e(i) - x2.e(i);
+      return y;
+    }
+
+  template <int M, class AT>
+    inline RowVector<GeneralFixed<1,M>, AT> operator+(const RowVector<GeneralFixed<1,M>, AT> &x1, const RowVector<GeneralFixed<1,M>, AT> &x2) {
+      RowVector<GeneralFixed<1,M>, AT> y(NONINIT);
+      for(int i=0; i<M; i++) 
+	y.e(i) = x1.e(i) + x2.e(i);
       return y;
     }
 
@@ -135,6 +144,17 @@ namespace fmatvec {
 	  y.e(i) += A.ei(i,j)*x.e(j);
 	for(int j=i; j<M; j++) 
 	  y.e(i) += A.ej(i,j)*x.e(j);
+      }
+      return y;
+    }
+
+  template <int M, int N, class AT>
+    inline RowVector<GeneralFixed<1,N>, AT> operator*(const RowVector<GeneralFixed<1,M>, AT> &x, const Matrix<GeneralFixed<M,N>, AT> &A) {
+      RowVector<GeneralFixed<1,N>, AT> y(NONINIT);
+      for(int i=0; i<N; i++) {
+	y.e(i) = 0;
+	for(int j=0; j<M; j++) 
+	  y.e(i) += x.e(j)*A.e(j,i);
       }
       return y;
     }
@@ -233,15 +253,15 @@ namespace fmatvec {
 
       SquareMatrix<GeneralFixed<3,3>,AT> B(NONINIT);
 
-      B.e(0) =  0;
-      B.e(4) =  0;
-      B.e(8) =  0;
-      B.e(3) = -x.e(2);
-      B.e(6) =  x.e(1);
-      B.e(1) =  x.e(2);
-      B.e(7) = -x.e(0);
-      B.e(2) = -x.e(1);
-      B.e(5) =  x.e(0);
+      B.e(0,0) =  0;
+      B.e(1,1) =  0;
+      B.e(2,2) =  0;
+      B.e(0,1) = -x.e(2);
+      B.e(0,2) =  x.e(1);
+      B.e(1,0) =  x.e(2);
+      B.e(1,2) = -x.e(0);
+      B.e(2,0) = -x.e(1);
+      B.e(2,1) =  x.e(0);
 
       return B;
     }

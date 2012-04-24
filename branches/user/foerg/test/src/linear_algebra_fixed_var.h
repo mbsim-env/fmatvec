@@ -37,8 +37,9 @@ namespace fmatvec {
       assert(A1.cols() == A2.cols());
 #endif
       Matrix<GeneralFixedVar<M>, AT> A3(A1.cols(),NONINIT);
-      for(int i=0; i<A3.rows()*A3.cols(); i++) 
-	A3.e(i) = A1.e(i) + A2.e(i);
+      for(int i=0; i<M; i++) 
+        for(int j=0; j<A3.cols(); j++) 
+          A3.e(i,j) = A1.e(i,j) + A2.e(i,j);
       return A3;
     }
 
@@ -48,8 +49,9 @@ namespace fmatvec {
       assert(A1.cols() == A2.cols());
 #endif
       Matrix<GeneralFixedVar<M>, AT> A3(A1.cols(),NONINIT);
-      for(int i=0; i<A3.rows()*A3.cols(); i++) 
-	A3.e(i) = A1.e(i) - A2.e(i);
+      for(int i=0; i<M; i++) 
+        for(int j=0; j<A3.cols(); j++) 
+          A3.e(i,j) = A1.e(i,j) - A2.e(i,j);
       return A3;
     }
 
@@ -59,8 +61,9 @@ namespace fmatvec {
       assert(A1_.cols() == A2.cols());
 #endif
       Matrix<GeneralFixedVar<M>, AT> &A1 = const_cast<Matrix<GeneralFixedVar<M>, AT> &>(A1_);
-      for(int i=0; i<A1.rows()*A1.cols(); i++) 
-	A1.e(i) += A2.e(i);
+      for(int i=0; i<M; i++) 
+        for(int j=0; j<A1.cols(); j++) 
+	A1.e(i,j) += A2.e(i,j);
       return A1;
     }
 
@@ -70,8 +73,9 @@ namespace fmatvec {
       assert(A1_.cols() == A2.cols());
 #endif
       Matrix<GeneralFixedVar<M>, AT> &A1 = const_cast<Matrix<GeneralFixedVar<M>, AT> &>(A1_);
-      for(int i=0; i<A1.rows()*A1.cols(); i++) 
-	A1.e(i) -= A2.e(i);
+      for(int i=0; i<M; i++) 
+        for(int j=0; j<A1.cols(); j++) 
+	A1.e(i,j) -= A2.e(i,j);
       return A1;
     }
 
@@ -202,8 +206,9 @@ namespace fmatvec {
 
       Matrix<GeneralFixedVar<M>, AT> B(A.cols(),NONINIT);
 
-      for(int i=0; i<M*A.cols(); i++)
-	B.e(i)=-A.e(i);
+      for(int i=0; i<M; i++) 
+        for(int j=0; j<A.cols(); j++) 
+	B.e(i,j)=-A.e(i,j);
 
       return B;
     }

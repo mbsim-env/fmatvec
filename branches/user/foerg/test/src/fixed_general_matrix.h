@@ -43,10 +43,9 @@ namespace fmatvec {
 
     protected:
 
-      AT ele[M*N];
+      AT ele[M][N];
 
       template <class Type> inline void deepCopy(const Matrix<Type, AT> &A); 
-      inline void deepCopy(const Matrix<GeneralFixed<M,N>, AT> &A); 
 
  /// @endcond
  
@@ -64,8 +63,9 @@ namespace fmatvec {
       Matrix(Initialization ini, const AT &a=0) {  
 
 	if(ini == INIT) {
-	  for(int i=0; i<M*N; i++) 
-	    e(i) = a;
+          for(int i=0; i<M; i++)
+            for(int j=0; j<N; j++)
+              e(i,j) = a;
 	} else if(ini == EYE ) {
 	  for(int i=0; i<M; i++) {
 	    for(int j=0; j<N; j++) {
@@ -74,17 +74,6 @@ namespace fmatvec {
 	    }
 	  }
 	}
-      }
-
-      /*! \brief Copy Constructor
-       *
-       * Constructs a reference to the matrix \em A.
-       * \attention The physical memory of the matrix \em A will not be copied, only
-       * referenced.
-       * \param A The matrix that will be referenced.
-       * */
-      Matrix(const Matrix<GeneralFixed<M,N>, AT> &A) {
-	deepCopy(A);
       }
 
       template<class Type>
@@ -112,22 +101,8 @@ namespace fmatvec {
        * */
       Matrix(const char *str);
 
-      /*! \brief Destructor. 
-       * */
-      ~Matrix() {
-      }
-
-      /*! \brief Assignment operator
-       *
-       * Copies the matrix given by \em A.
-       * \param A The matrix to be assigned. 
-       * \return A reference to the calling matrix.
-       * */
-      inline Matrix<GeneralFixed<M,N>, AT>& operator=(const Matrix<GeneralFixed<M,N>, AT> &A);
-
       template <class Type>
       inline Matrix<GeneralFixed<M,N>, AT>& operator=(const Matrix<Type, AT> &A);
-
       /*! \brief Element operator
        *
        * Returns a reference to the element in the i-th row and the j-th column. 
@@ -166,7 +141,7 @@ namespace fmatvec {
       };
 
       AT& e(int i, int j) {
-	return ele[i+j*M];
+	return ele[i][j];
       };
 
       /*! \brief Element operator
@@ -174,7 +149,7 @@ namespace fmatvec {
        * See e(int,int) 
        * */
       const AT& e(int i, int j) const {
-	return ele[i+j*M];
+	return ele[i][j];
       };
 
       AT& e(int i) {
@@ -238,7 +213,7 @@ namespace fmatvec {
        * \return CblasColMajor.
        * */
       const CBLAS_ORDER blasOrder() const {
-	return  CblasColMajor;
+	return  CblasRowMajor;
       };
 
       /*! \brief Column operator.
@@ -344,18 +319,11 @@ namespace fmatvec {
     }
 
   template <int M, int N, class AT>
-    inline Matrix<GeneralFixed<M,N>, AT>& Matrix<GeneralFixed<M,N>, AT>::operator=(const Matrix<GeneralFixed<M,N>, AT> &A) { 
-
-      deepCopy(A);
-
-      return *this;
-    }
-
-  template <int M, int N, class AT>
     inline Matrix<GeneralFixed<M,N>, AT>& Matrix<GeneralFixed<M,N>, AT>::init(const AT& val) {
 
-      for(int i=0; i<M*N; i++) 
-        e(i) = val;
+      for(int i=0; i<M; i++) 
+        for(int j=0; j<N; j++) 
+          e(i,j) = val;
 
       return *this;
     }
@@ -448,12 +416,6 @@ namespace fmatvec {
       for(int i=0; i<M; i++) 
         for(int j=0; j<N; j++)
           e(i,j) = A.e(i,j);
-    }
-
-  template<int M, int N, class AT>
-    inline void Matrix<GeneralFixed<M,N>,AT>::deepCopy(const Matrix<GeneralFixed<M,N>,AT> &A) {
-      for(int i=0; i<M*N; i++) 
-        e(i) = A.e(i);
     }
 
   /// @endcond
