@@ -796,6 +796,17 @@ namespace fmatvec {
       return x;
     }
 
+  template <class AT>
+    inline Vector<General, AT>& operator+=(const Vector<General, AT> &x_, const Vector<GeneralVar, AT> &y) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(x_.size() == y.size());
+#endif
+      Vector<General, AT> &x = const_cast<Vector<General, AT> &>(x_);
+      for(int i=0; i<x.size(); i++) 
+	x.e(i) += y.e(i);
+      return x;
+    }
+
   template <int M, class AT>
     inline Vector<GeneralFixed<M,1>, AT> operator*(const Matrix<GeneralFixedVar<M>, AT> &A, const Vector<General, AT> &x) {
 #ifndef FMATVEC_NO_SIZE_CHECK

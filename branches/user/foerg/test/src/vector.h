@@ -60,6 +60,7 @@ namespace fmatvec {
     protected:
 
     inline void deepCopy(const Vector<General, AT> &x);
+    template<class Type> inline void deepCopy(const Vector<Type, AT> &x);
 
     AT* elePtr(int i) {
       return tp ? ele+lda*i : ele+i;
@@ -166,6 +167,9 @@ namespace fmatvec {
        * */
       inline Vector<General, AT>& operator<<(const Vector<General, AT> &x);
 
+      template <class Type>
+      inline Vector<General, AT>& operator<<(const Vector<Type, AT> &x);
+
       /*! \brief Reference operator
        *
        * References the vector given by \em x.
@@ -217,6 +221,11 @@ namespace fmatvec {
 #else
 	return operator>>(x);
 #endif
+      }
+
+      template <class Type>
+      Vector<General, AT>& operator=(const Vector<Type, AT> &x) {
+	return operator<<(x);
       }
 
       /*! \brief Element operator
@@ -402,6 +411,18 @@ namespace fmatvec {
       return *this;
     }
 
+  template <class AT> template<class Type>
+    inline Vector<General, AT>& Vector<General, AT>::operator<<(const Vector<Type ,AT> &x) { 
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(m == x.size());
+#endif
+
+      deepCopy(x);
+
+      return *this;
+    }
+
   template <class AT>
     inline Vector<General, AT>& Vector<General, AT>::operator>>(const Vector<General, AT> &x) { 
 
@@ -493,6 +514,16 @@ namespace fmatvec {
           for(int i=0; i<size(); i++)
             er(i) = x.er(i);
       }
+    }
+
+  template <class AT> template <class Type>
+    inline void Vector<General, AT>::deepCopy(const Vector<Type, AT> &x) {
+      if(tp) 
+	for(int i=0; i<size(); i++)
+	  et(i) = x.e(i);
+      else 
+	for(int i=0; i<size(); i++)
+	  er(i) = x.e(i);
     }
 
   /// @endcond

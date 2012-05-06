@@ -131,10 +131,10 @@ namespace fmatvec {
        * \param x The vector to be assigned. 
        * \return A reference to the calling vector.
        * */
-      inline Vector<GeneralVar,AT>& operator=(const Vector<GeneralVar,AT> &x);
+      inline Vector<GeneralVar,AT>& operator=(const Vector<GeneralVar, AT> &x);
 
       template <class Type>
-      inline Vector<GeneralVar,AT>& operator=(const Vector<Type ,AT> &x);
+      inline Vector<GeneralVar,AT>& operator=(const Vector<Type, AT> &x);
 
       /*! \brief Element operator
        *

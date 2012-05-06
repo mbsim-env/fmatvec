@@ -80,6 +80,8 @@ namespace fmatvec {
    * */
   typedef  Matrix<GeneralBand, double> BandMat;
 
+  typedef  Vector<General, int> VecInt;
+
   typedef  Matrix<GeneralFixed<3,3>,double> FMat;
 
   typedef  SquareMatrix<GeneralFixed<3,3>,double> FSqrMat;

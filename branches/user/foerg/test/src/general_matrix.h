@@ -245,14 +245,19 @@ namespace fmatvec {
 #endif
       }
 
+      template<class Type>
+      Matrix<General, AT>& operator=(const Matrix<Type, AT> &A) {
+	return operator<<(A);
+      }
+
       /*! \brief Copy operator
        *
        * Copies the matrix given by \em A.
        * \param A The matrix to be copied. 
        * \return A reference to the calling matrix.
        * */
-      template<class T>
-        inline Matrix<General, AT>& operator<<(const Matrix<T, AT> &A);
+      template<class Type>
+        inline Matrix<General, AT>& operator<<(const Matrix<Type, AT> &A);
 
       /*! \brief Reference operator
        *
