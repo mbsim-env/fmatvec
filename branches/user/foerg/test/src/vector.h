@@ -400,7 +400,7 @@ namespace fmatvec {
         ele = (AT*)memory.get();
       } else {
 #ifndef FMATVEC_NO_SIZE_CHECK
-        assert(m == x.m);
+        assert(m == x.size());
 #endif
       }
 
