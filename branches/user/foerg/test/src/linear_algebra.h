@@ -808,6 +808,17 @@ namespace fmatvec {
     }
 
   template <class AT>
+    inline Vector<General, AT>& operator-=(const Vector<General, AT> &x_, const Vector<GeneralVar, AT> &y) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(x_.size() == y.size());
+#endif
+      Vector<General, AT> &x = const_cast<Vector<General, AT> &>(x_);
+      for(int i=0; i<x.size(); i++) 
+	x.e(i) -= y.e(i);
+      return x;
+    }
+
+  template <class AT>
     inline Matrix<Symmetric, AT>& operator+=(const Matrix<Symmetric, AT> &A_, const Matrix<SymmetricVar, AT> &B) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A_.size() == B.size());
