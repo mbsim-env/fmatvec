@@ -269,13 +269,19 @@ namespace fmatvec {
 #endif
       }
 
+      template<class Type>
+      Matrix<Symmetric, AT>& operator=(const Matrix<Type, AT> &A) {
+	return operator<<(A);
+      }
+
       /*! \brief Copy operator
        *
        * Copies the symmetric matrix given by \em A.
        * \param A The matrix to be copied. 
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<Symmetric, AT>& operator<<(const Matrix<Symmetric, AT> &A);
+      template<class Type>
+        inline Matrix<Symmetric, AT>& operator<<(const Matrix<Type, AT> &A);
 
       /*! \brief Reference operator
        *
@@ -502,20 +508,22 @@ namespace fmatvec {
       return *this;
     }
 
-  template <class AT>
-    inline Matrix<Symmetric, AT>& Matrix<Symmetric, AT>::operator<<(const Matrix<Symmetric, AT> &A) { 
+  template <class AT> template< class Type>
+    inline Matrix<Symmetric, AT>& Matrix<Symmetric, AT>::operator<<(const Matrix<Type, AT> &A) { 
       
       if(A.size() == 0)
 	return *this;
 
       if(n==0) {
-	n = A.n;
+        assert(A.rows() == A.cols());
+	n = A.rows();
 	lda = n;
 	memory.resize(n*n);
 	ele = (AT*)memory.get();
       } else {
 #ifndef FMATVEC_NO_SIZE_CHECK
-	assert(n == A.n);
+        assert(A.rows() == A.cols());
+	assert(n == A.rows());
 #endif
       }
 

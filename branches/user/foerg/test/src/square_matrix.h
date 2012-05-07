@@ -208,18 +208,7 @@ namespace fmatvec {
        * \param A The matrix to be copied. 
        * \return A reference to the calling matrix.
        * */
-      SquareMatrix<General, AT>& operator<<(const SquareMatrix<General, AT>&  A) {
-	Matrix<General,AT>::operator<<(A);
-	return *this;
-      }
-
-      /*! \brief Copy operator
-       *
-       * Copies the matrix given by \em A.
-       * \param A The matrix to be copied. 
-       * \return A reference to the calling matrix.
-       * */
-      template<class T> SquareMatrix<General, AT>& operator<<(const Matrix<T, AT> &A) {
+      template<class Type> SquareMatrix<General, AT>& operator<<(const Matrix<Type, AT> &A) {
 	Matrix<General,AT>::operator<<(A);
 	return *this;
       }
