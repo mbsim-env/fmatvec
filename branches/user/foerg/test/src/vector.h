@@ -392,8 +392,8 @@ namespace fmatvec {
         return *this;
 
       if(m==0) {
-        m = x.m; 
-        n = x.n;
+        m = x.size(); 
+        n = 1;
         lda = m;
         tp = false;
         memory.resize(m);
