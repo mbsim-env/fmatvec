@@ -165,10 +165,8 @@ namespace fmatvec {
        * \param x The vector to be copied. 
        * \return A reference to the calling vector.
        * */
-      inline Vector<General, AT>& operator<<(const Vector<General, AT> &x);
-
       template <class Type>
-      inline Vector<General, AT>& operator<<(const Vector<Type, AT> &x);
+        inline Vector<General, AT>& operator<<(const Vector<Type, AT> &x);
 
       /*! \brief Reference operator
        *
@@ -387,8 +385,8 @@ namespace fmatvec {
       return *this;
     }
 
-  template <class AT>
-    inline Vector<General, AT>& Vector<General, AT>::operator<<(const Vector<General, AT> &x) { 
+  template <class AT> template<class Type>
+    inline Vector<General, AT>& Vector<General, AT>::operator<<(const Vector<Type, AT> &x) { 
 
       if(x.size() == 0)
         return *this;
@@ -405,18 +403,6 @@ namespace fmatvec {
         assert(m == x.m);
 #endif
       }
-
-      deepCopy(x);
-
-      return *this;
-    }
-
-  template <class AT> template<class Type>
-    inline Vector<General, AT>& Vector<General, AT>::operator<<(const Vector<Type ,AT> &x) { 
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(m == x.size());
-#endif
 
       deepCopy(x);
 
