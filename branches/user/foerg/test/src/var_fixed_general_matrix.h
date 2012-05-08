@@ -189,7 +189,7 @@ namespace fmatvec {
       };
 
       AT& e(int i, int j) {
-	return ele[i+j*M];
+	return ele[i*N+j];
       };
 
       /*! \brief Element operator
@@ -197,7 +197,7 @@ namespace fmatvec {
        * See e(int,int) 
        * */
       const AT& e(int i, int j) const {
-	return ele[i+j*M];
+	return ele[i*N+j];
       };
 
       AT& e(int i) {
