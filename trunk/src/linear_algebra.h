@@ -22,6 +22,7 @@
 #ifndef linear_algebra_h
 #define linear_algebra_h
 #include "square_matrix.h"
+#include <cmath>
 
 namespace fmatvec {
 

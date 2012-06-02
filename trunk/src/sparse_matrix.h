@@ -26,6 +26,7 @@
 #include "square_matrix.h"
 #include "types.h"
 #include "_memory.h"
+#include <cmath>
 
 namespace fmatvec {
 
