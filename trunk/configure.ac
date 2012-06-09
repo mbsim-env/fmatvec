@@ -6,7 +6,7 @@ AC_INIT(fmatvec, 1.0.1, martin.o.foerg@googlemail.com)
 AC_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([src/fmatvec.h])
-AC_PROG_LIBTOOL
+LT_INIT([win32-dll])
 AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_LANG([C++])
@@ -25,8 +25,6 @@ AC_SUBST([LIBFMATVEC_REVISION])
 AC_SUBST([LIBFMATVEC_AGE])
 LIBFMATVEC_VERSION_INFO=$LIBFMATVEC_CURRENT:$LIBFMATVEC_REVISION:$LIBFMATVEC_AGE
 AC_SUBST([LIBFMATVEC_VERSION_INFO])
-
-LDFLAGS="$LDFLAGS -Wl,--no-undefined"
 
 dnl By autoscan
 AC_CHECK_FUNCS([sqrt])
@@ -236,6 +234,8 @@ elif test $threadsafety = no; then
 else
   AC_MSG_ERROR([Unknown thread safety type specified by --enable-threadsafety.])
 fi
+
+LDFLAGS="$LDFLAGS -no-undefined"
 
 AC_SUBST(LIBS)
 AC_SUBST([INCDIRS])
