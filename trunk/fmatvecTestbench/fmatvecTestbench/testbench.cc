@@ -37,47 +37,47 @@ namespace fmatvec {
     // creating Mat
     GenMat1.resize(Dim,Dim); GenMat1<<matgenerator.getMat(Dim,Dim);
     GenMat2.resize(Dim,Dim); GenMat2<<matgenerator.getMat(Dim,Dim);
-    GenMat3.resize(Dim,Dim); GenMat3<<matgenerator.getMat(Dim,Dim);
-    GenMat4.resize(Dim,Dim); GenMat4<<matgenerator.getMat(Dim,Dim);
-    GenMat5.resize(Dim,Dim); GenMat5<<matgenerator.getMat(Dim,Dim);
+    //GenMat3.resize(Dim,Dim); GenMat3<<matgenerator.getMat(Dim,Dim);
+    //GenMat4.resize(Dim,Dim); GenMat4<<matgenerator.getMat(Dim,Dim);
+    //GenMat5.resize(Dim,Dim); GenMat5<<matgenerator.getMat(Dim,Dim);
 
     // creating SymMat
-    SymMat1.resize(Dim); SymMat1<<matgenerator.getSymMat(Dim);
-    SymMat2.resize(Dim); SymMat2<<matgenerator.getSymMat(Dim);
-    SymMat3.resize(Dim); SymMat3<<matgenerator.getSymMat(Dim);
-    SymMat4.resize(Dim); SymMat4<<matgenerator.getSymMat(Dim);
-    SymMat5.resize(Dim); SymMat5<<matgenerator.getSymMat(Dim);   
+    //SymMat1.resize(Dim); SymMat1<<matgenerator.getSymMat(Dim);
+    //SymMat2.resize(Dim); SymMat2<<matgenerator.getSymMat(Dim);
+    //SymMat3.resize(Dim); SymMat3<<matgenerator.getSymMat(Dim);
+    //SymMat4.resize(Dim); SymMat4<<matgenerator.getSymMat(Dim);
+    //SymMat5.resize(Dim); SymMat5<<matgenerator.getSymMat(Dim);   
     
     // creating SqrMat
     SqrMat1.resize(Dim); SqrMat1<<matgenerator.getSqrMat(Dim);
-    SqrMat2.resize(Dim); SqrMat2<<matgenerator.getSqrMat(Dim);
-    SqrMat3.resize(Dim); SqrMat3<<matgenerator.getSqrMat(Dim);
-    SqrMat4.resize(Dim); SqrMat4<<matgenerator.getSqrMat(Dim);
-    SqrMat5.resize(Dim); SqrMat5<<matgenerator.getSqrMat(Dim);    
+    //SqrMat2.resize(Dim); SqrMat2<<matgenerator.getSqrMat(Dim);
+    //SqrMat3.resize(Dim); SqrMat3<<matgenerator.getSqrMat(Dim);
+    //SqrMat4.resize(Dim); SqrMat4<<matgenerator.getSqrMat(Dim);
+    //SqrMat5.resize(Dim); SqrMat5<<matgenerator.getSqrMat(Dim);    
     
     // creating DiagMat
-    DiagMat1.resize(Dim); DiagMat1<<matgenerator.getDiagMat(Dim);
-    DiagMat2.resize(Dim); DiagMat2<<matgenerator.getDiagMat(Dim);
-    DiagMat3.resize(Dim); DiagMat3<<matgenerator.getDiagMat(Dim);
-    DiagMat4.resize(Dim); DiagMat4<<matgenerator.getDiagMat(Dim);
-    DiagMat5.resize(Dim); DiagMat5<<matgenerator.getDiagMat(Dim);    
+    //DiagMat1.resize(Dim); DiagMat1<<matgenerator.getDiagMat(Dim);
+    //DiagMat2.resize(Dim); DiagMat2<<matgenerator.getDiagMat(Dim);
+    //DiagMat3.resize(Dim); DiagMat3<<matgenerator.getDiagMat(Dim);
+    //DiagMat4.resize(Dim); DiagMat4<<matgenerator.getDiagMat(Dim);
+    //DiagMat5.resize(Dim); DiagMat5<<matgenerator.getDiagMat(Dim);    
     
     // creating Vec
-    Vec1.resize(Dim); Vec1<<matgenerator.getVec(Dim);
-    Vec2.resize(Dim); Vec2<<matgenerator.getVec(Dim);
-    Vec3.resize(Dim); Vec3<<matgenerator.getVec(Dim);
-    Vec4.resize(Dim); Vec4<<matgenerator.getVec(Dim);
-    Vec5.resize(Dim); Vec5<<matgenerator.getVec(Dim);    
+    //Vec1.resize(Dim); Vec1<<matgenerator.getVec(Dim);
+    //Vec2.resize(Dim); Vec2<<matgenerator.getVec(Dim);
+    //Vec3.resize(Dim); Vec3<<matgenerator.getVec(Dim);
+    //Vec4.resize(Dim); Vec4<<matgenerator.getVec(Dim);
+    //Vec5.resize(Dim); Vec5<<matgenerator.getVec(Dim);    
     
     // creating RowVec
-    RowVec1.resize(Dim); RowVec1<<matgenerator.getRowVec(Dim);
-    RowVec2.resize(Dim); RowVec2<<matgenerator.getRowVec(Dim);
-    RowVec3.resize(Dim); RowVec3<<matgenerator.getRowVec(Dim);
-    RowVec4.resize(Dim); RowVec4<<matgenerator.getRowVec(Dim);
-    RowVec5.resize(Dim); RowVec5<<matgenerator.getRowVec(Dim);
+    //RowVec1.resize(Dim); RowVec1<<matgenerator.getRowVec(Dim);
+    //RowVec2.resize(Dim); RowVec2<<matgenerator.getRowVec(Dim);
+    //RowVec3.resize(Dim); RowVec3<<matgenerator.getRowVec(Dim);
+    //RowVec4.resize(Dim); RowVec4<<matgenerator.getRowVec(Dim);
+    //RowVec5.resize(Dim); RowVec5<<matgenerator.getRowVec(Dim);
 
     // creating positiv definit matrix
-    Hposdef1.resize(Dim); Hposdef1<<matgenerator.hposdefSymMat(Dim);
+    //Hposdef1.resize(Dim); Hposdef1<<matgenerator.hposdefSymMat(Dim);
 
     // creating LL decomposited matrix
     hposdefSymFacLLMat1.resize(Dim); hposdefSymFacLLMat1<<matgenerator.hposdefSymFacLLMat(Dim);
@@ -90,7 +90,13 @@ namespace fmatvec {
       GenMat1=GenMat5-GenMat2*GenMat3-GenMat4*GenMat1-GenMat5*GenMat3;
     }
   }
-
+  
+  void Testbench::operate_MultibodyDynamics() {
+    for(int i=0; i<NumRuns; i++){
+      Vec1 = Vec2 + GenMat1*Vec3 + GenMat2*Vec4;
+    }
+  }
+  
   void Testbench::operate_SymMatSymMat() {
     for(int i=0; i<NumRuns; i++){
       GenMat1=SymMat5-SymMat2*SymMat3-SymMat4*SymMat1-SymMat5*SymMat3;
@@ -146,6 +152,12 @@ namespace fmatvec {
     }
   }
   
+  void Testbench::operate_G() {
+    for(int i=0; i<NumRuns; i++){
+      SqrMat1 = SqrMat(GenMat1.T()*slvLLFac(hposdefSymFacLLMat1,GenMat2));
+    }
+  }
+
   void Testbench::operate_slvLU() {
     for(int i=0; i<NumRuns; i++){
       Vec1 = slvLU(SqrMat1,Vec2);

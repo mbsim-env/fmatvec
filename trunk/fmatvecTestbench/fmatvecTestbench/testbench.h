@@ -110,6 +110,12 @@ namespace fmatvec {
        * */      
       void operate_GenMatGenMat();
 
+      /*! \brief Operation: operations similar not MultiBody Dynamics
+       *
+       * Does some operations similar to Multibody Dynamics
+       * */  
+      void operate_MultibodyDynamics();
+      
       /*! \brief Operation: symmetric matrix operations
        *
        * Does some operations with symmetric matrices
@@ -163,6 +169,12 @@ namespace fmatvec {
        * Does the solution of a system of linear equations (matrix already factorized)
        * */
       void operate_slvLLFac_MatMat();
+      
+      /*! \brief Operation: operation similar to DynamicSystemSolver::updateG
+       *
+       * Does operations similar to DynamicSystemSolver::update
+       * */
+      void operate_G();
       
       /*! \brief Operation: solution of a system of linear equations (A*x=b)
        *
