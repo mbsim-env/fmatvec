@@ -251,6 +251,40 @@ namespace fmatvec {
 	return  CblasColMajor;
       };
 
+      /*! \brief Submatrix operator.
+       *
+       * Returns a submatrix of the calling matrix. 
+       * For example
+       * \code 
+       * B = A(Range<Var>(1,2),Range<Var>(2,4));
+       * \endcode
+       * yields
+       * \f[ 
+       * A=\begin{pmatrix}
+       * 	a_{00} & a_{01} & a_{02} & a_{03} & a_{04}\\
+       * 	a_{10} & a_{11} & a_{12} & a_{13} & a_{14}\\
+       * 	a_{20} & a_{21} & a_{22} & a_{23} & a_{24}\\
+       * 	a_{30} & a_{31} & a_{32} & a_{33} & a_{34}
+       * \end{pmatrix}\quad \Rightarrow \quad
+       * B=\begin{pmatrix}
+       * 	 a_{12} & a_{13} & a_{14}\\
+       * 	 a_{22} & a_{23} & a_{24}
+       * \end{pmatrix}
+       * \f]
+       * \attention The submatrix and the
+       * calling matrix will share the same physical memory.
+       * \param I Range<Var> containing the starting and the ending row. 
+       * \param J Range<Var> containing the starting and the ending column. 
+       * \return A submatrix of the calling matrix.
+       * */
+      //inline Matrix<GeneralVar, AT> operator()(const Range<Var> &I, const Range<Var> &J);
+
+      /*! \brief Submatrix operator.
+       *
+       * See operator()(const Range<Var>&, const Range<Var>&)
+       * */
+      inline Matrix<GeneralVar, AT> operator()(const Range<Var> &I, const Range<Var> &J) const;
+
       /*! \brief Column operator.
        *
        * Returns a vector containing the i-th column of the calling matrix. 
@@ -292,7 +326,7 @@ namespace fmatvec {
 
       inline const Matrix<GeneralVar, AT> T() const;
 
-      inline void set(int j, Vector<GeneralVar, AT> &x);
+      inline void set(int j, const Vector<GeneralVar, AT> &x);
 
       template<class Type>
       inline void assign(const Matrix<Type,AT> &A);
@@ -372,6 +406,21 @@ namespace fmatvec {
       return *this;
     }
 
+  template <class AT> 
+    inline Matrix<GeneralVar, AT> Matrix<GeneralVar, AT>::operator()(const Range<Var> &I, const Range<Var> &J) const {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(I.end()<M);
+      assert(J.end()<N);
+#endif
+      Matrix<GeneralVar, AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
+
+      for(int i=0; i<A.rows(); i++) 
+        for(int j=0; j<A.cols(); j++)
+          A.e(i,j) = e(I.start()+i,J.start()+j);
+
+      return A;
+    }
+
   template <class AT>
     inline Vector<GeneralVar, AT> Matrix<GeneralVar, AT>::col(int j) {
 
@@ -424,7 +473,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline void Matrix<GeneralVar, AT>::set(int j, Vector<GeneralVar, AT> &x) {
+    inline void Matrix<GeneralVar, AT>::set(int j, const Vector<GeneralVar, AT> &x) {
       for(int i=0; i<M; i++)
         e(i,j) = x.e(i);
     }

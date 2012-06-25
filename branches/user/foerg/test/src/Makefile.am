@@ -13,7 +13,6 @@ libfmatvec_la_SOURCES = blas_extensions_double.cc \
 			vector_int.cc \
 			band_matrix_double.cc\
 			sparse_matrix_double.cc\
-			index.cc\
 			wrapper.cc
 
 fmatvecincludedir=$(includedir)/fmatvec
@@ -36,7 +35,7 @@ fmatvecinclude_HEADERS = blas_extensions_double.h \
 			 vector.h \
 			 band_matrix.h\
 			 sparse_matrix.h\
-			 index.h\
+			 range.h\
 			 fixed_general_matrix.h\
 			 fixed_square_matrix.h\
 			 fixed_symmetric_matrix.h\

@@ -22,7 +22,6 @@
 #ifndef var_symmetric_matrix_h
 #define var_symmetric_matrix_h
 
-#include "index.h"
 #include "types.h"
 
 namespace fmatvec {

@@ -24,7 +24,7 @@
 
 #include "_memory.h"
 #include "types.h"
-#include "index.h"
+#include "matrix.h"
 #include <stdlib.h>
 
 namespace fmatvec {

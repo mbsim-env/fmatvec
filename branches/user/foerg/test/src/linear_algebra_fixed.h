@@ -229,6 +229,15 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
+    inline Vector<GeneralFixed<M,1>, AT>& operator-=(const Vector<GeneralFixed<M,1>, AT> &x_, const Vector<GeneralFixed<M,1>, AT> &y) {
+
+      Vector<GeneralFixed<M,1>, AT> &x = const_cast<Vector<GeneralFixed<M,1>, AT> &>(x_);
+      for(int i=0; i<M; i++) 
+	x.e(i) -= y.e(i);
+      return x;
+    }
+
+  template <int M, class AT>
     inline Vector<GeneralFixed<M,1>, AT> operator*=(const Vector<GeneralFixed<M,1>, AT> &x_, const AT &a) {
       Vector<GeneralFixed<M,1>, AT> &x = const_cast<Vector<GeneralFixed<M,1>, AT> &>(x_);
       for(int i=0; i<M; i++)

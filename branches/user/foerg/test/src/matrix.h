@@ -27,6 +27,7 @@
 #include <sstream>
 #include <iomanip>
 #include <vector>
+#include "range.h"
 
 /*! 
  * \brief Namespace fmatvec.

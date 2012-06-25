@@ -216,6 +216,75 @@ namespace fmatvec {
 	return  CblasRowMajor;
       };
 
+//      /*! \brief Submatrix operator.
+//       *
+//       * Returns a submatrix of the calling matrix. 
+//       * \attention The submatrix and the
+//       * calling matrix will share the same physical memory.
+//       * \param i1 The starting row. 
+//       * \param j1 The starting column.
+//       * \param i2 The ending row.
+//       * \param j2 The ending column.
+//       * \return A submatrix of the calling matrix.
+//       * */
+//      inline Matrix<General, AT> operator()(int i1, int j1, int i2, int j2);
+//
+//      /*! \brief Submatrix operator.
+//       *
+//       * See operator()(int,int,int,int);
+//       * */
+//      inline const Matrix<General, AT> operator()(int i1, int j1, int i2, int j2) const;
+
+      /*! \brief Submatrix operator.
+       *
+       * Returns a submatrix of the calling matrix. 
+       * For example
+       * \code 
+       * B = A(Range<Var>(1,2),Range<Var>(2,4));
+       * \endcode
+       * yields
+       * \f[ 
+       * A=\begin{pmatrix}
+       * 	a_{00} & a_{01} & a_{02} & a_{03} & a_{04}\\
+       * 	a_{10} & a_{11} & a_{12} & a_{13} & a_{14}\\
+       * 	a_{20} & a_{21} & a_{22} & a_{23} & a_{24}\\
+       * 	a_{30} & a_{31} & a_{32} & a_{33} & a_{34}
+       * \end{pmatrix}\quad \Rightarrow \quad
+       * B=\begin{pmatrix}
+       * 	 a_{12} & a_{13} & a_{14}\\
+       * 	 a_{22} & a_{23} & a_{24}
+       * \end{pmatrix}
+       * \f]
+       * \attention The submatrix and the
+       * calling matrix will share the same physical memory.
+       * \param I Range<Var> containing the starting and the ending row. 
+       * \param J Range<Var> containing the starting and the ending column. 
+       * \return A submatrix of the calling matrix.
+       * */
+//      inline Matrix<GeneralVar, AT> operator()(const Range<Var> &I, const Range<Var> &J);
+
+      /*! \brief Submatrix operator.
+       *
+       * See operator()(const Range<Var>&, const Range<Var>&)
+       * */
+      inline Matrix<GeneralVar, AT> operator()(const Range<Var> &I, const Range<Var> &J) const;
+
+//      /*! \brief Submatrix operator.
+//       *
+//       * Returns a square submatrix of the calling matrix. 
+//       * \attention The submatrix and the
+//       * calling matrix will share the same physical memory.
+//       * \param I Range<Var> containing the starting and the ending row. 
+//       * \return A submatrix of the calling matrix.
+//       * */
+//      inline SquareMatrix<General, AT> operator() (const Range<Var> &I);
+//
+//      /*! \brief Submatrix operator.
+//       *
+//       * See operator()(const Range<Var>&)
+//       * */
+//      inline const SquareMatrix<General, AT> operator()(const Range<Var> &I) const;
+
       /*! \brief Column operator.
        *
        * Returns a vector containing the i-th column of the calling matrix. 
@@ -257,7 +326,7 @@ namespace fmatvec {
 
       inline const Matrix<GeneralFixed<M,N>, AT> T() const;
 
-      inline void set(int j, Vector<GeneralFixed<M,1>, AT> &x);
+      inline void set(int j, const Vector<GeneralFixed<M,1>, AT> &x);
 
   };
 
@@ -328,6 +397,62 @@ namespace fmatvec {
       return *this;
     }
 
+// template <class AT>
+//    inline Matrix<General, AT>  Matrix<General, AT>::operator()(int i1, int j1, int i2, int j2) {
+//      return operator()(Range<Var>(i1,i2),Range<Var>(j1,j2));
+//    }
+//
+//  template <class AT>
+//    inline const Matrix<General, AT>  Matrix<General, AT>::operator()(int i1, int j1, int i2, int j2) const {
+//      return operator()(Range<Var>(i1,i2),Range<Var>(j1,j2));
+//    }
+
+//  template <int M, int N, class AT> 
+//    inline Matrix<GeneralVar, AT> Matrix<GeneralFixed<M,N>, AT>::operator()(const Range<Var> &I, const Range<Var> &J) {
+//#ifndef FMATVEC_NO_BOUNDS_CHECK
+//      assert(I.end()<M);
+//      assert(J.end()<N);
+//#endif
+//      Matrix<GeneralVar, AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
+//
+//      for(int i=0; i<A.rows(); i++) 
+//        for(int j=0; j<A.cols(); j++)
+//          A.e(i,j) = e(I.start()+i,J.start()+j);
+//
+//      return A;
+//    }
+
+  template <int M, int N, class AT> 
+    inline Matrix<GeneralVar, AT> Matrix<GeneralFixed<M,N>, AT>::operator()(const Range<Var> &I, const Range<Var> &J) const {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(I.end()<M);
+      assert(J.end()<N);
+#endif
+      Matrix<GeneralVar, AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
+
+      for(int i=0; i<A.rows(); i++) 
+        for(int j=0; j<A.cols(); j++)
+          A.e(i,j) = e(I.start()+i,J.start()+j);
+
+      return A;
+    }
+//
+//  template <class AT> 
+//    inline const SquareMatrix<General, AT> Matrix<General, AT>::operator()(const Range<Var> &I) const {
+//#ifndef FMATVEC_NO_BOUNDS_CHECK
+//      assert(I.end()<m);
+//#endif
+//      return SquareMatrix<General, AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start(),I.start()));
+//    }
+//
+//  template <class AT>
+//    inline SquareMatrix<General, AT> Matrix<General, AT>::operator()(const Range<Var> &I) {
+//#ifndef FMATVEC_NO_BOUNDS_CHECK
+//      assert(I.end()<m);
+//#endif
+//      return SquareMatrix<General, AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start(),I.start()));
+//    }
+
   template <int M, int N, class AT>
     inline Vector<GeneralFixed<M,1>, AT> Matrix<GeneralFixed<M,N>, AT>::col(int j) {
 
@@ -380,7 +505,7 @@ namespace fmatvec {
     }
 
   template <int M, int N, class AT>
-    inline void Matrix<GeneralFixed<M,N>, AT>::set(int j, Vector<GeneralFixed<M,1>, AT> &x) {
+    inline void Matrix<GeneralFixed<M,N>, AT>::set(int j, const Vector<GeneralFixed<M,1>, AT> &x) {
       for(int i=0; i<M; i++)
         e(i,j) = x.e(i);
     }
