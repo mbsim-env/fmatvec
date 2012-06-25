@@ -245,6 +245,14 @@ namespace fmatvec {
       return x;
     }
 
+  template <int M, class AT>
+    inline Vector<GeneralFixed<M,1>, AT> operator/=(const Vector<GeneralFixed<M,1>, AT> &x_, const AT &a) {
+      Vector<GeneralFixed<M,1>, AT> &x = const_cast<Vector<GeneralFixed<M,1>, AT> &>(x_);
+      for(int i=0; i<M; i++)
+	x.e(i) /= a;
+      return x;
+    }
+
   template <class AT>
     inline Vector<GeneralFixed<3,1>, AT> crossProduct(const Vector<GeneralFixed<3,1>, AT> &x, const Vector<GeneralFixed<3,1>, AT> &y) {
 
@@ -364,6 +372,18 @@ namespace fmatvec {
 
       return y;
     }
+
+  template <int M, class AT>
+    inline RowVector<GeneralFixed<1,M>, AT> operator-(const RowVector<GeneralFixed<1,M>, AT> &x) {
+
+      RowVector<GeneralFixed<1,M>, AT> y(NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+	y.e(i)=-x.e(i);
+
+      return y;
+    }
+
 }
 
 #endif
