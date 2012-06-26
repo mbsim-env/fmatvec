@@ -181,6 +181,9 @@ namespace fmatvec {
        * */
       int inc() const {return 1;};
 
+      template <int M1, int M2>
+      inline Vector<GeneralFixed<M2-M1+1,1>, AT> operator()(const Range<Fixed<M1, M2> > &I) const;
+
       using Matrix<GeneralFixed<M,1>, AT>::operator();
 
       /*! \brief Cast to std::vector<AT>.
@@ -208,6 +211,19 @@ namespace fmatvec {
 	e(i) = val; 
 
       return *this;
+    }
+
+  template <int M, class AT> template <int M1, int M2>
+    inline Vector<GeneralFixed<M2-M1+1,1>, AT> Vector<GeneralFixed<M,1>, AT>::operator()(const Range<Fixed<M1,M2> > &I) const {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(M2<M);
+#endif
+      Vector<GeneralFixed<M2-M1+1,1>, AT> x(NONINIT);
+
+      for(int i=0; i<x.size(); i++) 
+        x.e(i) = e(M1+i);
+
+      return x;
     }
 
   template <int M, class AT> template <class Type>
