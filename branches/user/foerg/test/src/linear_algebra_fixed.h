@@ -63,7 +63,7 @@ namespace fmatvec {
     }
 
   template <int M, int N, int K, class AT>
-    inline Matrix<GeneralFixed<M,N>, AT> operator*(const Matrix<GeneralFixed<M,N>, AT> &A1, const Matrix<GeneralFixed<N,K>, AT> &A2) {
+    inline Matrix<GeneralFixed<M,K>, AT> operator*(const Matrix<GeneralFixed<M,N>, AT> &A1, const Matrix<GeneralFixed<N,K>, AT> &A2) {
       Matrix<GeneralFixed<M,K>, AT> A3(NONINIT);
       for(int i=0; i<M; i++) {
 	for(int k=0; k<K; k++) {
@@ -360,6 +360,18 @@ namespace fmatvec {
 	for(int j=i; j<M; j++) 
 	  A3.ej(i,j) = A1.ej(i,j) - A2.ej(i,j);
       return A3;
+    }
+
+  template <int M, int N, class AT>
+    inline Matrix<GeneralFixed<M,N>, AT> operator-(const Matrix<GeneralFixed<M,N>, AT> &A) {
+
+      Matrix<GeneralFixed<M,N>, AT> B(NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+        for(int j=0; j<A.cols(); j++)
+          B.e(i,j)=-A.e(i,j);
+
+      return B;
     }
 
   template <int M, class AT>
