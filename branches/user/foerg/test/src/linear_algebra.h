@@ -844,6 +844,20 @@ namespace fmatvec {
       return y;
     }
 
+  template <int M, int N, class AT>
+    inline Vector<GeneralFixed<M,1>, AT> operator*(const Matrix<GeneralFixed<M,N>, AT> &A, const Vector<General, AT> &x) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A.cols() == x.size());
+#endif
+      Vector<GeneralFixed<M,1>, AT> y(NONINIT);
+      for(int i=0; i<M; i++) {
+	y.e(i) = 0;
+	for(int j=0; j<A.cols(); j++) 
+	  y.e(i) += A.e(i,j)*x.e(j);
+      }
+      return y;
+    }
+
 }
 
 #endif
