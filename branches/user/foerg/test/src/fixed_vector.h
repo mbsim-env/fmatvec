@@ -182,7 +182,7 @@ namespace fmatvec {
       int inc() const {return 1;};
 
       template <int M1, int M2>
-      inline Vector<GeneralFixed<M2-M1+1,1>, AT> operator()(const Range<Fixed<M1, M2> > &I) const;
+      inline const Vector<GeneralFixed<M2-M1+1,1>, AT> operator()(const Range<Fixed<M1, M2> > &I) const;
 
       using Matrix<GeneralFixed<M,1>, AT>::operator();
 
@@ -198,8 +198,6 @@ namespace fmatvec {
        * */
       inline Vector(std::vector<AT> v);
 
-      inline RowVector<GeneralFixed<1,M>,AT> T();
-
       inline const RowVector<GeneralFixed<1,M>,AT> T() const;
 
   };
@@ -214,7 +212,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT> template <int M1, int M2>
-    inline Vector<GeneralFixed<M2-M1+1,1>, AT> Vector<GeneralFixed<M,1>, AT>::operator()(const Range<Fixed<M1,M2> > &I) const {
+    inline const Vector<GeneralFixed<M2-M1+1,1>, AT> Vector<GeneralFixed<M,1>, AT>::operator()(const Range<Fixed<M1,M2> > &I) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(M2<M);
 #endif
@@ -236,14 +234,6 @@ namespace fmatvec {
       deepCopy(x);
 
       return *this;
-    }
-
-  template <int M, class AT>
-    inline RowVector<GeneralFixed<1,M>,AT> Vector<GeneralFixed<M,1>, AT>::T() {
-      RowVector<GeneralFixed<1,M>,AT> x(NONINIT);
-      for(int i=0; i<M; i++)
-	x.e(i) = e(i);
-      return x;
     }
 
   template <int M, class AT>

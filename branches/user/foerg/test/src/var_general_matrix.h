@@ -283,7 +283,7 @@ namespace fmatvec {
        *
        * See operator()(const Range<Var>&, const Range<Var>&)
        * */
-      inline Matrix<GeneralVar, AT> operator()(const Range<Var> &I, const Range<Var> &J) const;
+      inline const Matrix<GeneralVar, AT> operator()(const Range<Var> &I, const Range<Var> &J) const;
 
       /*! \brief Column operator.
        *
@@ -291,12 +291,6 @@ namespace fmatvec {
        * \attention The vector and the calling matrix will share the same physical memory.
        * \param i The column, that will be returned.  
        * \return A vector containing the i-th column of the calling matrix.
-       * */
-      inline Vector<GeneralVar, AT> col(int j);
-
-      /*! \brief Column operator.
-       *
-       * see col(int)
        * */
       inline const Vector<GeneralVar, AT> col(int j) const;
 
@@ -321,8 +315,6 @@ namespace fmatvec {
        * \param m The std::vector<std::vector<AT> > the matrix will be initialized with. 
        * */
       inline Matrix(std::vector<std::vector<AT> > m);
-
-      inline Matrix<GeneralVar, AT> T();
 
       inline const Matrix<GeneralVar, AT> T() const;
 
@@ -407,7 +399,7 @@ namespace fmatvec {
     }
 
   template <class AT> 
-    inline Matrix<GeneralVar, AT> Matrix<GeneralVar, AT>::operator()(const Range<Var> &I, const Range<Var> &J) const {
+    inline const Matrix<GeneralVar, AT> Matrix<GeneralVar, AT>::operator()(const Range<Var> &I, const Range<Var> &J) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<M);
       assert(J.end()<N);
@@ -419,22 +411,6 @@ namespace fmatvec {
           A.e(i,j) = e(I.start()+i,J.start()+j);
 
       return A;
-    }
-
-  template <class AT>
-    inline Vector<GeneralVar, AT> Matrix<GeneralVar, AT>::col(int j) {
-
-#ifndef FMATVEC_NO_BOUNDS_CHECK
-      assert(j>=0);
-      assert(j<N);
-#endif
-
-      Vector<GeneralVar, AT> x(M,NONINIT);
-
-      for(int i=0; i<M; i++)
-        x.e(i) = e(i,j);
-
-      return x;
     }
 
   template <class AT>
@@ -452,15 +428,6 @@ namespace fmatvec {
 
       return x;
 
-    }
-
-  template <class AT>
-    inline Matrix<GeneralVar, AT> Matrix<GeneralVar, AT>::T() {
-      Matrix<GeneralVar, AT> A(N,M,NONINIT);
-      for(int i=0; i<N; i++)
-        for(int j=0; j<M; j++)
-          A.e(i,j) = e(j,i);
-      return A;
     }
 
   template <class AT>

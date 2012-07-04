@@ -267,7 +267,7 @@ namespace fmatvec {
        *
        * See operator()(const Range<Var>&, const Range<Var>&)
        * */
-      inline Matrix<GeneralVar, AT> operator()(const Range<Var> &I, const Range<Var> &J) const;
+      inline const Matrix<GeneralVar, AT> operator()(const Range<Var> &I, const Range<Var> &J) const;
 
 //      /*! \brief Submatrix operator.
 //       *
@@ -327,8 +327,6 @@ namespace fmatvec {
        * \param m The std::vector<std::vector<AT> > the matrix will be initialized with. 
        * */
       Matrix(std::vector<std::vector<AT> > m);
-
-      inline Matrix<GeneralFixed<M,N>, AT> T();
 
       inline const Matrix<GeneralFixed<M,N>, AT> T() const;
 
@@ -431,7 +429,7 @@ namespace fmatvec {
 //    }
 
   template <int M, int N, class AT> 
-    inline Matrix<GeneralVar, AT> Matrix<GeneralFixed<M,N>, AT>::operator()(const Range<Var> &I, const Range<Var> &J) const {
+    inline const Matrix<GeneralVar, AT> Matrix<GeneralFixed<M,N>, AT>::operator()(const Range<Var> &I, const Range<Var> &J) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<M);
       assert(J.end()<N);
@@ -509,15 +507,6 @@ namespace fmatvec {
 
       return x;
 
-    }
-
-  template <int M, int N, class AT>
-    inline Matrix<GeneralFixed<M,N>, AT> Matrix<GeneralFixed<M,N>, AT>::T() {
-      Matrix<GeneralFixed<N,M>, AT> A(NONINIT);
-      for(int i=0; i<N; i++)
-        for(int j=0; j<M; j++)
-          A.e(i,j) = e(j,i);
-      return A;
     }
 
   template <int M, int N, class AT>

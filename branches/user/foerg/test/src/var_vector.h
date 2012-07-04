@@ -219,8 +219,6 @@ namespace fmatvec {
        * */
       inline Vector(std::vector<AT> v);
 
-      inline RowVector<GeneralVar, AT> T(); 
-
       inline const RowVector<GeneralVar, AT> T() const;
 
   };
@@ -256,14 +254,6 @@ namespace fmatvec {
       deepCopy(x);
 
       return *this;
-    }
-
-  template <class AT>
-    inline RowVector<GeneralVar, AT> Vector<GeneralVar,AT>::T() {
-      RowVector<GeneralVar, AT> x(NONINIT);
-      for(int i=0; i<M; i++)
-        x.e(i) = e(i);
-      return x;
     }
 
   template <class AT>

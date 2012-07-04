@@ -97,20 +97,9 @@ namespace fmatvec {
        * */
       inline operator std::vector<std::vector<AT> >();
 
-      inline SquareMatrix<GeneralFixed<M,M>, AT> T();
-
       inline const SquareMatrix<GeneralFixed<M,M>, AT> T() const;
 
   };
-
-  template <int M, class AT>
-    inline SquareMatrix<GeneralFixed<M,M>, AT> SquareMatrix<GeneralFixed<M,M>, AT>::T() {
-      SquareMatrix<GeneralFixed<M,M>, AT> A(NONINIT);
-      for(int i=0; i<M; i++)
-        for(int j=0; j<M; j++)
-          A.e(i,j) = e(j,i);
-      return A;
-    }
 
   template <int M, class AT>
     inline const SquareMatrix<GeneralFixed<M,M>, AT> SquareMatrix<GeneralFixed<M,M>, AT>::T() const {

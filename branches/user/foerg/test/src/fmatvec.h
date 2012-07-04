@@ -108,6 +108,8 @@ namespace fmatvec {
 
   typedef  Vector<GeneralVar,double> VVec;
 
+  typedef  Vector<GeneralVar,double> VecV;
+
   typedef  Matrix<GeneralFixedVar<3>,double> FVMat;
 }
 

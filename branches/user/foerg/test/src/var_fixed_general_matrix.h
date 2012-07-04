@@ -266,15 +266,6 @@ namespace fmatvec {
 
       /*! \brief Column operator.
        *
-       * Returns a vector containing the i-th column of the calling matrix. 
-       * \attention The vector and the calling matrix will share the same physical memory.
-       * \param i The column, that will be returned.  
-       * \return A vector containing the i-th column of the calling matrix.
-       * */
-      inline Vector<GeneralVar, AT> col(int j);
-
-      /*! \brief Column operator.
-       *
        * see col(int)
        * */
       inline const Vector<GeneralVar, AT> col(int j) const;
@@ -300,8 +291,6 @@ namespace fmatvec {
        * \param m The std::vector<std::vector<AT> > the matrix will be initialized with. 
        * */
       inline Matrix(std::vector<std::vector<AT> > m);
-
-      inline Matrix<GeneralFixedVar<N>, AT> T();
 
       inline const Matrix<GeneralFixedVar<N>, AT> T() const;
 
@@ -393,22 +382,6 @@ namespace fmatvec {
     }
 
   template <int N, class AT>
-    inline Vector<GeneralVar, AT> Matrix<GeneralVarFixed<N>, AT>::col(int j) {
-
-#ifndef FMATVEC_NO_BOUNDS_CHECK
-      assert(j>=0);
-      assert(j<N);
-#endif
-
-      Vector<GeneralVar, AT> x(M,NONINIT);
-
-      for(int i=0; i<M; i++)
-        x.e(i) = e(i,j);
-
-      return x;
-    }
-
-  template <int N, class AT>
     inline const Vector<GeneralVar, AT> Matrix<GeneralVarFixed<N>, AT>::col(int j) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
@@ -423,15 +396,6 @@ namespace fmatvec {
 
       return x;
 
-    }
-
-  template <int N, class AT>
-    inline Matrix<GeneralFixedVar<N>, AT> Matrix<GeneralVarFixed<N>, AT>::T() {
-      Matrix<GeneralFixedVar<N>, AT> A(rows(),NONINIT);
-      for(int i=0; i<N; i++)
-        for(int j=0; j<M; j++)
-          A.e(i,j) = e(j,i);
-      return A;
     }
 
   template <int N, class AT>
