@@ -82,35 +82,27 @@ namespace fmatvec {
 
   typedef  Vector<General, int> VecInt;
 
-  typedef  Matrix<GeneralFixed<3,3>,double> FMat;
-  
   typedef  Matrix<GeneralFixed<3,3>,double> Mat33;
 
   typedef  Matrix<GeneralFixed<3,2>,double> Mat32;
 
   typedef  SquareMatrix<GeneralFixed<3,3>,double> SqrMat3;
 
-  typedef  SquareMatrix<GeneralFixed<3,3>,double> FSqrMat;
-
-  typedef  Vector<GeneralFixed<3,1>,double> FVec;
-
   typedef  Vector<GeneralFixed<3,1>,double> Vec3;
 
   typedef  Vector<GeneralFixed<2,1>,double> Vec2;
 
-  typedef  RowVector<GeneralFixed<1,3>,double> FRowVec;
+  typedef  RowVector<GeneralFixed<1,3>,double> RowVec3;
 
-  typedef  Matrix<SymmetricFixed<3>,double> FSymMat;
+  typedef  Matrix<SymmetricFixed<3>,double> SymMat3;
 
-  typedef  Matrix<SymmetricVar,double> VSymMat;
+  typedef  Matrix<SymmetricVar,double> SymMatV;
 
-  typedef  Matrix<GeneralVar,double> VMat;
-
-  typedef  Vector<GeneralVar,double> VVec;
+  typedef  Matrix<GeneralVar,double> MatV;
 
   typedef  Vector<GeneralVar,double> VecV;
 
-  typedef  Matrix<GeneralFixedVar<3>,double> FVMat;
+  typedef  Matrix<GeneralFixedVar<3>,double> Mat3V;
 }
 
 #endif
