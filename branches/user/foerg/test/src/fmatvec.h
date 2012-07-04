@@ -88,6 +88,8 @@ namespace fmatvec {
 
   typedef  Matrix<GeneralFixed<3,2>,double> Mat32;
 
+  typedef  SquareMatrix<GeneralFixed<3,3>,double> SqrMat3;
+
   typedef  SquareMatrix<GeneralFixed<3,3>,double> FSqrMat;
 
   typedef  Vector<GeneralFixed<3,1>,double> FVec;

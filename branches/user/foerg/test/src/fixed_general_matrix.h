@@ -285,20 +285,26 @@ namespace fmatvec {
 //       * */
 //      inline const SquareMatrix<General, AT> operator()(const Range<Var> &I) const;
 
-      /*! \brief Column operator.
-       *
-       * Returns a vector containing the i-th column of the calling matrix. 
-       * \attention The vector and the calling matrix will share the same physical memory.
-       * \param i The column, that will be returned.  
-       * \return A vector containing the i-th column of the calling matrix.
-       * */
-      inline Vector<GeneralFixed<M,1>, AT> col(int j);
+//      /*! \brief Column operator.
+//       *
+//       * Returns a vector containing the i-th column of the calling matrix. 
+//       * \attention The vector and the calling matrix will share the same physical memory.
+//       * \param i The column, that will be returned.  
+//       * \return A vector containing the i-th column of the calling matrix.
+//       * */
+//      inline Vector<GeneralFixed<M,1>, AT> col(int j);
 
       /*! \brief Column operator.
        *
        * see col(int)
        * */
       inline const Vector<GeneralFixed<M,1>, AT> col(int j) const;
+
+      /*! \brief Column operator.
+       *
+       * see col(int)
+       * */
+      inline const RowVector<GeneralFixed<1,N>, AT> row(int j) const;
 
       /*! \brief Initialization.
        *
@@ -327,6 +333,8 @@ namespace fmatvec {
       inline const Matrix<GeneralFixed<M,N>, AT> T() const;
 
       inline void set(int j, const Vector<GeneralFixed<M,1>, AT> &x);
+
+      inline void set(int j, const RowVector<GeneralFixed<1,N>, AT> &x);
 
   };
 
@@ -453,8 +461,24 @@ namespace fmatvec {
 //      return SquareMatrix<General, AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start(),I.start()));
 //    }
 
+//  template <int M, int N, class AT>
+//    inline Vector<GeneralFixed<M,1>, AT> Matrix<GeneralFixed<M,N>, AT>::col(int j) {
+//
+//#ifndef FMATVEC_NO_BOUNDS_CHECK
+//      assert(j>=0);
+//      assert(j<N);
+//#endif
+//
+//      Vector<GeneralFixed<M,1>, AT> x(NONINIT);
+//
+//      for(int i=0; i<M; i++)
+//        x.e(i) = e(i,j);
+//
+//      return x;
+//    }
+
   template <int M, int N, class AT>
-    inline Vector<GeneralFixed<M,1>, AT> Matrix<GeneralFixed<M,N>, AT>::col(int j) {
+    inline const Vector<GeneralFixed<M,1>, AT> Matrix<GeneralFixed<M,N>, AT>::col(int j) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(j>=0);
@@ -467,17 +491,18 @@ namespace fmatvec {
         x.e(i) = e(i,j);
 
       return x;
+
     }
 
   template <int M, int N, class AT>
-    inline const Vector<GeneralFixed<M,1>, AT> Matrix<GeneralFixed<M,N>, AT>::col(int j) const {
+    inline const RowVector<GeneralFixed<1,N>, AT> Matrix<GeneralFixed<M,N>, AT>::row(int j) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(j>=0);
-      assert(j<N);
+      assert(j<M);
 #endif
 
-      Vector<GeneralFixed<M,1>, AT> x(NONINIT);
+      RowVector<GeneralFixed<1,N>, AT> x(NONINIT);
 
       for(int i=0; i<M; i++)
         x.e(i) = e(i,j);
@@ -507,6 +532,12 @@ namespace fmatvec {
   template <int M, int N, class AT>
     inline void Matrix<GeneralFixed<M,N>, AT>::set(int j, const Vector<GeneralFixed<M,1>, AT> &x) {
       for(int i=0; i<M; i++)
+        e(i,j) = x.e(i);
+    }
+
+  template <int M, int N, class AT>
+    inline void Matrix<GeneralFixed<M,N>, AT>::set(int j, const RowVector<GeneralFixed<1,N>, AT> &x) {
+      for(int i=0; i<N; i++)
         e(i,j) = x.e(i);
     }
 

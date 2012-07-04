@@ -183,6 +183,22 @@ namespace fmatvec {
       return y;
     }
 
+  template <int N, class AT>
+    inline RowVector<GeneralFixed<1,N>, AT> operator*(const RowVector<GeneralFixed<1,N>, AT> &x, const AT &a) {
+      RowVector<GeneralFixed<1,N>, AT> y(NONINIT);
+      for(int i=0; i<N; i++)
+	y.e(i) = a*x.e(i);
+      return y;
+    }
+
+  template <int N, class AT>
+    inline RowVector<GeneralFixed<1,N>, AT> operator/(const RowVector<GeneralFixed<1,N>, AT> &x, const AT &a) {
+      RowVector<GeneralFixed<1,N>, AT> y(NONINIT);
+      for(int i=0; i<N; i++)
+	y.e(i) = x.e(i)/a;
+      return y;
+    }
+
   template <int M, class AT>
     inline Matrix<SymmetricFixed<M>, AT> operator*(const AT &a, const Matrix<SymmetricFixed<M>,AT> &A) {
       Matrix<SymmetricFixed<M>, AT> B(NONINIT);
@@ -295,6 +311,14 @@ namespace fmatvec {
     inline AT nrm2(const Vector<GeneralFixed<M,1>, AT> &x) {
       AT c = 0;
       for(int i=0; i<M; i++)
+	c += pow(x.e(i),2);
+      return sqrt(c);
+    }
+
+  template <int N, class AT>
+    inline AT nrm2(const RowVector<GeneralFixed<1,N>, AT> &x) {
+      AT c = 0;
+      for(int i=0; i<N; i++)
 	c += pow(x.e(i),2);
       return sqrt(c);
     }
