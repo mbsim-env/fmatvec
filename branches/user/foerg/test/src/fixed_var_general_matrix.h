@@ -36,7 +36,7 @@ namespace fmatvec {
    * of the matrix. Valid types are int, float, double, complex<float> and
    * complex<double> 
    * */
-  template <int M, class AT> class Matrix<General<FixedVar<M> >, AT> {
+  template <int M, class AT> class Matrix<General<Fixed<M>,Var>, AT> {
 
     public:
 
@@ -49,7 +49,7 @@ namespace fmatvec {
       AT *ele;
 
       template <class Type> inline void deepCopy(const Matrix<Type, AT> &A); 
-      inline void deepCopy(const Matrix<General<FixedVar<M> >, AT> &A); 
+      inline void deepCopy(const Matrix<General<Fixed<M>,Var>, AT> &A); 
 
  /// @endcond
  
@@ -79,6 +79,21 @@ namespace fmatvec {
 	}
       }
 
+      Matrix(int m, int n, Initialization ini, const AT &a=0) : N(n), ele(new AT[M*N]) {  
+
+	if(ini == INIT) {
+	  for(int i=0; i<M*N; i++) 
+	    e(i) = a;
+	} else if(ini == EYE ) {
+	  for(int i=0; i<M; i++) {
+	    for(int j=0; j<N; j++) {
+	      if (i==j) e(i,j) = 1;
+	      else e(i,j) = 0;
+	    }
+	  }
+	}
+      }
+
       /*! \brief Copy Constructor
        *
        * Constructs a reference to the matrix \em A.
@@ -86,7 +101,7 @@ namespace fmatvec {
        * referenced.
        * \param A The matrix that will be referenced.
        * */
-      Matrix(const Matrix<General<FixedVar<M> >, AT> &A) : N(A.N), ele(new AT[M*N]) {
+      Matrix(const Matrix<General<Fixed<M>,Var>, AT> &A) : N(A.N), ele(new AT[M*N]) {
 	deepCopy(A);
       }
 
@@ -130,7 +145,7 @@ namespace fmatvec {
        * zero by default. To change this behavior, define
        * FMATVEC_NO_INITIALIZATION.
        * */
-      Matrix<General<FixedVar<M> >, AT>& resize(int n) {
+      Matrix<General<Fixed<M>,Var>, AT>& resize(int n) {
 	delete[] ele;
 	N=n;
 	ele = new AT[M*N];
@@ -147,10 +162,10 @@ namespace fmatvec {
        * \param A The matrix to be assigned. 
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<General<FixedVar<M> >, AT>& operator=(const Matrix<General<FixedVar<M> >, AT> &A);
+      inline Matrix<General<Fixed<M>,Var>, AT>& operator=(const Matrix<General<Fixed<M>,Var>, AT> &A);
 
       template <class Type>
-      inline Matrix<General<FixedVar<M> >, AT>& operator=(const Matrix<Type, AT> &A);
+      inline Matrix<General<Fixed<M>,Var>, AT>& operator=(const Matrix<Type, AT> &A);
 
       /*! \brief Element operator
        *
@@ -270,7 +285,7 @@ namespace fmatvec {
        * Returns a submatrix of the calling matrix. 
        * For example
        * \code 
-       * B = A(Range<Var>(1,2),Range<Var>(2,4));
+       * B = A(Range<Var,Var>(1,2),Range<Var,Var>(2,4));
        * \endcode
        * yields
        * \f[ 
@@ -287,20 +302,20 @@ namespace fmatvec {
        * \f]
        * \attention The submatrix and the
        * calling matrix will share the same physical memory.
-       * \param I Range<Var> containing the starting and the ending row. 
-       * \param J Range<Var> containing the starting and the ending column. 
+       * \param I Range<Var,Var> containing the starting and the ending row. 
+       * \param J Range<Var,Var> containing the starting and the ending column. 
        * \return A submatrix of the calling matrix.
        * */
-      //inline Matrix<GeneralVar, AT> operator()(const Range<Var> &I, const Range<Var> &J);
+      //inline Matrix<GeneralVar, AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J);
 
       /*! \brief Submatrix operator.
        *
-       * See operator()(const Range<Var>&, const Range<Var>&)
+       * See operator()(const Range<Var,Var>&, const Range<Var,Var>&)
        * */
-      inline const Matrix<General<Var>, AT> operator()(const Range<Var> &I, const Range<Var> &J) const;
+      inline const Matrix<General<Var,Var>, AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const;
 
       template <int M1, int M2>
-      inline const Matrix<General<FixedVar<M2-M1+1> >, AT> operator()(const Range<Fixed<M1, M2> > &I, const Range<Var> &J) const;
+      inline const Matrix<General<Fixed<M2-M1+1>,Var>, AT> operator()(const Range<Fixed<M1>,Fixed<M2> > &I, const Range<Var,Var> &J) const;
 
       /*! \brief Column operator.
        *
@@ -309,7 +324,7 @@ namespace fmatvec {
        * \param i The column, that will be returned.  
        * \return A vector containing the i-th column of the calling matrix.
        * */
-      inline const Vector<General<Fixed<M,1> >, AT> col(int j) const;
+      inline const Vector<General<Fixed<M>,Fixed<1> >, AT> col(int j) const;
 
       /*! \brief Initialization.
        *
@@ -318,7 +333,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<General<FixedVar<M> >, AT>& init(const AT &a);
+      inline Matrix<General<Fixed<M>,Var>, AT>& init(const AT &a);
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -333,15 +348,15 @@ namespace fmatvec {
        * */
       inline Matrix(std::vector<std::vector<AT> > m);
 
-      inline const Matrix<General<VarFixed<M> >, AT> T() const;
+      inline const Matrix<General<Var,Fixed<M> >, AT> T() const;
 
-      inline void set(int j, const Vector<General<Fixed<M,1> >, AT> &x);
-
-      template<int K> 
-	inline void set(const Range<Var> &I, const Range<Var> &J, const Matrix<General<FixedVar<K> >, AT> &A);
+      inline void set(int j, const Vector<General<Fixed<M>,Fixed<1> >, AT> &x);
 
       template<int K> 
-	inline void add(const Range<Var> &I, const Range<Var> &J, const Matrix<General<FixedVar<K> >, AT> &A);
+	inline void set(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<General<Fixed<K>,Var>, AT> &A);
+
+      template<int K> 
+	inline void add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<General<Fixed<K>,Var>, AT> &A);
 
       template<class Type>
       inline void assign(const Matrix<Type, AT> &A);
@@ -349,7 +364,7 @@ namespace fmatvec {
   };
 
   template <int M, class AT> 
-    Matrix<General<FixedVar<M> >, AT>::Matrix(const char *strs) {
+    Matrix<General<Fixed<M>,Var>, AT>::Matrix(const char *strs) {
       // if 'strs' is a single scalar, surround it first with '[' and ']'.
       // This is more Matlab-like, because e.g. '5' and '[5]' is just the same.
       // (This functionallitiy is needed e.g. by MBXMLUtils (OpenMBV,MBSim))
@@ -394,7 +409,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT> template< class Type>
-    inline Matrix<General<FixedVar<M> >, AT>& Matrix<General<FixedVar<M> >, AT>::operator=(const Matrix<Type, AT> &A) { 
+    inline Matrix<General<Fixed<M>,Var>, AT>& Matrix<General<Fixed<M>,Var>, AT>::operator=(const Matrix<Type, AT> &A) { 
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.rows() == M); 
@@ -407,7 +422,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline Matrix<General<FixedVar<M> >, AT>& Matrix<General<FixedVar<M> >, AT>::operator=(const Matrix<General<FixedVar<M> >, AT> &A) { 
+    inline Matrix<General<Fixed<M>,Var>, AT>& Matrix<General<Fixed<M>,Var>, AT>::operator=(const Matrix<General<Fixed<M>,Var>, AT> &A) { 
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.cols() == N);
@@ -419,7 +434,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline  Matrix<General<FixedVar<M> >, AT>& Matrix<General<FixedVar<M> >, AT>::init(const AT& val) {
+    inline  Matrix<General<Fixed<M>,Var>, AT>& Matrix<General<Fixed<M>,Var>, AT>::init(const AT& val) {
 
       for(int i=0; i<M*N; i++) 
         e(i) = val;
@@ -428,12 +443,12 @@ namespace fmatvec {
     }
 
   template <int M, class AT> template <int M1, int M2>
-    inline const Matrix<General<FixedVar<M2-M1+1> >, AT> Matrix<General<FixedVar<M> >, AT>::operator()(const Range<Fixed<M1,M2> > &I, const Range<Var> &J) const {
+    inline const Matrix<General<Fixed<M2-M1+1>,Var>, AT> Matrix<General<Fixed<M>,Var>, AT>::operator()(const Range<Fixed<M1>,Fixed<M2> > &I, const Range<Var,Var> &J) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(M2<M);
       assert(J.end()<N);
 #endif
-      Matrix<General<FixedVar<M2-M1+1> >, AT> A(J.end()-J.start()+1,NONINIT);
+      Matrix<General<Fixed<M2-M1+1>,Var>, AT> A(J.end()-J.start()+1,NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
         for(int j=0; j<A.cols(); j++)
@@ -443,12 +458,12 @@ namespace fmatvec {
     }
 
   template <int M, class AT> 
-    inline const Matrix<General<Var>, AT> Matrix<General<FixedVar<M> >, AT>::operator()(const Range<Var> &I, const Range<Var> &J) const {
+    inline const Matrix<General<Var,Var>, AT> Matrix<General<Fixed<M>,Var>, AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<M);
       assert(J.end()<N);
 #endif
-      Matrix<General<Var>, AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
+      Matrix<General<Var,Var>, AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
         for(int j=0; j<A.cols(); j++)
@@ -458,14 +473,14 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline const Vector<General<Fixed<M,1> >, AT> Matrix<General<FixedVar<M> >, AT>::col(int j) const {
+    inline const Vector<General<Fixed<M>,Fixed<1> >, AT> Matrix<General<Fixed<M>,Var>, AT>::col(int j) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(j>=0);
       assert(j<N);
 #endif
 
-      Vector<General<Fixed<M,1> >, AT> x(NONINIT);
+      Vector<General<Fixed<M>,Fixed<1> >, AT> x(NONINIT);
 
       for(int i=0; i<M; i++)
         x.e(i) = e(i,j);
@@ -475,8 +490,8 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline const Matrix<General<VarFixed<M> >, AT> Matrix<General<FixedVar<M> >, AT>::T() const {
-      Matrix<General<VarFixed<M> >, AT> A(cols(),NONINIT);
+    inline const Matrix<General<Var,Fixed<M> >, AT> Matrix<General<Fixed<M>,Var>, AT>::T() const {
+      Matrix<General<Var,Fixed<M> >, AT> A(cols(),NONINIT);
       for(int i=0; i<N; i++)
         for(int j=0; j<M; j++)
           A.e(i,j) = e(j,i);
@@ -484,13 +499,13 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline void Matrix<General<FixedVar<M> >, AT>::set(int j, const Vector<General<Fixed<M,1> >, AT> &x) {
+    inline void Matrix<General<Fixed<M>,Var>, AT>::set(int j, const Vector<General<Fixed<M>,Fixed<1> >, AT> &x) {
       for(int i=0; i<M; i++)
         e(i,j) = x.e(i);
     }
 
   template <int M, class AT> template<int K>
-    inline void Matrix<General<FixedVar<M> >, AT>::set(const Range<Var> &I, const Range<Var> &J, const Matrix<General<FixedVar<K> >, AT> &A) {
+    inline void Matrix<General<Fixed<M>,Var>, AT>::set(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<General<Fixed<K>,Var>, AT> &A) {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<M);
@@ -505,7 +520,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT> template<int K>
-    inline void Matrix<General<FixedVar<M> >, AT>::add(const Range<Var> &I, const Range<Var> &J, const Matrix<General<FixedVar<K> >, AT> &A) {
+    inline void Matrix<General<Fixed<M>,Var>, AT>::add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<General<Fixed<K>,Var>, AT> &A) {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<M);
@@ -520,7 +535,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline Matrix<General<FixedVar<M> >, AT>::operator std::vector<std::vector<AT> >() {
+    inline Matrix<General<Fixed<M>,Var>, AT>::operator std::vector<std::vector<AT> >() {
       std::vector<std::vector<AT> > ret(rows());
       for(int r=0; r<rows(); r++) {
         ret[r].resize(cols());
@@ -531,7 +546,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline Matrix<General<FixedVar<M> >, AT>::Matrix(std::vector<std::vector<AT> > m) {
+    inline Matrix<General<Fixed<M>,Var>, AT>::Matrix(std::vector<std::vector<AT> > m) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(m.size() == M);
       assert(m[0].size() == N);
@@ -544,7 +559,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT> template <class Type>
-    inline void Matrix<General<FixedVar<M> >, AT>::assign(const Matrix<Type, AT> &A) {
+    inline void Matrix<General<Fixed<M>,Var>, AT>::assign(const Matrix<Type, AT> &A) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.rows() == M);
 #endif
@@ -559,14 +574,14 @@ namespace fmatvec {
   /// @cond NO_SHOW
 
   template <int M, class AT> template <class Type>
-    inline void Matrix<General<FixedVar<M> >, AT>::deepCopy(const Matrix<Type, AT> &A) { 
+    inline void Matrix<General<Fixed<M>,Var>, AT>::deepCopy(const Matrix<Type, AT> &A) { 
       for(int i=0; i<M; i++) 
         for(int j=0; j<N; j++)
           e(i,j) = A.e(i,j);
     }
 
   template<int M, class AT>
-    inline void Matrix<General<FixedVar<M> >,AT>::deepCopy(const Matrix<General<FixedVar<M> >,AT> &A) {
+    inline void Matrix<General<Fixed<M>,Var>,AT>::deepCopy(const Matrix<General<Fixed<M>,Var>,AT> &A) {
       for(int i=0; i<M*N; i++) 
         e(i) = A.e(i);
     }

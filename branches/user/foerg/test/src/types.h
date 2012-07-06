@@ -65,13 +65,7 @@ namespace fmatvec {
   class Var {
   };
 
-  template<int M, int N> class Fixed {
-  };
-
-  template<int M> class FixedVar {
-  };
-
-  template<int N> class VarFixed {
+  template<int M> class Fixed {
   };
 
 //  class General {
@@ -103,7 +97,7 @@ namespace fmatvec {
    *
    * Class General is a shape class for general matrices.
    * */
-  template<class Mem>
+  template<class Row, class Col>
   class General {
   };
 
@@ -112,7 +106,7 @@ namespace fmatvec {
    *
    * Class GeneralBand is a shape class for general band matrices.
    * */
-  template<class Mem>
+  template<class Row, class Col>
   class GeneralBand {
   };
 
@@ -121,7 +115,7 @@ namespace fmatvec {
    *
    * Class Symmetric is a shape class for symmetric matrices.
    * */
-  template<class Mem>
+  template<class Row, class Col>
   class Symmetric {
   };
 
@@ -130,7 +124,7 @@ namespace fmatvec {
    *
    * Class Diagonal is a shape class for diagonal matrices.
    * */
-  template<class Mem>
+  template<class Row, class Col>
   class Diagonal {
   };
 
@@ -139,7 +133,7 @@ namespace fmatvec {
    *
    * Class Sparse is a shape class for sparse matrices.
    * */
-  template<class Mem>
+  template<class Row, class Col>
   class Sparse {
   };
 

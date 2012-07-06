@@ -32,7 +32,7 @@ namespace fmatvec {
    *
    * The index class contains indices defining the first and the last element.
    * */
-  template <class Type> class Range {
+  template <class Row, class Col> class Range {
     private:
   };
 
@@ -41,7 +41,7 @@ namespace fmatvec {
    *
    * The index class contains indices defining the first and the last element.
    * */
-  template <> class Range<Var> {
+  template <> class Range<Var, Var> {
     private:
       
    /// @cond NO_SHOW
@@ -107,7 +107,7 @@ namespace fmatvec {
    *
    * The index class contains indices defining the first and the last element.
    * */
-  template <int I1, int I2> class Range<Fixed<I1,I2> > {
+  template <int I1, int I2> class Range<Fixed<I1>, Fixed<I2> > {
     private:
       
     public:
@@ -130,14 +130,14 @@ namespace fmatvec {
    * Checks for equality of two indices.
    * \return true if two index objects are equal, false otherwise. 
    */
-  inline bool operator==(const Range<Var> &I, const Range<Var> &J) {
+  inline bool operator==(const Range<Var,Var> &I, const Range<Var,Var> &J) {
     if(I.start() == J.start() && I.end() == J.end())
       return true;
     else
       return false;
   }
 
-  typedef Range<Var> Index;
+  typedef Range<Var,Var> Index;
 
 }
 

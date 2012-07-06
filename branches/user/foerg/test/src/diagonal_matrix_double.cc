@@ -26,7 +26,7 @@
 namespace fmatvec {
 
   template <>
-  void Matrix<Diagonal<Ref>, double>::deepCopy(const Matrix<Diagonal<Ref>, double> &A) { 
+  void Matrix<Diagonal<Ref,Ref>, double>::deepCopy(const Matrix<Diagonal<Ref,Ref>, double> &A) { 
     dcopy(n, A.ele,1, ele,1);
   }
 

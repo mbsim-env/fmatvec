@@ -35,7 +35,7 @@ namespace fmatvec {
    * parameter AT defines the atomic type of the vector. Valid
    * types are int, float, double, complex<float> and
    * complex<double> */
-  template <int M, class AT> class SquareMatrix<General<Fixed<M,M> >, AT> : public Matrix<General<Fixed<M,M> >, AT> {
+  template <int M, class AT> class SquareMatrix<General<Fixed<M>,Fixed<M> >, AT> : public Matrix<General<Fixed<M>,Fixed<M> >, AT> {
 
     public:
 
@@ -45,7 +45,7 @@ namespace fmatvec {
        *
        * Constructs a squarematrix with no size. 
        * */
-      SquareMatrix() : Matrix<General<Fixed<M,M> >, AT>() {
+      SquareMatrix() : Matrix<General<Fixed<M>,Fixed<M> >, AT>() {
       }
 
       /*! \brief Regular Constructor
@@ -58,17 +58,20 @@ namespace fmatvec {
        * \param ini INIT means initialization, NONINIT means no initialization.
        * \param a The value, the matrix will be initialized with (default 0)
        * */
-      SquareMatrix(Initialization ini, const AT &a=0) : Matrix<General<Fixed<M,M> >, AT>(ini,a) {
+      SquareMatrix(Initialization ini, const AT &a=0) : Matrix<General<Fixed<M>,Fixed<M> >, AT>(ini,a) {
+      }
+
+      SquareMatrix(int m, int n, Initialization ini, const AT &a=0) : Matrix<General<Fixed<M>,Fixed<M> >, AT>(m,n,ini,a) {
       }
 
       /*! \brief Copy Constructor
        *
        * See SquareMatrix(const SquareMatrix<AT>&) 
        * */
-      explicit SquareMatrix(const Matrix<General<Fixed<M,M> >, AT>&  A) : Matrix<General<Fixed<M,M> >, AT>(A) {
+      explicit SquareMatrix(const Matrix<General<Fixed<M>,Fixed<M> >, AT>&  A) : Matrix<General<Fixed<M>,Fixed<M> >, AT>(A) {
       }
 
-      explicit SquareMatrix(const SquareMatrix<General<Ref>, AT> &A) : Matrix<General<Fixed<M,M> >, AT>(A) {
+      explicit SquareMatrix(const SquareMatrix<General<Ref,Ref>, AT> &A) : Matrix<General<Fixed<M>,Fixed<M> >, AT>(A) {
       }
 
       /*! \brief Copy operator
@@ -77,8 +80,8 @@ namespace fmatvec {
        * \param A The matrix to be copied. 
        * \return A reference to the calling matrix.
        * */
-      template <class Type> SquareMatrix<General<Fixed<M,M> >, AT>& operator=(const Matrix<Type, AT> &A) {
-	Matrix<General<Fixed<M,M> >,AT>::operator=(A);
+      template <class Type> SquareMatrix<General<Fixed<M>,Fixed<M> >, AT>& operator=(const Matrix<Type, AT> &A) {
+	Matrix<General<Fixed<M>,Fixed<M> >,AT>::operator=(A);
 	return *this;
       }
 
@@ -88,8 +91,8 @@ namespace fmatvec {
        * */
       int size() const {return M;};
 
-      using Matrix<General<Fixed<M,M> >, AT>::operator();
-      using Matrix<General<Fixed<M,M> >, AT>::e;
+      using Matrix<General<Fixed<M>,Fixed<M> >, AT>::operator();
+      using Matrix<General<Fixed<M>,Fixed<M> >, AT>::e;
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -97,13 +100,13 @@ namespace fmatvec {
        * */
       inline operator std::vector<std::vector<AT> >();
 
-      inline const SquareMatrix<General<Fixed<M,M> >, AT> T() const;
+      inline const SquareMatrix<General<Fixed<M>,Fixed<M> >, AT> T() const;
 
   };
 
   template <int M, class AT>
-    inline const SquareMatrix<General<Fixed<M,M> >, AT> SquareMatrix<General<Fixed<M,M> >, AT>::T() const {
-      SquareMatrix<General<Fixed<M,M> >, AT> A(NONINIT);
+    inline const SquareMatrix<General<Fixed<M>,Fixed<M> >, AT> SquareMatrix<General<Fixed<M>,Fixed<M> >, AT>::T() const {
+      SquareMatrix<General<Fixed<M>,Fixed<M> >, AT> A(NONINIT);
       for(int i=0; i<M; i++)
         for(int j=0; j<M; j++)
           A.e(i,j) = e(j,i);
@@ -111,7 +114,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline SquareMatrix<General<Fixed<M,M> >, AT>::operator std::vector<std::vector<AT> >() {
+    inline SquareMatrix<General<Fixed<M>,Fixed<M> >, AT>::operator std::vector<std::vector<AT> >() {
       std::vector<std::vector<AT> > ret(size());
       for(int r=0; r<size(); r++) {
         ret[r].resize(size());

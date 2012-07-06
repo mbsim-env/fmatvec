@@ -31,23 +31,23 @@
 namespace fmatvec {
 
   template <class AT>
-    inline Matrix<General<Var>, AT> operator+(const Matrix<General<Var>, AT> &A1, const Matrix<General<Var>, AT> &A2) {
+    inline Matrix<General<Var,Var>, AT> operator+(const Matrix<General<Var,Var>, AT> &A1, const Matrix<General<Var,Var>, AT> &A2) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A1.rows() == A2.rows());
       assert(A1.cols() == A2.cols());
 #endif
-      Matrix<General<Var>, AT> A3(A1.rows(),A1.cols(),NONINIT);
+      Matrix<General<Var,Var>, AT> A3(A1.rows(),A1.cols(),NONINIT);
       for(int i=0; i<A3.rows()*A3.cols(); i++) 
 	A3.e(i) = A1.e(i) + A2.e(i);
       return A3;
     }
 
   template <class AT>
-    inline Matrix<Symmetric<Var>, AT> operator+(const Matrix<Symmetric<Var>, AT> &A1, const Matrix<Symmetric<Var>, AT> &A2) {
+    inline Matrix<Symmetric<Var,Var>, AT> operator+(const Matrix<Symmetric<Var,Var>, AT> &A1, const Matrix<Symmetric<Var,Var>, AT> &A2) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A1.size() == A2.size());
 #endif
-      Matrix<Symmetric<Var>, AT> A3(A1.size(),NONINIT);
+      Matrix<Symmetric<Var,Var>, AT> A3(A1.size(),NONINIT);
       for(int i=0; i<A3.size(); i++) 
 	for(int j=i; j<A3.size(); j++) 
 	  A3.ej(i,j) = A1.ej(i,j) + A2.ej(i,j);
@@ -55,22 +55,22 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Vector<General<Var>, AT> operator+(const Vector<General<Var>, AT> &x1, const Vector<General<Var>, AT> &x2) {
+    inline Vector<General<Var,Fixed<1> >, AT> operator+(const Vector<General<Var,Fixed<1> >, AT> &x1, const Vector<General<Var,Fixed<1> >, AT> &x2) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(x1.size() == x2.size());
 #endif
-      Vector<General<Var>, AT> y(x1.size(),NONINIT);
+      Vector<General<Var,Fixed<1> >, AT> y(x1.size(),NONINIT);
       for(int i=0; i<y.size(); i++) 
 	y.e(i) = x1.e(i) + x2.e(i);
       return y;
     }
 
   template <class AT>
-    inline Vector<General<Var>, AT> operator-(const Vector<General<Var>, AT> &x1, const Vector<General<Var>, AT> &x2) {
+    inline Vector<General<Var,Fixed<1> >, AT> operator-(const Vector<General<Var,Fixed<1> >, AT> &x1, const Vector<General<Var,Fixed<1> >, AT> &x2) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(x1.size() == x2.size());
 #endif
-      Vector<General<Var>, AT> y(x1.size(),NONINIT);
+      Vector<General<Var,Fixed<1> >, AT> y(x1.size(),NONINIT);
       for(int i=0; i<y.size(); i++) 
 	y.e(i) = x1.e(i) - x2.e(i);
       return y;
@@ -79,11 +79,11 @@ namespace fmatvec {
 
 
 //  template <class AT>
-//    inline Vector<General<Var>, AT> operator*(const Matrix<General<Var>, AT> &A, const Vector<General<Var>, AT> &x) {
+//    inline Vector<General<Var,Fixed<1> >, AT> operator*(const Matrix<General<Var,Var>, AT> &A, const Vector<General<Var,Fixed<1> >, AT> &x) {
 //#ifndef FMATVEC_NO_SIZE_CHECK
 //      assert(A.cols() == x.size());
 //#endif
-//      Vector<General<Var>, AT> y(A.rows(),NONINIT);
+//      Vector<General<Var,Fixed<1> >, AT> y(A.rows(),NONINIT);
 //      for(int i=0; i<y.size(); i++) {
 //	y.e(i) = 0;
 //	for(int j=0; j<A.cols(); j++) 
@@ -93,24 +93,24 @@ namespace fmatvec {
 //    }
 
   template <class AT>
-    inline Vector<General<Var>, AT> operator*(const AT &a, const Vector<General<Var>, AT> &x) {
-      Vector<General<Var>, AT> y(x.size(),NONINIT);
+    inline Vector<General<Var,Fixed<1> >, AT> operator*(const AT &a, const Vector<General<Var,Fixed<1> >, AT> &x) {
+      Vector<General<Var,Fixed<1> >, AT> y(x.size(),NONINIT);
       for(int i=0; i<x.size(); i++)
 	y.e(i) = a*x.e(i);
       return y;
     }
 
   template <class AT>
-    inline Vector<General<Var>, AT> operator*(const Vector<General<Var>, AT> &x, const AT &a) {
-      Vector<General<Var>, AT> y(x.size(),NONINIT);
+    inline Vector<General<Var,Fixed<1> >, AT> operator*(const Vector<General<Var,Fixed<1> >, AT> &x, const AT &a) {
+      Vector<General<Var,Fixed<1> >, AT> y(x.size(),NONINIT);
       for(int i=0; i<x.size(); i++)
 	y.e(i) = a*x.e(i);
       return y;
     }
 
   template <class AT>
-    inline Matrix<Symmetric<Var>, AT> operator*(const AT &a, const Matrix<Symmetric<Var>, AT> &A) {
-      Matrix<Symmetric<Var>, AT> B(A.size(),NONINIT);
+    inline Matrix<Symmetric<Var,Var>, AT> operator*(const AT &a, const Matrix<Symmetric<Var,Var>, AT> &A) {
+      Matrix<Symmetric<Var,Var>, AT> B(A.size(),NONINIT);
       for(int i=0; i<A.size(); i++)
 	for(int j=i; j<A.size(); j++)
 	  B.ej(i,j) = a*A.ej(i,j);
@@ -118,8 +118,8 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<Symmetric<Var>, AT> operator*(const Matrix<Symmetric<Var>, AT> &A, const AT &a) {
-      Matrix<Symmetric<Var>, AT> B(A.size(),NONINIT);
+    inline Matrix<Symmetric<Var,Var>, AT> operator*(const Matrix<Symmetric<Var,Var>, AT> &A, const AT &a) {
+      Matrix<Symmetric<Var,Var>, AT> B(A.size(),NONINIT);
       for(int i=0; i<A.size(); i++)
 	for(int j=i; j<A.size(); j++)
 	  B.ej(i,j) = a*A.ej(i,j);
@@ -127,8 +127,8 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<General<Var>, AT> operator*(const Matrix<General<Var>, AT> &A, const AT &a) {
-      Matrix<General<Var>, AT> B(A.rows(),A.cols(),NONINIT);
+    inline Matrix<General<Var,Var>, AT> operator*(const Matrix<General<Var,Var>, AT> &A, const AT &a) {
+      Matrix<General<Var,Var>, AT> B(A.rows(),A.cols(),NONINIT);
 
       for(int i=0; i<A.rows(); i++)
 	for(int j=0; j<A.cols(); j++)
@@ -142,9 +142,9 @@ namespace fmatvec {
    * \return The negation. 
    * */
   template <class AT>
-    Matrix<General<Var>, AT> operator-(const Matrix<General<Var>, AT> &A) {
+    Matrix<General<Var,Var>, AT> operator-(const Matrix<General<Var,Var>, AT> &A) {
 
-      Matrix<General<Var>, AT> C(A.rows(),A.cols(),NONINIT);
+      Matrix<General<Var,Var>, AT> C(A.rows(),A.cols(),NONINIT);
 
       for(int i=0; i<A.rows(); i++)
         for(int j=0; j<A.cols(); j++)
@@ -159,9 +159,9 @@ namespace fmatvec {
    * \return The negation. 
    * */
   template <class AT>
-    Vector<General<Var>, AT> operator-(const Vector<General<Var>, AT> &a) {
+    Vector<General<Var,Fixed<1> >, AT> operator-(const Vector<General<Var,Fixed<1> >, AT> &a) {
 
-      Vector<General<Var>, AT> c(a.size(),NONINIT);
+      Vector<General<Var,Fixed<1> >, AT> c(a.size(),NONINIT);
 
       for(int i=0; i<a.size(); i++)
           c.e(i)=-a.e(i);

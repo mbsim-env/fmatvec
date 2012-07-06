@@ -36,7 +36,7 @@ namespace fmatvec {
    * atomic type of the matrix. Valid types are int, float,
    * double, complex<float> and complex<double> 
    * */
-  template <class AT> class Matrix<Diagonal<Ref>, AT> {
+  template <class AT> class Matrix<Diagonal<Ref,Ref>, AT> {
 
       protected:
 
@@ -46,7 +46,7 @@ namespace fmatvec {
 	AT *ele;
 	int n;
 
-	void deepCopy(const Matrix<Diagonal<Ref>, AT> &x);
+	void deepCopy(const Matrix<Diagonal<Ref,Ref>, AT> &x);
 
 	Matrix(int n_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_) {
 	}
@@ -94,7 +94,7 @@ namespace fmatvec {
 	 * zero by default. To change this behavior, define
 	 * FMATVEC_NO_INITIALIZATION.
 	 * */
-	Matrix<Diagonal<Ref>, AT>& resize(int n_) {
+	Matrix<Diagonal<Ref,Ref>, AT>& resize(int n_) {
 	  n = n_;
 
 	  memory.resize(n);
@@ -117,7 +117,7 @@ namespace fmatvec {
 	 * \param a The value, the matrix will be initialized with (default 0)
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Diagonal<Ref>, AT>& resize(int n_, Initialization ini, const AT &a=0) {
+	Matrix<Diagonal<Ref,Ref>, AT>& resize(int n_, Initialization ini, const AT &a=0) {
 	  n = n_;
 
 	  memory.resize(n);
@@ -161,7 +161,7 @@ namespace fmatvec {
 	 * will not be copied, only referenced.
 	 * \param A The matrix that will be referenced.
 	 * */
-	Matrix(const Matrix<Diagonal<Ref>, AT> &A) : memory(A.memory), ele(A.ele) ,n(A.n) {
+	Matrix(const Matrix<Diagonal<Ref,Ref>, AT> &A) : memory(A.memory), ele(A.ele) ,n(A.n) {
 	}
 
 	/*! \brief Destructor. 
@@ -175,7 +175,7 @@ namespace fmatvec {
 	 * \param A The matrix to be copied. 
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Diagonal<Ref>, AT>& operator<<(const Matrix<Diagonal<Ref>, AT> &A);
+	Matrix<Diagonal<Ref,Ref>, AT>& operator<<(const Matrix<Diagonal<Ref,Ref>, AT> &A);
 
 	/*! \brief Reference operator
 	 *
@@ -183,7 +183,7 @@ namespace fmatvec {
 	 * \param A The matrix to be referenced. 
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Diagonal<Ref>, AT>& operator>>(const Matrix<Diagonal<Ref>, AT> &A);
+	Matrix<Diagonal<Ref,Ref>, AT>& operator>>(const Matrix<Diagonal<Ref,Ref>, AT> &A);
 
 	/*! \brief Assignment operator
 	 *
@@ -193,7 +193,7 @@ namespace fmatvec {
 	 * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
 	 * \sa operator<<(), operator>>()
 	 * */
-	Matrix<Diagonal<Ref>, AT>& operator=(const Matrix<Diagonal<Ref>, AT> &A) {
+	Matrix<Diagonal<Ref,Ref>, AT>& operator=(const Matrix<Diagonal<Ref,Ref>, AT> &A) {
 #ifndef FMATVEC_NO_DEEP_ASSIGNMENT 
 	  return operator<<(A);
 #else
@@ -322,7 +322,7 @@ namespace fmatvec {
 	 * The calling matrix returns a \em deep copy of itself.  
 	 * \return The duplicate.
 	 * */
-	Matrix<Diagonal<Ref>, AT> copy() const;
+	Matrix<Diagonal<Ref,Ref>, AT> copy() const;
 
 	/*! \brief Initialization.
 	 *
@@ -331,7 +331,7 @@ namespace fmatvec {
 	 * \param a Value all elements will be initialized with.
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Diagonal<Ref>, AT>& init(const AT &a);
+	Matrix<Diagonal<Ref,Ref>, AT>& init(const AT &a);
 
         /*! \brief Cast to std::vector<std::vector<AT> >.
          *
@@ -341,7 +341,7 @@ namespace fmatvec {
     };
 
   template <class AT>
-    Matrix<Diagonal<Ref>, AT>& Matrix<Diagonal<Ref>, AT>::operator>>(const Matrix<Diagonal<Ref>, AT> &A) { 
+    Matrix<Diagonal<Ref,Ref>, AT>& Matrix<Diagonal<Ref,Ref>, AT>::operator>>(const Matrix<Diagonal<Ref,Ref>, AT> &A) { 
       if(n==0) {
 	n=A.n;
       } else 
@@ -354,7 +354,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    Matrix<Diagonal<Ref>, AT>& Matrix<Diagonal<Ref>, AT>::operator<<(const Matrix<Diagonal<Ref>, AT> &A) { 
+    Matrix<Diagonal<Ref,Ref>, AT>& Matrix<Diagonal<Ref,Ref>, AT>::operator<<(const Matrix<Diagonal<Ref,Ref>, AT> &A) { 
 
       if(A.size() == 0)
 	return *this;
@@ -372,7 +372,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    Matrix<Diagonal<Ref>, AT>&  Matrix<Diagonal<Ref>, AT>::init(const AT &val) {
+    Matrix<Diagonal<Ref,Ref>, AT>&  Matrix<Diagonal<Ref,Ref>, AT>::init(const AT &val) {
 
       for(int i=0; i<rows(); i++)
         e(i) = val;
@@ -382,9 +382,9 @@ namespace fmatvec {
 
  
   template <class AT>
-    Matrix<Diagonal<Ref>, AT> Matrix<Diagonal<Ref>, AT>::copy() const {
+    Matrix<Diagonal<Ref,Ref>, AT> Matrix<Diagonal<Ref,Ref>, AT>::copy() const {
 
-      Matrix<Diagonal<Ref>, AT> A(n);
+      Matrix<Diagonal<Ref,Ref>, AT> A(n);
 
       A.deepCopy(*this);
 
@@ -392,15 +392,15 @@ namespace fmatvec {
     }
 
   template <class AT>
-    void Matrix<Diagonal<Ref>, AT>::deepCopy(const Matrix<Diagonal<Ref>, AT> &A) { 
+    void Matrix<Diagonal<Ref,Ref>, AT>::deepCopy(const Matrix<Diagonal<Ref,Ref>, AT> &A) { 
       for(int i=0; i<n; i++)
         e(i) = A.e(i);
     }
 
-  template <> void Matrix<Diagonal<Ref>, double>::deepCopy(const Matrix<Diagonal<Ref>, double> &A);
+  template <> void Matrix<Diagonal<Ref,Ref>, double>::deepCopy(const Matrix<Diagonal<Ref,Ref>, double> &A);
 
   template <class AT>
-    Matrix<Diagonal<Ref>, AT>::operator std::vector<std::vector<AT> >() {
+    Matrix<Diagonal<Ref,Ref>, AT>::operator std::vector<std::vector<AT> >() {
       std::vector<std::vector<AT> > ret(rows());
       for(int r=0; r<rows(); r++) {
         ret[r].resize(cols());

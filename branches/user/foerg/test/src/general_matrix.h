@@ -29,10 +29,10 @@
 
 namespace fmatvec {
 
-  template <class AT> class Vector<General<Ref>, AT>;
-  template <class AT> class RowVector<General<Ref>, AT>;
-  template <class AT> class SquareMatrix<General<Ref>, AT>;
-  template <class AT> class Matrix<Symmetric<Ref>, AT>;
+  template <class AT> class Vector<General<Ref,Fixed<1> >, AT>;
+  template <class AT> class RowVector<General<Fixed<1>,Ref>, AT>;
+  template <class AT> class SquareMatrix<General<Ref,Ref>, AT>;
+  template <class AT> class Matrix<Symmetric<Ref,Ref>, AT>;
 
   /*! 
    *  \brief This is a matrix class for general matrices.
@@ -42,15 +42,15 @@ namespace fmatvec {
    * of the matrix. Valid types are int, float, double, complex<float> and
    * complex<double> 
    * */
-  template <class AT> class Matrix<General<Ref>, AT> {
+  template <class AT> class Matrix<General<Ref,Ref>, AT> {
 
     public:
 
  /// @cond NO_SHOW
 
-      friend class Matrix<Symmetric<Ref>, AT>;
+      friend class Matrix<Symmetric<Ref,Ref>, AT>;
       
-      template <class T> friend Matrix<General<Ref>, T>  trans(const Matrix<General<Ref>, T> &A);
+      template <class T> friend Matrix<General<Ref,Ref>, T>  trans(const Matrix<General<Ref,Ref>, T> &A);
 
     protected:
 
@@ -62,8 +62,8 @@ namespace fmatvec {
       bool tp;
 
       template <class Type> inline void deepCopy(const Matrix<Type, AT> &A); 
-      inline void deepCopy(const Matrix<General<Ref>, AT> &A); 
-      inline void deepCopy(const Matrix<Symmetric<Ref>, AT> &A); 
+      inline void deepCopy(const Matrix<General<Ref,Ref>, AT> &A); 
+      inline void deepCopy(const Matrix<Symmetric<Ref,Ref>, AT> &A); 
 
       const AT* elePtr(int i, int j) const {
 	return tp ? ele+i*lda+j : ele+i+j*lda; 
@@ -136,7 +136,7 @@ namespace fmatvec {
        * referenced.
        * \param A The matrix that will be referenced.
        * */
-      Matrix(const Matrix<General<Ref>, AT> &A) : memory(A.memory), ele(A.ele) ,m(A.m), n(A.n), lda(A.lda), tp(A.tp) {
+      Matrix(const Matrix<General<Ref,Ref>, AT> &A) : memory(A.memory), ele(A.ele) ,m(A.m), n(A.n), lda(A.lda), tp(A.tp) {
       }
 
       /*! \brief Regular Constructor
@@ -155,7 +155,7 @@ namespace fmatvec {
        * notation. The rows are seperated by semicolons, the columns by commas.
        * For example
        * \code 
-       * Matrix<General<Ref>double> A("[3,2;1,2]");
+       * Matrix<General<Ref,Ref>double> A("[3,2;1,2]");
        * \endcode 
        * constructs the matrix
        * \f[ A=\begin{pmatrix}3 & 2\\ 1 & 2\end{pmatrix}  \f]
@@ -184,7 +184,7 @@ namespace fmatvec {
        * zero by default. To change this behavior, define
        * FMATVEC_NO_INITIALIZATION.
        * */
-      Matrix<General<Ref>, AT>& resize(int m_, int n_) {
+      Matrix<General<Ref,Ref>, AT>& resize(int m_, int n_) {
 	m=m_;n=n_;
 	lda=m;
 	tp = false;
@@ -208,7 +208,7 @@ namespace fmatvec {
        * \param a The value, the matrix will be initialized with (default 0)
        * \return A reference to the calling matrix.
        * */
-      Matrix<General<Ref>, AT>& resize(int m_, int n_, Initialization ini, const AT &a=0) {
+      Matrix<General<Ref,Ref>, AT>& resize(int m_, int n_, Initialization ini, const AT &a=0) {
 	m=m_;n=n_;
 	lda=m;
 	tp = false;
@@ -237,7 +237,7 @@ namespace fmatvec {
        * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
        * \sa operator<<(), operator>>()
        * */
-      Matrix<General<Ref>, AT>& operator=(const Matrix<General<Ref>, AT> &A) {
+      Matrix<General<Ref,Ref>, AT>& operator=(const Matrix<General<Ref,Ref>, AT> &A) {
 #ifndef FMATVEC_NO_DEEP_ASSIGNMENT 
 	return operator<<(A);
 #else
@@ -246,7 +246,7 @@ namespace fmatvec {
       }
 
       template<class Type>
-      Matrix<General<Ref>, AT>& operator=(const Matrix<Type, AT> &A) {
+      Matrix<General<Ref,Ref>, AT>& operator=(const Matrix<Type, AT> &A) {
 	return operator<<(A);
       }
 
@@ -257,7 +257,7 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       template<class Type>
-        inline Matrix<General<Ref>, AT>& operator<<(const Matrix<Type, AT> &A);
+        inline Matrix<General<Ref,Ref>, AT>& operator<<(const Matrix<Type, AT> &A);
 
       /*! \brief Reference operator
        *
@@ -265,7 +265,7 @@ namespace fmatvec {
        * \param A The matrix to be referenced. 
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<General<Ref>, AT>& operator>>(const Matrix<General<Ref>, AT> &A);
+      inline Matrix<General<Ref,Ref>, AT>& operator>>(const Matrix<General<Ref,Ref>, AT> &A);
 
       /*! \brief Element operator
        *
@@ -398,13 +398,13 @@ namespace fmatvec {
        * \param j2 The ending column.
        * \return A submatrix of the calling matrix.
        * */
-      inline Matrix<General<Ref>, AT> operator()(int i1, int j1, int i2, int j2);
+      inline Matrix<General<Ref,Ref>, AT> operator()(int i1, int j1, int i2, int j2);
 
       /*! \brief Submatrix operator.
        *
        * See operator()(int,int,int,int);
        * */
-      inline const Matrix<General<Ref>, AT> operator()(int i1, int j1, int i2, int j2) const;
+      inline const Matrix<General<Ref,Ref>, AT> operator()(int i1, int j1, int i2, int j2) const;
 
       /*! \brief Submatrix operator.
        *
@@ -432,13 +432,13 @@ namespace fmatvec {
        * \param J Index containing the starting and the ending column. 
        * \return A submatrix of the calling matrix.
        * */
-      inline Matrix<General<Ref>, AT> operator()(const Index &I, const Index &J);
+      inline Matrix<General<Ref,Ref>, AT> operator()(const Index &I, const Index &J);
 
       /*! \brief Submatrix operator.
        *
        * See operator()(const Index&, const Index&)
        * */
-      inline const Matrix<General<Ref>, AT> operator()(const Index &I, const Index &J) const;
+      inline const Matrix<General<Ref,Ref>, AT> operator()(const Index &I, const Index &J) const;
 
       /*! \brief Submatrix operator.
        *
@@ -448,13 +448,13 @@ namespace fmatvec {
        * \param I Index containing the starting and the ending row. 
        * \return A submatrix of the calling matrix.
        * */
-      inline SquareMatrix<General<Ref>, AT> operator() (const Index &I);
+      inline SquareMatrix<General<Ref,Ref>, AT> operator() (const Index &I);
 
       /*! \brief Submatrix operator.
        *
        * See operator()(const Index&)
        * */
-      inline const SquareMatrix<General<Ref>, AT> operator()(const Index &I) const;
+      inline const SquareMatrix<General<Ref,Ref>, AT> operator()(const Index &I) const;
 
       /*! \brief Column operator.
        *
@@ -463,13 +463,13 @@ namespace fmatvec {
        * \param i The column, that will be returned.  
        * \return A vector containing the i-th column of the calling matrix.
        * */
-      inline Vector<General<Ref>, AT> col(int i);
+      inline Vector<General<Ref,Fixed<1> >, AT> col(int i);
 
       /*! \brief Column operator.
        *
        * see col(int)
        * */
-      inline const Vector<General<Ref>, AT> col(int i) const;
+      inline const Vector<General<Ref,Fixed<1> >, AT> col(int i) const;
 
       /*! \brief Row operator.
        *
@@ -478,27 +478,27 @@ namespace fmatvec {
        * \param i The row, that will be returned. 
        * \return A rowvector containing the i-th row of the calling matrix.
        * */
-      inline RowVector<General<Ref>, AT> row(int i); 
+      inline RowVector<General<Fixed<1>,Ref>, AT> row(int i); 
 
       /*! \brief Row operator.
        *
        * see row(int)
        * */
-      inline const RowVector<General<Ref>, AT> row(int i) const;
+      inline const RowVector<General<Fixed<1>,Ref>, AT> row(int i) const;
 
       /*! \brief Matrix unsizing.
        *
        * Resizes the matrix to size zero.  
        * \return A reference to the calling matrix.
        * */
-      Matrix<General<Ref>, AT>& resize() {m=0;n=0;return *this;};
+      Matrix<General<Ref,Ref>, AT>& resize() {m=0;n=0;return *this;};
 
       /*! \brief Matrix duplicating.
        *
        * The calling matrix returns a \em deep copy of itself.  
        * \return The duplicate.
        * */
-      inline Matrix<General<Ref>, AT> copy() const;
+      inline Matrix<General<Ref,Ref>, AT> copy() const;
 
       /*! \brief Initialization.
        *
@@ -507,7 +507,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<General<Ref>, AT>& init(const AT &a);
+      inline Matrix<General<Ref,Ref>, AT>& init(const AT &a);
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -522,17 +522,17 @@ namespace fmatvec {
        * */
       inline Matrix(std::vector<std::vector<AT> > m);
 
-      Matrix<General<Ref>, AT> T() {
-	return Matrix<General<Ref>, AT>(n,m,lda,tp?false:true,memory,ele);
+      Matrix<General<Ref,Ref>, AT> T() {
+	return Matrix<General<Ref,Ref>, AT>(n,m,lda,tp?false:true,memory,ele);
       };
 
-      const Matrix<General<Ref>, AT> T() const {
-	return Matrix<General<Ref>, AT>(n,m,lda,tp?false:true,memory,ele);
+      const Matrix<General<Ref,Ref>, AT> T() const {
+	return Matrix<General<Ref,Ref>, AT>(n,m,lda,tp?false:true,memory,ele);
       }
   };
 
   template <class AT> 
-    Matrix<General<Ref>, AT>::Matrix(const char *strs) {
+    Matrix<General<Ref,Ref>, AT>::Matrix(const char *strs) {
     // if 'strs' is a single scalar, surround it first with '[' and ']'.
     // This is more Matlab-like, because e.g. '5' and '[5]' is just the same.
     // (This functionallitiy is needed e.g. by MBXMLUtils (OpenMBV,MBSim))
@@ -578,7 +578,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<General<Ref>, AT>& Matrix<General<Ref>, AT>::operator>>(const Matrix<General<Ref>, AT> &A) { 
+    inline Matrix<General<Ref,Ref>, AT>& Matrix<General<Ref,Ref>, AT>::operator>>(const Matrix<General<Ref,Ref>, AT> &A) { 
 
       if(m==0) {
         m=A.m; 
@@ -599,7 +599,7 @@ namespace fmatvec {
     }
 
   template <class AT> template< class Type>
-    inline Matrix<General<Ref>, AT>& Matrix<General<Ref>, AT>::operator<<(const Matrix<Type, AT> &A) { 
+    inline Matrix<General<Ref,Ref>, AT>& Matrix<General<Ref,Ref>, AT>::operator<<(const Matrix<Type, AT> &A) { 
 
       if(A.rows() == 0 || A.cols() == 0)
         return *this;
@@ -624,7 +624,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<General<Ref>, AT>&  Matrix<General<Ref>, AT>::init(const AT& val) {
+    inline Matrix<General<Ref,Ref>, AT>&  Matrix<General<Ref,Ref>, AT>::init(const AT& val) {
 
       if(tp) {
         for(int i=0; i<rows(); i++) 
@@ -641,104 +641,104 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<General<Ref>, AT>  Matrix<General<Ref>, AT>::operator()(int i1, int j1, int i2, int j2) {
+    inline Matrix<General<Ref,Ref>, AT>  Matrix<General<Ref,Ref>, AT>::operator()(int i1, int j1, int i2, int j2) {
       return operator()(Index(i1,i2),Index(j1,j2));
     }
 
   template <class AT>
-    inline const Matrix<General<Ref>, AT>  Matrix<General<Ref>, AT>::operator()(int i1, int j1, int i2, int j2) const {
+    inline const Matrix<General<Ref,Ref>, AT>  Matrix<General<Ref,Ref>, AT>::operator()(int i1, int j1, int i2, int j2) const {
       return operator()(Index(i1,i2),Index(j1,j2));
     }
 
   template <class AT> 
-    inline Matrix<General<Ref>, AT> Matrix<General<Ref>, AT>::operator()(const Index &I, const Index &J) {
+    inline Matrix<General<Ref,Ref>, AT> Matrix<General<Ref,Ref>, AT>::operator()(const Index &I, const Index &J) {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<m);
       assert(J.end()<n);
 #endif
-      return Matrix<General<Ref>, AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,tp,memory,elePtr(I.start(),J.start()));
+      return Matrix<General<Ref,Ref>, AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,tp,memory,elePtr(I.start(),J.start()));
     }
 
   template <class AT> 
-    inline const Matrix<General<Ref>, AT> Matrix<General<Ref>, AT>::operator()(const Index &I, const Index &J) const {
+    inline const Matrix<General<Ref,Ref>, AT> Matrix<General<Ref,Ref>, AT>::operator()(const Index &I, const Index &J) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<m);
       assert(J.end()<n);
 #endif
-      return Matrix<General<Ref>, AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,tp,memory,elePtr(I.start(),J.start()));
+      return Matrix<General<Ref,Ref>, AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,tp,memory,elePtr(I.start(),J.start()));
     }
 
   template <class AT> 
-    inline const SquareMatrix<General<Ref>, AT> Matrix<General<Ref>, AT>::operator()(const Index &I) const {
+    inline const SquareMatrix<General<Ref,Ref>, AT> Matrix<General<Ref,Ref>, AT>::operator()(const Index &I) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<m);
 #endif
-      return SquareMatrix<General<Ref>, AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start(),I.start()));
+      return SquareMatrix<General<Ref,Ref>, AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start(),I.start()));
     }
 
   template <class AT>
-    inline SquareMatrix<General<Ref>, AT> Matrix<General<Ref>, AT>::operator()(const Index &I) {
+    inline SquareMatrix<General<Ref,Ref>, AT> Matrix<General<Ref,Ref>, AT>::operator()(const Index &I) {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<m);
 #endif
-      return SquareMatrix<General<Ref>, AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start(),I.start()));
+      return SquareMatrix<General<Ref,Ref>, AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start(),I.start()));
     }
 
   template <class AT>
-    inline Vector<General<Ref>, AT>  Matrix<General<Ref>, AT>::col(int i) {
+    inline Vector<General<Ref,Fixed<1> >, AT>  Matrix<General<Ref,Ref>, AT>::col(int i) {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i>=0);
       assert(i<n);
 #endif
 
-      return Vector<General<Ref>, AT>(m,lda,tp,memory,elePtr(0,i));
+      return Vector<General<Ref,Fixed<1> >, AT>(m,lda,tp,memory,elePtr(0,i));
     }
 
   template <class AT>
-    inline const Vector<General<Ref>, AT>  Matrix<General<Ref>, AT>::col(int i) const {
+    inline const Vector<General<Ref,Fixed<1> >, AT>  Matrix<General<Ref,Ref>, AT>::col(int i) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i>=0);
       assert(i<n);
 #endif
 
-      return Vector<General<Ref>, AT>(m,lda,tp,memory,elePtr(0,i));
+      return Vector<General<Ref,Fixed<1> >, AT>(m,lda,tp,memory,elePtr(0,i));
     }
 
   template <class AT>
-    inline RowVector<General<Ref>, AT>  Matrix<General<Ref>, AT>::row(int i) {
+    inline RowVector<General<Fixed<1>,Ref>, AT>  Matrix<General<Ref,Ref>, AT>::row(int i) {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i>=0);
       assert(i<m);
 #endif
 
-      return RowVector<General<Ref>, AT>(n,lda,tp,memory,elePtr(i,0));
+      return RowVector<General<Fixed<1>,Ref>, AT>(n,lda,tp,memory,elePtr(i,0));
     }
 
   template <class AT>
-    inline const RowVector<General<Ref>, AT>  Matrix<General<Ref>, AT>::row(int i) const {
+    inline const RowVector<General<Fixed<1>,Ref>, AT>  Matrix<General<Ref,Ref>, AT>::row(int i) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i>=0);
       assert(i<m);
 #endif
 
-      return RowVector<General<Ref>, AT>(n,lda,tp,memory,elePtr(i,0));
+      return RowVector<General<Fixed<1>,Ref>, AT>(n,lda,tp,memory,elePtr(i,0));
     }
 
   template <class AT>
-    inline Matrix<General<Ref>, AT> Matrix<General<Ref>, AT>::copy() const {
+    inline Matrix<General<Ref,Ref>, AT> Matrix<General<Ref,Ref>, AT>::copy() const {
 
-      Matrix<General<Ref>, AT> A(m,n,NONINIT);
+      Matrix<General<Ref,Ref>, AT> A(m,n,NONINIT);
       A.deepCopy(*this);
 
       return A;
     }
 
   template <class AT>
-    inline Matrix<General<Ref>, AT>::operator std::vector<std::vector<AT> >() {
+    inline Matrix<General<Ref,Ref>, AT>::operator std::vector<std::vector<AT> >() {
       std::vector<std::vector<AT> > ret(rows());
       if(tp) {
         for(int r=0; r<rows(); r++) {
@@ -758,7 +758,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<General<Ref>, AT>::Matrix(std::vector<std::vector<AT> > m) : memory(m.size()*m[0].size()), ele((AT*)memory.get()), m(m.size()), n(m[0].size()), lda(m.size()), tp(false) {
+    inline Matrix<General<Ref,Ref>, AT>::Matrix(std::vector<std::vector<AT> > m) : memory(m.size()*m[0].size()), ele((AT*)memory.get()), m(m.size()), n(m[0].size()), lda(m.size()), tp(false) {
 #ifndef FMATVEC_NO_INITIALIZATION 
       init(0);
 #endif
@@ -772,7 +772,7 @@ namespace fmatvec {
   /// @cond NO_SHOW
 
   template <class AT> template <class Type>
-    inline void Matrix<General<Ref>, AT>::deepCopy(const Matrix<Type, AT> &A) { 
+    inline void Matrix<General<Ref,Ref>, AT>::deepCopy(const Matrix<Type, AT> &A) { 
       if(tp) {
         for(int i=0; i<m; i++) 
           for(int j=0; j<n; j++)
@@ -786,7 +786,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline void Matrix<General<Ref>, AT>::deepCopy(const Matrix<General<Ref>, AT> &A) { 
+    inline void Matrix<General<Ref,Ref>, AT>::deepCopy(const Matrix<General<Ref,Ref>, AT> &A) { 
       if(A.tp) {
         if(tp) {
           for(int i=0; i<m; i++) 
@@ -813,7 +813,7 @@ namespace fmatvec {
     }
 
   template<class AT>
-    inline void Matrix<General<Ref>, AT>::deepCopy(const Matrix<Symmetric<Ref>, AT> &A) {
+    inline void Matrix<General<Ref,Ref>, AT>::deepCopy(const Matrix<Symmetric<Ref,Ref>, AT> &A) {
       for(int i=0; i<A.size(); i++) {
         er(i,i) = A.er(i,i);
         for(int j=i+1; j<A.size(); j++)
