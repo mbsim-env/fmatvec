@@ -45,7 +45,7 @@ namespace fmatvec {
    * Template class Matrix with shape type ST and atomic type AT. The first template parameter defines the shape type, the second parameter the
    * atomic type of the matrix. Valid shape types are General, Symmetric, GeneralBand, Diagonal and Sparse. Valid atomic types are int, float, double, complex<float> and complex<double> 
    * */
-  template <class ST, class AT> class Matrix {
+  template <class Type, class AT> class Matrix {
 
     protected:
 
@@ -53,7 +53,7 @@ namespace fmatvec {
 
       //AT* ele;
 
-      void deepCopy(const Matrix<ST, AT> &A);
+      void deepCopy(const Matrix<Type, AT> &A);
 
       /// @endcond
 
@@ -125,7 +125,7 @@ namespace fmatvec {
 
 
 
-  template <class ST, class AT> void Matrix<ST, AT>::deepCopy(const Matrix<ST, AT> &A) { 
+  template <class Type, class AT> void Matrix<Type, AT>::deepCopy(const Matrix<Type, AT> &A) { 
     for(int i=0; i<rows(); i++) 
       for(int j=0; j<cols(); j++) 
 	e(i,j) = A.e(i,j);
@@ -138,7 +138,7 @@ namespace fmatvec {
    * \param A A matrix of any shape and type.
    * \return A reference to the output stream.
    * */
-  template <class ST, class AT> std::ostream& operator<<(std::ostream &os, const Matrix<ST, AT> &A) {
+  template <class Type, class AT> std::ostream& operator<<(std::ostream &os, const Matrix<Type, AT> &A) {
     os << A.rows() << " x " << A.cols() << std::endl;
     os << "[ ";
     for (int i=0; i < A.rows(); ++i) {
@@ -159,7 +159,7 @@ namespace fmatvec {
    * \param A A matrix of any shape and type.
    * \return A reference to the input stream.
    * */
-  template <class ST, class AT> std::istream& operator>>(std::istream &is, Matrix<ST, AT> &A) {
+  template <class Type, class AT> std::istream& operator>>(std::istream &is, Matrix<Type, AT> &A) {
     int m, n;
     char c;
     is >> m >> c >> n >> c;
@@ -177,7 +177,7 @@ namespace fmatvec {
    * \param is The filename.
    * \param A A matrix of any shape and type.
    * */
-  template <class ST, class AT> void dump(const char* str, const Matrix<ST, AT> &A) {
+  template <class Type, class AT> void dump(const char* str, const Matrix<Type, AT> &A) {
     std::ofstream os(str);
     for (int i=0; i < A.rows(); ++i) {
       for (int j=0; j < A.cols(); ++j) 
@@ -189,8 +189,8 @@ namespace fmatvec {
     os.close();
   }
 
-  template <class ST, class AT>
-    Matrix<ST, AT>::operator std::vector<std::vector<AT> >() {
+  template <class Type, class AT>
+    Matrix<Type, AT>::operator std::vector<std::vector<AT> >() {
       std::vector<std::vector<AT> > ret(rows());
       for(int r=0; r<rows(); r++) {
 	ret[r].resize(cols());
@@ -200,13 +200,13 @@ namespace fmatvec {
       return ret;
     }
 
-  template <class ST, class AT> class SquareMatrix {
+  template <class Type, class AT> class SquareMatrix {
   };
 
-  template <class ST, class AT> class Vector {
+  template <class Type, class AT> class Vector {
   };
 
-  template <class ST, class AT> class RowVector {
+  template <class Type, class AT> class RowVector {
   };
 }
 

@@ -23,15 +23,9 @@
 #define range_h
 
 //#include "matrix.h"
-//#include "types.h"
+#include "types.h"
 
 namespace fmatvec {
-
-  class Var {
-  };
-
-  template<int M, int N> class Fixed {
-  };
 
   /*! 
    * \brief This is an index class for creating submatrices.

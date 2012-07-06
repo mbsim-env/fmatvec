@@ -24,10 +24,9 @@
 #include "wrapper.h"
 
 namespace fmatvec {
-//const double Matrix<Diagonal, double>::zero = 0;
 
   template <>
-  void Matrix<Diagonal, double>::deepCopy(const Matrix<Diagonal, double> &A) { 
+  void Matrix<Diagonal<Ref>, double>::deepCopy(const Matrix<Diagonal<Ref>, double> &A) { 
     dcopy(n, A.ele,1, ele,1);
   }
 

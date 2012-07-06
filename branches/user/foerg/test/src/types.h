@@ -59,20 +59,52 @@
 
 namespace fmatvec {
 
-  /*! 
-   *  \brief Basic shape class for matrices.
-   *
-   * Class BasicType is the basic shape type.
-   * */
-  class BasicType {
+  class Ref {
   };
+
+  class Var {
+  };
+
+  template<int M, int N> class Fixed {
+  };
+
+  template<int M> class FixedVar {
+  };
+
+  template<int N> class VarFixed {
+  };
+
+//  class General {
+//  };
+//
+//  class GeneralBand {
+//  };
+//
+//  class Symmetric {
+//  };
+//
+//  class Diagonal {
+//  };
+//
+//  class Sparse {
+//  };
+//
+//  /*! 
+//   *  \brief Basic shape class for matrices.
+//   *
+//   * Class BasicType is the basic shape type.
+//   * */
+//  template<class Shape, class Mem>
+//  class Type {
+//  };
 
   /*! 
    *  \brief Shape class for general matrices.
    *
    * Class General is a shape class for general matrices.
    * */
-  class General : public BasicType {
+  template<class Mem>
+  class General {
   };
 
   /*! 
@@ -80,7 +112,8 @@ namespace fmatvec {
    *
    * Class GeneralBand is a shape class for general band matrices.
    * */
-  class GeneralBand : public BasicType {
+  template<class Mem>
+  class GeneralBand {
   };
 
   /*! 
@@ -88,7 +121,8 @@ namespace fmatvec {
    *
    * Class Symmetric is a shape class for symmetric matrices.
    * */
-  class Symmetric : public BasicType {
+  template<class Mem>
+  class Symmetric {
   };
 
   /*! 
@@ -96,7 +130,8 @@ namespace fmatvec {
    *
    * Class Diagonal is a shape class for diagonal matrices.
    * */
-  class Diagonal : public BasicType {
+  template<class Mem>
+  class Diagonal {
   };
 
   /*! 
@@ -104,30 +139,31 @@ namespace fmatvec {
    *
    * Class Sparse is a shape class for sparse matrices.
    * */
-  class Sparse : public BasicType {
+  template<class Mem>
+  class Sparse {
   };
 
-  template<int M, int N>
-  class GeneralFixed: public BasicType {
-  };
-
-  template<int M>
-  class SymmetricFixed: public BasicType {
-  };
-
-  class GeneralVar: public BasicType {
-  };
-
-  class SymmetricVar: public BasicType {
-  };
-
-  template<int M>
-  class GeneralFixedVar: public BasicType {
-  };
-
-  template<int N>
-  class GeneralVarFixed: public BasicType {
-  };
+//  template<int M, int N>
+//  class GeneralFixed: public BasicType {
+//  };
+//
+//  template<int M>
+//  class SymmetricFixed: public BasicType {
+//  };
+//
+//  class GeneralVar: public BasicType {
+//  };
+//
+//  class SymmetricVar: public BasicType {
+//  };
+//
+//  template<int M>
+//  class GeneralFixedVar: public BasicType {
+//  };
+//
+//  template<int N>
+//  class GeneralVarFixed: public BasicType {
+//  };
 
 }
 

@@ -35,7 +35,7 @@ using namespace std;
 namespace fmatvec {
 
   template <>
-  Matrix<General, int>::Matrix(const char *strs) {
+  Matrix<General<Ref>, int>::Matrix(const char *strs) {
     istringstream iss(strs);
     int x;
     char c;

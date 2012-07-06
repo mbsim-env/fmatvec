@@ -43,7 +43,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A reference to the diagonal matrix. 
    * */
-  Matrix<Diagonal, double >& operator*=(const Matrix<Diagonal, double >& A, double alpha);
+  Matrix<Diagonal<Ref>, double >& operator*=(const Matrix<Diagonal<Ref>, double >& A, double alpha);
 
   /*! \brief Matrix-scalar division.
    *
@@ -52,7 +52,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A reference to the diagonal matrix. 
    * */
-  Matrix<Diagonal, double >& operator/=(const Matrix<Diagonal, double >& A, double alpha);
+  Matrix<Diagonal<Ref>, double >& operator/=(const Matrix<Diagonal<Ref>, double >& A, double alpha);
 
   /*! \brief Matrix-scalar multiplication.
    *
@@ -61,7 +61,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A reference to the square matrix. 
    * */
-  SquareMatrix<General, double>& operator*=(const SquareMatrix<General, double>& A, double alpha);
+  SquareMatrix<General<Ref>, double>& operator*=(const SquareMatrix<General<Ref>, double>& A, double alpha);
 
   /*! \brief Matrix-scalar division.
    *
@@ -70,7 +70,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A reference to the square matrix. 
    * */
-  SquareMatrix<General, double>& operator/=(const SquareMatrix<General, double>& A, double alpha);
+  SquareMatrix<General<Ref>, double>& operator/=(const SquareMatrix<General<Ref>, double>& A, double alpha);
 
   /*! \brief Matrix-scalar multiplication.
    *
@@ -79,13 +79,13 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A new square matrix containig the result.
    * */
-  SquareMatrix<General, double> operator*(const SquareMatrix<General, double> &A, double alpha);
+  SquareMatrix<General<Ref>, double> operator*(const SquareMatrix<General<Ref>, double> &A, double alpha);
 
   /*! \brief Scalar-matrix multiplication.
    *
-   * \see operator*(const SquareMatrix<General, double> &A, double alpha).
+   * \see operator*(const SquareMatrix<General<Ref>, double> &A, double alpha).
    * */
-  SquareMatrix<General, double> operator*(double alpha, const SquareMatrix<General, double> &A);
+  SquareMatrix<General<Ref>, double> operator*(double alpha, const SquareMatrix<General<Ref>, double> &A);
 
   /*! \brief Matrix-scalar division.
    *
@@ -94,7 +94,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A new square matrix containig the result.
    * */
-  SquareMatrix<General, double> operator/(const SquareMatrix<General, double> &A, double alpha);
+  SquareMatrix<General<Ref>, double> operator/(const SquareMatrix<General<Ref>, double> &A, double alpha);
 
  /*! \brief Matrix-scalar multiplication.
    *
@@ -103,7 +103,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A reference to the general matrix. 
    * */
-  Matrix<General, double >& operator*=(const Matrix<General, double > &A, const double &alpha);
+  Matrix<General<Ref>, double >& operator*=(const Matrix<General<Ref>, double > &A, const double &alpha);
 
   /*! \brief Matrix-scalar division.
    *
@@ -112,7 +112,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A reference to the general matrix. 
    * */
-  Matrix<General, double >& operator/=(const Matrix<General, double > &A, const double &alpha);
+  Matrix<General<Ref>, double >& operator/=(const Matrix<General<Ref>, double > &A, const double &alpha);
 
   /*! \brief Matrix-matrix addition.
    *
@@ -121,7 +121,7 @@ namespace fmatvec {
    * \param B A general matrix. 
    * \return A new general matrix containig the result.
    * */
-  Matrix<General, double > operator+(const Matrix<General, double > &A, const Matrix<General, double > &B);
+  Matrix<General<Ref>, double > operator+(const Matrix<General<Ref>, double > &A, const Matrix<General<Ref>, double > &B);
 
   /*! \brief Matrix-matrix subtraction.
    *
@@ -131,7 +131,7 @@ namespace fmatvec {
    * \param B A general matrix. 
    * \return A new general matrix containig the result.
    * */
-  Matrix<General, double> operator-(const Matrix<General, double> &A, const Matrix<General, double> &B);
+  Matrix<General<Ref>, double> operator-(const Matrix<General<Ref>, double> &A, const Matrix<General<Ref>, double> &B);
 
   /*! \brief Matrix-matrix addition.
    *
@@ -140,7 +140,7 @@ namespace fmatvec {
    * \param B A square matrix. 
    * \return A new square matrix containig the result.
    * */
-  SquareMatrix<General, double> operator+(const SquareMatrix<General, double> &A, const SquareMatrix<General, double> &B);
+  SquareMatrix<General<Ref>, double> operator+(const SquareMatrix<General<Ref>, double> &A, const SquareMatrix<General<Ref>, double> &B);
 
   /*! \brief Matrix-matrix addition.
    *
@@ -149,7 +149,7 @@ namespace fmatvec {
    * \param B A symmetric matrix. 
    * \return A new symmetric matrix containig the result.
    * */
-  Matrix<Symmetric, double> operator+(const Matrix<Symmetric, double > &A, const Matrix<Symmetric, double > &B);
+  Matrix<Symmetric<Ref>, double> operator+(const Matrix<Symmetric<Ref>, double > &A, const Matrix<Symmetric<Ref>, double > &B);
 
   /*! \brief Matrix-matrix subtraction.
    *
@@ -158,7 +158,7 @@ namespace fmatvec {
    * \param B A square matrix. 
    * \return A new square matrix containig the result.
    * */
-  SquareMatrix<General, double> operator-(const SquareMatrix<General, double> &A, const SquareMatrix<General, double> &B);
+  SquareMatrix<General<Ref>, double> operator-(const SquareMatrix<General<Ref>, double> &A, const SquareMatrix<General<Ref>, double> &B);
 
    /*! \brief Matrix-matrix subtraction.
    *
@@ -167,7 +167,7 @@ namespace fmatvec {
    * \param B A symmetric matrix. 
    * \return A new symmetric matrix containig the result.
    * */
-  Matrix<Symmetric, double> operator-(const Matrix<Symmetric, double > &A, const Matrix<Symmetric, double > &B);
+  Matrix<Symmetric<Ref>, double> operator-(const Matrix<Symmetric<Ref>, double > &A, const Matrix<Symmetric<Ref>, double > &B);
 
   /*! \brief Matrix-scalar multiplication.
    *
@@ -176,13 +176,13 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A new general matrix containig the result.
    * */
-  Matrix<General, double> operator*(const Matrix<General, double> &A, double alpha);
+  Matrix<General<Ref>, double> operator*(const Matrix<General<Ref>, double> &A, double alpha);
 
   /*! \brief Scalar-matrix multiplication.
    *
-   * \see operator*(const Matrix<General, double> &A, double alpha).
+   * \see operator*(const Matrix<General<Ref>, double> &A, double alpha).
    * */
-  Matrix<General, double> operator*(double alpha, const Matrix<General, double> &A);
+  Matrix<General<Ref>, double> operator*(double alpha, const Matrix<General<Ref>, double> &A);
 
   /*! \brief Matrix-scalar division.
    *
@@ -191,7 +191,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A new general matrix containig the result.
    * */
-  Matrix<General, double> operator/(const Matrix<General, double> &A, double alpha);
+  Matrix<General<Ref>, double> operator/(const Matrix<General<Ref>, double> &A, double alpha);
 
   /*! \brief Matrix-scalar multiplication.
    *
@@ -200,13 +200,13 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A new symmetric matrix containig the result.
    * */
-  Matrix<Symmetric, double> operator*(const Matrix<Symmetric, double> &A, double alpha);
+  Matrix<Symmetric<Ref>, double> operator*(const Matrix<Symmetric<Ref>, double> &A, double alpha);
 
    /*! \brief Scalar-matrix multiplication.
    *
-   * \see operator*(const Matrix<Symmetric, double> &A, double alpha).
+   * \see operator*(const Matrix<Symmetric<Ref>, double> &A, double alpha).
    * */
-  Matrix<Symmetric, double> operator*(double alpha, const Matrix<Symmetric, double> &A);
+  Matrix<Symmetric<Ref>, double> operator*(double alpha, const Matrix<Symmetric<Ref>, double> &A);
 
   /*! \brief Matrix-scalar division.
    *
@@ -215,7 +215,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A new symmetric matrix containig the result.
    * */
-  Matrix<Symmetric, double> operator/(const Matrix<Symmetric, double> &A, double alpha);
+  Matrix<Symmetric<Ref>, double> operator/(const Matrix<Symmetric<Ref>, double> &A, double alpha);
 
   /*! \brief Matrix-scalar multiplication.
    *
@@ -224,13 +224,13 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A new diagonal matrix containig the result.
    * */
-  Matrix<Diagonal, double> operator*(const Matrix<Diagonal, double> &A, double alpha);
+  Matrix<Diagonal<Ref>, double> operator*(const Matrix<Diagonal<Ref>, double> &A, double alpha);
 
  /*! \brief Scalar-matrix multiplication.
    *
-   * \see operator*(const Matrix<Diagonal, double> &D, double alpha).
+   * \see operator*(const Matrix<Diagonal<Ref>, double> &D, double alpha).
    * */
-  Matrix<Diagonal, double> operator*(double alpha, const Matrix<Diagonal, double> &A);
+  Matrix<Diagonal<Ref>, double> operator*(double alpha, const Matrix<Diagonal<Ref>, double> &A);
 
    /*! \brief Matrix-scalar division.
    *
@@ -239,7 +239,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A new diagonal matrix containig the result.
    * */
-  Matrix<Diagonal, double> operator/(const Matrix<Diagonal, double> &A, double alpha);
+  Matrix<Diagonal<Ref>, double> operator/(const Matrix<Diagonal<Ref>, double> &A, double alpha);
 
    /*! \brief Special multiplication.
    *
@@ -248,7 +248,7 @@ namespace fmatvec {
    * \param A A general matrix. 
    * \return A new symmetric matrix containig the result.
    * */
-  Matrix<Symmetric, double> JTJ(const Matrix<General, double> &A);
+  Matrix<Symmetric<Ref>, double> JTJ(const Matrix<General<Ref>, double> &A);
 
    /*! \brief Special multiplication.
    *
@@ -258,7 +258,7 @@ namespace fmatvec {
    * \param B A symmetric matrix. 
    * \return A new symmetric matrix containig the result.
    * */
-  Matrix<Symmetric, double> JTMJ(const Matrix<Symmetric, double> &B, const Matrix<General, double> &A);
+  Matrix<Symmetric<Ref>, double> JTMJ(const Matrix<Symmetric<Ref>, double> &B, const Matrix<General<Ref>, double> &A);
 
    /*! \brief Special multiplication.
    *
@@ -268,7 +268,7 @@ namespace fmatvec {
    * \param B A diagonal matrix. 
    * \return A new symmetric matrix containig the result.
    * */
-  Matrix<Symmetric, double> JTMJ(const Matrix<Diagonal, double> &B, const Matrix<General, double> &A);
+  Matrix<Symmetric<Ref>, double> JTMJ(const Matrix<Diagonal<Ref>, double> &B, const Matrix<General<Ref>, double> &A);
 
  /*! \brief Matrix-matrix addition.
    *
@@ -278,7 +278,7 @@ namespace fmatvec {
    * \param B A diagonal matrix. 
    * \return A reference to the first diagonal matrix. 
    * */
-  Matrix<Diagonal, double >& operator+=(const Matrix<Diagonal, double >& A, const Matrix<Diagonal, double > &B);
+  Matrix<Diagonal<Ref>, double >& operator+=(const Matrix<Diagonal<Ref>, double >& A, const Matrix<Diagonal<Ref>, double > &B);
 
  /*! \brief Matrix-matrix subtraction.
    *
@@ -288,7 +288,7 @@ namespace fmatvec {
    * \param B A diagonal matrix. 
    * \return A reference to the first matrix.
    * */
-  Matrix<Diagonal, double >& operator-=(const Matrix<Diagonal, double >& A, const Matrix<Diagonal, double > &B);
+  Matrix<Diagonal<Ref>, double >& operator-=(const Matrix<Diagonal<Ref>, double >& A, const Matrix<Diagonal<Ref>, double > &B);
 
  /*! \brief Matrix-matrix addition.
    *
@@ -298,7 +298,7 @@ namespace fmatvec {
    * \param B A symmetric matrix. 
    * \return A reference to the first matrix. 
    * */
-  Matrix<Symmetric, double>& operator+=(const Matrix<Symmetric, double >& A, const Matrix<Symmetric, double> &B);
+  Matrix<Symmetric<Ref>, double>& operator+=(const Matrix<Symmetric<Ref>, double >& A, const Matrix<Symmetric<Ref>, double> &B);
 
  /*! \brief Matrix-matrix subtraction.
    *
@@ -308,7 +308,7 @@ namespace fmatvec {
    * \param B A symmetric matrix. 
    * \return A reference to the first matrix.
    * */
-  Matrix<Symmetric, double>& operator-=(const Matrix<Symmetric, double >& A, const Matrix<Symmetric, double> &B);
+  Matrix<Symmetric<Ref>, double>& operator-=(const Matrix<Symmetric<Ref>, double >& A, const Matrix<Symmetric<Ref>, double> &B);
 
  /*! \brief Matrix-matrix addition.
    *
@@ -318,7 +318,7 @@ namespace fmatvec {
    * \param B A square matrix. 
    * \return A reference to the first matrix. 
    * */
-  SquareMatrix<General, double>& operator+=(const SquareMatrix<General, double>& A, const SquareMatrix<General, double> &B);
+  SquareMatrix<General<Ref>, double>& operator+=(const SquareMatrix<General<Ref>, double>& A, const SquareMatrix<General<Ref>, double> &B);
 
  /*! \brief Matrix-matrix subtraction.
    *
@@ -328,7 +328,7 @@ namespace fmatvec {
    * \param B A square matrix. 
    * \return A reference to the first matrix.
    * */
-  SquareMatrix<General, double>& operator-=(const SquareMatrix<General, double>& A, const SquareMatrix<General, double> &B);
+  SquareMatrix<General<Ref>, double>& operator-=(const SquareMatrix<General<Ref>, double>& A, const SquareMatrix<General<Ref>, double> &B);
 
  /*! \brief Matrix-matrix addition.
    *
@@ -338,7 +338,7 @@ namespace fmatvec {
    * \param B A general matrix. 
    * \return A reference to the first matrix. 
    * */
-  Matrix<General, double >& operator+=(const Matrix<General, double > &A, const Matrix<General, double > &B);
+  Matrix<General<Ref>, double >& operator+=(const Matrix<General<Ref>, double > &A, const Matrix<General<Ref>, double > &B);
 
  /*! \brief Matrix-matrix subtraction.
    *
@@ -348,7 +348,7 @@ namespace fmatvec {
    * \param B A general matrix. 
    * \return A reference to the first matrix.
    * */
-  Matrix<General, double >& operator-=(const Matrix<General, double > &A, const Matrix<General, double > &B);
+  Matrix<General<Ref>, double >& operator-=(const Matrix<General<Ref>, double > &A, const Matrix<General<Ref>, double > &B);
 
   /*! \brief Matrix-matrix multiplication.
    *
@@ -358,7 +358,7 @@ namespace fmatvec {
    * \param B A general matrix. 
    * \return A new general matrix containig the result.
    * */
-  Matrix<General, double> operator*(const Matrix<General, double> &A, const Matrix<General, double> &B);
+  Matrix<General<Ref>, double> operator*(const Matrix<General<Ref>, double> &A, const Matrix<General<Ref>, double> &B);
 
   /*! \brief Matrix-matrix multiplication.
    *
@@ -368,7 +368,7 @@ namespace fmatvec {
    * \param B A square matrix. 
    * \return A new square matrix containig the result.
    * */
-  SquareMatrix<General, double> operator*(const SquareMatrix<General, double> &A, const SquareMatrix<General, double> &B);
+  SquareMatrix<General<Ref>, double> operator*(const SquareMatrix<General<Ref>, double> &A, const SquareMatrix<General<Ref>, double> &B);
 
   /*! \brief Matrix-matrix multiplication.
    *
@@ -378,13 +378,13 @@ namespace fmatvec {
    * \param B A symmetric matrix. 
    * \return A new general matrix containig the result.
    * */
-  Matrix<General, double> operator*(const Matrix<General, double> &A, const Matrix<Symmetric, double> &B);
+  Matrix<General<Ref>, double> operator*(const Matrix<General<Ref>, double> &A, const Matrix<Symmetric<Ref>, double> &B);
 
   /*! \brief Scalar-matrix multiplication.
    *
-   * \see operator*(const Matrix<General, double> &A, const Matrix<Symmetric, double> &B)
+   * \see operator*(const Matrix<General<Ref>, double> &A, const Matrix<Symmetric<Ref>, double> &B)
    * */
-  Matrix<General, double> operator*(const Matrix<Symmetric, double> &A, const Matrix<General, double> &B);
+  Matrix<General<Ref>, double> operator*(const Matrix<Symmetric<Ref>, double> &A, const Matrix<General<Ref>, double> &B);
 
   /*! \brief Matrix-matrix multiplication.
    *
@@ -394,13 +394,13 @@ namespace fmatvec {
    * \param B A diagonal matrix. 
    * \return A new general matrix containig the result.
    * */
-  Matrix<General, double> operator*(const Matrix<General, double> &A,const Matrix<Diagonal, double> &B);
+  Matrix<General<Ref>, double> operator*(const Matrix<General<Ref>, double> &A,const Matrix<Diagonal<Ref>, double> &B);
 
   /*! \brief Scalar-matrix multiplication.
    *
-   * \see operator*(const Matrix<General, double> &A,const Matrix<Diagonal, double> &B)
+   * \see operator*(const Matrix<General<Ref>, double> &A,const Matrix<Diagonal<Ref>, double> &B)
    * */
-  Matrix<General, double> operator*(const Matrix<Diagonal, double> &B, const Matrix<General, double> &A);
+  Matrix<General<Ref>, double> operator*(const Matrix<Diagonal<Ref>, double> &B, const Matrix<General<Ref>, double> &A);
 
 /*! \brief Vector-scalar multiplication.
    *
@@ -409,7 +409,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A reference to the vector.
    * */
-  Vector<General, double>& operator*=(const Vector<General, double> &x, const double& alpha);
+  Vector<General<Ref>, double>& operator*=(const Vector<General<Ref>, double> &x, const double& alpha);
 
  /*! \brief Vector-scalar multiplication.
    *
@@ -418,13 +418,13 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A new vector containig the result.
    * */
-  Vector<General, double> operator*(const Vector<General, double> &x, double alpha);
+  Vector<General<Ref>, double> operator*(const Vector<General<Ref>, double> &x, double alpha);
 
   /*! \brief Scalar-vector multiplication.
    *
-   * \see operator*(const Vector<General, double> &x, double alpha)
+   * \see operator*(const Vector<General<Ref>, double> &x, double alpha)
    * */
-  Vector<General, double> operator*(double alpha, const Vector<General, double> &x);
+  Vector<General<Ref>, double> operator*(double alpha, const Vector<General<Ref>, double> &x);
 
   /*! \brief Vector-scalar division.
    *
@@ -433,7 +433,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A reference to the vector.
    * */
-  Vector<General, double>& operator/=(const Vector<General, double> &x, const double &alpha);
+  Vector<General<Ref>, double>& operator/=(const Vector<General<Ref>, double> &x, const double &alpha);
 
  /*! \brief Vector-scalar division.
    *
@@ -442,7 +442,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A new vector containig the result.
    * */
-  Vector<General, double> operator/(const Vector<General, double> &x, double alpha);
+  Vector<General<Ref>, double> operator/(const Vector<General<Ref>, double> &x, double alpha);
 
   /*! \brief Vector-vector addition.
    *
@@ -452,7 +452,7 @@ namespace fmatvec {
    * \param y A vector.
    * \return A reference to the first vector.
    * */
-  Vector<General, double>& operator+=(const Vector<General, double> &x, const Vector<General, double> &y);
+  Vector<General<Ref>, double>& operator+=(const Vector<General<Ref>, double> &x, const Vector<General<Ref>, double> &y);
 
   /*! \brief Vector-vector subtraction.
    *
@@ -462,7 +462,7 @@ namespace fmatvec {
    * \param y A vector.
    * \return A reference to the first vector.
    * */
-  Vector<General, double>& operator-=(const Vector<General, double> &x, const Vector<General, double> &y);
+  Vector<General<Ref>, double>& operator-=(const Vector<General<Ref>, double> &x, const Vector<General<Ref>, double> &y);
 
   /*! \brief Vector-vector addition.
    *
@@ -472,7 +472,7 @@ namespace fmatvec {
    * \param y A vector.
    * \return A new vector containig the result.
    * */
-  //Vector<General, double> operator+(const Vector<General, double> &x, const Vector<General, double> &y);
+  //Vector<General<Ref>, double> operator+(const Vector<General<Ref>, double> &x, const Vector<General<Ref>, double> &y);
 
   /*! \brief Vector-vector subtraction.
    *
@@ -482,7 +482,7 @@ namespace fmatvec {
    * \param y A vector.
    * \return A new vector containig the result.
    * */
-  Vector<General, double> operator-(const Vector<General, double> &x, const Vector<General, double> &y);
+  Vector<General<Ref>, double> operator-(const Vector<General<Ref>, double> &x, const Vector<General<Ref>, double> &y);
 
 /*! \brief vector-scalar multiplication.
    *
@@ -491,7 +491,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A reference to the row vector.
    * */
-  RowVector<General, double>& operator*=(const RowVector<General, double> &x, const double& alpha);
+  RowVector<General<Ref>, double>& operator*=(const RowVector<General<Ref>, double> &x, const double& alpha);
 
   /*! \brief Vector-scalar division.
    *
@@ -500,7 +500,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A reference to the vector.
    * */
-  RowVector<General, double>& operator/=(const RowVector<General, double> &x, const double &alpha);
+  RowVector<General<Ref>, double>& operator/=(const RowVector<General<Ref>, double> &x, const double &alpha);
 
   /*! \brief Vector-scalar multiplication.
    *
@@ -509,13 +509,13 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A new row vector containig the result.
    * */
-  RowVector<General, double> operator*(double alpha, const RowVector<General, double> &x);
+  RowVector<General<Ref>, double> operator*(double alpha, const RowVector<General<Ref>, double> &x);
 
   /*! \brief Scalar-vector multiplication.
    *
-   * \see operator*(const RowVector<General, double> &x, double alpha)
+   * \see operator*(const RowVector<General<Ref>, double> &x, double alpha)
    * */
-  RowVector<General, double> operator*(const RowVector<General, double> &x, double alpha);
+  RowVector<General<Ref>, double> operator*(const RowVector<General<Ref>, double> &x, double alpha);
 
   /*! \brief Vector-scalar division.
    *
@@ -524,7 +524,7 @@ namespace fmatvec {
    * \param alpha A scalar. 
    * \return A new row vector containig the result.
    * */
-  RowVector<General, double> operator/(const RowVector<General, double> &x, double alpha);
+  RowVector<General<Ref>, double> operator/(const RowVector<General<Ref>, double> &x, double alpha);
 
   /*! \brief Vector-vector addition.
    *
@@ -534,7 +534,7 @@ namespace fmatvec {
    * \param y A row vector.
    * \return A reference to the first row vector.
    * */
-  RowVector<General, double>& operator+=(const RowVector<General, double> &x, const RowVector<General, double> &y);
+  RowVector<General<Ref>, double>& operator+=(const RowVector<General<Ref>, double> &x, const RowVector<General<Ref>, double> &y);
 
   /*! \brief Vector-vector subtraction.
    *
@@ -544,7 +544,7 @@ namespace fmatvec {
    * \param y A row vector.
    * \return A reference to the first row vector.
    * */
-  RowVector<General, double>& operator-=(const RowVector<General, double> &x, const RowVector<General, double> &y);
+  RowVector<General<Ref>, double>& operator-=(const RowVector<General<Ref>, double> &x, const RowVector<General<Ref>, double> &y);
 
   /*! \brief Vector-vector addition.
    *
@@ -554,7 +554,7 @@ namespace fmatvec {
    * \param y A row vector.
    * \return A new vector containig the result.
    * */
-  RowVector<General, double> operator+(const RowVector<General, double> &x, const RowVector<General, double> &y);
+  RowVector<General<Ref>, double> operator+(const RowVector<General<Ref>, double> &x, const RowVector<General<Ref>, double> &y);
 
   /*! \brief Vector-vector subtraction.
    *
@@ -564,7 +564,7 @@ namespace fmatvec {
    * \param y A row vector.
    * \return A new vector containig the result.
    * */
-  RowVector<General, double> operator-(const RowVector<General, double> &x, const RowVector<General, double> &y);
+  RowVector<General<Ref>, double> operator-(const RowVector<General<Ref>, double> &x, const RowVector<General<Ref>, double> &y);
 
   /*! \brief Matrix-vector multiplication.
    *
@@ -574,7 +574,7 @@ namespace fmatvec {
    * \param x A vector. 
    * \return A new vector containig the result.
    * */
-  //Vector<General, double> operator*(const Matrix<General, double> &A, const Vector<General, double> &x);
+  //Vector<General<Ref>, double> operator*(const Matrix<General<Ref>, double> &A, const Vector<General<Ref>, double> &x);
 
   /*! \brief Matrix-vector multiplication.
    *
@@ -584,7 +584,7 @@ namespace fmatvec {
    * \param x A vector. 
    * \return A new vector containig the result.
    * */
-  Vector<General, double> operator*(const Matrix<Symmetric, double> &A, const Vector<General, double> &x);
+  Vector<General<Ref>, double> operator*(const Matrix<Symmetric<Ref>, double> &A, const Vector<General<Ref>, double> &x);
 
   /*! \brief Matrix-vector multiplication.
    *
@@ -594,7 +594,7 @@ namespace fmatvec {
    * \param x A vector. 
    * \return A new vector containig the result.
    * */
-  Vector<General, double> operator*(const Matrix<Diagonal, double> &A, const Vector<General, double> &x);
+  Vector<General<Ref>, double> operator*(const Matrix<Diagonal<Ref>, double> &A, const Vector<General<Ref>, double> &x);
 
   /*! \brief Vector-matrix multiplication.
    *
@@ -604,7 +604,7 @@ namespace fmatvec {
    * \param A A general matrix.
    * \return A new row vector containig the result.
    * */
-  RowVector<General, double> operator*(const RowVector<General, double> &x, const Matrix<General, double> &A); 
+  RowVector<General<Ref>, double> operator*(const RowVector<General<Ref>, double> &x, const Matrix<General<Ref>, double> &A); 
 
   /*! \brief Vector-matrix multiplication.
    *
@@ -614,7 +614,7 @@ namespace fmatvec {
    * \param A A symmetric matrix.
    * \return A new row vector containig the result.
    * */
-  RowVector<General, double> operator*(const RowVector<General, double> &x, const Matrix<Symmetric, double> &A);
+  RowVector<General<Ref>, double> operator*(const RowVector<General<Ref>, double> &x, const Matrix<Symmetric<Ref>, double> &A);
 
   /*! \brief Vector-matrix multiplication.
    *
@@ -624,7 +624,7 @@ namespace fmatvec {
    * \param A A diagonal matrix.
    * \return A new row vector containig the result.
    * */
-  RowVector<General, double> operator*(const RowVector<General, double> &x, const Matrix<Diagonal, double> &A);
+  RowVector<General<Ref>, double> operator*(const RowVector<General<Ref>, double> &x, const Matrix<Diagonal<Ref>, double> &A);
 
   /*! \brief Vector-vector multiplication.
    *
@@ -634,7 +634,7 @@ namespace fmatvec {
    * \param y A vector. 
    * \return A scalar containig the result.
    * */
-  double operator*(const RowVector<General, double> &x, const Vector<General, double> &y); 
+  double operator*(const RowVector<General<Ref>, double> &x, const Vector<General<Ref>, double> &y); 
 
   /*! \brief Eigenvalues
    *
@@ -642,7 +642,7 @@ namespace fmatvec {
    * \param A A square matrix. 
    * \return A vector containig the eigenvalues.
    * */
-  Vector<General, std::complex<double> > eigval(const SquareMatrix<General, double> &A); 
+  Vector<General<Ref>, std::complex<double> > eigval(const SquareMatrix<General<Ref>, double> &A); 
 
   /*! \brief Eigenvectors and Eigenvalues
    *
@@ -654,7 +654,7 @@ namespace fmatvec {
    * \param eigenvalues A vector in the size of A, containing the Eigenvalues at the end of the function
    * \return void
    * */
-  int eigvec(const Matrix<Symmetric, double> &A, const Matrix<Symmetric, double> &B, SquareMatrix<General, double> &eigenvectors, Vector<General, double> &eigenvalues); 
+  int eigvec(const Matrix<Symmetric<Ref>, double> &A, const Matrix<Symmetric<Ref>, double> &B, SquareMatrix<General<Ref>, double> &eigenvectors, Vector<General<Ref>, double> &eigenvalues); 
 
   /*! \brief Eigenvalues
    *
@@ -662,7 +662,7 @@ namespace fmatvec {
    * \param A A symmetric matrix. 
    * \return A vector containig the eigenvalues.
    * */
-  Vector<General, double> eigval(const Matrix<Symmetric, double> &A); 
+  Vector<General<Ref>, double> eigval(const Matrix<Symmetric<Ref>, double> &A); 
 
   /*! \brief Eigenvalues
    *
@@ -675,7 +675,7 @@ namespace fmatvec {
    * \param abstol The absolute error tolerance for the eigenvalues
    * \return A vector containig the eigenvalues.
    * */
-  Vector<General, double> eigvalSel(const Matrix<Symmetric, double> &A, int il, int iu, double abstol=0);
+  Vector<General<Ref>, double> eigvalSel(const Matrix<Symmetric<Ref>, double> &A, int il, int iu, double abstol=0);
 
   /*! \brief Systems of linear equations
    *
@@ -686,7 +686,7 @@ namespace fmatvec {
    * \param B A general matrix containing the right hand sides.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General, double> slvLU(const SquareMatrix<General, double> &A, const Matrix<General, double> &B);
+  Matrix<General<Ref>, double> slvLU(const SquareMatrix<General<Ref>, double> &A, const Matrix<General<Ref>, double> &B);
 
   /*! \brief System of linear equations
    *
@@ -697,7 +697,7 @@ namespace fmatvec {
    * \param b A vector containing the right hand side.
    * \return A vector containig the solution.
    * */
-  Vector<General, double> slvLU(const SquareMatrix<General, double> &A, const Vector<General, double> &b);
+  Vector<General<Ref>, double> slvLU(const SquareMatrix<General<Ref>, double> &A, const Vector<General<Ref>, double> &b);
 
   /*! \brief Systems of linear equations
    *
@@ -709,7 +709,7 @@ namespace fmatvec {
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General, double> slvLUFac(const SquareMatrix<General, double> &A, const Matrix<General, double> &B, const Vector<General, int> &ipiv);
+  Matrix<General<Ref>, double> slvLUFac(const SquareMatrix<General<Ref>, double> &A, const Matrix<General<Ref>, double> &B, const Vector<General<Ref>, int> &ipiv);
 
   /*! \brief System of linear equations
    *
@@ -721,7 +721,7 @@ namespace fmatvec {
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A vector containig the solution.
    * */
-  Vector<General, double> slvLUFac(const SquareMatrix<General, double> &A, const Vector<General, double> &b, const Vector<General, int> &ipiv);
+  Vector<General<Ref>, double> slvLUFac(const SquareMatrix<General<Ref>, double> &A, const Vector<General<Ref>, double> &b, const Vector<General<Ref>, int> &ipiv);
 
   /*! \brief Systems of linear equations
    *
@@ -732,7 +732,7 @@ namespace fmatvec {
    * \param B A general matrix containing the right hand sides.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General, double> slvLL(const Matrix<Symmetric, double> &A, const Matrix<General, double> &B);
+  Matrix<General<Ref>, double> slvLL(const Matrix<Symmetric<Ref>, double> &A, const Matrix<General<Ref>, double> &B);
 
   /*! \brief System of linear equations
    *
@@ -743,7 +743,7 @@ namespace fmatvec {
    * \param b A vector containing the right hand side.
    * \return A vector containig the solution.
    * */
-  Vector<General, double> slvLL(const Matrix<Symmetric, double> &A, const Vector<General, double> &b);
+  Vector<General<Ref>, double> slvLL(const Matrix<Symmetric<Ref>, double> &A, const Vector<General<Ref>, double> &b);
 
 
   /*! \brief Systems of linear equations
@@ -755,7 +755,7 @@ namespace fmatvec {
    * \param B A general matrix containing the right hand sides.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General, double> slvQR(const SquareMatrix<General, double> &A, const Matrix<General, double> &B);
+  Matrix<General<Ref>, double> slvQR(const SquareMatrix<General<Ref>, double> &A, const Matrix<General<Ref>, double> &B);
 
   /*! \brief System of linear equations
    *
@@ -766,7 +766,7 @@ namespace fmatvec {
    * \param b A vector containing the right hand side.
    * \return A vector containig the solution.
    * */
-  Vector<General, double> slvQR(const SquareMatrix<General, double> &A, const Vector<General, double> &b);
+  Vector<General<Ref>, double> slvQR(const SquareMatrix<General<Ref>, double> &A, const Vector<General<Ref>, double> &b);
 
   /*! \brief Inverse
    *
@@ -775,7 +775,7 @@ namespace fmatvec {
    * \param A A square matrix. 
    * \return A square matrix containig the result.
    * */
-  SquareMatrix<General, double> inv(const SquareMatrix<General, double> &A);
+  SquareMatrix<General<Ref>, double> inv(const SquareMatrix<General<Ref>, double> &A);
 
   /*! \brief Inverse
    *
@@ -784,7 +784,7 @@ namespace fmatvec {
    * \param A A symmetric matrix. 
    * \return A symmetric matrix containig the result.
    * */
-  Matrix<Symmetric, double> inv(const Matrix<Symmetric, double> &A);
+  Matrix<Symmetric<Ref>, double> inv(const Matrix<Symmetric<Ref>, double> &A);
 
   /*! \brief Inverse
    *
@@ -793,7 +793,7 @@ namespace fmatvec {
    * \param A A diagonal matrix. 
    * \return A diagonal matrix containig the result.
    * */
-  Matrix<Diagonal, double> inv(const Matrix<Diagonal, double> &A);
+  Matrix<Diagonal<Ref>, double> inv(const Matrix<Diagonal<Ref>, double> &A);
 
   /*! \brief LU decomposition
    *
@@ -803,7 +803,7 @@ namespace fmatvec {
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A general matrix containig the result.
    * */
-  Matrix<General, double> facLU(const Matrix<General, double> &A, Vector<General, int> &ipiv);
+  Matrix<General<Ref>, double> facLU(const Matrix<General<Ref>, double> &A, Vector<General<Ref>, int> &ipiv);
 
   /*! \brief LU decomposition
    *
@@ -813,7 +813,7 @@ namespace fmatvec {
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A square matrix containig the result.
    * */
-  SquareMatrix<General, double> facLU(const SquareMatrix<General, double> &A, Vector<General, int> &ipiv);
+  SquareMatrix<General<Ref>, double> facLU(const SquareMatrix<General<Ref>, double> &A, Vector<General<Ref>, int> &ipiv);
 
   /*! \brief LL decomposition
    *
@@ -822,7 +822,7 @@ namespace fmatvec {
    * \param A A symmetric matrix. 
    * \return A symmetric matrix containig the result.
    * */
-  Matrix<Symmetric, double> facLL(const Matrix<Symmetric, double> &A);
+  Matrix<Symmetric<Ref>, double> facLL(const Matrix<Symmetric<Ref>, double> &A);
 
   /*! \brief 1-norm
    *
@@ -830,7 +830,7 @@ namespace fmatvec {
    * \param x A vector.
    * \return A scalar containig the result.
    * */
-  double nrm1(const Vector<General, double> &x);
+  double nrm1(const Vector<General<Ref>, double> &x);
 
   /*! \brief 2-norm
    *
@@ -838,7 +838,7 @@ namespace fmatvec {
    * \param x A vector.
    * \return A scalar containig the result.
    * */
-  double nrm2(const Vector<General, double> &x);
+  double nrm2(const Vector<General<Ref>, double> &x);
 
   /*! \brief Infinity-norm
    *
@@ -846,7 +846,7 @@ namespace fmatvec {
    * \param x A vector.
    * \return A scalar containig the result.
    * */
-  double nrmInf(const Vector<General, double> &x);
+  double nrmInf(const Vector<General<Ref>, double> &x);
 
   /*! \brief 1-norm
    *
@@ -855,7 +855,7 @@ namespace fmatvec {
    * \param A A general matrix.
    * \return A scalar containig the result.
    * */
-  double nrm1(const Matrix<General,double> &A);
+  double nrm1(const Matrix<General<Ref>,double> &A);
 
   /*! \brief 2-norm
    *
@@ -863,7 +863,7 @@ namespace fmatvec {
    * \param A A general matrix.
    * \return A scalar containig the result.
    * */
-  double nrm2(const Matrix<General,double> &A);
+  double nrm2(const Matrix<General<Ref>,double> &A);
 
   /*! \brief Infinity-norm
    *
@@ -872,7 +872,7 @@ namespace fmatvec {
    * \param A A general matrix.
    * \return A scalar containig the result.
    * */
-  double nrmInf(const Matrix<General,double> &A);
+  double nrmInf(const Matrix<General<Ref>,double> &A);
 
   /*! \brief Frobenius-norm
    *
@@ -880,7 +880,7 @@ namespace fmatvec {
    * \param A A general matrix.
    * \return A scalar containig the result.
    * */
-  double nrmFro(const Matrix<General,double> &A);
+  double nrmFro(const Matrix<General<Ref>,double> &A);
 
   /*! \brief Spectral radius
    *
@@ -888,7 +888,7 @@ namespace fmatvec {
    * \param A A square matrix.
    * \return A scalar containig the result.
    * */
-  double rho(const SquareMatrix<General, double> &A);
+  double rho(const SquareMatrix<General<Ref>, double> &A);
 
   /*! \brief Spectral radius
    *
@@ -896,17 +896,17 @@ namespace fmatvec {
    * \param A A symmetric matrix.
    * \return A scalar containig the result.
    * */
-  double rho(const Matrix<Symmetric, double> &A);
+  double rho(const Matrix<Symmetric<Ref>, double> &A);
   
-  Vector<General, double> slvLLFac(const Matrix<Symmetric, double> &A, const Vector<General, double> &x);
+  Vector<General<Ref>, double> slvLLFac(const Matrix<Symmetric<Ref>, double> &A, const Vector<General<Ref>, double> &x);
 
-  Matrix<General, double> slvLLFac(const Matrix<Symmetric, double> &A, const Matrix<General, double> &X);
+  Matrix<General<Ref>, double> slvLLFac(const Matrix<Symmetric<Ref>, double> &A, const Matrix<General<Ref>, double> &X);
 
-  Matrix<General, double> slvLS(const Matrix<General, double> &A, const Matrix<General, double> &B, double rcond=-1);
+  Matrix<General<Ref>, double> slvLS(const Matrix<General<Ref>, double> &A, const Matrix<General<Ref>, double> &B, double rcond=-1);
 
-  Vector<General, double> slvLS(const Matrix<General,double> &A, const Vector<General, double> &b, double rcond=-1);
+  Vector<General<Ref>, double> slvLS(const Matrix<General<Ref>,double> &A, const Vector<General<Ref>, double> &b, double rcond=-1);
 
-  //Matrix<General, double> slvLU(CBLAS_SIDE side, CBLAS_UPLO uplo, CBLAS_DIAG unit, const SquareMatrix<General, double> &A, const Matrix<General, double> &X, const Vector<General, int> &ipiv );
+  //Matrix<General<Ref>, double> slvLU(CBLAS_SIDE side, CBLAS_UPLO uplo, CBLAS_DIAG unit, const SquareMatrix<General<Ref>, double> &A, const Matrix<General<Ref>, double> &X, const Vector<General<Ref>, int> &ipiv );
 
   /*! \brief Row interchanges
    *
@@ -915,7 +915,7 @@ namespace fmatvec {
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A Matrix containig the result.
    * */
-  //Matrix<General, double> swap(const Matrix<General, double> &A, const Vector<General, int> &ipiv );
+  //Matrix<General<Ref>, double> swap(const Matrix<General<Ref>, double> &A, const Vector<General<Ref>, int> &ipiv );
 }
 
 #endif

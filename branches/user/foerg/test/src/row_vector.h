@@ -28,35 +28,35 @@ namespace fmatvec {
   /*! 
    *  \brief This is a rowvector class of general shape in dense storage format.
    *
-   * Template class RowVector of type General, id. shape is general
+   * Template class RowVector of type General<Ref>, id. shape is general
    * and storage form is dense. The template parameter AT defines the
    * atomic type of the rowvector. Valid types are int, float,
    * double, complex<float> and complex<double> 
    * */
-  template <class AT> class RowVector<General, AT> : public Matrix<General, AT> {
-    using Matrix<General, AT>::m;
-    using Matrix<General, AT>::n;
-    using Matrix<General, AT>::lda;
-    using Matrix<General, AT>::ele;
-    using Matrix<General, AT>::tp;
-    using Matrix<General, AT>::memory;
-    using Matrix<General, AT>::elePtr;
+  template <class AT> class RowVector<General<Ref>, AT> : public Matrix<General<Ref>, AT> {
+    using Matrix<General<Ref>, AT>::m;
+    using Matrix<General<Ref>, AT>::n;
+    using Matrix<General<Ref>, AT>::lda;
+    using Matrix<General<Ref>, AT>::ele;
+    using Matrix<General<Ref>, AT>::tp;
+    using Matrix<General<Ref>, AT>::memory;
+    using Matrix<General<Ref>, AT>::elePtr;
 
     public:
 
     /// @cond NO_SHOW
     
-    template <class T> friend Vector<General,T> trans(const RowVector<General,T> &x); 
-    template <class T> friend RowVector<General,T> trans(const Vector<General,T> &x);
+    template <class T> friend Vector<General<Ref>,T> trans(const RowVector<General<Ref>,T> &x); 
+    template <class T> friend RowVector<General<Ref>,T> trans(const Vector<General<Ref>,T> &x);
 
-    friend class Vector<General, AT>;
+    friend class Vector<General<Ref>, AT>;
 
-    friend RowVector<General, AT> Matrix<General, AT>::row(int i);
-    friend const RowVector<General, AT> Matrix<General, AT>::row(int i) const;
+    friend RowVector<General<Ref>, AT> Matrix<General<Ref>, AT>::row(int i);
+    friend const RowVector<General<Ref>, AT> Matrix<General<Ref>, AT>::row(int i) const;
 
     protected:
 
-    inline void deepCopy(const RowVector<General, AT> &x);
+    inline void deepCopy(const RowVector<General<Ref>, AT> &x);
 
     const AT* elePtr(int i) const {
       return tp ? ele+i : ele+lda*i;
@@ -66,7 +66,7 @@ namespace fmatvec {
       return tp ? ele+i : ele+lda*i;
     };
 
-    RowVector(int n_, int lda_, bool tp, Memory<AT> memory, const AT* ele_) : Matrix<General, AT>(1,n_, lda_, tp, memory, ele_) {
+    RowVector(int n_, int lda_, bool tp, Memory<AT> memory, const AT* ele_) : Matrix<General<Ref>, AT>(1,n_, lda_, tp, memory, ele_) {
     }
 
     /// @endcond
@@ -77,7 +77,7 @@ namespace fmatvec {
        *
        * Constructs a rowvector with no size. 
        * */
-      RowVector() : Matrix<General, AT>() {
+      RowVector() : Matrix<General<Ref>, AT>() {
       }
 
       /*! \brief String Constructor. 
@@ -92,7 +92,7 @@ namespace fmatvec {
        * \f[ x=\begin{pmatrix}3 1 2\end{pmatrix}  \f]
        * \param str The string the vector will be initialized with. 
        * */
-      RowVector(const char *str) : Matrix<General, AT>(str) {
+      RowVector(const char *str) : Matrix<General<Ref>, AT>(str) {
 #ifndef FMATVEC_NO_SIZE_CHECK
 	assert(m==1);
 #endif
@@ -106,7 +106,7 @@ namespace fmatvec {
        * zero by default. This default behavior can be
        * changed by defining FMATVEC_NO_INITIALIZATION.
        * */
-      RowVector(int n) : Matrix<General, AT>(1,n) {
+      RowVector(int n) : Matrix<General<Ref>, AT>(1,n) {
       }
 
       /*! \brief Regular Constructor
@@ -115,7 +115,7 @@ namespace fmatvec {
        * \param n The size.
        * \param ele The physical memory the rowvector will point to.
        * */
-      RowVector(int n, AT* ele) : Matrix<General, AT>(1,n,ele) {
+      RowVector(int n, AT* ele) : Matrix<General<Ref>, AT>(1,n,ele) {
       }
 
       /*! \brief Regular Constructor
@@ -128,15 +128,15 @@ namespace fmatvec {
        * \param ini INIT means initialization, NONINIT means no initialization.
        * \param a The value, the rowvector will be initialized with (default 0)
        * */
-      RowVector(int n, Initialization ini, const AT &a=0) : Matrix<General, AT>(1,n,ini,a) {
+      RowVector(int n, Initialization ini, const AT &a=0) : Matrix<General<Ref>, AT>(1,n,ini,a) {
       }
 
       /*! \brief Copy Constructor
        *
-       * See RowVector(const RowVector<General, AT>&) 
+       * See RowVector(const RowVector<General<Ref>, AT>&) 
        * */
-      explicit RowVector(const Matrix<General, AT> &x) : Matrix<General, AT>(x) {
-	LogicAssert(x.rows()==1,"Number of cols() must be 1 in RowVector<General, AT>::RowVector(const Matrix<General, AT> &x)");
+      explicit RowVector(const Matrix<General<Ref>, AT> &x) : Matrix<General<Ref>, AT>(x) {
+	LogicAssert(x.rows()==1,"Number of cols() must be 1 in RowVector<General<Ref>, AT>::RowVector(const Matrix<General<Ref>, AT> &x)");
       }
 
       /*! \brief Rowvector resizing. 
@@ -149,7 +149,7 @@ namespace fmatvec {
        * FMATVEC_NO_INITIALIZATION.
        * */
       RowVector& resize(int n) {
-	Matrix<General, AT>::resize(1,n);
+	Matrix<General<Ref>, AT>::resize(1,n);
 	return *this;
       }
 
@@ -165,7 +165,7 @@ namespace fmatvec {
        * \return A reference to the calling rowvector.
        * */
       RowVector& resize(int n, Initialization ini, const AT &a=0) {
-	Matrix<General, AT>::resize(1,n,ini,a);
+	Matrix<General<Ref>, AT>::resize(1,n,ini,a);
 	return *this;
       }
 
@@ -176,7 +176,7 @@ namespace fmatvec {
        * \em x will not be copied, only referenced.
        * \param x The rowvector that will be referenced.
        * */
-      RowVector(const RowVector<General, AT> &x) : Matrix<General, AT>(x) {
+      RowVector(const RowVector<General<Ref>, AT> &x) : Matrix<General<Ref>, AT>(x) {
       }
 
       /*! \brief Copy operator
@@ -185,7 +185,7 @@ namespace fmatvec {
        * \param x The rowvector to be copied. 
        * \return A reference to the calling rowvector.
        * */
-      inline RowVector<General, AT>& operator<<(const RowVector<General, AT> &x);
+      inline RowVector<General<Ref>, AT>& operator<<(const RowVector<General<Ref>, AT> &x);
 
       /*! \brief Reference operator
        *
@@ -193,7 +193,7 @@ namespace fmatvec {
        * \param x The rowvector to be referenced. 
        * \return A reference to the calling rowvector.
        * */
-      inline RowVector<General, AT>& operator>>(const RowVector<General, AT> &x);
+      inline RowVector<General<Ref>, AT>& operator>>(const RowVector<General<Ref>, AT> &x);
 
       /*! \brief Assignment operator
        *
@@ -203,7 +203,7 @@ namespace fmatvec {
        * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
        * \sa operator<<(), operator>>()
        * */
-      RowVector<General, AT>& operator=(const RowVector<General, AT> &x) {
+      RowVector<General<Ref>, AT>& operator=(const RowVector<General<Ref>, AT> &x) {
 #ifndef FMATVEC_NO_DEEP_ASSIGNMENT 
 	return operator<<(x);
 #else
@@ -272,7 +272,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling rowvector.
        * */
-      inline RowVector<General, AT>& init(const AT& a);
+      inline RowVector<General<Ref>, AT>& init(const AT& a);
 
       /*! \brief Size.
        *
@@ -293,7 +293,7 @@ namespace fmatvec {
        * The calling rowvector returns a \em deep copy of itself.  
        * \return The duplicate of the calling rowvector.
        * */
-      inline RowVector<General, AT> copy() const;
+      inline RowVector<General<Ref>, AT> copy() const;
 
       /*! \brief Subrowvector operator.
        *
@@ -304,13 +304,13 @@ namespace fmatvec {
        * \param i2 The ending element.
        * \return A subrowvector of the calling rowvector.
        * */
-      inline RowVector<General, AT> operator()(int i1, int i2);
+      inline RowVector<General<Ref>, AT> operator()(int i1, int i2);
 
       /*! \brief Subvector operator.
        *
        * See operator()(int,int);
        * */
-      inline const RowVector<General, AT> operator()(int i1, int i2) const;
+      inline const RowVector<General<Ref>, AT> operator()(int i1, int i2) const;
 
       /*! \brief Subrowvector operator.
        *
@@ -320,30 +320,30 @@ namespace fmatvec {
        * \param I Index containing the starting and the ending element. 
        * \return A subrowvector of the calling rowvector.
        * */
-      inline RowVector<General, AT> operator()(const Index &I);
+      inline RowVector<General<Ref>, AT> operator()(const Index &I);
 
       /*! \brief Subrowvector operator.
        *
        * See operator()(const Index&)
        * */
-      inline const RowVector<General, AT> operator()(const Index &I) const;
+      inline const RowVector<General<Ref>, AT> operator()(const Index &I) const;
 
-      using Matrix<General, AT>::operator();
-      using Matrix<General, AT>::resize;
+      using Matrix<General<Ref>, AT>::operator();
+      using Matrix<General<Ref>, AT>::resize;
 
-      Vector<General, AT> T() {
-	return Vector<General, AT>(n,lda,tp?false:true,memory,ele);
+      Vector<General<Ref>, AT> T() {
+	return Vector<General<Ref>, AT>(n,lda,tp?false:true,memory,ele);
       }
 
-      const Vector<General, AT> T() const {
-	return Vector<General, AT>(n,lda,tp?false:true,memory,ele);
+      const Vector<General<Ref>, AT> T() const {
+	return Vector<General<Ref>, AT>(n,lda,tp?false:true,memory,ele);
       }
   };
 
   /////////////////////////////////////////////////////////////////////
 
   template <class AT>
-    inline RowVector<General, AT>& RowVector<General, AT>::init(const AT& val) {
+    inline RowVector<General<Ref>, AT>& RowVector<General<Ref>, AT>::init(const AT& val) {
 
       if(tp) {
 	for(int i=0; i<n; i++) 
@@ -358,7 +358,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline RowVector<General, AT>& RowVector<General, AT>::operator<<(const RowVector<General, AT> &x) { 
+    inline RowVector<General<Ref>, AT>& RowVector<General<Ref>, AT>::operator<<(const RowVector<General<Ref>, AT> &x) { 
 
       if(x.size() == 0)
 	return *this;
@@ -382,7 +382,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline RowVector<General, AT>& RowVector<General, AT>::operator>>(const RowVector<General, AT> &x) { 
+    inline RowVector<General<Ref>, AT>& RowVector<General<Ref>, AT>::operator>>(const RowVector<General<Ref>, AT> &x) { 
 
       if(n==0) {
 	m = x.m; 
@@ -402,48 +402,48 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline RowVector<General, AT> RowVector<General, AT>::copy() const {
+    inline RowVector<General<Ref>, AT> RowVector<General<Ref>, AT>::copy() const {
 
-      RowVector<General, AT> x(n,NONINIT);
+      RowVector<General<Ref>, AT> x(n,NONINIT);
       x.deepCopy(*this);
 
       return x;
     }
 
   template <class AT> 
-    inline RowVector<General, AT> RowVector<General, AT>::operator()(int i1, int i2) {
+    inline RowVector<General<Ref>, AT> RowVector<General<Ref>, AT>::operator()(int i1, int i2) {
       return operator()(Index(i1,i2));
     }
 
   template <class AT> 
-    inline const RowVector<General, AT> RowVector<General, AT>::operator()(int i1, int i2) const {
+    inline const RowVector<General<Ref>, AT> RowVector<General<Ref>, AT>::operator()(int i1, int i2) const {
       return operator()(Index(i1,i2));
     }
 
   template <class AT>
-    inline const RowVector<General, AT> RowVector<General, AT>::operator()(const Index &I) const {
+    inline const RowVector<General<Ref>, AT> RowVector<General<Ref>, AT>::operator()(const Index &I) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<n);
 #endif
 
-      return RowVector<General, AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start()));
+      return RowVector<General<Ref>, AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start()));
     }
 
   template <class AT>
-    inline RowVector<General, AT> RowVector<General, AT>::operator()(const Index &I) {
+    inline RowVector<General<Ref>, AT> RowVector<General<Ref>, AT>::operator()(const Index &I) {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<n);
 #endif
 
-      return RowVector<General, AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start()));
+      return RowVector<General<Ref>, AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start()));
     }
 
   /// @cond NO_SHOW
 
   template <class AT>
-    inline void RowVector<General, AT>::deepCopy(const RowVector<General, AT> &x) {
+    inline void RowVector<General<Ref>, AT>::deepCopy(const RowVector<General<Ref>, AT> &x) {
       if(tp) {
         if(x.tp) 
           for(int i=0; i<size(); i++)

@@ -36,9 +36,9 @@ namespace fmatvec {
    * atomic type of the vector. Valid types are int, float,
    * double, complex<float> and complex<double> 
    * */
-  template <class AT> class Vector<GeneralVar, AT> : public Matrix<GeneralVar, AT> {
-    using Matrix<GeneralVar, AT>::M;
-    using Matrix<GeneralVar, AT>::ele;
+  template <class AT> class Vector<General<Var>, AT> : public Matrix<General<Var>, AT> {
+    using Matrix<General<Var>, AT>::M;
+    using Matrix<General<Var>, AT>::ele;
 
     public:
 
@@ -56,7 +56,7 @@ namespace fmatvec {
        *
        * Constructs a vector with no size. 
        * */
-      Vector(int m=0) : Matrix<GeneralVar, AT>(m,1) {
+      Vector(int m=0) : Matrix<General<Var>, AT>(m,1) {
       }
 
       /*! \brief Regular Constructor
@@ -68,7 +68,7 @@ namespace fmatvec {
        * \param ini INIT means initialization, NONINIT means no initialization.
        * \param a The value, the vector will be initialized with (default 0)
        * */
-      Vector(int M, Initialization ini, const AT &a=0) : Matrix<GeneralVar, AT>(M,1,ini,a) {
+      Vector(int M, Initialization ini, const AT &a=0) : Matrix<General<Var>, AT>(M,1,ini,a) {
       }
 
       /*! \brief String Constructor. 
@@ -83,7 +83,7 @@ namespace fmatvec {
        * \f[ x=\begin{pmatrix}3\\ 1 \\ 2\end{pmatrix}  \f]
        * \param str The string the vector will be initialized with. 
        * */
-      Vector(const char *str) : Matrix<GeneralVar, AT>(str) {
+      Vector(const char *str) : Matrix<General<Var>, AT>(str) {
       }
 
       /*! \brief Copy Constructor
@@ -93,7 +93,7 @@ namespace fmatvec {
        * \em x will not be copied, only referenced.
        * \param x The vector that will be referenced.
        * */
-      Vector(const Vector<GeneralVar,AT> &x) : Matrix<GeneralVar, AT>(x) {
+      Vector(const Vector<General<Var>, AT> &x) : Matrix<General<Var>, AT>(x) {
       }
 
       /*! \brief Copy Constructor
@@ -103,25 +103,25 @@ namespace fmatvec {
        * \em x will not be copied, only referenced.
        * \param x The vector that will be referenced.
        * */
-      explicit Vector(const Vector<General, AT> &x) : Matrix<GeneralVar, AT>(x) {
+      explicit Vector(const Vector<General<Ref>, AT> &x) : Matrix<General<Var>, AT>(x) {
       }
 
       /*! \brief Copy Constructor
        *
        * See Vector(const Vector<AT>&) 
        * */
-      explicit Vector(const Matrix<GeneralVar, AT> &A) : Matrix<GeneralVar, AT>(A) {
+      explicit Vector(const Matrix<General<Var>, AT> &A) : Matrix<General<Var>, AT>(A) {
       }
 
       /*! \brief Copy Constructor
        *
        * See Vector(const Vector<AT>&) 
        * */
-      explicit Vector(const Matrix<General, AT> &A) : Matrix<GeneralVar, AT>(A) {
+      explicit Vector(const Matrix<General<Ref>, AT> &A) : Matrix<General<Var>, AT>(A) {
       }
 
-      Vector<GeneralVar,AT>& resize(int n) {
-	Matrix<GeneralVar, AT>::resize(n,1);
+      Vector<General<Var>, AT>& resize(int n) {
+	Matrix<General<Var>, AT>::resize(n,1);
 	return *this;
       }
 
@@ -131,10 +131,10 @@ namespace fmatvec {
        * \param x The vector to be assigned. 
        * \return A reference to the calling vector.
        * */
-      inline Vector<GeneralVar,AT>& operator=(const Vector<GeneralVar, AT> &x);
+      inline Vector<General<Var>, AT>& operator=(const Vector<General<Var>, AT> &x);
 
       template <class Type>
-      inline Vector<GeneralVar,AT>& operator=(const Vector<Type, AT> &x);
+      inline Vector<General<Var>, AT>& operator=(const Vector<Type, AT> &x);
 
       /*! \brief Element operator
        *
@@ -189,7 +189,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling vector.
        * */
-      Vector<GeneralVar,AT>& init(const AT& a); 
+      Vector<General<Var>, AT>& init(const AT& a); 
 
       /*! \brief Size.
        *
@@ -205,7 +205,7 @@ namespace fmatvec {
        * */
       int inc() const {return 1;};
 
-      using Matrix<GeneralVar, AT>::operator();
+      using Matrix<General<Var>, AT>::operator();
 
       /*! \brief Cast to std::vector<AT>.
        *
@@ -219,14 +219,14 @@ namespace fmatvec {
        * */
       inline Vector(std::vector<AT> v);
 
-      inline const RowVector<GeneralVar, AT> T() const;
+      inline const RowVector<General<Var>, AT> T() const;
 
       template <class Type>
       inline void set(const Range<Var> &I, const Vector<Type, AT> &x);
   };
 
   template <class AT>
-    inline Vector<GeneralVar,AT>& Vector<GeneralVar,AT>::init(const AT& val) {
+    inline Vector<General<Var>, AT>& Vector<General<Var>, AT>::init(const AT& val) {
 
       for(int i=0; i<M; i++) 
         e(i) = val; 
@@ -235,7 +235,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Vector<GeneralVar,AT>& Vector<GeneralVar,AT>::operator=(const Vector<GeneralVar,AT> &x) { 
+    inline Vector<General<Var>, AT>& Vector<General<Var>, AT>::operator=(const Vector<General<Var>, AT> &x) { 
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(M == x.M);
@@ -247,7 +247,7 @@ namespace fmatvec {
     }
 
   template <class AT> template<class Type>
-    inline Vector<GeneralVar,AT>& Vector<GeneralVar,AT>::operator=(const Vector<Type ,AT> &x) { 
+    inline Vector<General<Var>, AT>& Vector<General<Var>, AT>::operator=(const Vector<Type, AT> &x) { 
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(M == x.size());
@@ -259,27 +259,27 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline const RowVector<GeneralVar, AT> Vector<GeneralVar,AT>::T() const {
-      RowVector<GeneralVar, AT> x(NONINIT);
+    inline const RowVector<General<Var>, AT> Vector<General<Var>, AT>::T() const {
+      RowVector<General<Var>, AT> x(NONINIT);
       for(int i=0; i<M; i++)
         x.e(i) = e(i);
       return x;
     }
 
   template <class AT>
-    inline Vector<GeneralVar,AT>::operator std::vector<AT>() {
+    inline Vector<General<Var>, AT>::operator std::vector<AT>() {
       std::vector<AT> ret(size());
       if(size()>0) memcpy(&ret[0], &operator()(0), sizeof(AT)*size());
       return ret;
     }
 
   template <class AT>
-    inline Vector<GeneralVar,AT>::Vector(std::vector<AT> v) : Matrix<GeneralVar, AT>(v.size(),1) {
+    inline Vector<General<Var>, AT>::Vector(std::vector<AT> v) : Matrix<General<Var>, AT>(v.size(),1) {
       if(size()>0) memcpy(&operator()(0), &v[0], sizeof(AT)*size());
     }
 
   template <class AT> template <class Type>
-    inline void Vector<GeneralVar, AT>::set(const Range<Var> &I, const Vector<Type, AT> &x) {
+    inline void Vector<General<Var>, AT>::set(const Range<Var> &I, const Vector<Type, AT> &x) {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<size());
       assert(I.size()==x.size());
@@ -292,7 +292,7 @@ namespace fmatvec {
   /// @cond NO_SHOW
 
   template <class AT> template <class Type>
-    inline void Vector<GeneralVar,AT>::deepCopy(const Vector<Type, AT> &x) {
+    inline void Vector<General<Var>, AT>::deepCopy(const Vector<Type, AT> &x) {
       for(int i=0; i<M; i++)
         e(i) = x.e(i);
     }

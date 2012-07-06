@@ -36,73 +36,73 @@ namespace fmatvec {
    *  
    *  Mat is an abbreviation for general matrices of type double.
    * */
-  typedef  Matrix<General, double> Mat;
+  typedef  Matrix<General<Ref>, double> Mat;
 
   /*! 
    *  \brief Vector
    *  
    *  Vec is an abbreviation for vectors of type double.
    * */
-  typedef  Vector<General, double> Vec;
+  typedef  Vector<General<Ref>, double> Vec;
 
   /*! 
    *  \brief Row vector
    *  
    *  RowVec is an abbreviation for row vectors of type double.
    * */
-  typedef  RowVector<General, double> RowVec;
+  typedef  RowVector<General<Ref>, double> RowVec;
 
   /*! 
    *  \brief Square matrix
    *  
    *  SqrMat is an abbreviation for square matrices of type double.
    * */
-  typedef  SquareMatrix<General, double> SqrMat;
+  typedef  SquareMatrix<General<Ref>, double> SqrMat;
 
   /*! 
    *  \brief Diagonal matrix
    *  
    *  DiagMat is an abbreviation for diagonal matrices of type double.
    * */
-  typedef  Matrix<Diagonal, double> DiagMat;
+  typedef  Matrix<Diagonal<Ref>, double> DiagMat;
 
   /*! 
    *  \brief Symmetric matrix
    *  
    *  SymMat is an abbreviation for symmetric matrices of type double.
    * */
-  typedef  Matrix<Symmetric, double> SymMat;
+  typedef  Matrix<Symmetric<Ref>, double> SymMat;
 
   /*! 
    *  \brief Band matrix
    *  
    *  BandMat is an abbreviation for band matrices of type double.
    * */
-  typedef  Matrix<GeneralBand, double> BandMat;
+  typedef  Matrix<GeneralBand<Ref>, double> BandMat;
 
-  typedef  Vector<General, int> VecInt;
+  typedef  Vector<General<Ref>, int> VecInt;
 
-  typedef  Matrix<GeneralFixed<3,3>,double> Mat33;
+  typedef  Matrix<General<Fixed<3,3> >,double> Mat33;
 
-  typedef  Matrix<GeneralFixed<3,2>,double> Mat32;
+  typedef  Matrix<General<Fixed<3,2> >,double> Mat32;
 
-  typedef  SquareMatrix<GeneralFixed<3,3>,double> SqrMat3;
+  typedef  SquareMatrix<General<Fixed<3,3> >,double> SqrMat3;
 
-  typedef  Vector<GeneralFixed<3,1>,double> Vec3;
+  typedef  Vector<General<Fixed<3,1> >,double> Vec3;
 
-  typedef  Vector<GeneralFixed<2,1>,double> Vec2;
+  typedef  Vector<General<Fixed<2,1> >,double> Vec2;
 
-  typedef  RowVector<GeneralFixed<1,3>,double> RowVec3;
+  typedef  RowVector<General<Fixed<1,3> >,double> RowVec3;
 
-  typedef  Matrix<SymmetricFixed<3>,double> SymMat3;
+  typedef  Matrix<Symmetric<Fixed<3,3> >,double> SymMat3;
 
-  typedef  Matrix<SymmetricVar,double> SymMatV;
+  typedef  Matrix<Symmetric<Var>,double> SymMatV;
 
-  typedef  Matrix<GeneralVar,double> MatV;
+  typedef  Matrix<General<Var>,double> MatV;
 
-  typedef  Vector<GeneralVar,double> VecV;
+  typedef  Vector<General<Var>,double> VecV;
 
-  typedef  Matrix<GeneralFixedVar<3>,double> Mat3V;
+  typedef  Matrix<General<FixedVar<3> >,double> Mat3V;
 }
 
 #endif
