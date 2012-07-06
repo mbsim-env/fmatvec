@@ -92,8 +92,8 @@ namespace fmatvec {
       return A3;
     }
 
-  template <class AT>
-    inline Vector<GeneralVar, AT> operator*(const Matrix<GeneralVar, AT> &A, const Vector<GeneralVar, AT> &x) {
+  template <class AT, class Type>
+    inline Vector<GeneralVar, AT> operator*(const Matrix<GeneralVar, AT> &A, const Vector<Type, AT> &x) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.cols() == x.size());
 #endif
@@ -105,6 +105,20 @@ namespace fmatvec {
       }
       return y;
     }
+
+//  template <class AT>
+//    inline Vector<GeneralVar, AT> operator*(const Matrix<GeneralVar, AT> &A, const Vector<GeneralVar, AT> &x) {
+//#ifndef FMATVEC_NO_SIZE_CHECK
+//      assert(A.cols() == x.size());
+//#endif
+//      Vector<GeneralVar, AT> y(A.rows(),NONINIT);
+//      for(int i=0; i<y.size(); i++) {
+//	y.e(i) = 0;
+//	for(int j=0; j<A.cols(); j++) 
+//	  y.e(i) += A.e(i,j)*x.e(j);
+//      }
+//      return y;
+//    }
 
   template <class AT>
     inline Vector<GeneralVar, AT> operator*(const AT &a, const Vector<GeneralVar, AT> &x) {
@@ -140,6 +154,48 @@ namespace fmatvec {
       return B;
     }
 
+  template <class AT>
+    inline Matrix<GeneralVar, AT> operator*(const Matrix<GeneralVar, AT> &A, const AT &a) {
+      Matrix<GeneralVar, AT> B(A.rows(),A.cols(),NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+	for(int j=0; j<A.cols(); j++)
+	  B.e(i,j) = a*A.e(i,j);
+      return B;
+    }
+
+  /*! \brief Negation.
+   *
+   * This function computes the negation of a matrix
+   * \return The negation. 
+   * */
+  template <class AT>
+    Matrix<GeneralVar, AT> operator-(const Matrix<GeneralVar, AT> &A) {
+
+      Matrix<GeneralVar, AT> C(A.rows(),A.cols(),NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+        for(int j=0; j<A.cols(); j++)
+          C.e(i,j)=-A.e(i,j);
+
+      return C;
+    }
+
+  /*! \brief Negation.
+   *
+   * This function computes the negation of a matrix
+   * \return The negation. 
+   * */
+  template <class AT>
+    Vector<GeneralVar, AT> operator-(const Vector<GeneralVar, AT> &a) {
+
+      Vector<GeneralVar, AT> c(a.size(),NONINIT);
+
+      for(int i=0; i<a.size(); i++)
+          c.e(i)=-a.e(i);
+
+      return c;
+    }
 }
 
 #endif

@@ -49,7 +49,7 @@ namespace fmatvec {
       Vector<General, AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++)
-	y(i)=-x(i);
+	y.e(i)=-x.e(i);
 
       return y;
     }
@@ -66,7 +66,7 @@ namespace fmatvec {
       Vector<General, AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++) 
-	y(i) = x(i)*alpha;
+	y.e(i) = x.e(i)*alpha;
 
       return y;
     }
@@ -81,7 +81,7 @@ namespace fmatvec {
       Vector<General, AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++) 
-	y(i) = x(i)*alpha;
+	y.e(i) = x.e(i)*alpha;
 
       return y;
     }
@@ -110,7 +110,7 @@ namespace fmatvec {
       RowVector<General, AT> c(a.size(),NONINIT);
 
       for(int i=0; i<a.size(); i++)
-	c(i)=-a(i);
+	c.e(i)=-a.e(i);
 
       return c;
     }
@@ -127,7 +127,7 @@ namespace fmatvec {
       RowVector<General, AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++) 
-	y(i) = x(i)*alpha;
+	y.e(i) = x.e(i)*alpha;
 
       return y;
     }
@@ -142,7 +142,7 @@ namespace fmatvec {
       RowVector<General, AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++) 
-	y(i) = x(i)*alpha;
+	y.e(i) = x.e(i)*alpha;
 
       return y;
     }
@@ -155,7 +155,9 @@ namespace fmatvec {
   template <class AT>
     inline Vector<General, AT> operator+(const Vector<General, AT> &x, const Vector<General, AT> &y) {
 
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(y.size() == x.size());
+#endif
 
       Vector<General, AT> z(x.size(),NONINIT);
 
@@ -184,15 +186,17 @@ namespace fmatvec {
    * This function computes the difference of two vectors
    * \return The difference.
    * */
-  template <class AT>
-    Vector<General, AT> operator-(const Vector<General, AT> &x, const Vector<General, AT> &y) {
+  template <class AT, class Type>
+    Vector<General, AT> operator-(const Vector<General, AT> &x, const Vector<Type, AT> &y) {
 
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(y.size() == x.size());
+#endif
 
       Vector<General, AT> z(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++)
-	z(i) = x(i) - y(i);
+	z.e(i) = x.e(i) - y.e(i);
 
       return z;
     }
@@ -205,12 +209,14 @@ namespace fmatvec {
   template <class AT>
     AT scalarProduct(const Vector<General, AT> &x, const Vector<General, AT> &y) {
 
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size()==y.size());
+#endif
 
       AT res = 0;
 
       for(int i=0; i<x.size(); i++)
-	res += x(i)*y(i);
+	res += x.e(i)*y.e(i);
 
       return res;
     }
@@ -223,14 +229,16 @@ namespace fmatvec {
   template <class AT>
     Vector<General, AT> crossProduct(const Vector<General, AT> &x, const Vector<General, AT> &y) {
 
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size()==3);
       assert(y.size()==3);
+#endif
 
       Vector<General, AT> z(3,NONINIT);
 
-      z(0) = x(1)*y(2) - x(2)*y(1);
-      z(1) = x(2)*y(0) - x(0)*y(2);
-      z(2) = x(0)*y(1) - x(1)*y(0);
+      z.e(0) = x.e(1)*y.e(2) - x.e(2)*y.e(1);
+      z.e(1) = x.e(2)*y.e(0) - x.e(0)*y.e(2);
+      z.e(2) = x.e(0)*y.e(1) - x.e(1)*y.e(0);
 
       return z;
     }
@@ -243,11 +251,13 @@ namespace fmatvec {
   template <class AT>
     double tripleProduct(const Vector<General, AT> &a, const Vector<General, AT> &x, const Vector<General, AT> &y) {
 
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(a.size()==3);
       assert(x.size()==3);
       assert(y.size()==3);
+#endif
 
-      return a(0)*(x(1)*y(2)-x(2)*y(1)) + a(1)*(x(2)*y(0)-x(0)*y(2)) + a(2)*(x(0)*y(1)-x(1)*y(0));
+      return a.e(0)*(x.e(1)*y.e(2)-x.e(2)*y.e(1)) + a.e(1)*(x.e(2)*y.e(0)-x.e(0)*y.e(2)) + a.e(2)*(x.e(0)*y.e(1)-x.e(1)*y.e(0));
     }
 
   /*! \brief Rowvector-rowvector subtraction.
@@ -258,12 +268,14 @@ namespace fmatvec {
   template <class AT>
     RowVector<General, AT> operator-(const RowVector<General, AT> &x, const RowVector<General, AT> &y) {
 
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(y.size() == x.size());
+#endif
 
       RowVector<General, AT> z(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++)
-	z(i) = x(i) - y(i);
+	z.e(i) = x.e(i) - y.e(i);
 
       return z;
     }
@@ -277,12 +289,14 @@ namespace fmatvec {
   template <class AT> 
     AT operator*(const RowVector<General, AT> &x, const Vector<General, AT> &y) {
 
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size() == y.size());
+#endif
 
       AT res=0;
 
       for(int i=0; i<x.size(); i++)
-	res+=x(i)*y(i);
+	res+=x.e(i)*y.e(i);
 
       return res;
     }
@@ -327,27 +341,27 @@ namespace fmatvec {
 
       for(int i=0; i<A.rows(); i++)
 	for(int j=0; j<A.cols(); j++)
-	  B(i,j)=-A(i,j);
+	  B.e(i,j)=-A.e(i,j);
 
       return B;
     }
 
-  /*! \brief Negation.
-   *
-   * This function computes the negation of a matrix
-   * \return The negation. 
-   * */
-  template <class AT, class Type>
-    Matrix<Type, AT> operator-(const Matrix<Type, AT> &A) {
-
-      Matrix<Type, AT> C(A.rows(),A.cols(),NONINIT);
-
-      for(int i=0; i<A.rows(); i++)
-	for(int j=0; j<A.cols(); j++)
-	  C(i,j)=-A(i,j);
-
-      return C;
-    }
+///////  /*! \brief Negation.
+///////   *
+///////   * This function computes the negation of a matrix
+///////   * \return The negation. 
+///////   * */
+///////  template <class AT, class Type>
+///////    Matrix<Type, AT> operator-(const Matrix<Type, AT> &A) {
+///////
+///////      Matrix<Type, AT> C(A.rows(),A.cols(),NONINIT);
+///////
+///////      for(int i=0; i<A.rows(); i++)
+///////	for(int j=0; j<A.cols(); j++)
+///////	  C(i,j)=-A(i,j);
+///////
+///////      return C;
+///////    }
 
   /*! \brief Matrix-scalar multiplication.
    *
@@ -357,14 +371,14 @@ namespace fmatvec {
    * \param alpha The scalar. 
    * \return The product.
    * */
-  template <class AT, class Type>
-    Matrix<Type, AT> operator*(const Matrix<Type, AT > &A, const AT &alpha) {
+  template <class AT>
+    Matrix<General, AT> operator*(const Matrix<General, AT > &A, const AT &alpha) {
 
-      Matrix<Type, AT> B(A.rows(),A.cols(),NONINIT);
+      Matrix<General, AT> B(A.rows(),A.cols(),NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
 	for(int j=0; j<A.cols(); j++) 
-	  B(i,j) = A(i,j)*alpha;
+	  B.e(i,j) = A.e(i,j)*alpha;
 
       return B;
     }
@@ -373,14 +387,14 @@ namespace fmatvec {
    *
    * \see operator*(const Matrix<Type, AT >&, const AT&).
    * */
-  template <class AT, class Type>
-    Matrix<Type, AT> operator*(const AT &alpha, const Matrix<Type, AT > &A) {
+  template <class AT>
+    Matrix<General, AT> operator*(const AT &alpha, const Matrix<General, AT > &A) {
 
-      Matrix<Type, AT> B(A.rows(),A.cols(),NONINIT);
+      Matrix<General, AT> B(A.rows(),A.cols(),NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
 	for(int j=0; j<A.cols(); j++) 
-	  B(i,j) = A(i,j)*alpha;
+	  B.e(i,j) = A.e(i,j)*alpha;
 
       return B;
     }
@@ -401,15 +415,15 @@ namespace fmatvec {
 
       SquareMatrix<General, AT> B(x.size(),NONINIT);
 
-      B(0,0) =  0;
-      B(1,1) =  0;
-      B(2,2) =  0;
-      B(0,1) = -x(2);
-      B(0,2) =  x(1);
-      B(1,0) =  x(2);
-      B(1,2) = -x(0);
-      B(2,0) = -x(1);
-      B(2,1) =  x(0);
+      B.e(0,0) =  0;
+      B.e(1,1) =  0;
+      B.e(2,2) =  0;
+      B.e(0,1) = -x.e(2);
+      B.e(0,2) =  x.e(1);
+      B.e(1,0) =  x.e(2);
+      B.e(1,2) = -x.e(0);
+      B.e(2,0) = -x.e(1);
+      B.e(2,1) =  x.e(0);
 
       return B;
     }
@@ -423,7 +437,9 @@ namespace fmatvec {
   template <class AT>
     inline Vector<General, AT> operator*(const Matrix<General, AT> &A, const Vector<General, AT> &x) {
 
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.cols() == x.size());
+#endif
 
       Vector<General, AT> z(A.rows(),NONINIT);
 
@@ -472,120 +488,168 @@ namespace fmatvec {
   template <class AT, class Type> 
     RowVector<General, AT> operator*(const RowVector<General, AT> &x, const Matrix<Type, AT> &A) {
 
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size() == A.rows());
+#endif
 
       RowVector<General, AT> z(A.cols(),NONINIT);
 
       for(int i=0; i<z.size(); i++) {
 	z(i)=0;
 	for(int j=0; j<x.size(); j++)
-	  z(i) += x(j) * A(j,i);
+	  z.e(i) += x.e(j) * A.e(j,i);
       }
 
       return z;
     }
 
-   /*! \brief Matrix-matrix addition.
+  /*! \brief Matrix-matrix addition.
    *
    * This function computes the sum of two matrices
    * \return The sum.
    * */
- template <class AT, class Type1, class Type2> 
-    Matrix<General, AT> operator+(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
+  template <class AT, class Type> 
+    Matrix<General, AT> operator+(const Matrix<General, AT> &A, const Matrix<Type, AT > &B) {
 
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.rows() == B.rows());
       assert(A.cols() == B.cols());
+#endif
 
       Matrix<General, AT> C(A.rows(),A.cols(),NONINIT);
       for(int i=0; i<A.rows(); i++)
-	for(int j=0; j<A.cols(); j++)
-	  C(i,j) = A(i,j) + B(i,j);
+        for(int j=0; j<A.cols(); j++)
+          C.e(i,j) = A.e(i,j) + B.e(i,j);
 
       return C;
     }
 
-   /*! \brief Matrix-matrix subtraction.
+  /*! \brief Matrix-matrix subtraction.
    *
    * This function computes the difference of two matrices
    * \return The difference.
    * */
-  template <class AT, class Type1, class Type2>
-    Matrix<General, AT> operator-(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
+  template <class AT, class Type>
+    Matrix<General, AT> operator-(const Matrix<General, AT> &A, const Matrix<Type, AT > &B) {
 
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.rows() == B.rows());
       assert(A.cols() == B.cols());
+#endif
 
       Matrix<General, AT> C(A.rows(),A.cols(),NONINIT);
       for(int i=0; i<A.rows(); i++)
-	for(int j=0; j<A.cols(); j++)
-	  C(i,j) = A(i,j) - B(i,j);
+        for(int j=0; j<A.cols(); j++)
+          C.e(i,j) = A.e(i,j) - B.e(i,j);
 
       return C;
     }
 
-   /*! \brief Matrix-matrix multiplication.
+  /*! \brief Matrix-matrix subtraction.
    *
-   * This function computes the product of two matrices
-   * \return The product.
+   * This function computes the difference of two matrices
+   * \return The difference.
    * */
-  template <class AT, class Type1, class Type2> 
-    Matrix<General, AT> operator*(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
+  template <class AT, class Type>
+    Matrix<General, AT> operator+(const Matrix<Symmetric, AT> &A, const Matrix<Type, AT > &B) {
 
-      assert(A.cols() == B.rows());
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A.rows() == B.rows());
+      assert(A.cols() == B.cols());
+#endif
 
-      Matrix<General, AT> C(A.rows(),B.cols(),NONINIT);
-
-      for(int i=0; i<C.rows(); i++) {
-	for(int j=0; j<C.cols(); j++) {
-	  C(i,j)=0;
-	  for(int k=0; k<A.cols(); k++)
-	    C(i,j) += A(i,k) * B(k,j);
-	}
-      }
+      Matrix<General, AT> C(A.rows(),A.cols(),NONINIT);
+      for(int i=0; i<A.rows(); i++)
+        for(int j=0; j<A.cols(); j++)
+          C.e(i,j) = A.e(i,j) + B.e(i,j);
 
       return C;
     }
 
-   /*! \brief Matrix-matrix comparison.
+  /*! \brief Matrix-matrix subtraction.
    *
-   * This function compares two matrices
-   * \return True, if the matrices are identical, false otherwise.
+   * This function computes the difference of two matrices
+   * \return The difference.
    * */
-  template <class AT, class Type1, class Type2> 
-    bool operator==(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
+  template <class AT, class Type>
+    Matrix<General, AT> operator-(const Matrix<Symmetric, AT> &A, const Matrix<Type, AT > &B) {
 
-      if(&A == &B)
-	return true;
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A.rows() == B.rows());
+      assert(A.cols() == B.cols());
+#endif
 
-      if(A.rows() != B.rows() || A.cols() != B.cols())
-	return false;
+      Matrix<General, AT> C(A.rows(),A.cols(),NONINIT);
+      for(int i=0; i<A.rows(); i++)
+        for(int j=0; j<A.cols(); j++)
+          C.e(i,j) = A.e(i,j) - B.e(i,j);
 
-      for(int i=0; i<A.rows(); i++) 
-	for(int j=0; j<A.cols(); j++)
-	  if(A(i,j)!=B(i,j))
-	    return false;
-
-      return true;
+      return C;
     }
 
-   /*! \brief Matrix-matrix comparison.
-   *
-   * This function compares two matrices.
-   * \return True, if the matrices are different, false otherwise.
-   * */
-  template <class AT, class Type1, class Type2> 
-    bool operator!=(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
-
-      if(A.rows() != B.rows() || A.cols() != B.cols())
-	return true;
-
-      for(int i=0; i<A.rows(); i++) 
-	for(int j=0; j<A.cols(); j++)
-	  if(A(i,j)!=B(i,j))
-	    return true;
-
-      return false;
-    }
+////////   /*! \brief Matrix-matrix multiplication.
+////////   *
+////////   * This function computes the product of two matrices
+////////   * \return The product.
+////////   * */
+////////  template <class AT, class Type1, class Type2> 
+////////    Matrix<General, AT> operator*(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
+////////
+////////      assert(A.cols() == B.rows());
+////////
+////////      Matrix<General, AT> C(A.rows(),B.cols(),NONINIT);
+////////
+////////      for(int i=0; i<C.rows(); i++) {
+////////	for(int j=0; j<C.cols(); j++) {
+////////	  C(i,j)=0;
+////////	  for(int k=0; k<A.cols(); k++)
+////////	    C(i,j) += A(i,k) * B(k,j);
+////////	}
+////////      }
+////////
+////////      return C;
+////////    }
+////////
+////////   /*! \brief Matrix-matrix comparison.
+////////   *
+////////   * This function compares two matrices
+////////   * \return True, if the matrices are identical, false otherwise.
+////////   * */
+////////  template <class AT, class Type1, class Type2> 
+////////    bool operator==(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
+////////
+////////      if(&A == &B)
+////////	return true;
+////////
+////////      if(A.rows() != B.rows() || A.cols() != B.cols())
+////////	return false;
+////////
+////////      for(int i=0; i<A.rows(); i++) 
+////////	for(int j=0; j<A.cols(); j++)
+////////	  if(A(i,j)!=B(i,j))
+////////	    return false;
+////////
+////////      return true;
+////////    }
+////////
+////////   /*! \brief Matrix-matrix comparison.
+////////   *
+////////   * This function compares two matrices.
+////////   * \return True, if the matrices are different, false otherwise.
+////////   * */
+////////  template <class AT, class Type1, class Type2> 
+////////    bool operator!=(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
+////////
+////////      if(A.rows() != B.rows() || A.cols() != B.cols())
+////////	return true;
+////////
+////////      for(int i=0; i<A.rows(); i++) 
+////////	for(int j=0; j<A.cols(); j++)
+////////	  if(A(i,j)!=B(i,j))
+////////	    return true;
+////////
+////////      return false;
+////////    }
 
    /*! \brief Matrix-vector multiplication.
    *
@@ -595,7 +659,10 @@ namespace fmatvec {
    * */
   template <class AT> 
     Vector<General, AT> operator*(const Matrix<Sparse, AT> &A, const Vector<General, AT> &x) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.cols() == x.size());
+#endif
 
       Vector<General, AT> z(A.rows(),NONINIT);
 
@@ -603,9 +670,9 @@ namespace fmatvec {
       const int *ia = A.Ip();
       const int *ja = A.Jp();
       for(int i=0; i<A.rows(); i++) {
-	z(i) = 0;
+	z.e(i) = 0;
 	for(int j=ia[i]; j<ia[i+1]; j++)
-	  z(i) += a[j]*x(ja[j]);
+	  z.e(i) += a[j]*x.e(ja[j]);
       }
 
       return z;
@@ -618,11 +685,14 @@ namespace fmatvec {
    * */
   template <class AT>
     AT max(const Vector<General, AT> &x) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size() > 0);
-      AT maximum = x(0);
+#endif
+      AT maximum = x.e(0);
       for(int i=1; i<x.size(); i++) {
-	if(x(i) > maximum)
-	  maximum = x(i);
+	if(x.e(i) > maximum)
+	  maximum = x.e(i);
       }
       return maximum;
     }
@@ -634,12 +704,15 @@ namespace fmatvec {
    * */
   template <class AT>
     int maxIndex(const Vector<General, AT> &x) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size() > 0);
-      AT maximum = x(0);
+#endif
+      AT maximum = x.e(0);
       int index = 0;
       for(int i=1; i<x.size(); i++) {
-	if(x(i) > maximum) {
-	  maximum = x(i);
+	if(x.e(i) > maximum) {
+	  maximum = x.e(i);
 	  index = i;
 	}
       }
@@ -653,11 +726,14 @@ namespace fmatvec {
    * */
   template <class AT>
     AT min(const Vector<General, AT> &x) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size() > 0);
-      AT minimum = x(0);
+#endif
+      AT minimum = x.e(0);
       for(int i=1; i<x.size(); i++) {
-	if(x(i) < minimum)
-	  minimum = x(i);
+	if(x.e(i) < minimum)
+	  minimum = x.e(i);
       }
       return minimum;
     }
@@ -669,12 +745,15 @@ namespace fmatvec {
    * */
   template <class AT>
     int minIndex(const Vector<General, AT> &x) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size() > 0);
-      AT minimum = x(0);
+#endif
+      AT minimum = x.e(0);
       int index = 0;
       for(int i=1; i<x.size(); i++) {
-	if(x(i) < minimum) {
-	  minimum = x(i);
+	if(x.e(i) < minimum) {
+	  minimum = x.e(i);
 	  index = i;
 	}
       }
@@ -690,9 +769,12 @@ namespace fmatvec {
    */
   template <class AT>
     Matrix<General, AT> bubbleSort(const Matrix<General, AT> &A_, int PivotCol) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
       assert(A_.rows()>0);
       assert(A_.cols()>0);
       assert(A_.cols()> PivotCol);
+#endif
       Matrix<General, AT> A = A_.copy();
       int i,j,N;
       RowVector<General, AT> tmp;
@@ -816,6 +898,32 @@ namespace fmatvec {
       for(int i=0; i<x.size(); i++) 
 	x.e(i) -= y.e(i);
       return x;
+    }
+
+  template <class Type, class AT>
+    inline Matrix<General, AT>& operator+=(const Matrix<General, AT> &A_, const Matrix<Type, AT> &B) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A_.rows() == B.rows());
+      assert(A_.cols() == B.cols());
+#endif
+      Matrix<General, AT> &A = const_cast<Matrix<General, AT> &>(A_);
+      for(int i=0; i<A.rows(); i++) 
+        for(int j=0; j<A.cols(); j++) 
+          A.e(i,j) += B.e(i,j);
+      return A;
+    }
+
+  template <class Type, class AT>
+    inline Matrix<General, AT>& operator-=(const Matrix<General, AT> &A_, const Matrix<Type, AT> &B) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A_.rows() == B.rows());
+      assert(A_.cols() == B.cols());
+#endif
+      Matrix<General, AT> &A = const_cast<Matrix<General, AT> &>(A_);
+      for(int i=0; i<A.rows(); i++) 
+        for(int j=0; j<A.cols(); j++) 
+          A.e(i,j) -= B.e(i,j);
+      return A;
     }
 
   template <class AT>

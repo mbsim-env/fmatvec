@@ -323,6 +323,9 @@ namespace fmatvec {
       template<class Type>
       inline void assign(const Matrix<Type,AT> &A);
 
+      template<class Type> 
+        inline void add(const Range<Var> &I, const Range<Var> &J, const Matrix<Type, AT> &A);
+
   };
 
   template <class AT> 
@@ -475,6 +478,22 @@ namespace fmatvec {
       }
       deepCopy(A);
     }
+
+  template <class AT> template<class Type>
+    inline void Matrix<GeneralVar, AT>::add(const Range<Var> &I, const Range<Var> &J, const Matrix<Type, AT> &A) {
+
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(I.end()<rows());
+      assert(J.end()<cols());
+      assert(I.size()==A.rows());
+      assert(J.size()==A.cols());
+#endif
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
+          e(i,j) += A.e(ii,jj);
+    }
+
 
   /// @cond NO_SHOW
 

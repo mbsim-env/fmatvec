@@ -75,6 +75,22 @@ namespace fmatvec {
       return A3;
     }
 
+  template <int M, int N, class AT, class Type>
+    inline Matrix<GeneralFixedVar<M>, AT> operator*(const Matrix<GeneralFixed<M,N>, AT> &A1, const Matrix<Type, AT> &A2) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A1.cols() == A2.rows());
+#endif
+      Matrix<GeneralFixedVar<M>, AT> A3(A2.cols(),NONINIT);
+      for(int i=0; i<A3.rows(); i++) {
+	for(int k=0; k<A3.cols(); k++) {
+	  A3.e(i,k) = 0;
+	  for(int j=0; j<A1.cols(); j++) 
+	    A3.e(i,k) += A1.e(i,j)*A2.e(j,k);
+	}
+      }
+      return A3;
+    }
+
   template <int M, class AT>
     inline SquareMatrix<GeneralFixed<M,M>, AT> operator*(const SquareMatrix<GeneralFixed<M,M>, AT> &A1, const SquareMatrix<GeneralFixed<M,M>, AT> &A2) {
       SquareMatrix<GeneralFixed<M,M>, AT> A3(NONINIT);
