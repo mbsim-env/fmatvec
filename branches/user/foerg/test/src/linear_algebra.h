@@ -24,11 +24,604 @@
 
 #include "square_matrix.h"
 #include "fixed_vector.h"
-/////////////////////////////////// matmatmult //////////////////////////////
 namespace fmatvec {
+
+/////////////////////////////////// vecvecadd //////////////////////////////
+
+  /*! \brief Vector-vector addition.
+   *
+   * This function computes the sum of two vectors
+   * \return The sum.
+   * */
+  template <class AT>
+    inline Vector<General<Ref,Fixed<1> >, AT> operator+(const Vector<General<Ref,Fixed<1> >, AT> &x, const Vector<General<Ref,Fixed<1> >, AT> &y) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(y.size() == x.size());
+#endif
+
+      Vector<General<Ref,Fixed<1> >, AT> z(x.size(),NONINIT);
+
+      if(y.transposed()) {
+        if(x.transposed())
+          for(int i=0; i<x.size(); i++)
+            z.er(i) = x.et(i) + y.et(i);
+        else
+          for(int i=0; i<x.size(); i++)
+            z.er(i) = x.er(i) + y.et(i);
+      }
+      else {
+        if(x.transposed())
+          for(int i=0; i<x.size(); i++)
+            z.er(i) = x.et(i) + y.er(i);
+        else 
+          for(int i=0; i<x.size(); i++)
+            z.er(i) = x.er(i) + y.er(i);
+      } 
+
+      return z;
+    }
+
+  /*! \brief Vector-vector addition.
+   *
+   * This function computes the difference of two vectors
+   * \return The difference.
+   * */
+  template <class AT, int M, class Type>
+    Vector<General<Fixed<M>,Fixed<1> >, AT> operator+(const Vector<General<Fixed<M>,Fixed<1> >, AT> &x, const Vector<Type, AT> &y) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(y.size() == x.size());
+#endif
+
+      Vector<General<Fixed<M>,Fixed<1> >, AT> z(x.size(),NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+        z.e(i) = x.e(i) + y.e(i);
+
+      return z;
+    }
+
+  /*! \brief Vector-vector addition.
+   *
+   * This function computes the difference of two vectors
+   * \return The difference.
+   * */
+  template <class AT, class Type, int M> 
+    Vector<General<Fixed<M>,Fixed<1> >, AT> operator+(const Vector<Type, AT> &x, const Vector<General<Fixed<M>,Fixed<1> >, AT> &y) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(y.size() == x.size());
+#endif
+
+      Vector<General<Fixed<M>,Fixed<1> >, AT> z(x.size(),NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+        z.e(i) = x.e(i) + y.e(i);
+
+      return z;
+    }
+
+
+  /*! \brief Vector-vector addition.
+   *
+   * This function computes the difference of two vectors
+   * \return The difference.
+   * */
+  template <class AT, class Type1, class Type2>
+    Vector<General<Var,Fixed<1> >, AT> operator+(const Vector<Type1, AT> &x, const Vector<Type2, AT> &y) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(y.size() == x.size());
+#endif
+
+      Vector<General<Var,Fixed<1> >, AT> z(x.size(),NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+        z.e(i) = x.e(i) + y.e(i);
+
+      return z;
+    }
+
+  /*! \brief Vector-vector subtraction.
+   *
+   * This function computes the difference of two vectors
+   * \return The difference.
+   * */
+  template <class AT, int M, class Type>
+    Vector<General<Fixed<M>,Fixed<1> >, AT> operator-(const Vector<General<Fixed<M>,Fixed<1> >, AT> &x, const Vector<Type, AT> &y) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(y.size() == x.size());
+#endif
+
+      Vector<General<Fixed<M>,Fixed<1> >, AT> z(x.size(),NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+        z.e(i) = x.e(i) - y.e(i);
+
+      return z;
+    }
+
+  /*! \brief Vector-vector subtraction.
+   *
+   * This function computes the difference of two vectors
+   * \return The difference.
+   * */
+  template <class AT, class Type, int M> 
+    Vector<General<Fixed<M>,Fixed<1> >, AT> operator-(const Vector<Type, AT> &x, const Vector<General<Fixed<M>,Fixed<1> >, AT> &y) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(y.size() == x.size());
+#endif
+
+      Vector<General<Fixed<M>,Fixed<1> >, AT> z(x.size(),NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+        z.e(i) = x.e(i) - y.e(i);
+
+      return z;
+    }
+
+  /*! \brief Vector-vector subtraction.
+   *
+   * This function computes the difference of two vectors
+   * \return The difference.
+   * */
+  template <class AT, class Type1, class Type2>
+    Vector<General<Var,Fixed<1> >, AT> operator-(const Vector<Type1, AT> &x, const Vector<Type2, AT> &y) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(y.size() == x.size());
+#endif
+
+      Vector<General<Var,Fixed<1> >, AT> z(x.size(),NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+        z.e(i) = x.e(i) - y.e(i);
+
+      return z;
+    }
+
+  /*! \brief Vector-vector addition.
+   *
+   * This function computes the difference of two vectors
+   * \return The difference.
+   * */
+  template <class AT, int M, class Type>
+    RowVector<General<Fixed<1>,Fixed<M> >, AT> operator+(const RowVector<General<Fixed<1>,Fixed<M> >, AT> &x, const Vector<Type, AT> &y) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(y.size() == x.size());
+#endif
+
+      RowVector<General<Fixed<1>,Fixed<M> >, AT> z(x.size(),NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+        z.e(i) = x.e(i) + y.e(i);
+
+      return z;
+    }
+
+  /*! \brief Vector-vector addition.
+   *
+   * This function computes the difference of two vectors
+   * \return The difference.
+   * */
+  template <class AT, class Type, int M> 
+    RowVector<General<Fixed<1>,Fixed<M> >, AT> operator+(const Vector<Type, AT> &x, const RowVector<General<Fixed<1>,Fixed<M> >, AT> &y) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(y.size() == x.size());
+#endif
+
+      RowVector<General<Fixed<1>,Fixed<M> >, AT> z(x.size(),NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+        z.e(i) = x.e(i) + y.e(i);
+
+      return z;
+    }
+
+
+  /*! \brief Vector-vector addition.
+   *
+   * This function computes the difference of two vectors
+   * \return The difference.
+   * */
+  template <class AT, class Type1, class Type2>
+    RowVector<General<Fixed<1>,Var>, AT> operator+(const Vector<Type1, AT> &x, const Vector<Type2, AT> &y) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(y.size() == x.size());
+#endif
+
+      RowVector<General<Fixed<1>,Var>, AT> z(x.size(),NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+        z.e(i) = x.e(i) + y.e(i);
+
+      return z;
+    }
+
+  /*! \brief Vector-vector subtraction.
+   *
+   * This function computes the difference of two vectors
+   * \return The difference.
+   * */
+  template <class AT, int M, class Type>
+    RowVector<General<Fixed<1>,Fixed<M> >, AT> operator-(const RowVector<General<Fixed<1>,Fixed<M> >, AT> &x, const Vector<Type, AT> &y) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(y.size() == x.size());
+#endif
+
+      RowVector<General<Fixed<1>,Fixed<M> >, AT> z(x.size(),NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+        z.e(i) = x.e(i) - y.e(i);
+
+      return z;
+    }
+
+  /*! \brief Vector-vector subtraction.
+   *
+   * This function computes the difference of two vectors
+   * \return The difference.
+   * */
+  template <class AT, class Type, int M> 
+    RowVector<General<Fixed<1>,Fixed<M> >, AT> operator-(const Vector<Type, AT> &x, const RowVector<General<Fixed<1>,Fixed<M> >, AT> &y) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(y.size() == x.size());
+#endif
+
+      RowVector<General<Fixed<1>,Fixed<M> >, AT> z(x.size(),NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+        z.e(i) = x.e(i) - y.e(i);
+
+      return z;
+    }
+
+  /*! \brief Vector-vector subtraction.
+   *
+   * This function computes the difference of two vectors
+   * \return The difference.
+   * */
+  template <class AT, class Type1, class Type2>
+    RowVector<General<Fixed<1>,Var>, AT> operator-(const Vector<Type1, AT> &x, const Vector<Type2, AT> &y) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(y.size() == x.size());
+#endif
+
+      RowVector<General<Fixed<1>,Var>, AT> z(x.size(),NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+        z.e(i) = x.e(i) - y.e(i);
+
+      return z;
+    }
+
+  template <class Type1, class Type2, class AT>
+    inline Vector<Type1, AT>& operator+=(const Vector<Type1, AT> &x_, const Vector<Type2, AT> &y) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(x_.size() == y.size());
+#endif
+      Vector<Type1, AT> &x = const_cast<Vector<Type1, AT> &>(x_);
+      for(int i=0; i<x.size(); i++) 
+        x.e(i) += y.e(i);
+      return x;
+    }
+
+  template <class Type1, class Type2, class AT>
+    inline Vector<Type1, AT>& operator-=(const Vector<Type1, AT> &x_, const Vector<Type2, AT> &y) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(x_.size() == y.size());
+#endif
+      Vector<Type1, AT> &x = const_cast<Vector<Type1, AT> &>(x_);
+      for(int i=0; i<x.size(); i++) 
+        x.e(i) -= y.e(i);
+      return x;
+    }
+
+  template <class Type1, class Type2, class AT>
+    inline RowVector<Type1, AT>& operator+=(const RowVector<Type1, AT> &x_, const RowVector<Type2, AT> &y) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(x_.size() == y.size());
+#endif
+      RowVector<Type1, AT> &x = const_cast<RowVector<Type1, AT> &>(x_);
+      for(int i=0; i<x.size(); i++) 
+        x.e(i) += y.e(i);
+      return x;
+    }
+
+  template <class Type1, class Type2, class AT>
+    inline RowVector<Type1, AT>& operator-=(const RowVector<Type1, AT> &x_, const RowVector<Type2, AT> &y) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(x_.size() == y.size());
+#endif
+      RowVector<Type1, AT> &x = const_cast<RowVector<Type1, AT> &>(x_);
+      for(int i=0; i<x.size(); i++) 
+        x.e(i) -= y.e(i);
+      return x;
+    }
+
+/////////////////////////////////// end vecvecadd //////////////////////////////
+  template <class Type1, class Type2, class Type3, class AT>
+    inline void add(const Matrix<Type1, AT> &A1, const Matrix<Type2, AT> &A2, Matrix<Type3, AT> &A3) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A1.rows() == A2.rows());
+      assert(A1.cols() == A2.cols());
+#endif
+      for(int i=0; i<A1.rows(); i++)
+        for(int j=0; j<A2.cols(); j++)
+          A3.e(i,j) = A1.e(i,j) + A2.e(i,j);
+    }
+
+  template <class Type1, class Type2, class Type3, class AT>
+    inline void sub(const Matrix<Type1, AT> &A1, const Matrix<Type2, AT> &A2, Matrix<Type3, AT> &A3) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A1.rows() == A2.rows());
+      assert(A1.cols() == A2.cols());
+#endif
+      for(int i=0; i<A1.rows(); i++)
+        for(int j=0; j<A1.cols(); j++)
+          A3.e(i,j) = A1.e(i,j) - A2.e(i,j);
+    }
+
+ /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+  template <class AT, int M, int N, class Type> 
+    Matrix<General<Fixed<M>,Fixed<N> >, AT> operator+(const Matrix<General<Fixed<M>,Fixed<N> >, AT> &A, const Matrix<Type, AT > &B) {
+      Matrix<General<Fixed<M>,Fixed<N> >, AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+  template <class AT, int M, int N, class Type> 
+    Matrix<General<Fixed<M>,Fixed<N> >, AT> operator-(const Matrix<General<Fixed<M>,Fixed<N> >, AT> &A, const Matrix<Type, AT > &B) {
+      Matrix<General<Fixed<M>,Fixed<N> >, AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+  template <class AT, class Type, int M, int N>
+    Matrix<General<Fixed<M>,Fixed<N> >, AT> operator+(const Matrix<Type, AT > &A, const Matrix<General<Fixed<M>,Fixed<N> >, AT> &B) {
+      Matrix<General<Fixed<M>,Fixed<N> >, AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+  template <class AT, class Type, int M, int N>
+    Matrix<General<Fixed<M>,Fixed<N> >, AT> operator-(const Matrix<Type, AT > &A, const Matrix<General<Fixed<M>,Fixed<N> >, AT> &B) {
+      Matrix<General<Fixed<M>,Fixed<N> >, AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+  template <class AT, class Row, int N, class Type> 
+    Matrix<General<Row,Fixed<N> >, AT> operator+(const Matrix<General<Row,Fixed<N> >, AT> &A, const Matrix<Type, AT > &B) {
+      Matrix<General<Row,Fixed<N> >, AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+  template <class AT, class Row, int N, class Type> 
+    Matrix<General<Row,Fixed<N> >, AT> operator-(const Matrix<General<Row,Fixed<N> >, AT> &A, const Matrix<Type, AT > &B) {
+      Matrix<General<Row,Fixed<N> >, AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+  template <class AT, class Type, class Row, int N>
+    Matrix<General<Row,Fixed<N> >, AT> operator+(const Matrix<Type, AT > &A, const Matrix<General<Row,Fixed<N> >, AT> &B) {
+      Matrix<General<Row,Fixed<N> >, AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+  template <class AT, class Type, class Row, int N>
+    Matrix<General<Row,Fixed<N> >, AT> operator-(const Matrix<Type, AT > &A, const Matrix<General<Row,Fixed<N> >, AT> &B) {
+      Matrix<General<Row,Fixed<N> >, AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+  template <class AT, int M, class Col, class Type> 
+    Matrix<General<Fixed<M>,Col>, AT> operator+(const Matrix<General<Fixed<M>,Col>, AT> &A, const Matrix<Type, AT > &B) {
+      Matrix<General<Fixed<M>,Col>, AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+  template <class AT, int M, class Col, class Type> 
+    Matrix<General<Fixed<M>,Col>, AT> operator-(const Matrix<General<Fixed<M>,Col>, AT> &A, const Matrix<Type, AT > &B) {
+      Matrix<General<Fixed<M>,Col>, AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+  template <class AT, class Type, int M, class Col>
+    Matrix<General<Fixed<M>,Col>, AT> operator+(const Matrix<Type, AT > &A, const Matrix<General<Fixed<M>,Col>, AT> &B) {
+      Matrix<General<Fixed<M>,Col>, AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+  template <class AT, class Type, int M, class Col>
+    Matrix<General<Fixed<M>,Col>, AT> operator-(const Matrix<Type, AT > &A, const Matrix<General<Fixed<M>,Col>, AT> &B) {
+      Matrix<General<Fixed<M>,Col>, AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+  template <template <class Row, class Col> class Type1, template <class Row, class Col> class Type2, class AT> 
+    Matrix<General<Ref,Ref>, AT> operator+(const Matrix<Type1<Ref,Ref>, AT> &A, const Matrix<Type2<Ref,Ref>, AT > &B) {
+      Matrix<General<Ref,Ref>, AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+  template <template <class Row, class Col> class Type1, template <class Row, class Col> class Type2, class AT> 
+    Matrix<General<Ref,Ref>, AT> operator-(const Matrix<Type1<Ref,Ref>, AT> &A, const Matrix<Type2<Ref,Ref>, AT > &B) {
+      Matrix<General<Ref,Ref>, AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+  template <class AT, class Type1, class Type2> 
+    Matrix<General<Var,Var>, AT> operator+(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
+      Matrix<General<Var,Var>, AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+
+  /*! \brief Matrix-matrix addition.
+   *
+   * This function computes the sum of two matrices
+   * \return The sum.
+   * */
+  template <class AT, class Type1, class Type2> 
+    Matrix<General<Var,Var>, AT> operator-(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
+      Matrix<General<Var,Var>, AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+
+  template <class Type1, class Type2, class AT>
+    inline Matrix<Type1, AT>& operator+=(const Matrix<Type1, AT> &A_, const Matrix<Type2, AT> &B) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A_.rows() == B.rows());
+      assert(A_.cols() == B.cols());
+#endif
+      Matrix<Type1, AT> &A = const_cast<Matrix<Type1, AT> &>(A_);
+      for(int i=0; i<A.rows(); i++) 
+        for(int j=0; j<A.cols(); j++) 
+          A.e(i,j) += B.e(i,j);
+      return A;
+    }
+
+  template <class Type1, class Type2, class AT>
+    inline Matrix<Type1, AT>& operator-=(const Matrix<Type1, AT> &A_, const Matrix<Type2, AT> &B) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A_.rows() == B.rows());
+      assert(A_.cols() == B.cols());
+#endif
+      Matrix<Type1, AT> &A = const_cast<Matrix<Type1, AT> &>(A_);
+      for(int i=0; i<A.rows(); i++) 
+        for(int j=0; j<A.cols(); j++) 
+          A.e(i,j) -= B.e(i,j);
+      return A;
+    }
+
+  template <class Row1, class Row2, class AT>
+    inline Matrix<Symmetric<Row1,Row1>, AT>& operator+=(const Matrix<Symmetric<Row1,Row1>, AT> &A_, const Matrix<Symmetric<Row2,Row2>, AT> &B) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A_.size() == B.size());
+#endif
+      Matrix<Symmetric<Row1,Row1>, AT> &A = const_cast<Matrix<Symmetric<Row1,Row1>, AT> &>(A_);
+      for(int i=0; i<A.size(); i++) 
+        for(int j=i; j<A.size(); j++) 
+          A.ej(i,j) += B.ej(i,j);
+      return A;
+    }
+
+  template <class Row1, class Row2, class AT>
+    inline Matrix<Symmetric<Row1,Row1>, AT>& operator-=(const Matrix<Symmetric<Row1,Row1>, AT> &A_, const Matrix<Symmetric<Row2,Row2>, AT> &B) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A_.size() == B.size());
+#endif
+      Matrix<Symmetric<Row1,Row1>, AT> &A = const_cast<Matrix<Symmetric<Row1,Row1>, AT> &>(A_);
+      for(int i=0; i<A.size(); i++) 
+        for(int j=i; j<A.size(); j++) 
+          A.ej(i,j) -= B.ej(i,j);
+      return A;
+    }
+
+/////////////////////////////////// end vecvecadd //////////////////////////////
+
+/////////////////////////////////// matmatmult //////////////////////////////
 
   template <class Type1, class Type2, class Type3, class AT>
     inline void mult(const Matrix<Type1, AT> &A1, const Matrix<Type2, AT> &A2, Matrix<Type3, AT> &A3) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A1.cols() == A2.rows());
+#endif
       for(int i=0; i<A3.rows(); i++) {
         for(int k=0; k<A3.cols(); k++) {
           A3.e(i,k) = 0;
@@ -40,6 +633,9 @@ namespace fmatvec {
 
   template <class Row, class Type2, class Type3, class AT>
     inline void mult(const Matrix<Symmetric<Row,Row>, AT> &A1, const Matrix<Type2, AT> &A2, Matrix<Type3, AT> &A3) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A1.cols() == A2.rows());
+#endif
     for(int i=0; i<A3.rows(); i++) {
 	for(int k=0; k<A3.cols(); k++) {
 	  A3.e(i,k) = 0;
@@ -53,6 +649,9 @@ namespace fmatvec {
 
   template <class Type1, class Row, class Type3, class AT>
     inline void mult(const Matrix<Type1, AT> &A1, const Matrix<Symmetric<Row,Row>, AT> &A2, Matrix<Type3, AT> &A3) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A1.cols() == A2.rows());
+#endif
       for(int i=0; i<A3.rows(); i++) {
         for(int k=0; k<A3.cols(); k++) {
           A3.e(i,k) = 0;
@@ -66,26 +665,13 @@ namespace fmatvec {
 
   template <class Type1, class Type2, class AT>
     inline Matrix<General<Var,Var>, AT> operator*(const Matrix<Type1, AT> &A1, const Matrix<Type2, AT> &A2) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A1.cols() == A2.rows());
-#endif
       Matrix<General<Var,Var>, AT> A3(A1.rows(),A2.cols(),NONINIT);
       mult(A1,A2,A3);
       return A3;
     }
 
-//  template <int M, int N, int K, class AT>
-//    inline Matrix<General<Fixed<M>,Fixed<K> >, AT> operator*(const Matrix<General<Fixed<M>,Fixed<N> >, AT> &A1, const Matrix<General<Fixed<N>,Fixed<K> >, AT> &A2) {
-//      Matrix<General<Fixed<M>,Fixed<K> >, AT> A3(NONINIT);
-//      mult(A1,A2,A3);
-//      return A3;
-//    }
-
   template <class Row1, class Col1, class Row2, class Col2, class AT>
     inline Matrix<General<Row1,Col2>, AT> operator*(const Matrix<General<Row1,Col1>, AT> &A1, const Matrix<General<Row2,Col2>, AT> &A2) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A1.cols() == A2.rows());
-#endif
       Matrix<General<Row1,Col2>, AT> A3(A1.rows(),A2.cols(),NONINIT);
       mult(A1,A2,A3);
       return A3;
@@ -93,9 +679,6 @@ namespace fmatvec {
 
   template <class Row1, class Col1, class AT>
     inline Matrix<General<Row1,Var>, AT> operator*(const Matrix<General<Row1,Col1>, AT> &A1, const Matrix<General<Ref,Ref>, AT> &A2) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A1.cols() == A2.rows());
-#endif
       Matrix<General<Row1,Var>, AT> A3(A1.rows(),A2.cols(),NONINIT);
       mult(A1,A2,A3);
       return A3;
@@ -103,9 +686,6 @@ namespace fmatvec {
 
   template <class Row2, class Col2, class AT>
     inline Matrix<General<Var,Col2>, AT> operator*(const Matrix<General<Ref,Ref>, AT> &A1, const Matrix<General<Row2,Col2>, AT> &A2) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A1.cols() == A2.rows());
-#endif
       Matrix<General<Var,Col2>, AT> A3(A1.rows(),A2.cols(),NONINIT);
       mult(A1,A2,A3);
       return A3;
@@ -113,9 +693,6 @@ namespace fmatvec {
 
   template <class Row1, class Col1, class Row2, class Col2, class AT>
     inline SquareMatrix<General<Row1,Col2>, AT> operator*(const SquareMatrix<General<Row1,Col1>, AT> &A1, const SquareMatrix<General<Row2,Col2>, AT> &A2) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A1.cols() == A2.rows());
-#endif
       SquareMatrix<General<Row1,Col2>, AT> A3(A1.rows(),A2.cols(),NONINIT);
       mult(A1,A2,A3);
       return A3;
@@ -123,9 +700,6 @@ namespace fmatvec {
 
   template <class Row1, class Row2, class Col2, class AT>
     inline Matrix<General<Row1,Col2>, AT> operator*(const Matrix<Symmetric<Row1,Row1>, AT> &A1, const Matrix<General<Row2,Col2 >, AT> &A2) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A1.cols() == A2.rows());
-#endif
       Matrix<General<Row1,Col2>, AT> A3(A1.rows(),A2.cols(),NONINIT);
       mult(A1,A2,A3);
       return A3;
@@ -133,152 +707,19 @@ namespace fmatvec {
 
   template <class Row1, class Col1, class Row2, class AT>
     inline Matrix<General<Row1,Row2>, AT> operator*(const Matrix<General<Row1,Col1 >, AT> &A1, const Matrix<Symmetric<Row2,Row2>, AT> &A2) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A1.cols() == A2.rows());
-#endif
       Matrix<General<Row1,Row2>, AT> A3(A1.rows(),A2.cols(),NONINIT);
       mult(A1,A2,A3);
       return A3;
     }
-
-//  template <int M, int N, class AT>
-//    inline Matrix<General<Fixed<M>,Var>, AT> operator*(const Matrix<General<Fixed<M>,Fixed<N> >, AT> &A1, const Matrix<General<Fixed<N>,Var>, AT> &A2) {
-//      Matrix<General<Fixed<M>,Var>, AT> A3(A2.cols(),NONINIT);
-//      mult(A1,A2,A3);
-//      return A3;
-//    }
-//
-//  template <int M, int N, int K, class AT>
-//    inline Matrix<General<Fixed<M>,Fixed<K> >, AT> operator*(const Matrix<General<Fixed<M>,Fixed<N> >, AT> &A1, const Matrix<General<Var,Fixed<K> >, AT> &A2) {
-//#ifndef FMATVEC_NO_SIZE_CHECK
-//      assert(A1.cols() == A2.rows());
-//#endif
-//      Matrix<General<Fixed<M>,Fixed<K> >, AT> A3(NONINIT);
-//      mult(A1,A2,A3);
-//      return A3;
-//    }
-//
-//  template <int M, int N, class AT, class Type>
-//    inline Matrix<General<Fixed<M>,Var>, AT> operator*(const Matrix<General<Fixed<M>,Fixed<N> >, AT> &A1, const Matrix<Type, AT> &A2) {
-//#ifndef FMATVEC_NO_SIZE_CHECK
-//      assert(A1.cols() == A2.rows());
-//#endif
-//      Matrix<General<Fixed<M>,Var>, AT> A3(A2.cols(),NONINIT);
-//      mult(A1,A2,A3);
-//      return A3;
-//    }
-//
-//  template <int M, int K, int N, class AT>
-//    inline Matrix<General<Fixed<M>,Fixed<N> >, AT> operator*(const Matrix<General<Fixed<M>,Var>, AT> &A1, const Matrix<General<Fixed<K>,Fixed<N> >, AT> &A2) {
-//#ifndef FMATVEC_NO_SIZE_CHECK
-//      assert(A1.cols() == A2.rows());
-//#endif
-//      Matrix<General<Fixed<M>,Fixed<N> >, AT> A3(A2.cols(),NONINIT);
-//      mult(A1,A2,A3);
-//      return A3;
-//    }
-//
-//  template <int M, class AT, class Type>
-//    inline Matrix<General<Fixed<M>,Var>, AT> operator*(const Matrix<General<Fixed<M>,Var>, AT> &A1, const Matrix<Type, AT> &A2) {
-//#ifndef FMATVEC_NO_SIZE_CHECK
-//      assert(A1.cols() == A2.rows());
-//#endif
-//      Matrix<General<Fixed<M>,Var>, AT> A3(A2.cols(),NONINIT);
-//      mult(A1,A2,A3);
-//      return A3;
-//    }
-//
-//  template <int N, int K, class AT>
-//    inline Matrix<General<Var,Fixed<K> >, AT> operator*(const Matrix<General<Var,Fixed<N> >, AT> &A1, const Matrix<General<Var,Fixed<K> >, AT> &A2) {
-//#ifndef FMATVEC_NO_SIZE_CHECK
-//      assert(A1.cols() == A2.rows());
-//#endif
-//      Matrix<General<Var,Fixed<K> >, AT> A3(A1.rows(), NONINIT);
-//      mult(A1,A2,A3);
-//      return A3;
-//    }
-//
-//  template <int N, int K, class AT>
-//    inline Matrix<General<Var,Fixed<K> >, AT> operator*(const Matrix<General<Var,Fixed<N> >, AT> &A1, const Matrix<General<Fixed<N>,Fixed<K> >, AT> &A2) {
-//      Matrix<General<Var,Fixed<K> >, AT> A3(A1.rows(), NONINIT);
-//      mult(A1,A2,A3);
-//      return A3;
-//    }
-//
-//  template <int M, class AT>
-//    inline SquareMatrix<General<Fixed<M>,Fixed<M> >, AT> operator*(const SquareMatrix<General<Fixed<M>,Fixed<M> >, AT> &A1, const SquareMatrix<General<Fixed<M>,Fixed<M> >, AT> &A2) {
-//      SquareMatrix<General<Fixed<M>,Fixed<M> >, AT> A3(NONINIT);
-//      mult(A1,A2,A3);
-//      return A3;
-//    }
-//
-//  template <int M, int N, class AT>
-//    inline Matrix<General<Fixed<M>,Fixed<N> >, AT> operator*(const Matrix<Symmetric<Fixed<M>,Fixed<M> >, AT> &A1, const Matrix<General<Fixed<M>,Fixed<N> >, AT> &A2) {
-//      Matrix<General<Fixed<M>,Fixed<N> >, AT> A3(NONINIT);
-//      mult(A1,A2,A3);
-//      return A3;
-//    }
-//
-//  template <int M, class AT>
-//    inline Matrix<General<Fixed<M>,Var>, AT> operator*(const Matrix<Symmetric<Fixed<M>,Fixed<M> >, AT> &A1, const Matrix<General<Fixed<M>,Var>, AT> &A2) {
-//      Matrix<General<Fixed<M>,Var>, AT> A3(A2.cols(),NONINIT);
-//      mult(A1,A2,A3);
-//      return A3;
-//    }
-//
-//  template <int M, class Type, class AT>
-//    inline Matrix<General<Fixed<M>,Var>, AT> operator*(const Matrix<Symmetric<Fixed<M>,Fixed<M> >, AT> &A1, const Matrix<Type, AT> &A2) {
-//#ifndef FMATVEC_NO_SIZE_CHECK
-//      assert(A1.cols() == A2.rows());
-//#endif
-//      Matrix<General<Fixed<M>,Var>, AT> A3(A2.cols(),NONINIT);
-//      mult(A1,A2,A3);
-//      return A3;
-//    }
-//
-//  template <class Row, class Col, class Type, class AT>
-//    inline Matrix<General<Var,Var>, AT> operator*(const Matrix<Symmetric<Row,Col>, AT> &A1, const Matrix<Type, AT> &A2) {
-//#ifndef FMATVEC_NO_SIZE_CHECK
-//      assert(A1.cols() == A2.rows());
-//#endif
-//      Matrix<General<Var,Var>, AT> A3(A1.rows(),A2.cols(),NONINIT);
-//      mult(A1,A2,A3);
-//      return A3;
-//    }
-//
-//  template <int M, int N, class AT>
-//    inline Matrix<General<Fixed<M>,Fixed<N> >, AT> operator*(const Matrix<General<Fixed<M>,Fixed<N> >, AT> &A1, const Matrix<Symmetric<Fixed<N>,Fixed<N> >, AT> &A2) {
-//      Matrix<General<Fixed<M>,Fixed<N> >, AT> A3(NONINIT);
-//      mult(A1,A2,A3);
-//      return A3;
-//    }
-//
-//  template <class Type, int N, class AT>
-//    inline Matrix<General<Var,Fixed<N> >, AT> operator*(const Matrix<Type, AT> &A1, const Matrix<Symmetric<Fixed<N>,Fixed<N> >, AT> &A2) {
-//#ifndef FMATVEC_NO_SIZE_CHECK
-//      assert(A1.cols() == A2.rows());
-//#endif
-//      Matrix<General<Var,Fixed<N> >, AT> A3(NONINIT);
-//      mult(A1,A2,A3);
-//      return A3;
-//    }
-//
-//  template <class Type, class Row, class Col, class AT>
-//    inline Matrix<General<Var,Var>, AT> operator*(const Matrix<Type, AT> &A1, const Matrix<Symmetric<Row,Col>, AT> &A2) {
-//#ifndef FMATVEC_NO_SIZE_CHECK
-//      assert(A1.cols() == A2.rows());
-//#endif
-//      Matrix<General<Var,Var>, AT> A3(A1.rows(),A2.cols(),NONINIT);
-//      mult(A1,A2,A3);
-//      return A3;
-//    }
-
 
   /////////////////////////////////// end matmatmult //////////////////////////////
   
   /////////////////////////////////// matvecmult //////////////////////////////
   template <class Type1, class Type2, class Type3, class AT>
     inline void mult(const Matrix<Type1, AT> &A, const Vector<Type2, AT> &x, Vector<Type3, AT> &y) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A.cols() == x.size());
+#endif
       for(int i=0; i<y.size(); i++) {
         y.e(i) = 0;
         for(int j=0; j<x.size(); j++) 
@@ -288,9 +729,6 @@ namespace fmatvec {
 
   template <class AT, class Type1, class Type2>
     inline Vector<General<Var,Fixed<1> >, AT> operator*(const Matrix<Type1, AT> &A, const Vector<Type2, AT> &x) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.cols() == x.size());
-#endif
       Vector<General<Var,Fixed<1> >, AT> y(A.rows(),NONINIT);
       mult(A,x,y);
       return y;
@@ -298,9 +736,6 @@ namespace fmatvec {
 
   template <class Row1, class Col1, class Row2, class AT>
     inline Vector<General<Row1,Fixed<1> >, AT> operator*(const Matrix<General<Row1,Col1>, AT> &A, const Vector<General<Row2,Fixed<1> >, AT> &x) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.cols() == x.size());
-#endif
       Vector<General<Row1,Fixed<1> >, AT> y(A.rows(),NONINIT);
       mult(A,x,y);
       return y;
@@ -321,63 +756,6 @@ namespace fmatvec {
       }
       return y;
     }
-
-//   template <int M, class AT>
-//    inline Vector<General<Fixed<M>,Fixed<1> >, AT> operator*(const Matrix<General<Fixed<M>,Var>, AT> &A, const Vector<General<Var,Fixed<1> >, AT> &x) {
-//#ifndef FMATVEC_NO_SIZE_CHECK
-//      assert(A.cols() == x.size());
-//#endif
-//      Vector<General<Fixed<M>,Fixed<1> >, AT> y(NONINIT);
-//      for(int i=0; i<M; i++) {
-//	y.e(i) = 0;
-//	for(int j=0; j<A.cols(); j++) 
-//	  y.e(i) += A.e(i,j)*x.e(j);
-//      }
-//      return y;
-//    }
-//
-//  template <int M, int N, class AT>
-//    inline Vector<General<Fixed<M>,Fixed<1> >, AT> operator*(const Matrix<General<Fixed<M>,Var>, AT> &A, const Vector<General<Fixed<N>,Fixed<1> >, AT> &x) {
-//#ifndef FMATVEC_NO_SIZE_CHECK
-//      assert(A.cols() == N);
-//#endif
-//      Vector<General<Fixed<M>,Fixed<1> >, AT> y(NONINIT);
-//      for(int i=0; i<M; i++) {
-//	y.e(i) = 0;
-//	for(int j=0; j<N; j++) 
-//	  y.e(i) += A.e(i,j)*x.e(j);
-//      }
-//      return y;
-//    }
-//   }
-
-//  template <int M, int N, class AT>
-//    inline Vector<General<Fixed<M>,Fixed<1> >, AT> operator*(const Matrix<General<Fixed<M>,Fixed<N> >, AT> &A, const Vector<General<Fixed<N>,Fixed<1> >, AT> &x) {
-//      Vector<General<Fixed<M>,Fixed<1> >, AT> y(NONINIT);
-//      mult(A,x,y);
-//      return y;
-//    }
-////
-//  template <int M, int N, class Type, class AT>
-//    inline Vector<General<Fixed<M>,Fixed<1> >, AT> operator*(const Matrix<General<Fixed<M>,Fixed<N> >, AT> &A, const Vector<Type, AT> &x) {
-//#ifndef FMATVEC_NO_SIZE_CHECK
-//      assert(A.cols() == x.size());
-//#endif
-//      Vector<General<Fixed<M>,Fixed<1> >, AT> y(NONINIT);
-//      mult(A,x,y);
-//      return y;
-//    }
-//
-//  template <int M, class Type, class AT>
-//    inline Vector<General<Fixed<M>,Fixed<1> >, AT> operator*(const Matrix<General<Fixed<M>,Var>, AT> &A, const Vector<Type, AT> &x) {
-//#ifndef FMATVEC_NO_SIZE_CHECK
-//      assert(A.cols() == x.size());
-//#endif
-//      Vector<General<Fixed<M>,Fixed<1> >, AT> y(NONINIT);
-//      mult(A,x,y);
-//      return y;
-//    }
-
 
   /*! \brief Matrix-vector multiplication.
    *
@@ -458,41 +836,61 @@ namespace fmatvec {
     }
 
   /////////////////////////////////// end matvecmult //////////////////////////////
-
-  template <int M, int N, class AT>
-    inline RowVector<General<Fixed<1>,Fixed<N> >, AT> operator*(const RowVector<General<Fixed<1>,Fixed<M> >, AT> &x, const Matrix<General<Fixed<M>,Fixed<N> >, AT> &A) {
-      RowVector<General<Fixed<1>,Fixed<N> >, AT> y(NONINIT);
-      for(int i=0; i<N; i++) {
-	y.e(i) = 0;
-	for(int j=0; j<M; j++) 
-	  y.e(i) += x.e(j)*A.e(j,i);
-      }
-      return y;
-    }
-
-  /*! \brief Vector-matrix multiplication.
-   *
-   * This function computes the product of a vector 
-   * and a matrix.
-   * \return The product.
-   * */
-  template <class AT, class Type> 
-    RowVector<General<Fixed<1>,Ref>, AT> operator*(const RowVector<General<Fixed<1>,Ref>, AT> &x, const Matrix<Type, AT> &A) {
-
+  //
+  /////////////////////////////////// rowvecmatmult //////////////////////////////
+  template <class Type1, class Type2, class Type3, class AT>
+    inline void mult(const Vector<Type1, AT> &x, const Matrix<Type2, AT> &A, RowVector<Type3, AT> &y) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size() == A.rows());
 #endif
-
-      RowVector<General<Fixed<1>,Ref>, AT> z(A.cols(),NONINIT);
-
-      for(int i=0; i<z.size(); i++) {
-        z(i)=0;
-        for(int j=0; j<x.size(); j++)
-          z.e(i) += x.e(j) * A.e(j,i);
+      for(int i=0; i<y.size(); i++) {
+	y.e(i) = 0;
+	for(int j=0; j<x.size(); j++) 
+	  y.e(i) += x.e(j)*A.e(j,i);
       }
-
-      return z;
     }
+
+  template <class AT, class Type1, class Type2>
+    inline RowVector<General<Fixed<1>,Var>, AT> operator*(const RowVector<Type1, AT> &x, const Matrix<Type2, AT> &A) {
+      RowVector<General<Fixed<1>,Var>, AT> y(A.cols(),NONINIT);
+      mult(x,A,y);
+      return y;
+    }
+
+  template <class Col1, class Row2, class Col2, class AT>
+    inline RowVector<General<Fixed<1>,Col2>, AT> operator*(const RowVector<General<Fixed<1>,Col1>, AT> &x, const Matrix<General<Row2,Col2>, AT> &A) {
+      RowVector<General<Fixed<1>,Col2>, AT> y(A.cols(),NONINIT);
+      mult(x,A,y);
+      return y;
+    }
+
+//  /*! \brief Vector-matrix multiplication.
+//   *
+//   * This function computes the product of a vector 
+//   * and a matrix.
+//   * \return The product.
+//   * */
+//  template <class AT, class Type> 
+//    RowVector<General<Fixed<1>,Ref>, AT> operator*(const RowVector<General<Fixed<1>,Ref>, AT> &x, const Matrix<Type, AT> &A) {
+//
+//#ifndef FMATVEC_NO_SIZE_CHECK
+//      assert(x.size() == A.rows());
+//#endif
+//
+//      RowVector<General<Fixed<1>,Ref>, AT> z(A.cols(),NONINIT);
+//
+//      for(int i=0; i<z.size(); i++) {
+//        z(i)=0;
+//        for(int j=0; j<x.size(); j++)
+//          z.e(i) += x.e(j) * A.e(j,i);
+//      }
+//
+//      return z;
+//    }
+
+  /////////////////////////////////// end rowvecmatmult //////////////////////////////
+  //
+  /////////////////////////////////// end vecscalmult //////////////////////////////
 
   /*! \brief Vector-scalar multiplication.
    *
@@ -500,10 +898,10 @@ namespace fmatvec {
    * and a scalar.
    * \return The product.
    * */
-  template <class AT>
-    Vector<General<Ref,Fixed<1> >, AT> operator*(const Vector<General<Ref,Fixed<1> >, AT> &x, const AT& alpha) {
+  template <class Row, class AT>
+    Vector<General<Row,Fixed<1> >, AT> operator*(const Vector<General<Row,Fixed<1> >, AT> &x, const AT& alpha) {
 
-      Vector<General<Ref,Fixed<1> >, AT> y(x.size(),NONINIT);
+      Vector<General<Row,Fixed<1> >, AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++) 
         y.e(i) = x.e(i)*alpha;
@@ -515,26 +913,27 @@ namespace fmatvec {
    *
    * \see operator*(const Vector<General<Ref,Fixed<1> >, AT>&x,const AT&).
    * */
-  template <class AT>
-    Vector<General<Ref,Fixed<1> >, AT> operator*(const AT& alpha, const Vector<General<Ref,Fixed<1> >, AT> &x) {
+  template <class Row, class AT>
+    Vector<General<Row,Fixed<1> >, AT> operator*(const AT& alpha, const Vector<General<Row,Fixed<1> >, AT> &x) {
 
-      Vector<General<Ref,Fixed<1> >, AT> y(x.size(),NONINIT);
+      Vector<General<Row,Fixed<1> >, AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++) 
         y.e(i) = x.e(i)*alpha;
 
       return y;
     }
+
   /*! \brief Rowvector-scalar multiplication.
    *
    * This function computes the product of a rowvector 
    * and a scalar.
    * \return The product.
    * */
-  template <class AT>
-    RowVector<General<Fixed<1>,Ref>, AT> operator*(const RowVector<General<Fixed<1>,Ref>, AT> &x, const AT& alpha) {
+  template <class Col, class AT>
+    RowVector<General<Fixed<1>,Col>, AT> operator*(const RowVector<General<Fixed<1>,Col>, AT> &x, const AT& alpha) {
 
-      RowVector<General<Fixed<1>,Ref>, AT> y(x.size(),NONINIT);
+      RowVector<General<Fixed<1>,Col>, AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++) 
         y.e(i) = x.e(i)*alpha;
@@ -544,26 +943,31 @@ namespace fmatvec {
 
   /*! \brief Scalar-rowvector multiplication.
    *
-   * \see operator*(const RowVector<General<Fixed<1>,Ref>, AT>&, const AT&).
+   * \see operator*(const RowVector<General<Fixed<1>,Col>, AT>&, const AT&).
    * */
-  template <class AT>
-    RowVector<General<Fixed<1>,Ref>, AT> operator*(const AT &alpha, const RowVector<General<Fixed<1>,Ref>, AT> &x) {
+  template <class Col, class AT>
+    RowVector<General<Fixed<1>,Col>, AT> operator*(const AT &alpha, const RowVector<General<Fixed<1>,Col>, AT> &x) {
 
-      RowVector<General<Fixed<1>,Ref>, AT> y(x.size(),NONINIT);
+      RowVector<General<Fixed<1>,Col>, AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++) 
         y.e(i) = x.e(i)*alpha;
 
       return y;
     }
-  /*! \brief Scalar product.
+
+  /////////////////////////////////// end vecscalmult //////////////////////////////
+  
+  /////////////////////////////////// end vecvecmult //////////////////////////////
+
+   /*! \brief Scalar product.
    *
    * This function computes the product of a vector and a rowvector. The result is
    * a scalar.
    * \return The product.
    * */
-  template <class AT> 
-    AT operator*(const RowVector<General<Fixed<1>,Ref>, AT> &x, const Vector<General<Ref,Fixed<1> >, AT> &y) {
+  template <class Col, class Row, class AT> 
+    AT operator*(const RowVector<General<Fixed<1>,Col>, AT> &x, const Vector<General<Row,Fixed<1> >, AT> &y) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size() == y.size());
@@ -576,159 +980,14 @@ namespace fmatvec {
 
       return res;
     }
-  /*! \brief Matrix-scalar multiplication.
-   *
-   * This function computes the product of a matrix 
-   * and a scalar.
-   * \param A The matrix. 
-   * \param alpha The scalar. 
-   * \return The product.
-   * */
-  template <class AT>
-    Matrix<General<Ref,Ref>, AT> operator*(const Matrix<General<Ref,Ref>, AT > &A, const AT &alpha) {
-
-      Matrix<General<Ref,Ref>, AT> B(A.rows(),A.cols(),NONINIT);
-
-      for(int i=0; i<A.rows(); i++) 
-        for(int j=0; j<A.cols(); j++) 
-          B.e(i,j) = A.e(i,j)*alpha;
-
-      return B;
-    }
-
-  /*! \brief Scalar-matrix multiplication.
-   *
-   * \see operator*(const Matrix<Type, AT >&, const AT&).
-   * */
-  template <class AT>
-    Matrix<General<Ref,Ref>, AT> operator*(const AT &alpha, const Matrix<General<Ref,Ref>, AT > &A) {
-
-      Matrix<General<Ref,Ref>, AT> B(A.rows(),A.cols(),NONINIT);
-
-      for(int i=0; i<A.rows(); i++) 
-        for(int j=0; j<A.cols(); j++) 
-          B.e(i,j) = A.e(i,j)*alpha;
-
-      return B;
-    }
-
-  /*! \brief Transpose of a vector.
-   *
-   * This function computes the transpose of a vector. The result is a rowvector.
-   * \return The transpose.
-   * */
-  template <class AT>
-    RowVector<General<Fixed<1>,Ref>, AT> trans(const Vector<General<Ref,Fixed<1> >, AT> &x) {
-
-      return RowVector<General<Fixed<1>,Ref>, AT>(x.m,x.lda,x.tp?false:true,x.memory,x.ele).copy();
-    }
-
-  /*! \brief Negation.
-   *
-   * This function computes the negation of a vector.
-   * \return The negation.
-   * */
-  template <class AT>
-    Vector<General<Ref,Fixed<1> >, AT> operator-(const Vector<General<Ref,Fixed<1> >, AT> &x) {
-
-      Vector<General<Ref,Fixed<1> >, AT> y(x.size(),NONINIT);
-
-      for(int i=0; i<x.size(); i++)
-        y.e(i)=-x.e(i);
-
-      return y;
-    }
-
-  /*! \brief Transpose of a rowvector.
-   *
-   * This function computes the transpose of a rowvector.
-   * The result is a vector.
-   * \param x A vector.
-   * \return The transpose.
-   * */
-  template <class AT>
-    Vector<General<Ref,Fixed<1> >, AT> trans(const RowVector<General<Fixed<1>,Ref>, AT> &x) {
-
-      return Vector<General<Ref,Fixed<1> >, AT>(x.n,x.lda,x.tp?false:true,x.memory,x.ele).copy();
-    }
-
-  /*! \brief Negation.
-   *
-   * This function computes the negation of a rowvector.
-   * \return The negation.
-   * */
-  template <class AT>
-    RowVector<General<Fixed<1>,Ref>, AT> operator-(const RowVector<General<Fixed<1>,Ref>, AT> &a) {
-
-      RowVector<General<Fixed<1>,Ref>, AT> c(a.size(),NONINIT);
-
-      for(int i=0; i<a.size(); i++)
-        c.e(i)=-a.e(i);
-
-      return c;
-    }
-
-  /*! \brief Vector-vector addition.
-   *
-   * This function computes the sum of two vectors
-   * \return The sum.
-   * */
-  template <class AT>
-    inline Vector<General<Ref,Fixed<1> >, AT> operator+(const Vector<General<Ref,Fixed<1> >, AT> &x, const Vector<General<Ref,Fixed<1> >, AT> &y) {
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(y.size() == x.size());
-#endif
-
-      Vector<General<Ref,Fixed<1> >, AT> z(x.size(),NONINIT);
-
-      if(y.transposed()) {
-        if(x.transposed())
-          for(int i=0; i<x.size(); i++)
-            z.er(i) = x.et(i) + y.et(i);
-        else
-          for(int i=0; i<x.size(); i++)
-            z.er(i) = x.er(i) + y.et(i);
-      }
-      else {
-        if(x.transposed())
-          for(int i=0; i<x.size(); i++)
-            z.er(i) = x.et(i) + y.er(i);
-        else 
-          for(int i=0; i<x.size(); i++)
-            z.er(i) = x.er(i) + y.er(i);
-      } 
-
-      return z;
-    }
-
-  /*! \brief Vector-vector subtraction.
-   *
-   * This function computes the difference of two vectors
-   * \return The difference.
-   * */
-  template <class AT, class Type>
-    Vector<General<Ref,Fixed<1> >, AT> operator-(const Vector<General<Ref,Fixed<1> >, AT> &x, const Vector<Type, AT> &y) {
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(y.size() == x.size());
-#endif
-
-      Vector<General<Ref,Fixed<1> >, AT> z(x.size(),NONINIT);
-
-      for(int i=0; i<x.size(); i++)
-        z.e(i) = x.e(i) - y.e(i);
-
-      return z;
-    }
 
   /*! \brief Scalar product.
    *
    * This function computes the scalar product of two vectors.
    * \return The scalar product.
    * */
-  template <class AT>
-    AT scalarProduct(const Vector<General<Ref,Fixed<1> >, AT> &x, const Vector<General<Ref,Fixed<1> >, AT> &y) {
+  template <class Row, class AT>
+    AT scalarProduct(const Vector<General<Row,Fixed<1> >, AT> &x, const Vector<General<Row,Fixed<1> >, AT> &y) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size()==y.size());
@@ -747,15 +1006,15 @@ namespace fmatvec {
    * This function computes the cross product of two vectors.
    * \return The cross product.
    * */
-  template <class AT>
-    Vector<General<Ref,Fixed<1> >, AT> crossProduct(const Vector<General<Ref,Fixed<1> >, AT> &x, const Vector<General<Ref,Fixed<1> >, AT> &y) {
+  template <class Row, class AT>
+    Vector<General<Row,Fixed<1> >, AT> crossProduct(const Vector<General<Row,Fixed<1> >, AT> &x, const Vector<General<Row,Fixed<1> >, AT> &y) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size()==3);
       assert(y.size()==3);
 #endif
 
-      Vector<General<Ref,Fixed<1> >, AT> z(3,NONINIT);
+      Vector<General<Row,Fixed<1> >, AT> z(3,NONINIT);
 
       z.e(0) = x.e(1)*y.e(2) - x.e(2)*y.e(1);
       z.e(1) = x.e(2)*y.e(0) - x.e(0)*y.e(2);
@@ -769,8 +1028,8 @@ namespace fmatvec {
    * This function computes the triple product of three vectors.
    * \return The triple product.
    * */
-  template <class AT>
-    double tripleProduct(const Vector<General<Ref,Fixed<1> >, AT> &a, const Vector<General<Ref,Fixed<1> >, AT> &x, const Vector<General<Ref,Fixed<1> >, AT> &y) {
+  template <class Row, class AT>
+    double tripleProduct(const Vector<General<Row,Fixed<1> >, AT> &a, const Vector<General<Row,Fixed<1> >, AT> &x, const Vector<General<Row,Fixed<1> >, AT> &y) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(a.size()==3);
@@ -781,26 +1040,126 @@ namespace fmatvec {
       return a.e(0)*(x.e(1)*y.e(2)-x.e(2)*y.e(1)) + a.e(1)*(x.e(2)*y.e(0)-x.e(0)*y.e(2)) + a.e(2)*(x.e(0)*y.e(1)-x.e(1)*y.e(0));
     }
 
-  /*! \brief Rowvector-rowvector subtraction.
+  /////////////////////////////////// end vecvecmult //////////////////////////////
+  //
+  /////////////////////////////////// end matscalmult //////////////////////////////
+
+  /*! \brief Matrix-scalar multiplication.
    *
-   * This function computes the difference of two rowvectors
-   * \return The difference.
+   * This function computes the product of a matrix 
+   * and a scalar.
+   * \param A The matrix. 
+   * \param alpha The scalar. 
+   * \return The product.
    * */
-  template <class AT>
-    RowVector<General<Fixed<1>,Ref>, AT> operator-(const RowVector<General<Fixed<1>,Ref>, AT> &x, const RowVector<General<Fixed<1>,Ref>, AT> &y) {
+  template <class Row, class Col, class AT>
+    Matrix<General<Row,Col>, AT> operator*(const Matrix<General<Row,Col>, AT > &A, const AT &alpha) {
 
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(y.size() == x.size());
-#endif
+      Matrix<General<Row,Col>, AT> B(A.rows(),A.cols(),NONINIT);
 
-      RowVector<General<Fixed<1>,Ref>, AT> z(x.size(),NONINIT);
+      for(int i=0; i<A.rows(); i++) 
+        for(int j=0; j<A.cols(); j++) 
+          B.e(i,j) = A.e(i,j)*alpha;
 
-      for(int i=0; i<x.size(); i++)
-        z.e(i) = x.e(i) - y.e(i);
-
-      return z;
+      return B;
     }
 
+  /*! \brief Scalar-matrix multiplication.
+   *
+   * \see operator*(const Matrix<Type, AT >&, const AT&).
+   * */
+  template <class Row, class Col, class AT>
+    Matrix<General<Row,Col>, AT> operator*(const AT &alpha, const Matrix<General<Row,Col>, AT > &A) {
+
+      Matrix<General<Row,Col>, AT> B(A.rows(),A.cols(),NONINIT);
+
+      for(int i=0; i<A.rows(); i++) 
+        for(int j=0; j<A.cols(); j++) 
+          B.e(i,j) = A.e(i,j)*alpha;
+
+      return B;
+    }
+
+  /////////////////////////////////// end matscalmult //////////////////////////////
+ 
+  /////////////////////////////////// negation //////////////////////////////
+
+  /*! \brief Negation.
+   *
+   * This function computes the negation of a vector.
+   * \return The negation.
+   * */
+  template <class AT>
+    Vector<General<Ref,Fixed<1> >, AT> operator-(const Vector<General<Ref,Fixed<1> >, AT> &x) {
+
+      Vector<General<Ref,Fixed<1> >, AT> y(x.size(),NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+        y.e(i)=-x.e(i);
+
+      return y;
+    }
+
+  /*! \brief Negation.
+   *
+   * This function computes the negation of a rowvector.
+   * \return The negation.
+   * */
+  template <class AT>
+    RowVector<General<Fixed<1>,Ref>, AT> operator-(const RowVector<General<Fixed<1>,Ref>, AT> &a) {
+
+      RowVector<General<Fixed<1>,Ref>, AT> c(a.size(),NONINIT);
+
+      for(int i=0; i<a.size(); i++)
+        c.e(i)=-a.e(i);
+
+      return c;
+    }
+
+ /*! \brief Negation.
+   *
+   * This function computes the negation of a vector.
+   * \return The negation.
+   * */
+  template <class AT>
+    SquareMatrix<General<Ref,Ref>, AT> operator-(const SquareMatrix<General<Ref,Ref>, AT> &A) {
+
+      SquareMatrix<General<Ref,Ref>, AT> B(A.size(),NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+        for(int j=0; j<A.cols(); j++)
+          B.e(i,j)=-A.e(i,j);
+
+      return B;
+    }
+
+  /////////////////////////////////// end negation //////////////////////////////
+  /////////////////////////////////// transpose //////////////////////////////
+
+  /*! \brief Transpose of a vector.
+   *
+   * This function computes the transpose of a vector. The result is a rowvector.
+   * \return The transpose.
+   * */
+  template <class AT>
+    RowVector<General<Fixed<1>,Ref>, AT> trans(const Vector<General<Ref,Fixed<1> >, AT> &x) {
+
+      return RowVector<General<Fixed<1>,Ref>, AT>(x.m,x.lda,x.tp?false:true,x.memory,x.ele).copy();
+    }
+
+
+  /*! \brief Transpose of a rowvector.
+   *
+   * This function computes the transpose of a rowvector.
+   * The result is a vector.
+   * \param x A vector.
+   * \return The transpose.
+   * */
+  template <class AT>
+    Vector<General<Ref,Fixed<1> >, AT> trans(const RowVector<General<Fixed<1>,Ref>, AT> &x) {
+
+      return Vector<General<Ref,Fixed<1> >, AT>(x.n,x.lda,x.tp?false:true,x.memory,x.ele).copy();
+    }
 
   /*! \brief Transpose of a matrix.
    *
@@ -830,23 +1189,10 @@ namespace fmatvec {
       return SquareMatrix<General<Ref,Ref>, AT>(A.n, A.lda, A.tp?false:true, A.memory, A.ele).copy();
     }
 
-  /*! \brief Negation.
-   *
-   * This function computes the negation of a vector.
-   * \return The negation.
-   * */
-  template <class AT>
-    SquareMatrix<General<Ref,Ref>, AT> operator-(const SquareMatrix<General<Ref,Ref>, AT> &A) {
+  /////////////////////////////////// end transpose //////////////////////////////
 
-      SquareMatrix<General<Ref,Ref>, AT> B(A.size(),NONINIT);
 
-      for(int i=0; i<A.rows(); i++)
-        for(int j=0; j<A.cols(); j++)
-          B.e(i,j)=-A.e(i,j);
-
-      return B;
-    }
-
+ 
   ///////  /*! \brief Negation.
   ///////   *
   ///////   * This function computes the negation of a matrix
@@ -894,89 +1240,6 @@ namespace fmatvec {
       return B;
     }
 
-  /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
-  template <class AT, class Type> 
-    Matrix<General<Ref,Ref>, AT> operator+(const Matrix<General<Ref,Ref>, AT> &A, const Matrix<Type, AT > &B) {
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.rows() == B.rows());
-      assert(A.cols() == B.cols());
-#endif
-
-      Matrix<General<Ref,Ref>, AT> C(A.rows(),A.cols(),NONINIT);
-      for(int i=0; i<A.rows(); i++)
-        for(int j=0; j<A.cols(); j++)
-          C.e(i,j) = A.e(i,j) + B.e(i,j);
-
-      return C;
-    }
-
-  /*! \brief Matrix-matrix subtraction.
-   *
-   * This function computes the difference of two matrices
-   * \return The difference.
-   * */
-  template <class AT, class Type>
-    Matrix<General<Ref,Ref>, AT> operator-(const Matrix<General<Ref,Ref>, AT> &A, const Matrix<Type, AT > &B) {
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.rows() == B.rows());
-      assert(A.cols() == B.cols());
-#endif
-
-      Matrix<General<Ref,Ref>, AT> C(A.rows(),A.cols(),NONINIT);
-      for(int i=0; i<A.rows(); i++)
-        for(int j=0; j<A.cols(); j++)
-          C.e(i,j) = A.e(i,j) - B.e(i,j);
-
-      return C;
-    }
-
-  /*! \brief Matrix-matrix subtraction.
-   *
-   * This function computes the difference of two matrices
-   * \return The difference.
-   * */
-  template <class AT, class Type>
-    Matrix<General<Ref,Ref>, AT> operator+(const Matrix<Symmetric<Ref,Ref>, AT> &A, const Matrix<Type, AT > &B) {
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.rows() == B.rows());
-      assert(A.cols() == B.cols());
-#endif
-
-      Matrix<General<Ref,Ref>, AT> C(A.rows(),A.cols(),NONINIT);
-      for(int i=0; i<A.rows(); i++)
-        for(int j=0; j<A.cols(); j++)
-          C.e(i,j) = A.e(i,j) + B.e(i,j);
-
-      return C;
-    }
-
-  /*! \brief Matrix-matrix subtraction.
-   *
-   * This function computes the difference of two matrices
-   * \return The difference.
-   * */
-  template <class AT, class Type>
-    Matrix<General<Ref,Ref>, AT> operator-(const Matrix<Symmetric<Ref,Ref>, AT> &A, const Matrix<Type, AT > &B) {
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.rows() == B.rows());
-      assert(A.cols() == B.cols());
-#endif
-
-      Matrix<General<Ref,Ref>, AT> C(A.rows(),A.cols(),NONINIT);
-      for(int i=0; i<A.rows(); i++)
-        for(int j=0; j<A.cols(); j++)
-          C.e(i,j) = A.e(i,j) - B.e(i,j);
-
-      return C;
-    }
 
   ////////
   ////////   /*! \brief Matrix-matrix comparison.
@@ -1210,76 +1473,6 @@ namespace fmatvec {
     return k;
   }
 
-  template <int M, class AT>
-    inline Vector<General<Ref,Fixed<1> >, AT>& operator+=(const Vector<General<Ref,Fixed<1> >, AT> &x_, const Vector<General<Fixed<M>,Fixed<1> >, AT> &y) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(x_.size() == M);
-#endif
-      Vector<General<Ref,Fixed<1> >, AT> &x = const_cast<Vector<General<Ref,Fixed<1> >, AT> &>(x_);
-      for(int i=0; i<M; i++) 
-        x.e(i) += y.e(i);
-      return x;
-    }
-
-  template <class AT>
-    inline Vector<General<Ref,Fixed<1> >, AT>& operator+=(const Vector<General<Ref,Fixed<1> >, AT> &x_, const Vector<General<Var,Fixed<1> >, AT> &y) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(x_.size() == y.size());
-#endif
-      Vector<General<Ref,Fixed<1> >, AT> &x = const_cast<Vector<General<Ref,Fixed<1> >, AT> &>(x_);
-      for(int i=0; i<x.size(); i++) 
-        x.e(i) += y.e(i);
-      return x;
-    }
-
-  template <class AT>
-    inline Vector<General<Ref,Fixed<1> >, AT>& operator-=(const Vector<General<Ref,Fixed<1> >, AT> &x_, const Vector<General<Var,Fixed<1> >, AT> &y) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(x_.size() == y.size());
-#endif
-      Vector<General<Ref,Fixed<1> >, AT> &x = const_cast<Vector<General<Ref,Fixed<1> >, AT> &>(x_);
-      for(int i=0; i<x.size(); i++) 
-        x.e(i) -= y.e(i);
-      return x;
-    }
-
-  template <class Type, class AT>
-    inline Matrix<General<Ref,Ref>, AT>& operator+=(const Matrix<General<Ref,Ref>, AT> &A_, const Matrix<Type, AT> &B) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A_.rows() == B.rows());
-      assert(A_.cols() == B.cols());
-#endif
-      Matrix<General<Ref,Ref>, AT> &A = const_cast<Matrix<General<Ref,Ref>, AT> &>(A_);
-      for(int i=0; i<A.rows(); i++) 
-        for(int j=0; j<A.cols(); j++) 
-          A.e(i,j) += B.e(i,j);
-      return A;
-    }
-
-  template <class Type, class AT>
-    inline Matrix<General<Ref,Ref>, AT>& operator-=(const Matrix<General<Ref,Ref>, AT> &A_, const Matrix<Type, AT> &B) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A_.rows() == B.rows());
-      assert(A_.cols() == B.cols());
-#endif
-      Matrix<General<Ref,Ref>, AT> &A = const_cast<Matrix<General<Ref,Ref>, AT> &>(A_);
-      for(int i=0; i<A.rows(); i++) 
-        for(int j=0; j<A.cols(); j++) 
-          A.e(i,j) -= B.e(i,j);
-      return A;
-    }
-
-  template <class AT>
-    inline Matrix<Symmetric<Ref,Ref>, AT>& operator+=(const Matrix<Symmetric<Ref,Ref>, AT> &A_, const Matrix<Symmetric<Var,Var>, AT> &B) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A_.size() == B.size());
-#endif
-      Matrix<Symmetric<Ref,Ref>, AT> &A = const_cast<Matrix<Symmetric<Ref,Ref>, AT> &>(A_);
-      for(int i=0; i<A.size(); i++) 
-        for(int j=i; j<A.size(); j++) 
-          A.ej(i,j) += B.ej(i,j);
-      return A;
-    }
 
 }
 
