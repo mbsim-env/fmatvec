@@ -29,9 +29,6 @@
 namespace fmatvec {
 
 
-
-
-
 }
 
 #endif

@@ -24,6 +24,8 @@
 
 #include "square_matrix.h"
 #include "fixed_vector.h"
+#include "vector.h"
+#include "row_vector.h"
 namespace fmatvec {
 
 /////////////////////////////////// vecvecadd //////////////////////////////
@@ -34,13 +36,13 @@ namespace fmatvec {
    * \return The sum.
    * */
   template <class AT>
-    inline Vector<General<Ref,Fixed<1> >, AT> operator+(const Vector<General<Ref,Fixed<1> >, AT> &x, const Vector<General<Ref,Fixed<1> >, AT> &y) {
+    inline Vector<General,Ref,Fixed<1>,AT> operator+(const Vector<General,Ref,Fixed<1>,AT> &x, const Vector<General,Ref,Fixed<1>,AT> &y) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(y.size() == x.size());
 #endif
 
-      Vector<General<Ref,Fixed<1> >, AT> z(x.size(),NONINIT);
+      Vector<General,Ref,Fixed<1>,AT> z(x.size(),NONINIT);
 
       if(y.transposed()) {
         if(x.transposed())
@@ -62,295 +64,307 @@ namespace fmatvec {
       return z;
     }
 
-  /*! \brief Vector-vector addition.
-   *
-   * This function computes the difference of two vectors
-   * \return The difference.
-   * */
-  template <class AT, int M, class Type>
-    Vector<General<Fixed<M>,Fixed<1> >, AT> operator+(const Vector<General<Fixed<M>,Fixed<1> >, AT> &x, const Vector<Type, AT> &y) {
-
+  // Vector-Vector
+  template <class Type1, class Row1, class Type2, class Row2, class Type3, class Row3, class AT> 
+    inline void add(const Vector<Type1,Row1,Fixed<1>,AT> &a1, const Vector<Type2,Row2,Fixed<1>,AT> &a2, Vector<Type3,Row3,Fixed<1>,AT> &a3) {
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(y.size() == x.size());
+      assert(a1.size() == a2.size());
 #endif
-
-      Vector<General<Fixed<M>,Fixed<1> >, AT> z(x.size(),NONINIT);
-
-      for(int i=0; i<x.size(); i++)
-        z.e(i) = x.e(i) + y.e(i);
-
-      return z;
+      for(int i=0; i<a1.size(); i++)
+          a3.e(i) = a1.e(i) + a2.e(i);
     }
 
-  /*! \brief Vector-vector addition.
-   *
-   * This function computes the difference of two vectors
-   * \return The difference.
-   * */
-  template <class AT, class Type, int M> 
-    Vector<General<Fixed<M>,Fixed<1> >, AT> operator+(const Vector<Type, AT> &x, const Vector<General<Fixed<M>,Fixed<1> >, AT> &y) {
-
+  template <class Type1, class Row1, class Type2, class Row2, class AT> 
+    inline void add(Vector<Type1,Row1,Fixed<1>,AT> &a1, const Vector<Type2,Row2,Fixed<1>,AT> &a2) {
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(y.size() == x.size());
+      assert(a1.size() == a2.size());
 #endif
-
-      Vector<General<Fixed<M>,Fixed<1> >, AT> z(x.size(),NONINIT);
-
-      for(int i=0; i<x.size(); i++)
-        z.e(i) = x.e(i) + y.e(i);
-
-      return z;
+      for(int i=0; i<a1.size(); i++)
+          a1.e(i) += a2.e(i);
     }
 
-
-  /*! \brief Vector-vector addition.
-   *
-   * This function computes the difference of two vectors
-   * \return The difference.
-   * */
-  template <class AT, class Type1, class Type2>
-    Vector<General<Var,Fixed<1> >, AT> operator+(const Vector<Type1, AT> &x, const Vector<Type2, AT> &y) {
-
+  template <class Type1, class Row1, class Type2, class Row2, class Type3, class Row3, class AT> 
+    inline void sub(const Vector<Type1,Row1,Fixed<1>,AT> &a1, const Vector<Type2,Row2,Fixed<1>,AT> &a2, Vector<Type3,Row3,Fixed<1>,AT> &a3) {
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(y.size() == x.size());
+      assert(a1.size() == a2.size());
 #endif
-
-      Vector<General<Var,Fixed<1> >, AT> z(x.size(),NONINIT);
-
-      for(int i=0; i<x.size(); i++)
-        z.e(i) = x.e(i) + y.e(i);
-
-      return z;
+      for(int i=0; i<a1.size(); i++)
+          a3.e(i) = a1.e(i) - a2.e(i);
     }
 
-  /*! \brief Vector-vector subtraction.
-   *
-   * This function computes the difference of two vectors
-   * \return The difference.
-   * */
-  template <class AT, int M, class Type>
-    Vector<General<Fixed<M>,Fixed<1> >, AT> operator-(const Vector<General<Fixed<M>,Fixed<1> >, AT> &x, const Vector<Type, AT> &y) {
-
+  template <class Type1, class Row1, class Type2, class Row2, class AT> 
+    inline void sub(Vector<Type1,Row1,Fixed<1>,AT> &a1, const Vector<Type2,Row2,Fixed<1>,AT> &a2) {
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(y.size() == x.size());
+      assert(a1.size() == a2.size());
 #endif
-
-      Vector<General<Fixed<M>,Fixed<1> >, AT> z(x.size(),NONINIT);
-
-      for(int i=0; i<x.size(); i++)
-        z.e(i) = x.e(i) - y.e(i);
-
-      return z;
+      for(int i=0; i<a1.size(); i++)
+          a1.e(i) -= a2.e(i);
     }
 
-  /*! \brief Vector-vector subtraction.
-   *
-   * This function computes the difference of two vectors
-   * \return The difference.
-   * */
-  template <class AT, class Type, int M> 
-    Vector<General<Fixed<M>,Fixed<1> >, AT> operator-(const Vector<Type, AT> &x, const Vector<General<Fixed<M>,Fixed<1> >, AT> &y) {
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(y.size() == x.size());
-#endif
-
-      Vector<General<Fixed<M>,Fixed<1> >, AT> z(x.size(),NONINIT);
-
-      for(int i=0; i<x.size(); i++)
-        z.e(i) = x.e(i) - y.e(i);
-
-      return z;
+  // Addition
+  template <class AT, class Type1, class Type2, class Row1, class Row2> 
+    inline Vector<General,Var,Fixed<1>,AT> operator+(const Vector<Type1,Row1,Fixed<1>,AT> &a, const Vector<Type2,Row2,Fixed<1>,AT> &b) {
+      Vector<General,Var,Fixed<1>,AT> c(a.size(),NONINIT);
+      add(a,b,c);
+      return c;
+    }
+  template <class AT, class Type1, class Type2, class Row> 
+    inline Vector<General,Row,Fixed<1>,AT> operator+(const Vector<Type1,Row,Fixed<1>,AT> &a, const Vector<Type2,Row,Fixed<1>,AT> &b) {
+      Vector<General,Row,Fixed<1>,AT> c(a.size(),NONINIT);
+      add(a,b,c);
+      return c;
+    }
+  template <class AT, int M, class Type1, class Type2, class Row2> 
+    inline Vector<General,Fixed<M>,Fixed<1>,AT> operator+(const Vector<Type1,Fixed<M>,Fixed<1>,AT> &a, const Vector<Type2,Row2,Fixed<1>,AT> &b) {
+      Vector<General,Fixed<M>,Fixed<1>,AT> c(a.size(),NONINIT);
+      add(a,b,c);
+      return c;
+    }
+  template <class AT, int M, class Type1, class Type2> 
+    inline Vector<General,Fixed<M>,Fixed<1>,AT> operator+(const Vector<Type1,Fixed<M>,Fixed<1>,AT> &a, const Vector<Type2,Fixed<M>,Fixed<1>,AT> &b) {
+      Vector<General,Fixed<M>,Fixed<1>,AT> c(a.size(),NONINIT);
+      add(a,b,c);
+      return c;
+    }
+  template <class AT, class Type, class Row1, class Row2> 
+    inline Vector<General,Var,Fixed<1>,AT> operator+(const Vector<Type,Row1,Fixed<1>,AT> &a, const Vector<Type,Row2,Fixed<1>,AT> &b) {
+      Vector<General,Var,Fixed<1>,AT> c(a.size(),NONINIT);
+      add(a,b,c);
+      return c;
+    }
+  template <class AT, class Type, class Row> 
+    inline Vector<General,Row,Fixed<1>,AT> operator+(const Vector<Type,Row,Fixed<1>,AT> &a, const Vector<Type,Row,Fixed<1>,AT> &b) {
+      Vector<General,Row,Fixed<1>,AT> c(a.size(),NONINIT);
+      add(a,b,c);
+      return c;
+    }
+  template <class AT, int M, class Type, class Row2> 
+    inline Vector<General,Fixed<M>,Fixed<1>,AT> operator+(const Vector<Type,Fixed<M>,Fixed<1>,AT> &a, const Vector<Type,Row2,Fixed<1>,AT> &b) {
+      Vector<General,Fixed<M>,Fixed<1>,AT> c(a.size(),NONINIT);
+      add(a,b,c);
+      return c;
+    }
+  template <class AT, int M, class Type> 
+    inline Vector<General,Fixed<M>,Fixed<1>,AT> operator+(const Vector<Type,Fixed<M>,Fixed<1>,AT> &a, const Vector<Type,Fixed<M>,Fixed<1>,AT> &b) {
+      Vector<General,Fixed<M>,Fixed<1>,AT> c(a.size(),NONINIT);
+      add(a,b,c);
+      return c;
+    }
+  template <class AT, class Type1, class Type2, class Row1, class Row2> 
+    inline Vector<General,Row1,Fixed<1>,AT> operator+=(const Vector<Type1,Row1,Fixed<1>,AT> &a_, const Vector<Type2,Row2,Fixed<1>,AT> &b) {
+      Vector<Type1,Row1,Fixed<1>,AT> &a = const_cast<Vector<Type1,Row1,Fixed<1>,AT> &>(a_);
+      add(a,b);
+      return a;
     }
 
-  /*! \brief Vector-vector subtraction.
-   *
-   * This function computes the difference of two vectors
-   * \return The difference.
-   * */
-  template <class AT, class Type1, class Type2>
-    Vector<General<Var,Fixed<1> >, AT> operator-(const Vector<Type1, AT> &x, const Vector<Type2, AT> &y) {
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(y.size() == x.size());
-#endif
-
-      Vector<General<Var,Fixed<1> >, AT> z(x.size(),NONINIT);
-
-      for(int i=0; i<x.size(); i++)
-        z.e(i) = x.e(i) - y.e(i);
-
-      return z;
+///  // Subtraction
+  template <class AT, class Type1, class Type2, class Row1, class Row2> 
+    inline Vector<General,Var,Fixed<1>,AT> operator-(const Vector<Type1,Row1,Fixed<1>,AT> &a, const Vector<Type2,Row2,Fixed<1>,AT> &b) {
+      Vector<General,Var,Fixed<1>,AT> c(a.size(),NONINIT);
+      sub(a,b,c);
+      return c;
+    }
+  template <class AT, class Type1, class Type2, class Row> 
+    inline Vector<General,Row,Fixed<1>,AT> operator-(const Vector<Type1,Row,Fixed<1>,AT> &a, const Vector<Type2,Row,Fixed<1>,AT> &b) {
+      Vector<General,Row,Fixed<1>,AT> c(a.size(),NONINIT);
+      sub(a,b,c);
+      return c;
+    }
+  template <class AT, int M, class Type1, class Type2, class Row2> 
+    inline Vector<General,Fixed<M>,Fixed<1>,AT> operator-(const Vector<Type1,Fixed<M>,Fixed<1>,AT> &a, const Vector<Type2,Row2,Fixed<1>,AT> &b) {
+      Vector<General,Fixed<M>,Fixed<1>,AT> c(a.size(),NONINIT);
+      sub(a,b,c);
+      return c;
+    }
+  template <class AT, int M, class Type1, class Type2> 
+    inline Vector<General,Fixed<M>,Fixed<1>,AT> operator-(const Vector<Type1,Fixed<M>,Fixed<1>,AT> &a, const Vector<Type2,Fixed<M>,Fixed<1>,AT> &b) {
+      Vector<General,Fixed<M>,Fixed<1>,AT> c(a.size(),NONINIT);
+      sub(a,b,c);
+      return c;
+    }
+  template <class AT, class Type, class Row1, class Row2> 
+    inline Vector<General,Var,Fixed<1>,AT> operator-(const Vector<Type,Row1,Fixed<1>,AT> &a, const Vector<Type,Row2,Fixed<1>,AT> &b) {
+      Vector<General,Var,Fixed<1>,AT> c(a.size(),NONINIT);
+      sub(a,b,c);
+      return c;
+    }
+  template <class AT, class Type, class Row> 
+    inline Vector<General,Row,Fixed<1>,AT> operator-(const Vector<Type,Row,Fixed<1>,AT> &a, const Vector<Type,Row,Fixed<1>,AT> &b) {
+      Vector<General,Row,Fixed<1>,AT> c(a.size(),NONINIT);
+      sub(a,b,c);
+      return c;
+    }
+  template <class AT, int M, class Type, class Row2> 
+    inline Vector<General,Fixed<M>,Fixed<1>,AT> operator-(const Vector<Type,Fixed<M>,Fixed<1>,AT> &a, const Vector<Type,Row2,Fixed<1>,AT> &b) {
+      Vector<General,Fixed<M>,Fixed<1>,AT> c(a.size(),NONINIT);
+      sub(a,b,c);
+      return c;
+    }
+  template <class AT, int M, class Type> 
+    inline Vector<General,Fixed<M>,Fixed<1>,AT> operator-(const Vector<Type,Fixed<M>,Fixed<1>,AT> &a, const Vector<Type,Fixed<M>,Fixed<1>,AT> &b) {
+      Vector<General,Fixed<M>,Fixed<1>,AT> c(a.size(),NONINIT);
+      sub(a,b,c);
+      return c;
+    }
+  template <class AT, class Type1, class Type2, class Row1, class Row2> 
+    inline Vector<General,Row1,Fixed<1>,AT> operator-=(const Vector<Type1,Row1,Fixed<1>,AT> &a_, const Vector<Type2,Row2,Fixed<1>,AT> &b) {
+      Vector<Type1,Row1,Fixed<1>,AT> &a = const_cast<Vector<Type1,Row1,Fixed<1>,AT> &>(a_);
+      sub(a,b);
+      return a;
     }
 
-  /*! \brief Vector-vector addition.
-   *
-   * This function computes the difference of two vectors
-   * \return The difference.
-   * */
-  template <class AT, int M, class Type>
-    RowVector<General<Fixed<1>,Fixed<M> >, AT> operator+(const RowVector<General<Fixed<1>,Fixed<M> >, AT> &x, const Vector<Type, AT> &y) {
-
+  // RowVector-Vector
+  template <class Type1, class Col1, class Type2, class Col2, class Type3, class Col3, class AT> 
+    inline void add(const RowVector<Type1,Fixed<1>,Col1,AT> &a1, const RowVector<Type2,Fixed<1>,Col2,AT> &a2, RowVector<Type3,Fixed<1>,Col3,AT> &a3) {
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(y.size() == x.size());
+      assert(a1.size() == a2.size());
 #endif
-
-      RowVector<General<Fixed<1>,Fixed<M> >, AT> z(x.size(),NONINIT);
-
-      for(int i=0; i<x.size(); i++)
-        z.e(i) = x.e(i) + y.e(i);
-
-      return z;
+      for(int i=0; i<a1.size(); i++)
+          a3.e(i) = a1.e(i) + a2.e(i);
     }
 
-  /*! \brief Vector-vector addition.
-   *
-   * This function computes the difference of two vectors
-   * \return The difference.
-   * */
-  template <class AT, class Type, int M> 
-    RowVector<General<Fixed<1>,Fixed<M> >, AT> operator+(const Vector<Type, AT> &x, const RowVector<General<Fixed<1>,Fixed<M> >, AT> &y) {
-
+  template <class Type1, class Col1, class Type2, class Col2, class AT> 
+    inline void add(RowVector<Type1,Fixed<1>,Col1,AT> &a1, const RowVector<Type2,Fixed<1>,Col2,AT> &a2) {
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(y.size() == x.size());
+      assert(a1.size() == a2.size());
 #endif
-
-      RowVector<General<Fixed<1>,Fixed<M> >, AT> z(x.size(),NONINIT);
-
-      for(int i=0; i<x.size(); i++)
-        z.e(i) = x.e(i) + y.e(i);
-
-      return z;
+      for(int i=0; i<a1.size(); i++)
+          a1.e(i) += a2.e(i);
     }
 
-
-  /*! \brief Vector-vector addition.
-   *
-   * This function computes the difference of two vectors
-   * \return The difference.
-   * */
-  template <class AT, class Type1, class Type2>
-    RowVector<General<Fixed<1>,Var>, AT> operator+(const Vector<Type1, AT> &x, const Vector<Type2, AT> &y) {
-
+  template <class Type1, class Col1, class Type2, class Col2, class Type3, class Col3, class AT> 
+    inline void sub(const RowVector<Type1,Fixed<1>,Col1,AT> &a1, const RowVector<Type2,Fixed<1>,Col2,AT> &a2, RowVector<Type3,Fixed<1>,Col3,AT> &a3) {
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(y.size() == x.size());
+      assert(a1.size() == a2.size());
 #endif
-
-      RowVector<General<Fixed<1>,Var>, AT> z(x.size(),NONINIT);
-
-      for(int i=0; i<x.size(); i++)
-        z.e(i) = x.e(i) + y.e(i);
-
-      return z;
+      for(int i=0; i<a1.size(); i++)
+          a3.e(i) = a1.e(i) - a2.e(i);
     }
 
-  /*! \brief Vector-vector subtraction.
-   *
-   * This function computes the difference of two vectors
-   * \return The difference.
-   * */
-  template <class AT, int M, class Type>
-    RowVector<General<Fixed<1>,Fixed<M> >, AT> operator-(const RowVector<General<Fixed<1>,Fixed<M> >, AT> &x, const Vector<Type, AT> &y) {
-
+  template <class Type1, class Col1, class Type2, class Col2, class AT> 
+    inline void sub(RowVector<Type1,Fixed<1>,Col1,AT> &a1, const RowVector<Type2,Fixed<1>,Col2,AT> &a2) {
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(y.size() == x.size());
+      assert(a1.size() == a2.size());
 #endif
-
-      RowVector<General<Fixed<1>,Fixed<M> >, AT> z(x.size(),NONINIT);
-
-      for(int i=0; i<x.size(); i++)
-        z.e(i) = x.e(i) - y.e(i);
-
-      return z;
+      for(int i=0; i<a1.size(); i++)
+          a1.e(i) -= a2.e(i);
     }
 
-  /*! \brief Vector-vector subtraction.
-   *
-   * This function computes the difference of two vectors
-   * \return The difference.
-   * */
-  template <class AT, class Type, int M> 
-    RowVector<General<Fixed<1>,Fixed<M> >, AT> operator-(const Vector<Type, AT> &x, const RowVector<General<Fixed<1>,Fixed<M> >, AT> &y) {
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(y.size() == x.size());
-#endif
-
-      RowVector<General<Fixed<1>,Fixed<M> >, AT> z(x.size(),NONINIT);
-
-      for(int i=0; i<x.size(); i++)
-        z.e(i) = x.e(i) - y.e(i);
-
-      return z;
+  // Addition
+  template <class AT, class Type1, class Type2, class Col1, class Col2> 
+    inline RowVector<General,Var,Fixed<1>,AT> operator+(const RowVector<Type1,Fixed<1>,Col1,AT> &a, const RowVector<Type2,Fixed<1>,Col2,AT> &b) {
+      RowVector<General,Fixed<1>,Var,AT> c(a.size(),NONINIT);
+      add(a,b,c);
+      return c;
+    }
+  template <class AT, class Type1, class Type2, class Col> 
+    inline RowVector<General,Fixed<1>,Col,AT> operator+(const RowVector<Type1,Fixed<1>,Col,AT> &a, const RowVector<Type2,Fixed<1>,Col,AT> &b) {
+      Vector<General,Fixed<1>,Col,AT> c(a.size(),NONINIT);
+      add(a,b,c);
+      return c;
+    }
+  template <class AT, int N, class Type1, class Type2, class Col2> 
+    inline RowVector<General,Fixed<1>,Fixed<N>,AT> operator+(const RowVector<Type1,Fixed<1>,Fixed<N>,AT> &a, const RowVector<Type2,Fixed<1>,Col2,AT> &b) {
+      RowVector<General,Fixed<1>,Fixed<N>,AT> c(a.size(),NONINIT);
+      add(a,b,c);
+      return c;
+    }
+  template <class AT, int N, class Type1, class Type2> 
+    inline RowVector<General,Fixed<1>,Fixed<N>,AT> operator+(const RowVector<Type1,Fixed<1>,Fixed<N>,AT> &a, const RowVector<Type2,Fixed<1>,Fixed<N>,AT> &b) {
+      RowVector<General,Fixed<1>,Fixed<N>,AT> c(a.size(),NONINIT);
+      add(a,b,c);
+      return c;
+    }
+  template <class AT, class Type, class Col1, class Col2> 
+    inline RowVector<General,Var,Fixed<1>,AT> operator+(const RowVector<Type,Fixed<1>,Col1,AT> &a, const RowVector<Type,Fixed<1>,Col2,AT> &b) {
+      RowVector<General,Fixed<1>,Var,AT> c(a.size(),NONINIT);
+      add(a,b,c);
+      return c;
+    }
+  template <class AT, class Type, class Col> 
+    inline RowVector<General,Fixed<1>,Col,AT> operator+(const RowVector<Type,Fixed<1>,Col,AT> &a, const RowVector<Type,Fixed<1>,Col,AT> &b) {
+      Vector<General,Fixed<1>,Col,AT> c(a.size(),NONINIT);
+      add(a,b,c);
+      return c;
+    }
+  template <class AT, int N, class Type, class Col2> 
+    inline RowVector<General,Fixed<1>,Fixed<N>,AT> operator+(const RowVector<Type,Fixed<1>,Fixed<N>,AT> &a, const RowVector<Type,Fixed<1>,Col2,AT> &b) {
+      RowVector<General,Fixed<1>,Fixed<N>,AT> c(a.size(),NONINIT);
+      add(a,b,c);
+      return c;
+    }
+  template <class AT, int N, class Type> 
+    inline RowVector<General,Fixed<1>,Fixed<N>,AT> operator+(const RowVector<Type,Fixed<1>,Fixed<N>,AT> &a, const RowVector<Type,Fixed<1>,Fixed<N>,AT> &b) {
+      RowVector<General,Fixed<1>,Fixed<N>,AT> c(a.size(),NONINIT);
+      add(a,b,c);
+      return c;
+    }
+  template <class AT, class Type1, class Type2, class Col1, class Col2> 
+    inline RowVector<General,Fixed<1>,Col1,AT> operator+=(const RowVector<Type1,Fixed<1>,Col1,AT> &a_, const RowVector<Type2,Fixed<1>,Col2,AT> &b) {
+      RowVector<Type1,Fixed<1>,Col1,AT> &a = const_cast<RowVector<Type1,Fixed<1>,Col1,AT> &>(a_);
+      add(a,b);
+      return a;
     }
 
-  /*! \brief Vector-vector subtraction.
-   *
-   * This function computes the difference of two vectors
-   * \return The difference.
-   * */
-  template <class AT, class Type1, class Type2>
-    RowVector<General<Fixed<1>,Var>, AT> operator-(const Vector<Type1, AT> &x, const Vector<Type2, AT> &y) {
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(y.size() == x.size());
-#endif
-
-      RowVector<General<Fixed<1>,Var>, AT> z(x.size(),NONINIT);
-
-      for(int i=0; i<x.size(); i++)
-        z.e(i) = x.e(i) - y.e(i);
-
-      return z;
+///  // Subtraction
+  template <class AT, class Type1, class Type2, class Col1, class Col2> 
+    inline RowVector<General,Var,Fixed<1>,AT> operator-(const RowVector<Type1,Fixed<1>,Col1,AT> &a, const RowVector<Type2,Fixed<1>,Col2,AT> &b) {
+      RowVector<General,Fixed<1>,Var,AT> c(a.size(),NONINIT);
+      sub(a,b,c);
+      return c;
+    }
+  template <class AT, class Type1, class Type2, class Col> 
+    inline RowVector<General,Fixed<1>,Col,AT> operator-(const RowVector<Type1,Fixed<1>,Col,AT> &a, const RowVector<Type2,Fixed<1>,Col,AT> &b) {
+      Vector<General,Fixed<1>,Col,AT> c(a.size(),NONINIT);
+      sub(a,b,c);
+      return c;
+    }
+  template <class AT, int N, class Type1, class Type2, class Col2> 
+    inline RowVector<General,Fixed<1>,Fixed<N>,AT> operator-(const RowVector<Type1,Fixed<1>,Fixed<N>,AT> &a, const RowVector<Type2,Fixed<1>,Col2,AT> &b) {
+      RowVector<General,Fixed<1>,Fixed<N>,AT> c(a.size(),NONINIT);
+      sub(a,b,c);
+      return c;
+    }
+  template <class AT, int N, class Type1, class Type2> 
+    inline RowVector<General,Fixed<1>,Fixed<N>,AT> operator-(const RowVector<Type1,Fixed<1>,Fixed<N>,AT> &a, const RowVector<Type2,Fixed<1>,Fixed<N>,AT> &b) {
+      RowVector<General,Fixed<1>,Fixed<N>,AT> c(a.size(),NONINIT);
+      sub(a,b,c);
+      return c;
+    }
+  template <class AT, class Type, class Col1, class Col2> 
+    inline RowVector<General,Var,Fixed<1>,AT> operator-(const RowVector<Type,Fixed<1>,Col1,AT> &a, const RowVector<Type,Fixed<1>,Col2,AT> &b) {
+      RowVector<General,Fixed<1>,Var,AT> c(a.size(),NONINIT);
+      sub(a,b,c);
+      return c;
+    }
+  template <class AT, class Type, class Col> 
+    inline RowVector<General,Fixed<1>,Col,AT> operator-(const RowVector<Type,Fixed<1>,Col,AT> &a, const RowVector<Type,Fixed<1>,Col,AT> &b) {
+      Vector<General,Fixed<1>,Col,AT> c(a.size(),NONINIT);
+      sub(a,b,c);
+      return c;
+    }
+  template <class AT, int N, class Type, class Col2> 
+    inline RowVector<General,Fixed<1>,Fixed<N>,AT> operator-(const RowVector<Type,Fixed<1>,Fixed<N>,AT> &a, const RowVector<Type,Fixed<1>,Col2,AT> &b) {
+      RowVector<General,Fixed<1>,Fixed<N>,AT> c(a.size(),NONINIT);
+      sub(a,b,c);
+      return c;
+    }
+  template <class AT, int N, class Type> 
+    inline RowVector<General,Fixed<1>,Fixed<N>,AT> operator-(const RowVector<Type,Fixed<1>,Fixed<N>,AT> &a, const RowVector<Type,Fixed<1>,Fixed<N>,AT> &b) {
+      RowVector<General,Fixed<1>,Fixed<N>,AT> c(a.size(),NONINIT);
+      sub(a,b,c);
+      return c;
+    }
+  template <class AT, class Type1, class Type2, class Col1, class Col2> 
+    inline RowVector<General,Fixed<1>,Col1,AT> operator-=(const RowVector<Type1,Fixed<1>,Col1,AT> &a_, const RowVector<Type2,Fixed<1>,Col2,AT> &b) {
+      RowVector<Type1,Fixed<1>,Col1,AT> &a = const_cast<RowVector<Type1,Fixed<1>,Col1,AT> &>(a_);
+      sub(a,b);
+      return a;
     }
 
-  template <class Type1, class Type2, class AT>
-    inline Vector<Type1, AT>& operator+=(const Vector<Type1, AT> &x_, const Vector<Type2, AT> &y) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(x_.size() == y.size());
-#endif
-      Vector<Type1, AT> &x = const_cast<Vector<Type1, AT> &>(x_);
-      for(int i=0; i<x.size(); i++) 
-        x.e(i) += y.e(i);
-      return x;
-    }
-
-  template <class Type1, class Type2, class AT>
-    inline Vector<Type1, AT>& operator-=(const Vector<Type1, AT> &x_, const Vector<Type2, AT> &y) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(x_.size() == y.size());
-#endif
-      Vector<Type1, AT> &x = const_cast<Vector<Type1, AT> &>(x_);
-      for(int i=0; i<x.size(); i++) 
-        x.e(i) -= y.e(i);
-      return x;
-    }
-
-  template <class Type1, class Type2, class AT>
-    inline RowVector<Type1, AT>& operator+=(const RowVector<Type1, AT> &x_, const RowVector<Type2, AT> &y) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(x_.size() == y.size());
-#endif
-      RowVector<Type1, AT> &x = const_cast<RowVector<Type1, AT> &>(x_);
-      for(int i=0; i<x.size(); i++) 
-        x.e(i) += y.e(i);
-      return x;
-    }
-
-  template <class Type1, class Type2, class AT>
-    inline RowVector<Type1, AT>& operator-=(const RowVector<Type1, AT> &x_, const RowVector<Type2, AT> &y) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(x_.size() == y.size());
-#endif
-      RowVector<Type1, AT> &x = const_cast<RowVector<Type1, AT> &>(x_);
-      for(int i=0; i<x.size(); i++) 
-        x.e(i) -= y.e(i);
-      return x;
-    }
-
-/////////////////////////////////// end vecvecadd //////////////////////////////
-  template <class Type1, class Type2, class Type3, class AT>
-    inline void add(const Matrix<Type1, AT> &A1, const Matrix<Type2, AT> &A2, Matrix<Type3, AT> &A3) {
+  // Matrix-Matrix
+  template <class Type1, class Row1, class Col1, class Type2, class Row2, class Col2, class Type3, class Row3, class Col3, class AT> 
+    inline void add(const Matrix<Type1,Row1,Col1,AT> &A1, const Matrix<Type2,Row2,Col2,AT> &A2, Matrix<Type3,Row3,Col3,AT> &A3) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A1.rows() == A2.rows());
       assert(A1.cols() == A2.cols());
@@ -360,265 +374,588 @@ namespace fmatvec {
           A3.e(i,j) = A1.e(i,j) + A2.e(i,j);
     }
 
-  template <class Type1, class Type2, class Type3, class AT>
-    inline void sub(const Matrix<Type1, AT> &A1, const Matrix<Type2, AT> &A2, Matrix<Type3, AT> &A3) {
+  template <class Row1, class Row2, class Row3, class AT> 
+    inline void add(const Matrix<Symmetric,Row1,Row1,AT> &A1, const Matrix<Symmetric,Row2,Row2,AT> &A2, Matrix<Symmetric,Row3,Row3,AT> &A3) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A1.rows() == A2.rows());
+      assert(A1.cols() == A2.cols());
+#endif
+      for(int i=0; i<A1.size(); i++)
+        for(int j=0; j<A2.size(); j++)
+          A3.ej(i,j) = A1.ej(i,j) + A2.ej(i,j);
+    }
+
+  template <class Type1, class Row1, class Col1, class Type2, class Row2, class Col2, class AT> 
+    inline void add(Matrix<Type1,Row1,Col1,AT> &A1, const Matrix<Type2,Row2,Col2,AT> &A2) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A1.rows() == A2.rows());
       assert(A1.cols() == A2.cols());
 #endif
       for(int i=0; i<A1.rows(); i++)
-        for(int j=0; j<A1.cols(); j++)
+        for(int j=0; j<A2.cols(); j++)
+          A1.e(i,j) += A2.e(i,j);
+    }
+
+  template <class Row1, class Row2, class AT> 
+    inline void add(Matrix<Symmetric,Row1,Row1,AT> &A1, const Matrix<Symmetric,Row2,Row2,AT> &A2) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A1.rows() == A2.rows());
+      assert(A1.cols() == A2.cols());
+#endif
+      for(int i=0; i<A1.size(); i++)
+        for(int j=0; j<A2.size(); j++)
+          A1.ej(i,j) += A2.ej(i,j);
+    }
+
+  template <class Type1, class Row1, class Col1, class Type2, class Row2, class Col2, class Type3, class Row3, class Col3, class AT> 
+    inline void sub(const Matrix<Type1,Row1,Col1,AT> &A1, const Matrix<Type2,Row2,Col2,AT> &A2, Matrix<Type3,Row3,Col3,AT> &A3) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A1.rows() == A2.rows());
+      assert(A1.cols() == A2.cols());
+#endif
+      for(int i=0; i<A1.rows(); i++)
+        for(int j=0; j<A2.cols(); j++)
           A3.e(i,j) = A1.e(i,j) - A2.e(i,j);
     }
 
- /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
+  template <class Row1, class Row2, class Row3, class AT> 
+    inline void sub(const Matrix<Symmetric,Row1,Row1,AT> &A1, const Matrix<Symmetric,Row2,Row2,AT> &A2, Matrix<Symmetric,Row3,Row3,AT> &A3) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A1.rows() == A2.rows());
+      assert(A1.cols() == A2.cols());
+#endif
+      for(int i=0; i<A1.size(); i++)
+        for(int j=0; j<A2.size(); j++)
+          A3.ej(i,j) = A1.ej(i,j) - A2.ej(i,j);
+    }
+
+  template <class Type1, class Row1, class Col1, class Type2, class Row2, class Col2, class AT> 
+    inline void sub(Matrix<Type1,Row1,Col1,AT> &A1, const Matrix<Type2,Row2,Col2,AT> &A2) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A1.rows() == A2.rows());
+      assert(A1.cols() == A2.cols());
+#endif
+      for(int i=0; i<A1.rows(); i++)
+        for(int j=0; j<A2.cols(); j++)
+          A1.e(i,j) -= A2.e(i,j);
+    }
+
+  template <class Row1, class Row2, class AT> 
+    inline void sub(Matrix<Symmetric,Row1,Row1,AT> &A1, const Matrix<Symmetric,Row2,Row2,AT> &A2) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A1.rows() == A2.rows());
+      assert(A1.cols() == A2.cols());
+#endif
+      for(int i=0; i<A1.size(); i++)
+        for(int j=0; j<A2.size(); j++)
+          A1.ej(i,j) -= A2.ej(i,j);
+    }
+
+
+  // Addition
+  // Type1 Type2
+  template <class AT, class Type1, class Type2, class Row1, class Col1, class Row2, class Col2> 
+    inline Matrix<General,Var,Var,AT> operator+(const Matrix<Type1,Row1,Col1,AT> &A, const Matrix<Type2,Row2,Col2,AT> &B) {
+      Matrix<General,Var,Var,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, class Type1, class Type2, class Row, class Col>
+    inline Matrix<General,Row,Col,AT> operator+(const Matrix<Type1,Row,Col,AT> &A, const Matrix<Type2,Row,Col,AT> &B) {
+      Matrix<General,Row,Col,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, int M, class Type1, class Type2, class Row, class Col> 
+    inline Matrix<General,Fixed<M>,Var,AT> operator+(const Matrix<Type1,Fixed<M>,Var,AT> &A, const Matrix<Type2,Row,Col,AT> &B) {
+      Matrix<General,Fixed<M>,Var,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, int M, class Type1, class Type2> 
+    inline Matrix<General,Fixed<M>,Var,AT> operator+(const Matrix<Type1,Fixed<M>,Var,AT> &A, const Matrix<Type2,Fixed<M>,Var,AT> &B) {
+      Matrix<General,Fixed<M>,Var,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, int N, class Type1, class Type2, class Row, class Col> 
+    inline Matrix<General,Var,Fixed<N>,AT> operator+(const Matrix<Type1,Var,Fixed<N>,AT> &A, const Matrix<Type2,Row,Col,AT> &B) {
+      Matrix<General,Var,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, int N, class Type1, class Type2> 
+    inline Matrix<General,Var,Fixed<N>,AT> operator+(const Matrix<Type1,Var,Fixed<N>,AT> &A, const Matrix<Type2,Var,Fixed<N>,AT> &B) {
+      Matrix<General,Var,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type1, class Type2, class Row, class Col> 
+    inline Matrix<General,Fixed<M>,Fixed<N>,AT> operator+(const Matrix<Type1,Fixed<M>,Fixed<N>,AT> &A, const Matrix<Type2,Row,Col,AT> &B) {
+      Matrix<General,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type1, class Type2> 
+    inline Matrix<General,Fixed<M>,Fixed<N>,AT> operator+(const Matrix<Type1,Fixed<M>,Fixed<N>,AT> &A, const Matrix<Type2,Fixed<M>,Var,AT> &B) {
+      Matrix<General,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type1, class Type2> 
+    inline Matrix<General,Fixed<M>,Fixed<N>,AT> operator+(const Matrix<Type1,Fixed<M>,Fixed<N>,AT> &A, const Matrix<Type2,Var,Fixed<N>,AT> &B) {
+      Matrix<General,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type1, class Type2> 
+    inline Matrix<General,Fixed<M>,Fixed<N>,AT> operator+(const Matrix<Type1,Fixed<M>,Fixed<N>,AT> &A, const Matrix<Type2,Fixed<M>,Fixed<N>,AT> &B) {
+      Matrix<General,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type1, class Type2, class Row, class Col> 
+    inline Matrix<General,Fixed<M>,Fixed<N>,AT> operator+(const Matrix<Type2,Row,Col,AT> &A, const Matrix<Type1,Fixed<M>,Fixed<N>,AT> &B) {
+      Matrix<General,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type1, class Type2> 
+    inline Matrix<General,Fixed<M>,Fixed<N>,AT> operator+(const Matrix<Type2,Fixed<M>,Var,AT> &A, const Matrix<Type1,Fixed<M>,Fixed<N>,AT> &B) {
+      Matrix<General,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type1, class Type2> 
+    inline Matrix<General,Fixed<M>,Fixed<N>,AT> operator+(const Matrix<Type2,Var,Fixed<N>,AT> &A, const Matrix<Type1,Fixed<M>,Fixed<N>,AT> &B) {
+      Matrix<General,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  // Type
+  template <class AT, class Type, class Row1, class Col1, class Row2, class Col2> 
+    inline Matrix<Type,Var,Var,AT> operator+(const Matrix<Type,Row1,Col1,AT> &A, const Matrix<Type,Row2,Col2,AT> &B) {
+      Matrix<Type,Var,Var,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, class Type, class Row, class Col> 
+    inline Matrix<Type,Row,Col,AT> operator+(const Matrix<Type,Row,Col,AT> &A, const Matrix<Type,Row,Col,AT> &B) {
+      Matrix<Type,Row,Col,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, int M, class Type, class Row, class Col> 
+    inline Matrix<Type,Fixed<M>,Var,AT> operator+(const Matrix<Type,Fixed<M>,Var,AT> &A, const Matrix<Type,Row,Col,AT> &B) {
+      Matrix<Type,Fixed<M>,Var,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, int M, class Type> 
+    inline Matrix<Type,Fixed<M>,Var,AT> operator+(const Matrix<Type,Fixed<M>,Var,AT> &A, const Matrix<Type,Fixed<M>,Var,AT> &B) {
+      Matrix<Type,Fixed<M>,Var,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, int N, class Type, class Row, class Col> 
+    inline Matrix<Type,Var,Fixed<N>,AT> operator+(const Matrix<Type,Var,Fixed<N>,AT> &A, const Matrix<Type,Row,Col,AT> &B) {
+      Matrix<Type,Var,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, int N, class Type> 
+    inline Matrix<Type,Var,Fixed<N>,AT> operator+(const Matrix<Type,Var,Fixed<N>,AT> &A, const Matrix<Type,Var,Fixed<N>,AT> &B) {
+      Matrix<Type,Var,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type, class Row, class Col> 
+    inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator+(const Matrix<Type,Fixed<M>,Fixed<N>,AT> &A, const Matrix<Type,Row,Col,AT> &B) {
+      Matrix<Type,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      add(A,B,C);
+      return C;
+    }
   template <class AT, int M, int N, class Type> 
-    Matrix<General<Fixed<M>,Fixed<N> >, AT> operator+(const Matrix<General<Fixed<M>,Fixed<N> >, AT> &A, const Matrix<Type, AT > &B) {
-      Matrix<General<Fixed<M>,Fixed<N> >, AT> C(A.rows(),A.cols(),NONINIT);
+    inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator+(const Matrix<Type,Fixed<M>,Fixed<N>,AT> &A, const Matrix<Type,Fixed<M>,Var,AT> &B) {
+      Matrix<Type,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
       add(A,B,C);
       return C;
     }
-
-  /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
   template <class AT, int M, int N, class Type> 
-    Matrix<General<Fixed<M>,Fixed<N> >, AT> operator-(const Matrix<General<Fixed<M>,Fixed<N> >, AT> &A, const Matrix<Type, AT > &B) {
-      Matrix<General<Fixed<M>,Fixed<N> >, AT> C(A.rows(),A.cols(),NONINIT);
-      sub(A,B,C);
-      return C;
-    }
-
-  /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
-  template <class AT, class Type, int M, int N>
-    Matrix<General<Fixed<M>,Fixed<N> >, AT> operator+(const Matrix<Type, AT > &A, const Matrix<General<Fixed<M>,Fixed<N> >, AT> &B) {
-      Matrix<General<Fixed<M>,Fixed<N> >, AT> C(A.rows(),A.cols(),NONINIT);
+    inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator+(const Matrix<Type,Fixed<M>,Fixed<N>,AT> &A, const Matrix<Type,Var,Fixed<N>,AT> &B) {
+      Matrix<Type,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
       add(A,B,C);
       return C;
     }
-
-  /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
-  template <class AT, class Type, int M, int N>
-    Matrix<General<Fixed<M>,Fixed<N> >, AT> operator-(const Matrix<Type, AT > &A, const Matrix<General<Fixed<M>,Fixed<N> >, AT> &B) {
-      Matrix<General<Fixed<M>,Fixed<N> >, AT> C(A.rows(),A.cols(),NONINIT);
-      sub(A,B,C);
-      return C;
-    }
-
-  /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
-  template <class AT, class Row, int N, class Type> 
-    Matrix<General<Row,Fixed<N> >, AT> operator+(const Matrix<General<Row,Fixed<N> >, AT> &A, const Matrix<Type, AT > &B) {
-      Matrix<General<Row,Fixed<N> >, AT> C(A.rows(),A.cols(),NONINIT);
+  template <class AT, int M, int N, class Type> 
+    inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator+(const Matrix<Type,Fixed<M>,Fixed<N>,AT> &A, const Matrix<Type,Fixed<M>,Fixed<N>,AT> &B) {
+      Matrix<Type,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
       add(A,B,C);
       return C;
     }
-
-  /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
-  template <class AT, class Row, int N, class Type> 
-    Matrix<General<Row,Fixed<N> >, AT> operator-(const Matrix<General<Row,Fixed<N> >, AT> &A, const Matrix<Type, AT > &B) {
-      Matrix<General<Row,Fixed<N> >, AT> C(A.rows(),A.cols(),NONINIT);
-      sub(A,B,C);
-      return C;
-    }
-
-  /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
-  template <class AT, class Type, class Row, int N>
-    Matrix<General<Row,Fixed<N> >, AT> operator+(const Matrix<Type, AT > &A, const Matrix<General<Row,Fixed<N> >, AT> &B) {
-      Matrix<General<Row,Fixed<N> >, AT> C(A.rows(),A.cols(),NONINIT);
+  template <class AT, int M, int N, class Type, class Row, class Col> 
+    inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator+(const Matrix<Type,Row,Col,AT> &A, const Matrix<Type,Fixed<M>,Fixed<N>,AT> &B) {
+      Matrix<Type,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
       add(A,B,C);
       return C;
     }
-
-  /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
-  template <class AT, class Type, class Row, int N>
-    Matrix<General<Row,Fixed<N> >, AT> operator-(const Matrix<Type, AT > &A, const Matrix<General<Row,Fixed<N> >, AT> &B) {
-      Matrix<General<Row,Fixed<N> >, AT> C(A.rows(),A.cols(),NONINIT);
-      sub(A,B,C);
-      return C;
-    }
-
-  /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
-  template <class AT, int M, class Col, class Type> 
-    Matrix<General<Fixed<M>,Col>, AT> operator+(const Matrix<General<Fixed<M>,Col>, AT> &A, const Matrix<Type, AT > &B) {
-      Matrix<General<Fixed<M>,Col>, AT> C(A.rows(),A.cols(),NONINIT);
+  template <class AT, int M, int N, class Type> 
+    inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator+(const Matrix<Type,Fixed<M>,Var,AT> &A, const Matrix<Type,Fixed<M>,Fixed<N>,AT> &B) {
+      Matrix<Type,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
       add(A,B,C);
       return C;
     }
-
-  /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
-  template <class AT, int M, class Col, class Type> 
-    Matrix<General<Fixed<M>,Col>, AT> operator-(const Matrix<General<Fixed<M>,Col>, AT> &A, const Matrix<Type, AT > &B) {
-      Matrix<General<Fixed<M>,Col>, AT> C(A.rows(),A.cols(),NONINIT);
-      sub(A,B,C);
-      return C;
-    }
-
-  /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
-  template <class AT, class Type, int M, class Col>
-    Matrix<General<Fixed<M>,Col>, AT> operator+(const Matrix<Type, AT > &A, const Matrix<General<Fixed<M>,Col>, AT> &B) {
-      Matrix<General<Fixed<M>,Col>, AT> C(A.rows(),A.cols(),NONINIT);
+  template <class AT, int M, int N, class Type> 
+    inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator+(const Matrix<Type,Var,Fixed<N>,AT> &A, const Matrix<Type,Fixed<M>,Fixed<N>,AT> &B) {
+      Matrix<Type,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
       add(A,B,C);
       return C;
     }
-
-  /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
-  template <class AT, class Type, int M, class Col>
-    Matrix<General<Fixed<M>,Col>, AT> operator-(const Matrix<Type, AT > &A, const Matrix<General<Fixed<M>,Col>, AT> &B) {
-      Matrix<General<Fixed<M>,Col>, AT> C(A.rows(),A.cols(),NONINIT);
-      sub(A,B,C);
-      return C;
-    }
-
-  /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
-  template <template <class Row, class Col> class Type1, template <class Row, class Col> class Type2, class AT> 
-    Matrix<General<Ref,Ref>, AT> operator+(const Matrix<Type1<Ref,Ref>, AT> &A, const Matrix<Type2<Ref,Ref>, AT > &B) {
-      Matrix<General<Ref,Ref>, AT> C(A.rows(),A.cols(),NONINIT);
-      add(A,B,C);
-      return C;
-    }
-
-  /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
-  template <template <class Row, class Col> class Type1, template <class Row, class Col> class Type2, class AT> 
-    Matrix<General<Ref,Ref>, AT> operator-(const Matrix<Type1<Ref,Ref>, AT> &A, const Matrix<Type2<Ref,Ref>, AT > &B) {
-      Matrix<General<Ref,Ref>, AT> C(A.rows(),A.cols(),NONINIT);
-      sub(A,B,C);
-      return C;
-    }
-
-  /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
-  template <class AT, class Type1, class Type2> 
-    Matrix<General<Var,Var>, AT> operator+(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
-      Matrix<General<Var,Var>, AT> C(A.rows(),A.cols(),NONINIT);
-      add(A,B,C);
-      return C;
-    }
-
-  /*! \brief Matrix-matrix addition.
-   *
-   * This function computes the sum of two matrices
-   * \return The sum.
-   * */
-  template <class AT, class Type1, class Type2> 
-    Matrix<General<Var,Var>, AT> operator-(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
-      Matrix<General<Var,Var>, AT> C(A.rows(),A.cols(),NONINIT);
-      sub(A,B,C);
-      return C;
-    }
-
-  template <class Type1, class Type2, class AT>
-    inline Matrix<Type1, AT>& operator+=(const Matrix<Type1, AT> &A_, const Matrix<Type2, AT> &B) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A_.rows() == B.rows());
-      assert(A_.cols() == B.cols());
-#endif
-      Matrix<Type1, AT> &A = const_cast<Matrix<Type1, AT> &>(A_);
-      for(int i=0; i<A.rows(); i++) 
-        for(int j=0; j<A.cols(); j++) 
-          A.e(i,j) += B.e(i,j);
+  template <class AT, class Type1, class Row1, class Col1, class Type2, class Row2, class Col2> 
+    inline Matrix<Type1,Row1,Col1,AT>& operator+=(const Matrix<Type1,Row1,Col1,AT> &A_, const Matrix<Type2,Row2,Col2,AT> &B) {
+      Matrix<Type1,Row1,Col1,AT> &A = const_cast<Matrix<Type1,Row1,Col1,AT> &>(A_);
+      add(A,B);
       return A;
     }
 
-  template <class Type1, class Type2, class AT>
-    inline Matrix<Type1, AT>& operator-=(const Matrix<Type1, AT> &A_, const Matrix<Type2, AT> &B) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A_.rows() == B.rows());
-      assert(A_.cols() == B.cols());
-#endif
-      Matrix<Type1, AT> &A = const_cast<Matrix<Type1, AT> &>(A_);
-      for(int i=0; i<A.rows(); i++) 
-        for(int j=0; j<A.cols(); j++) 
-          A.e(i,j) -= B.e(i,j);
+  // Subtraction
+  // Type1 Type2
+  template <class AT, class Type1, class Type2, class Row1, class Col1, class Row2, class Col2> 
+    inline Matrix<General,Var,Var,AT> operator-(const Matrix<Type1,Row1,Col1,AT> &A, const Matrix<Type2,Row2,Col2,AT> &B) {
+      Matrix<General,Var,Var,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, class Type1, class Type2, class Row, class Col>
+    inline Matrix<General,Row,Col,AT> operator-(const Matrix<Type1,Row,Col,AT> &A, const Matrix<Type2,Row,Col,AT> &B) {
+      Matrix<General,Row,Col,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, class Type1, class Type2, class Row, class Col> 
+    inline Matrix<General,Fixed<M>,Var,AT> operator-(const Matrix<Type1,Fixed<M>,Var,AT> &A, const Matrix<Type2,Row,Col,AT> &B) {
+      Matrix<General,Fixed<M>,Var,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, class Type1, class Type2> 
+    inline Matrix<General,Fixed<M>,Var,AT> operator-(const Matrix<Type1,Fixed<M>,Var,AT> &A, const Matrix<Type2,Fixed<M>,Var,AT> &B) {
+      Matrix<General,Fixed<M>,Var,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int N, class Type1, class Type2, class Row, class Col> 
+    inline Matrix<General,Var,Fixed<N>,AT> operator-(const Matrix<Type1,Var,Fixed<N>,AT> &A, const Matrix<Type2,Row,Col,AT> &B) {
+      Matrix<General,Var,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int N, class Type1, class Type2> 
+    inline Matrix<General,Var,Fixed<N>,AT> operator-(const Matrix<Type1,Var,Fixed<N>,AT> &A, const Matrix<Type2,Var,Fixed<N>,AT> &B) {
+      Matrix<General,Var,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type1, class Type2, class Row, class Col> 
+    inline Matrix<General,Fixed<M>,Fixed<N>,AT> operator-(const Matrix<Type1,Fixed<M>,Fixed<N>,AT> &A, const Matrix<Type2,Row,Col,AT> &B) {
+      Matrix<General,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type1, class Type2> 
+    inline Matrix<General,Fixed<M>,Fixed<N>,AT> operator-(const Matrix<Type1,Fixed<M>,Fixed<N>,AT> &A, const Matrix<Type2,Fixed<M>,Var,AT> &B) {
+      Matrix<General,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type1, class Type2> 
+    inline Matrix<General,Fixed<M>,Fixed<N>,AT> operator-(const Matrix<Type1,Fixed<M>,Fixed<N>,AT> &A, const Matrix<Type2,Var,Fixed<N>,AT> &B) {
+      Matrix<General,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type1, class Type2> 
+    inline Matrix<General,Fixed<M>,Fixed<N>,AT> operator-(const Matrix<Type1,Fixed<M>,Fixed<N>,AT> &A, const Matrix<Type2,Fixed<M>,Fixed<N>,AT> &B) {
+      Matrix<General,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type1, class Type2, class Row, class Col> 
+    inline Matrix<General,Fixed<M>,Fixed<N>,AT> operator-(const Matrix<Type2,Row,Col,AT> &A, const Matrix<Type1,Fixed<M>,Fixed<N>,AT> &B) {
+      Matrix<General,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type1, class Type2> 
+    inline Matrix<General,Fixed<M>,Fixed<N>,AT> operator-(const Matrix<Type2,Fixed<M>,Var,AT> &A, const Matrix<Type1,Fixed<M>,Fixed<N>,AT> &B) {
+      Matrix<General,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type1, class Type2> 
+    inline Matrix<General,Fixed<M>,Fixed<N>,AT> operator-(const Matrix<Type2,Var,Fixed<N>,AT> &A, const Matrix<Type1,Fixed<M>,Fixed<N>,AT> &B) {
+      Matrix<General,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  // Type
+  template <class AT, class Type, class Row1, class Col1, class Row2, class Col2> 
+    inline Matrix<Type,Var,Var,AT> operator-(const Matrix<Type,Row1,Col1,AT> &A, const Matrix<Type,Row2,Col2,AT> &B) {
+      Matrix<Type,Var,Var,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, class Type, class Row, class Col> 
+    inline Matrix<Type,Row,Col,AT> operator-(const Matrix<Type,Row,Col,AT> &A, const Matrix<Type,Row,Col,AT> &B) {
+      Matrix<Type,Row,Col,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, class Type, class Row, class Col> 
+    inline Matrix<Type,Fixed<M>,Var,AT> operator-(const Matrix<Type,Fixed<M>,Var,AT> &A, const Matrix<Type,Row,Col,AT> &B) {
+      Matrix<Type,Fixed<M>,Var,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, class Type> 
+    inline Matrix<Type,Fixed<M>,Var,AT> operator-(const Matrix<Type,Fixed<M>,Var,AT> &A, const Matrix<Type,Fixed<M>,Var,AT> &B) {
+      Matrix<Type,Fixed<M>,Var,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int N, class Type, class Row, class Col> 
+    inline Matrix<Type,Var,Fixed<N>,AT> operator-(const Matrix<Type,Var,Fixed<N>,AT> &A, const Matrix<Type,Row,Col,AT> &B) {
+      Matrix<Type,Var,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int N, class Type> 
+    inline Matrix<Type,Var,Fixed<N>,AT> operator-(const Matrix<Type,Var,Fixed<N>,AT> &A, const Matrix<Type,Var,Fixed<N>,AT> &B) {
+      Matrix<Type,Var,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type, class Row, class Col> 
+    inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator-(const Matrix<Type,Fixed<M>,Fixed<N>,AT> &A, const Matrix<Type,Row,Col,AT> &B) {
+      Matrix<Type,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type> 
+    inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator-(const Matrix<Type,Fixed<M>,Fixed<N>,AT> &A, const Matrix<Type,Fixed<M>,Var,AT> &B) {
+      Matrix<Type,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type> 
+    inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator-(const Matrix<Type,Fixed<M>,Fixed<N>,AT> &A, const Matrix<Type,Var,Fixed<N>,AT> &B) {
+      Matrix<Type,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type> 
+    inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator-(const Matrix<Type,Fixed<M>,Fixed<N>,AT> &A, const Matrix<Type,Fixed<M>,Fixed<N>,AT> &B) {
+      Matrix<Type,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type, class Row, class Col> 
+    inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator-(const Matrix<Type,Row,Col,AT> &A, const Matrix<Type,Fixed<M>,Fixed<N>,AT> &B) {
+      Matrix<Type,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type> 
+    inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator-(const Matrix<Type,Fixed<M>,Var,AT> &A, const Matrix<Type,Fixed<M>,Fixed<N>,AT> &B) {
+      Matrix<Type,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, int M, int N, class Type> 
+    inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator-(const Matrix<Type,Var,Fixed<N>,AT> &A, const Matrix<Type,Fixed<M>,Fixed<N>,AT> &B) {
+      Matrix<Type,Fixed<M>,Fixed<N>,AT> C(A.rows(),A.cols(),NONINIT);
+      sub(A,B,C);
+      return C;
+    }
+  template <class AT, class Type1, class Row1, class Col1, class Type2, class Row2, class Col2> 
+    inline Matrix<Type1,Row1,Col1,AT>& operator-=(const Matrix<Type1,Row1,Col1,AT> &A_, const Matrix<Type2,Row2,Col2,AT> &B) {
+      Matrix<Type1,Row1,Col1,AT> &A = const_cast<Matrix<Type1,Row1,Col1,AT> &>(A_);
+      sub(A,B);
       return A;
     }
 
-  template <class Row1, class Row2, class AT>
-    inline Matrix<Symmetric<Row1,Row1>, AT>& operator+=(const Matrix<Symmetric<Row1,Row1>, AT> &A_, const Matrix<Symmetric<Row2,Row2>, AT> &B) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A_.size() == B.size());
-#endif
-      Matrix<Symmetric<Row1,Row1>, AT> &A = const_cast<Matrix<Symmetric<Row1,Row1>, AT> &>(A_);
-      for(int i=0; i<A.size(); i++) 
-        for(int j=i; j<A.size(); j++) 
-          A.ej(i,j) += B.ej(i,j);
-      return A;
+//  SquareMatrix-SquareMatrix
+  template <class AT, class Row1, class Row2> 
+    inline SquareMatrix<General,Var,Var,AT> operator+(const SquareMatrix<General,Row1,Row1,AT> &A1, const SquareMatrix<General,Row2,Row2,AT> &A2) {
+      SquareMatrix<General,Var,Var,AT> A3(A1.rows(),A1.cols(),NONINIT);
+      add(A1,A2,A3);
+      return A3;
+    }
+  template <class AT, class Row> 
+    inline SquareMatrix<General,Row,Row,AT> operator+(const SquareMatrix<General,Row,Row,AT> &A1, const SquareMatrix<General,Row,Row,AT> &A2) {
+      SquareMatrix<General,Row,Row,AT> A3(A1.rows(),A1.cols(),NONINIT);
+      add(A1,A2,A3);
+      return A3;
     }
 
-  template <class Row1, class Row2, class AT>
-    inline Matrix<Symmetric<Row1,Row1>, AT>& operator-=(const Matrix<Symmetric<Row1,Row1>, AT> &A_, const Matrix<Symmetric<Row2,Row2>, AT> &B) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A_.size() == B.size());
-#endif
-      Matrix<Symmetric<Row1,Row1>, AT> &A = const_cast<Matrix<Symmetric<Row1,Row1>, AT> &>(A_);
-      for(int i=0; i<A.size(); i++) 
-        for(int j=i; j<A.size(); j++) 
-          A.ej(i,j) -= B.ej(i,j);
-      return A;
+//  SquareMatrix-SquareMatrix
+  template <class AT, class Row1, class Row2> 
+    inline SquareMatrix<General,Var,Var,AT> operator-(const SquareMatrix<General,Row1,Row1,AT> &A1, const SquareMatrix<General,Row2,Row2,AT> &A2) {
+      SquareMatrix<General,Var,Var,AT> A3(A1.rows(),A1.cols(),NONINIT);
+      sub(A1,A2,A3);
+      return A3;
+    }
+  template <class AT, class Row> 
+    inline SquareMatrix<General,Row,Row,AT> operator-(const SquareMatrix<General,Row,Row,AT> &A1, const SquareMatrix<General,Row,Row,AT> &A2) {
+      SquareMatrix<General,Row,Row,AT> A3(A1.rows(),A1.cols(),NONINIT);
+      sub(A1,A2,A3);
+      return A3;
     }
 
-/////////////////////////////////// end vecvecadd //////////////////////////////
+  //////      
+  //////      /////////////////////////////////// end vecvecadd //////////////////////////////
+  //////      
+  //////      /////////////////////////////////// matmatmult //////////////////////////////
+  //////      
+  template <class Type1, class Row1, class Col1, class Type2, class Row2, class Type3, class Row3, class AT> 
+    inline void mult(const Matrix<Type1,Row1,Col1,AT> &A, const Vector<Type2,Row2,Fixed<1>,AT> &x, Vector<Type3,Row3,Fixed<1>,AT> &y) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A.cols() == x.size());
+#endif
+      for(int i=0; i<y.size(); i++) {
+        y.e(i) = 0;
+        for(int j=0; j<x.size(); j++) 
+          y.e(i) += A.e(i,j)*x.e(j);
+      }
+    }
 
-/////////////////////////////////// matmatmult //////////////////////////////
+   // Matrix-Vector
+  template <class AT, class Type1, class Type2, class Row1, class Col1, class Row2> 
+    inline Vector<General,Var,Fixed<1>,AT> operator*(const Matrix<Type1,Row1,Col1,AT> &A, const Vector<Type2,Row2,Fixed<1>,AT> &x) {
+      Vector<General,Var,Fixed<1>,AT> y(A.rows(),NONINIT);
+      mult(A,x,y);
+      return y;
+    }
+  template <class AT, class Type1, class Type2, class Row, class Col> 
+    inline Vector<General,Row,Fixed<1>,AT> operator*(const Matrix<Type1,Row,Col,AT> &A, const Vector<Type2,Row,Fixed<1>,AT> &x) {
+      Vector<General,Row,Fixed<1>,AT> y(A.rows(),NONINIT);
+      mult(A,x,y);
+      return y;
+    }
+  template <class AT, int M, class Type1, class Type2, class Col1, class Row2> 
+    inline Vector<General,Fixed<M>,Fixed<1>,AT> operator*(const Matrix<Type1,Fixed<M>,Col1,AT> &A, const Vector<Type2,Row2,Fixed<1>,AT> &x) {
+      Vector<General,Fixed<M>,Fixed<1>,AT> y(A.rows(),NONINIT);
+      mult(A,x,y);
+      return y;
+    }
+  template <class AT, int M, class Type1, class Type2> 
+    inline Vector<General,Fixed<M>,Fixed<1>,AT> operator*(const Matrix<Type1,Fixed<M>,Fixed<M>,AT> &A, const Vector<Type2,Fixed<M>,Fixed<1>,AT> &x) {
+      Vector<General,Fixed<M>,Fixed<1>,AT> y(A.rows(),NONINIT);
+      mult(A,x,y);
+      return y;
+    }
+  template <class AT, class Type, class Row1, class Col1, class Row2> 
+    inline Vector<Type,Var,Fixed<1>,AT> operator*(const Matrix<Type,Row1,Col1,AT> &A, const Vector<Type,Row2,Fixed<1>,AT> &x) {
+      Vector<Type,Var,Fixed<1>,AT> y(A.rows(),NONINIT);
+      mult(A,x,y);
+      return y;
+    }
+  template <class AT, class Type, class Row, class Col> 
+    inline Vector<Type,Row,Fixed<1>,AT> operator*(const Matrix<Type,Row,Col,AT> &A, const Vector<Type,Row,Fixed<1>,AT> &x) {
+      Vector<Type,Row,Fixed<1>,AT> y(A.rows(),NONINIT);
+      mult(A,x,y);
+      return y;
+    }
+  template <class AT, int M, class Type, class Col1, class Row2> 
+    inline Vector<Type,Fixed<M>,Fixed<1>,AT> operator*(const Matrix<Type,Fixed<M>,Col1,AT> &A, const Vector<Type,Row2,Fixed<1>,AT> &x) {
+      Vector<Type,Fixed<M>,Fixed<1>,AT> y(A.rows(),NONINIT);
+      mult(A,x,y);
+      return y;
+    }
+  template <class AT, int M, int N, class Type, class Row2> 
+    inline Vector<Type,Fixed<M>,Fixed<1>,AT> operator*(const Matrix<Type,Fixed<M>,Fixed<N>,AT> &A, const Vector<Type,Row2,Fixed<1>,AT> &x) {
+      Vector<Type,Fixed<M>,Fixed<1>,AT> y(A.rows(),NONINIT);
+      mult(A,x,y);
+      return y;
+    }
+  template <class AT, int M, int N, class Type> 
+    inline Vector<Type,Fixed<M>,Fixed<1>,AT> operator*(const Matrix<Type,Fixed<M>,Fixed<N>,AT> &A, const Vector<Type,Fixed<N>,Fixed<1>,AT> &x) {
+      Vector<Type,Fixed<M>,Fixed<1>,AT> y(A.rows(),NONINIT);
+      mult(A,x,y);
+      return y;
+    }
+  template <class AT, int M, class Type> 
+    inline Vector<Type,Fixed<M>,Fixed<1>,AT> operator*(const Matrix<Type,Fixed<M>,Fixed<M>,AT> &A, const Vector<Type,Fixed<M>,Fixed<1>,AT> &x) {
+      Vector<Type,Fixed<M>,Fixed<1>,AT> y(A.rows(),NONINIT);
+      mult(A,x,y);
+      return y;
+    }
 
-  template <class Type1, class Type2, class Type3, class AT>
-    inline void mult(const Matrix<Type1, AT> &A1, const Matrix<Type2, AT> &A2, Matrix<Type3, AT> &A3) {
+  // RowVector-Matrix
+  template <class Type1, class Col1, class Type2, class Row2, class Col2, class Type3, class Col3, class AT> 
+    inline void mult(const RowVector<Type1,Fixed<1>,Col1,AT> &x, const Matrix<Type2,Row2,Col2,AT> &A, RowVector<Type3,Fixed<1>,Col3,AT> &y) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(x.size() == A.rows());
+#endif
+      for(int i=0; i<y.size(); i++) {
+        y.e(i) = 0;
+        for(int j=0; j<x.size(); j++) 
+          y.e(i) += x.e(j)*A.e(j,i);
+      }
+    }
+
+  template <class AT, class Type1, class Type2, class Col2, class Row1, class Col1> 
+    inline RowVector<General,Fixed<1>,Var,AT> operator*(const RowVector<Type1,Fixed<1>,Col2,AT> &x, const Matrix<Type2,Row1,Col1,AT> &A) {
+      RowVector<General,Fixed<1>,Var,AT> y(A.rows(),NONINIT);
+      mult(x,A,y);
+      return y;
+    }
+  template <class AT, class Type1, class Type2, class Row, class Col> 
+    inline RowVector<General,Fixed<1>,Col,AT> operator*(const RowVector<Type1,Fixed<1>,Col,AT> &x, const Matrix<Type2,Row,Col,AT> &A) {
+      RowVector<General,Fixed<1>,Col,AT> y(A.rows(),NONINIT);
+      mult(x,A,y);
+      return y;
+    }
+  template <class AT, int N, class Type1, class Type2, class Col1, class Row2> 
+    inline RowVector<General,Fixed<1>,Fixed<N>,AT> operator*(const RowVector<Type1,Fixed<1>,Col1,AT> &x, const Matrix<Type2,Row2,Fixed<N>,AT> &A) {
+      RowVector<General,Fixed<1>,Fixed<N>,AT> y(A.rows(),NONINIT);
+      mult(x,A,y);
+      return y;
+    }
+  template <class AT, int N, class Type1, class Type2> 
+    inline RowVector<General,Fixed<1>,Fixed<N>,AT> operator*(const RowVector<Type1,Fixed<1>,Fixed<N>,AT> &x, const Matrix<Type2,Fixed<N>,Fixed<N>,AT> &A) {
+      RowVector<General,Fixed<1>,Fixed<N>,AT> y(A.rows(),NONINIT);
+      mult(x,A,y);
+      return y;
+    }
+  template <class AT, class Type, class Col2, class Row1, class Col1> 
+    inline RowVector<General,Fixed<1>,Var,AT> operator*(const RowVector<Type,Fixed<1>,Col2,AT> &x, const Matrix<Type,Row1,Col1,AT> &A) {
+      RowVector<General,Fixed<1>,Var,AT> y(A.rows(),NONINIT);
+      mult(x,A,y);
+      return y;
+    }
+  template <class AT, class Type, class Row, class Col> 
+    inline RowVector<General,Fixed<1>,Col,AT> operator*(const RowVector<Type,Fixed<1>,Col,AT> &x, const Matrix<Type,Row,Col,AT> &A) {
+      RowVector<General,Fixed<1>,Col,AT> y(A.rows(),NONINIT);
+      mult(x,A,y);
+      return y;
+    }
+  template <class AT, int N, class Type, class Col1, class Row2> 
+    inline RowVector<General,Fixed<1>,Fixed<N>,AT> operator*(const RowVector<Type,Fixed<1>,Col1,AT> &x, const Matrix<Type,Row2,Fixed<N>,AT> &A) {
+      RowVector<General,Fixed<1>,Fixed<N>,AT> y(A.rows(),NONINIT);
+      mult(x,A,y);
+      return y;
+    }
+  template <class AT, int N, class Type> 
+    inline RowVector<General,Fixed<1>,Fixed<N>,AT> operator*(const RowVector<Type,Fixed<1>,Fixed<N>,AT> &x, const Matrix<Type,Fixed<N>,Fixed<N>,AT> &A) {
+      RowVector<General,Fixed<1>,Fixed<N>,AT> y(A.rows(),NONINIT);
+      mult(x,A,y);
+      return y;
+    }
+
+  // Matrix-Matrix
+  template <class Type1, class Row1, class Col1, class Type2, class Row2, class Col2, class Type3, class Row3, class Col3, class AT> 
+    inline void mult(const Matrix<Type1,Row1,Col1,AT> &A1, const Matrix<Type2,Row2,Col2,AT> &A2, Matrix<Type3,Row3,Col3,AT> &A3) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A1.cols() == A2.rows());
 #endif
@@ -630,266 +967,114 @@ namespace fmatvec {
         }
       }
     }
-
-  template <class Row, class Type2, class Type3, class AT>
-    inline void mult(const Matrix<Symmetric<Row,Row>, AT> &A1, const Matrix<Type2, AT> &A2, Matrix<Type3, AT> &A3) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A1.cols() == A2.rows());
-#endif
-    for(int i=0; i<A3.rows(); i++) {
-	for(int k=0; k<A3.cols(); k++) {
-	  A3.e(i,k) = 0;
-	  for(int j=0; j<i; j++) 
-	    A3.e(i,k) += A1.ei(i,j)*A2.e(j,k);
-	  for(int j=i; j<A1.cols(); j++) 
-	    A3.e(i,k) += A1.ej(i,j)*A2.e(j,k);
-	}
-      }
-    }
-
-  template <class Type1, class Row, class Type3, class AT>
-    inline void mult(const Matrix<Type1, AT> &A1, const Matrix<Symmetric<Row,Row>, AT> &A2, Matrix<Type3, AT> &A3) {
+  template <class Row1, class Type2, class Row2, class Col2, class Type3, class Row3, class Col3, class AT> 
+    inline void mult(const Matrix<Symmetric,Row1,Row1,AT> &A1, const Matrix<Type2,Row2,Col2,AT> &A2, Matrix<Type3,Row3,Col3,AT> &A3) {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A1.cols() == A2.rows());
 #endif
       for(int i=0; i<A3.rows(); i++) {
         for(int k=0; k<A3.cols(); k++) {
           A3.e(i,k) = 0;
-          for(int j=0; j<k; j++) 
-            A3.e(i,k) += A1.e(i,j)*A2.ej(j,k);
-          for(int j=k; j<A1.cols(); j++) 
-            A3.e(i,k) += A1.e(i,j)*A2.ei(j,k);
+          for(int j=0; j<i; j++) 
+            A3.e(i,k) += A1.ei(i,j)*A2.e(j,k);
+          for(int j=i; j<A1.cols(); j++) 
+            A3.e(i,k) += A1.ej(i,j)*A2.e(j,k);
         }
       }
     }
 
-  template <class Type1, class Type2, class AT>
-    inline Matrix<General<Var,Var>, AT> operator*(const Matrix<Type1, AT> &A1, const Matrix<Type2, AT> &A2) {
-      Matrix<General<Var,Var>, AT> A3(A1.rows(),A2.cols(),NONINIT);
+  template <class AT, class Type1, class Type2, class Row1, class Col1, class Row2, class Col2> 
+    inline Matrix<General,Var,Var,AT> operator*(const Matrix<Type1,Row1,Col1,AT> &A1, const Matrix<Type2,Row2,Col2,AT> &A2) {
+      Matrix<General,Var,Var,AT> A3(A1.rows(),A2.cols(),NONINIT);
       mult(A1,A2,A3);
       return A3;
     }
-
-  template <class Row1, class Col1, class Row2, class Col2, class AT>
-    inline Matrix<General<Row1,Col2>, AT> operator*(const Matrix<General<Row1,Col1>, AT> &A1, const Matrix<General<Row2,Col2>, AT> &A2) {
-      Matrix<General<Row1,Col2>, AT> A3(A1.rows(),A2.cols(),NONINIT);
+  template <class AT, class Type1, class Type2, class Row, class Col> 
+    inline Matrix<General,Row,Col,AT> operator*(const Matrix<Type1,Row,Col,AT> &A1, const Matrix<Type2,Row,Col,AT> &A2) {
+      Matrix<General,Row,Col,AT> A3(A1.rows(),A2.cols(),NONINIT);
       mult(A1,A2,A3);
       return A3;
     }
-
-  template <class Row1, class Col1, class AT>
-    inline Matrix<General<Row1,Var>, AT> operator*(const Matrix<General<Row1,Col1>, AT> &A1, const Matrix<General<Ref,Ref>, AT> &A2) {
-      Matrix<General<Row1,Var>, AT> A3(A1.rows(),A2.cols(),NONINIT);
+  template <class AT, int M, class Type1, class Type2, class Col1, class Row2, class Col2> 
+    inline Matrix<General,Fixed<M>,Var,AT> operator*(const Matrix<Type1,Fixed<M>,Col1,AT> &A1, const Matrix<Type2,Row2,Col2,AT> &A2) {
+      Matrix<General,Fixed<M>,Var,AT> A3(A1.rows(),A2.cols(),NONINIT);
       mult(A1,A2,A3);
       return A3;
     }
-
-  template <class Row2, class Col2, class AT>
-    inline Matrix<General<Var,Col2>, AT> operator*(const Matrix<General<Ref,Ref>, AT> &A1, const Matrix<General<Row2,Col2>, AT> &A2) {
-      Matrix<General<Var,Col2>, AT> A3(A1.rows(),A2.cols(),NONINIT);
+  template <class AT, int N, class Type1, class Row1, class Col1, class Type2, class Row2> 
+    inline Matrix<General,Var,Fixed<N>,AT> operator*(const Matrix<Type1,Row1,Col1,AT> &A1, const Matrix<Type2,Row2,Fixed<N>,AT> &A2) {
+      Matrix<General,Var,Fixed<N>,AT> A3(A1.rows(),A2.cols(),NONINIT);
       mult(A1,A2,A3);
       return A3;
     }
-
-  template <class Row1, class Col1, class Row2, class Col2, class AT>
-    inline SquareMatrix<General<Row1,Col2>, AT> operator*(const SquareMatrix<General<Row1,Col1>, AT> &A1, const SquareMatrix<General<Row2,Col2>, AT> &A2) {
-      SquareMatrix<General<Row1,Col2>, AT> A3(A1.rows(),A2.cols(),NONINIT);
+  template <class AT, int M, int N, class Type1, class Type2, class Col1, class Row2> 
+    inline Matrix<General,Fixed<M>,Fixed<N>,AT> operator*(const Matrix<Type1,Fixed<M>,Col1,AT> &A1, const Matrix<Type2,Row2,Fixed<N>,AT> &A2) {
+      Matrix<General,Fixed<M>,Fixed<N>,AT> A3(A1.rows(),A2.cols(),NONINIT);
       mult(A1,A2,A3);
       return A3;
     }
-
-  template <class Row1, class Row2, class Col2, class AT>
-    inline Matrix<General<Row1,Col2>, AT> operator*(const Matrix<Symmetric<Row1,Row1>, AT> &A1, const Matrix<General<Row2,Col2 >, AT> &A2) {
-      Matrix<General<Row1,Col2>, AT> A3(A1.rows(),A2.cols(),NONINIT);
+  template <class AT, int M, class Type1, class Type2> 
+    inline Matrix<General,Fixed<M>,Fixed<M>,AT> operator*(const Matrix<Type1,Fixed<M>,Fixed<M>,AT> &A1, const Matrix<Type2,Fixed<M>,Fixed<M>,AT> &A2) {
+      Matrix<General,Fixed<M>,Fixed<M>,AT> A3(A1.rows(),A2.cols(),NONINIT);
       mult(A1,A2,A3);
       return A3;
     }
-
-  template <class Row1, class Col1, class Row2, class AT>
-    inline Matrix<General<Row1,Row2>, AT> operator*(const Matrix<General<Row1,Col1 >, AT> &A1, const Matrix<Symmetric<Row2,Row2>, AT> &A2) {
-      Matrix<General<Row1,Row2>, AT> A3(A1.rows(),A2.cols(),NONINIT);
+  template <class AT, class Type, class Row1, class Col1, class Row2, class Col2> 
+    inline Matrix<Type,Var,Var,AT> operator*(const Matrix<Type,Row1,Col1,AT> &A1, const Matrix<Type,Row2,Col2,AT> &A2) {
+      Matrix<Type,Var,Var,AT> A3(A1.rows(),A2.cols(),NONINIT);
       mult(A1,A2,A3);
       return A3;
     }
-
-  /////////////////////////////////// end matmatmult //////////////////////////////
+  template <class AT, class Type, class Row, class Col> 
+    inline Matrix<Type,Row,Col,AT> operator*(const Matrix<Type,Row,Col,AT> &A1, const Matrix<Type,Row,Col,AT> &A2) {
+      Matrix<Type,Row,Col,AT> A3(A1.rows(),A2.cols(),NONINIT);
+      mult(A1,A2,A3);
+      return A3;
+    }
+  template <class AT, int M, class Type, class Col1, class Row2, class Col2> 
+    inline Matrix<Type,Fixed<M>,Var,AT> operator*(const Matrix<Type,Fixed<M>,Col1,AT> &A1, const Matrix<Type,Row2,Col2,AT> &A2) {
+      Matrix<Type,Fixed<M>,Var,AT> A3(A1.rows(),A2.cols(),NONINIT);
+      mult(A1,A2,A3);
+      return A3;
+    }
+  template <class AT, int N, class Type, class Row1, class Col1, class Row2> 
+    inline Matrix<Type,Var,Fixed<N>,AT> operator*(const Matrix<Type,Row1,Col1,AT> &A1, const Matrix<Type,Row2,Fixed<N>,AT> &A2) {
+      Matrix<Type,Var,Fixed<N>,AT> A3(A1.rows(),A2.cols(),NONINIT);
+      mult(A1,A2,A3);
+      return A3;
+    }
+  template <class AT, int M, int N, class Type, class Col1, class Row2> 
+    inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator*(const Matrix<Type,Fixed<M>,Col1,AT> &A1, const Matrix<Type,Row2,Fixed<N>,AT> &A2) {
+      Matrix<Type,Fixed<M>,Fixed<N>,AT> A3(A1.rows(),A2.cols(),NONINIT);
+      mult(A1,A2,A3);
+      return A3;
+    }
+ // template <class AT, int M, int K, int N, class Type> 
+ //   inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator*(const Matrix<Type,Fixed<M>,Fixed<K>,AT> &A1, const Matrix<Type,Fixed<K>,Fixed<N>,AT> &A2) {
+ //     Matrix<Type,Fixed<M>,Fixed<N>,AT> A3(A1.rows(),A2.cols(),NONINIT);
+ //     mult(A1,A2,A3);
+ //     return A3;
+ //   }
+  template <class AT, int M, class Type> 
+    inline Matrix<Type,Fixed<M>,Fixed<M>,AT> operator*(const Matrix<Type,Fixed<M>,Fixed<M>,AT> &A1, const Matrix<Type,Fixed<M>,Fixed<M>,AT> &A2) {
+      Matrix<Type,Fixed<M>,Fixed<M>,AT> A3(A1.rows(),A2.cols(),NONINIT);
+      mult(A1,A2,A3);
+      return A3;
+    }
   
-  /////////////////////////////////// matvecmult //////////////////////////////
-  template <class Type1, class Type2, class Type3, class AT>
-    inline void mult(const Matrix<Type1, AT> &A, const Vector<Type2, AT> &x, Vector<Type3, AT> &y) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.cols() == x.size());
-#endif
-      for(int i=0; i<y.size(); i++) {
-        y.e(i) = 0;
-        for(int j=0; j<x.size(); j++) 
-          y.e(i) += A.e(i,j)*x.e(j);
-      }
+//  SquareMatrix-SquareMatrix
+  template <class AT, class Row1, class Row2> 
+    inline SquareMatrix<General,Var,Var,AT> operator*(const SquareMatrix<General,Row1,Row1,AT> &A1, const SquareMatrix<General,Row2,Row2,AT> &A2) {
+      SquareMatrix<General,Var,Var,AT> A3(A1.rows(),A2.cols(),NONINIT);
+      mult(A1,A2,A3);
+      return A3;
     }
-
-  template <class AT, class Type1, class Type2>
-    inline Vector<General<Var,Fixed<1> >, AT> operator*(const Matrix<Type1, AT> &A, const Vector<Type2, AT> &x) {
-      Vector<General<Var,Fixed<1> >, AT> y(A.rows(),NONINIT);
-      mult(A,x,y);
-      return y;
+  template <class AT, class Row> 
+    inline SquareMatrix<General,Row,Row,AT> operator*(const SquareMatrix<General,Row,Row,AT> &A1, const SquareMatrix<General,Row,Row,AT> &A2) {
+      SquareMatrix<General,Row,Row,AT> A3(A1.rows(),A2.cols(),NONINIT);
+      mult(A1,A2,A3);
+      return A3;
     }
-
-  template <class Row1, class Col1, class Row2, class AT>
-    inline Vector<General<Row1,Fixed<1> >, AT> operator*(const Matrix<General<Row1,Col1>, AT> &A, const Vector<General<Row2,Fixed<1> >, AT> &x) {
-      Vector<General<Row1,Fixed<1> >, AT> y(A.rows(),NONINIT);
-      mult(A,x,y);
-      return y;
-    }
-
-  template <class Row1, class Row2, class AT>
-    inline Vector<General<Row1,Fixed<1> >, AT> operator*(const Matrix<Symmetric<Row1,Row1>, AT> &A, const Vector<General<Row2,Fixed<1> >, AT> &x) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.cols() == x.size());
-#endif
-      Vector<General<Row1,Fixed<1> >, AT> y(A.rows(),NONINIT);
-      for(int i=0; i<y.size(); i++) {
-	y.e(i) = 0;
-	for(int j=0; j<i; j++) 
-	  y.e(i) += A.ei(i,j)*x.e(j);
-	for(int j=i; j<A.cols(); j++) 
-	  y.e(i) += A.ej(i,j)*x.e(j);
-      }
-      return y;
-    }
-
-  /*! \brief Matrix-vector multiplication.
-   *
-   * This function computes the product of a matrix 
-   * and a vector.
-   * \return The product.
-   * */
-  template <class AT>
-    inline Vector<General<Ref,Fixed<1> >, AT> operator*(const Matrix<General<Ref,Ref>, AT> &A, const Vector<General<Ref,Fixed<1> >, AT> &x) {
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.cols() == x.size());
-#endif
-
-      Vector<General<Ref,Fixed<1> >, AT> z(A.rows(),NONINIT);
-
-      if(x.transposed()) {
-        if(A.transposed()) {
-          for(int i=0; i<z.size(); i++) {
-            z.er(i)=0;
-            for(int j=0; j<x.size(); j++)
-              z.er(i) += A.et(i,j) * x.et(j);
-          }
-        } 
-        else {
-          for(int i=0; i<z.size(); i++) {
-            z.er(i)=0;
-            for(int j=0; j<x.size(); j++)
-              z.er(i) += A.er(i,j) * x.et(j);
-          }
-        }
-      }
-      else {
-        if(A.transposed()) {
-          for(int i=0; i<z.size(); i++) {
-            z.er(i)=0;
-            for(int j=0; j<x.size(); j++)
-              z.er(i) += A.et(i,j) * x.er(j);
-          }
-        } 
-        else {
-          for(int i=0; i<z.size(); i++) {
-            z.er(i)=0;
-            for(int j=0; j<x.size(); j++)
-              z.er(i) += A.er(i,j) * x.er(j);
-          }
-        }
-      } 
-
-      return z;
-    }
-
-  /*! \brief Matrix-vector multiplication.
-   *
-   * This function computes the product of a sparse matrix
-   * and a vector.
-   * \return The product.
-   * */
-  template <class AT, class Type> 
-    Vector<General<Ref,Fixed<1> >, AT> operator*(const Matrix<Sparse<Ref,Ref>, AT> &A, const Vector<Type, AT> &x) {
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.cols() == x.size());
-#endif
-
-      Vector<General<Ref,Fixed<1> >, AT> z(A.rows(),NONINIT);
-
-      const AT *a = A();
-      const int *ia = A.Ip();
-      const int *ja = A.Jp();
-      for(int i=0; i<A.rows(); i++) {
-        z.e(i) = 0;
-        for(int j=ia[i]; j<ia[i+1]; j++)
-          z.e(i) += a[j]*x.e(ja[j]);
-      }
-
-      return z;
-    }
-
-  /////////////////////////////////// end matvecmult //////////////////////////////
-  //
-  /////////////////////////////////// rowvecmatmult //////////////////////////////
-  template <class Type1, class Type2, class Type3, class AT>
-    inline void mult(const Vector<Type1, AT> &x, const Matrix<Type2, AT> &A, RowVector<Type3, AT> &y) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(x.size() == A.rows());
-#endif
-      for(int i=0; i<y.size(); i++) {
-	y.e(i) = 0;
-	for(int j=0; j<x.size(); j++) 
-	  y.e(i) += x.e(j)*A.e(j,i);
-      }
-    }
-
-  template <class AT, class Type1, class Type2>
-    inline RowVector<General<Fixed<1>,Var>, AT> operator*(const RowVector<Type1, AT> &x, const Matrix<Type2, AT> &A) {
-      RowVector<General<Fixed<1>,Var>, AT> y(A.cols(),NONINIT);
-      mult(x,A,y);
-      return y;
-    }
-
-  template <class Col1, class Row2, class Col2, class AT>
-    inline RowVector<General<Fixed<1>,Col2>, AT> operator*(const RowVector<General<Fixed<1>,Col1>, AT> &x, const Matrix<General<Row2,Col2>, AT> &A) {
-      RowVector<General<Fixed<1>,Col2>, AT> y(A.cols(),NONINIT);
-      mult(x,A,y);
-      return y;
-    }
-
-//  /*! \brief Vector-matrix multiplication.
-//   *
-//   * This function computes the product of a vector 
-//   * and a matrix.
-//   * \return The product.
-//   * */
-//  template <class AT, class Type> 
-//    RowVector<General<Fixed<1>,Ref>, AT> operator*(const RowVector<General<Fixed<1>,Ref>, AT> &x, const Matrix<Type, AT> &A) {
-//
-//#ifndef FMATVEC_NO_SIZE_CHECK
-//      assert(x.size() == A.rows());
-//#endif
-//
-//      RowVector<General<Fixed<1>,Ref>, AT> z(A.cols(),NONINIT);
-//
-//      for(int i=0; i<z.size(); i++) {
-//        z(i)=0;
-//        for(int j=0; j<x.size(); j++)
-//          z.e(i) += x.e(j) * A.e(j,i);
-//      }
-//
-//      return z;
-//    }
-
-  /////////////////////////////////// end rowvecmatmult //////////////////////////////
-  //
   /////////////////////////////////// end vecscalmult //////////////////////////////
 
   /*! \brief Vector-scalar multiplication.
@@ -899,9 +1084,9 @@ namespace fmatvec {
    * \return The product.
    * */
   template <class Row, class AT>
-    Vector<General<Row,Fixed<1> >, AT> operator*(const Vector<General<Row,Fixed<1> >, AT> &x, const AT& alpha) {
+    Vector<General,Row,Fixed<1>,AT> operator*(const Vector<General,Row,Fixed<1>,AT> &x, const AT& alpha) {
 
-      Vector<General<Row,Fixed<1> >, AT> y(x.size(),NONINIT);
+      Vector<General,Row,Fixed<1>,AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++) 
         y.e(i) = x.e(i)*alpha;
@@ -911,12 +1096,12 @@ namespace fmatvec {
 
   /*! \brief Scalar-vector multiplication.
    *
-   * \see operator*(const Vector<General<Ref,Fixed<1> >, AT>&x,const AT&).
+   * \see operator*(const Vector<General,Ref,Fixed<1>,AT>&x,const AT&).
    * */
   template <class Row, class AT>
-    Vector<General<Row,Fixed<1> >, AT> operator*(const AT& alpha, const Vector<General<Row,Fixed<1> >, AT> &x) {
+    Vector<General,Row,Fixed<1>,AT> operator*(const AT& alpha, const Vector<General,Row,Fixed<1>,AT> &x) {
 
-      Vector<General<Row,Fixed<1> >, AT> y(x.size(),NONINIT);
+      Vector<General,Row,Fixed<1>,AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++) 
         y.e(i) = x.e(i)*alpha;
@@ -924,6 +1109,29 @@ namespace fmatvec {
       return y;
     }
 
+  template <class Row, class AT>
+    inline Vector<General,Row,Fixed<1>,AT> operator*=(const Vector<General,Row,Fixed<1>,AT> &x_, const AT &a) {
+      Vector<General,Row,Fixed<1>,AT> &x = const_cast<Vector<General,Row,Fixed<1>,AT> &>(x_);
+      for(int i=0; i<x.size(); i++)
+	x.e(i) *= a;
+      return x;
+    }
+
+  template <class Row, class AT>
+    inline Vector<General,Row,Fixed<1>,AT> operator/(const Vector<General,Row,Fixed<1>,AT> &x, const AT &a) {
+      Vector<General,Row,Fixed<1>,AT> y(x.size(),NONINIT);
+      for(int i=0; i<x.size(); i++)
+	y.e(i) = x.e(i)/a;
+      return y;
+    }
+
+  template <class Row, class AT>
+    inline Vector<General,Row,Fixed<1>,AT> operator/=(const Vector<General,Row,Fixed<1>,AT> &x_, const AT &a) {
+      Vector<General,Row,Fixed<1>,AT> &x = const_cast<Vector<General,Row,Fixed<1>,AT> &>(x_);
+      for(int i=0; i<x.size(); i++)
+	x.e(i) /= a;
+      return x;
+    }
   /*! \brief Rowvector-scalar multiplication.
    *
    * This function computes the product of a rowvector 
@@ -931,9 +1139,9 @@ namespace fmatvec {
    * \return The product.
    * */
   template <class Col, class AT>
-    RowVector<General<Fixed<1>,Col>, AT> operator*(const RowVector<General<Fixed<1>,Col>, AT> &x, const AT& alpha) {
+    RowVector<General,Fixed<1>,Col,AT> operator*(const RowVector<General,Fixed<1>,Col,AT> &x, const AT& alpha) {
 
-      RowVector<General<Fixed<1>,Col>, AT> y(x.size(),NONINIT);
+      RowVector<General,Fixed<1>,Col,AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++) 
         y.e(i) = x.e(i)*alpha;
@@ -946,9 +1154,9 @@ namespace fmatvec {
    * \see operator*(const RowVector<General<Fixed<1>,Col>, AT>&, const AT&).
    * */
   template <class Col, class AT>
-    RowVector<General<Fixed<1>,Col>, AT> operator*(const AT &alpha, const RowVector<General<Fixed<1>,Col>, AT> &x) {
+    RowVector<General,Fixed<1>,Col,AT> operator*(const AT &alpha, const RowVector<General,Fixed<1>,Col,AT> &x) {
 
-      RowVector<General<Fixed<1>,Col>, AT> y(x.size(),NONINIT);
+      RowVector<General,Fixed<1>,Col,AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++) 
         y.e(i) = x.e(i)*alpha;
@@ -956,18 +1164,42 @@ namespace fmatvec {
       return y;
     }
 
+  template <class Col, class AT>
+    inline RowVector<General,Fixed<1>,Col,AT> operator*=(const RowVector<General,Fixed<1>,Col,AT> &x_, const AT &a) {
+      RowVector<General,Fixed<1>,Col,AT> &x = const_cast<RowVector<General,Fixed<1>,Col,AT> &>(x_);
+      for(int i=0; i<x.size(); i++)
+	x.e(i) *= a;
+      return x;
+    }
+
+  template <class Col, class AT>
+    inline RowVector<General,Fixed<1>,Col,AT> operator/(const RowVector<General,Fixed<1>,Col,AT> &x, const AT &a) {
+      RowVector<General,Fixed<1>,Col,AT> y(x.size(),NONINIT);
+      for(int i=0; i<x.size(); i++)
+	y.e(i) = x.e(i)/a;
+      return y;
+    }
+
+  template <class Col, class AT>
+    inline RowVector<General,Fixed<1>,Col,AT> operator/=(const RowVector<General,Fixed<1>,Col,AT> &x_, const AT &a) {
+      RowVector<General,Fixed<1>,Col,AT> &x = const_cast<RowVector<General,Fixed<1>,Col,AT> &>(x_);
+      for(int i=0; i<x.size(); i++)
+	x.e(i) /= a;
+      return x;
+    }
+
   /////////////////////////////////// end vecscalmult //////////////////////////////
-  
+
   /////////////////////////////////// end vecvecmult //////////////////////////////
 
-   /*! \brief Scalar product.
+  /*! \brief Scalar product.
    *
    * This function computes the product of a vector and a rowvector. The result is
    * a scalar.
    * \return The product.
    * */
   template <class Col, class Row, class AT> 
-    AT operator*(const RowVector<General<Fixed<1>,Col>, AT> &x, const Vector<General<Row,Fixed<1> >, AT> &y) {
+    AT operator*(const RowVector<General,Fixed<1>,Col,AT> &x, const Vector<General,Row,Fixed<1>,AT> &y) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size() == y.size());
@@ -987,7 +1219,7 @@ namespace fmatvec {
    * \return The scalar product.
    * */
   template <class Row, class AT>
-    AT scalarProduct(const Vector<General<Row,Fixed<1> >, AT> &x, const Vector<General<Row,Fixed<1> >, AT> &y) {
+    AT scalarProduct(const Vector<General,Row,Fixed<1>,AT> &x, const Vector<General,Row,Fixed<1>,AT> &y) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size()==y.size());
@@ -1007,14 +1239,14 @@ namespace fmatvec {
    * \return The cross product.
    * */
   template <class Row, class AT>
-    Vector<General<Row,Fixed<1> >, AT> crossProduct(const Vector<General<Row,Fixed<1> >, AT> &x, const Vector<General<Row,Fixed<1> >, AT> &y) {
+    Vector<General,Row,Fixed<1>,AT> crossProduct(const Vector<General,Row,Fixed<1>,AT> &x, const Vector<General,Row,Fixed<1>,AT> &y) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size()==3);
       assert(y.size()==3);
 #endif
 
-      Vector<General<Row,Fixed<1> >, AT> z(3,NONINIT);
+      Vector<General,Row,Fixed<1>,AT> z(3,NONINIT);
 
       z.e(0) = x.e(1)*y.e(2) - x.e(2)*y.e(1);
       z.e(1) = x.e(2)*y.e(0) - x.e(0)*y.e(2);
@@ -1029,7 +1261,7 @@ namespace fmatvec {
    * \return The triple product.
    * */
   template <class Row, class AT>
-    double tripleProduct(const Vector<General<Row,Fixed<1> >, AT> &a, const Vector<General<Row,Fixed<1> >, AT> &x, const Vector<General<Row,Fixed<1> >, AT> &y) {
+    double tripleProduct(const Vector<General,Row,Fixed<1>,AT> &a, const Vector<General,Row,Fixed<1>,AT> &x, const Vector<General,Row,Fixed<1>,AT> &y) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(a.size()==3);
@@ -1052,10 +1284,10 @@ namespace fmatvec {
    * \param alpha The scalar. 
    * \return The product.
    * */
-  template <class Row, class Col, class AT>
-    Matrix<General<Row,Col>, AT> operator*(const Matrix<General<Row,Col>, AT > &A, const AT &alpha) {
+  template <class Type, class Row, class Col, class AT>
+    Matrix<Type,Row,Col,AT> operator*(const Matrix<Type,Row,Col,AT > &A, const AT &alpha) {
 
-      Matrix<General<Row,Col>, AT> B(A.rows(),A.cols(),NONINIT);
+      Matrix<Type,Row,Col,AT> B(A.rows(),A.cols(),NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
         for(int j=0; j<A.cols(); j++) 
@@ -1064,24 +1296,38 @@ namespace fmatvec {
       return B;
     }
 
-  /*! \brief Scalar-matrix multiplication.
-   *
-   * \see operator*(const Matrix<Type, AT >&, const AT&).
-   * */
-  template <class Row, class Col, class AT>
-    Matrix<General<Row,Col>, AT> operator*(const AT &alpha, const Matrix<General<Row,Col>, AT > &A) {
+  template <class Type, class Row, class Col, class AT>
+    Matrix<Type,Row,Col,AT> operator*(const AT &alpha, const Matrix<Type,Row,Col,AT > &A) {
 
-      Matrix<General<Row,Col>, AT> B(A.rows(),A.cols(),NONINIT);
+      Matrix<Type,Row,Col,AT> B(A.rows(),A.cols(),NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
         for(int j=0; j<A.cols(); j++) 
           B.e(i,j) = A.e(i,j)*alpha;
 
+      return B;
+    }
+  
+  template <class Row, class AT>
+   inline Matrix<Symmetric,Row,Row,AT> operator*(const AT &a, const Matrix<Symmetric,Row,Row,AT> &A) {
+     Matrix<Symmetric,Row,Row,AT> B(A.size(),NONINIT);
+     for(int i=0; i<A.size(); i++)
+       for(int j=i; j<A.size(); j++)
+         B.ej(i,j) = a*A.ej(i,j);
+     return B;
+   }
+
+  template <class Row, class AT>
+    inline Matrix<Symmetric,Row,Row,AT> operator*(const Matrix<Symmetric,Row,Row,AT> &A, const AT &a) {
+      Matrix<Symmetric,Row,Row,AT> B(A.size(),NONINIT);
+      for(int i=0; i<A.size(); i++)
+        for(int j=i; j<A.size(); j++)
+          B.ej(i,j) = a*A.ej(i,j);
       return B;
     }
 
   /////////////////////////////////// end matscalmult //////////////////////////////
- 
+
   /////////////////////////////////// negation //////////////////////////////
 
   /*! \brief Negation.
@@ -1089,10 +1335,10 @@ namespace fmatvec {
    * This function computes the negation of a vector.
    * \return The negation.
    * */
-  template <class AT>
-    Vector<General<Ref,Fixed<1> >, AT> operator-(const Vector<General<Ref,Fixed<1> >, AT> &x) {
+  template <class Type, class Row, class AT>
+    Vector<Type,Row,Fixed<1>,AT> operator-(const Vector<Type,Row,Fixed<1>,AT> &x) {
 
-      Vector<General<Ref,Fixed<1> >, AT> y(x.size(),NONINIT);
+      Vector<Type,Row,Fixed<1>,AT> y(x.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++)
         y.e(i)=-x.e(i);
@@ -1105,10 +1351,10 @@ namespace fmatvec {
    * This function computes the negation of a rowvector.
    * \return The negation.
    * */
-  template <class AT>
-    RowVector<General<Fixed<1>,Ref>, AT> operator-(const RowVector<General<Fixed<1>,Ref>, AT> &a) {
+  template <class Type, class Col, class AT>
+    RowVector<Type,Fixed<1>,Col,AT> operator-(const RowVector<Type,Fixed<1>,Col,AT> &a) {
 
-      RowVector<General<Fixed<1>,Ref>, AT> c(a.size(),NONINIT);
+      RowVector<Type,Fixed<1>,Col,AT> c(a.size(),NONINIT);
 
       for(int i=0; i<a.size(); i++)
         c.e(i)=-a.e(i);
@@ -1116,15 +1362,32 @@ namespace fmatvec {
       return c;
     }
 
- /*! \brief Negation.
+  /*! \brief Negation.
    *
    * This function computes the negation of a vector.
    * \return The negation.
    * */
-  template <class AT>
-    SquareMatrix<General<Ref,Ref>, AT> operator-(const SquareMatrix<General<Ref,Ref>, AT> &A) {
+  template <class Type, class Row, class AT>
+    SquareMatrix<Type,Row,Row,AT> operator-(const SquareMatrix<Type,Row,Row,AT> &A) {
 
-      SquareMatrix<General<Ref,Ref>, AT> B(A.size(),NONINIT);
+      SquareMatrix<Type,Row,Row,AT> B(A.size(),NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+        for(int j=0; j<A.cols(); j++)
+          B.e(i,j)=-A.e(i,j);
+
+      return B;
+    }
+
+  /*! \brief Negation.
+   *
+   * This function computes the negation of a vector.
+   * \return The negation.
+   * */
+  template <class Type, class Row, class Col, class AT>
+    Matrix<Type,Row,Col,AT> operator-(const Matrix<Type,Row,Col,AT> &A) {
+
+      Matrix<Type,Row,Col,AT> B(A.rows(),A.cols(),NONINIT);
 
       for(int i=0; i<A.rows(); i++)
         for(int j=0; j<A.cols(); j++)
@@ -1142,11 +1405,10 @@ namespace fmatvec {
    * \return The transpose.
    * */
   template <class AT>
-    RowVector<General<Fixed<1>,Ref>, AT> trans(const Vector<General<Ref,Fixed<1> >, AT> &x) {
+    RowVector<General,Fixed<1>,Ref,AT> trans(const Vector<General,Ref,Fixed<1>,AT> &x) {
 
-      return RowVector<General<Fixed<1>,Ref>, AT>(x.m,x.lda,x.tp?false:true,x.memory,x.ele).copy();
+      return RowVector<General,Fixed<1>,Ref,AT>(x.m,x.lda,x.tp?false:true,x.memory,x.ele).copy();
     }
-
 
   /*! \brief Transpose of a rowvector.
    *
@@ -1156,9 +1418,9 @@ namespace fmatvec {
    * \return The transpose.
    * */
   template <class AT>
-    Vector<General<Ref,Fixed<1> >, AT> trans(const RowVector<General<Fixed<1>,Ref>, AT> &x) {
+    Vector<General,Ref,Fixed<1>,AT> trans(const RowVector<General,Fixed<1>,Ref,AT> &x) {
 
-      return Vector<General<Ref,Fixed<1> >, AT>(x.n,x.lda,x.tp?false:true,x.memory,x.ele).copy();
+      return Vector<General,Ref,Fixed<1>,AT>(x.n,x.lda,x.tp?false:true,x.memory,x.ele).copy();
     }
 
   /*! \brief Transpose of a matrix.
@@ -1170,9 +1432,9 @@ namespace fmatvec {
    * \return The transpose.
    * */
   template <class AT>
-    Matrix<General<Ref,Ref>, AT> trans(const Matrix<General<Ref,Ref>, AT> &A) {
+    Matrix<General,Ref,Ref,AT> trans(const Matrix<General,Ref,Ref,AT> &A) {
 
-      return Matrix<General<Ref,Ref>, AT>(A.n,A.m,A.lda,A.tp?false:true,A.memory,A.ele).copy();
+      return Matrix<General,Ref,Ref,AT>(A.n,A.m,A.lda,A.tp?false:true,A.memory,A.ele).copy();
     }
 
   /*! \brief Transpose of a matrix.
@@ -1184,32 +1446,45 @@ namespace fmatvec {
    * \return The transpose.
    * */
   template <class AT>
-    SquareMatrix<General<Ref,Ref>, AT> trans(const SquareMatrix<General<Ref,Ref>, AT> &A) {
+    SquareMatrix<General,Ref,Ref,AT> trans(const SquareMatrix<General,Ref,Ref,AT> &A) {
 
-      return SquareMatrix<General<Ref,Ref>, AT>(A.n, A.lda, A.tp?false:true, A.memory, A.ele).copy();
+      return SquareMatrix<General,Ref,Ref,AT>(A.n, A.lda, A.tp?false:true, A.memory, A.ele).copy();
     }
 
+  template <class Type, class Row, class Col, class AT>
+    inline Matrix<Type,Col,Row,AT> trans(const Matrix<Type,Row,Col,AT> &A) {
+      Matrix<Type,Col,Row,AT> B(NONINIT);
+      for(int i=0; i<B.rows(); i++)
+        for(int j=0; j<B.cols(); j++)
+          B.e(i,j) = A.e(j,i);
+      return B;
+    }
+
+  template <class Row, class AT>
+    inline SquareMatrix<General,Row,Row,AT> trans(const SquareMatrix<General,Row,Row,AT> &A) {
+      SquareMatrix<General,Row,Row,AT> B(NONINIT);
+      for(int i=0; i<B.size(); i++)
+        for(int j=0; j<B.size(); j++)
+          B.e(i,j) = A.e(j,i);
+      return B;
+    }
   /////////////////////////////////// end transpose //////////////////////////////
 
+  template <class Row, class AT>
+    inline AT nrm2(const Vector<General,Row,Fixed<1>,AT> &x) {
+      AT c = 0;
+      for(int i=0; i<x.size(); i++)
+        c += pow(x.e(i),2);
+      return sqrt(c);
+    }
 
- 
-  ///////  /*! \brief Negation.
-  ///////   *
-  ///////   * This function computes the negation of a matrix
-  ///////   * \return The negation. 
-  ///////   * */
-  ///////  template <class AT, class Type>
-  ///////    Matrix<Type, AT> operator-(const Matrix<Type, AT> &A) {
-  ///////
-  ///////      Matrix<Type, AT> C(A.rows(),A.cols(),NONINIT);
-  ///////
-  ///////      for(int i=0; i<A.rows(); i++)
-  ///////	for(int j=0; j<A.cols(); j++)
-  ///////	  C(i,j)=-A(i,j);
-  ///////
-  ///////      return C;
-  ///////    }
-
+  template <class Col, class AT>
+    inline AT nrm2(const RowVector<General,Fixed<1>,Col,AT> &x) {
+      AT c = 0;
+      for(int i=0; i<x.size(); i++)
+        c += pow(x.e(i),2);
+      return sqrt(c);
+    }
 
   /*! \brief Tilde operator
    *
@@ -1222,10 +1497,10 @@ namespace fmatvec {
    *  \tilde x = \begin{pmatrix} 0 & -x_3 & x_2 \\ x_3 &  0 & -x_1 \\ -x_2 & x_1 & 0\end{pmatrix}
    *  \f]
    * */
-  template <class AT>
-    SquareMatrix<General<Ref,Ref>, AT> tilde(const Vector<General<Ref,Fixed<1> >, AT> &x) {
+  template <class Type, class Row, class AT>
+    SquareMatrix<Type,Row,Row,AT> tilde(const Vector<Type,Row,Fixed<1>,AT> &x) {
 
-      SquareMatrix<General<Ref,Ref>, AT> B(x.size(),NONINIT);
+      SquareMatrix<Type,Row,Row,AT> B(x.size(),NONINIT);
 
       B.e(0,0) =  0;
       B.e(1,1) =  0;
@@ -1240,48 +1515,46 @@ namespace fmatvec {
       return B;
     }
 
+  /*! \brief Matrix-matrix comparison.
+   *
+   * This function compares two matrices
+   * \return True, if the matrices are identical, false otherwise.
+   * */
+  template <class AT, class Type1, class Row1, class Col1, class Type2, class Row2, class Col2> 
+    bool operator==(const Matrix<Type1,Row1,Col1,AT> &A, const Matrix<Type2,Row2,Col2,AT > &B) {
 
-  ////////
-  ////////   /*! \brief Matrix-matrix comparison.
-  ////////   *
-  ////////   * This function compares two matrices
-  ////////   * \return True, if the matrices are identical, false otherwise.
-  ////////   * */
-  ////////  template <class AT, class Type1, class Type2> 
-  ////////    bool operator==(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
-  ////////
-  ////////      if(&A == &B)
-  ////////	return true;
-  ////////
-  ////////      if(A.rows() != B.rows() || A.cols() != B.cols())
-  ////////	return false;
-  ////////
-  ////////      for(int i=0; i<A.rows(); i++) 
-  ////////	for(int j=0; j<A.cols(); j++)
-  ////////	  if(A(i,j)!=B(i,j))
-  ////////	    return false;
-  ////////
-  ////////      return true;
-  ////////    }
-  ////////
-  ////////   /*! \brief Matrix-matrix comparison.
-  ////////   *
-  ////////   * This function compares two matrices.
-  ////////   * \return True, if the matrices are different, false otherwise.
-  ////////   * */
-  ////////  template <class AT, class Type1, class Type2> 
-  ////////    bool operator!=(const Matrix<Type1, AT> &A, const Matrix<Type2, AT > &B) {
-  ////////
-  ////////      if(A.rows() != B.rows() || A.cols() != B.cols())
-  ////////	return true;
-  ////////
-  ////////      for(int i=0; i<A.rows(); i++) 
-  ////////	for(int j=0; j<A.cols(); j++)
-  ////////	  if(A(i,j)!=B(i,j))
-  ////////	    return true;
-  ////////
-  ////////      return false;
-  ////////    }
+      if(&A == &B)
+        return true;
+
+      if(A.rows() != B.rows() || A.cols() != B.cols())
+        return false;
+
+      for(int i=0; i<A.rows(); i++) 
+        for(int j=0; j<A.cols(); j++)
+          if(A(i,j)!=B(i,j))
+            return false;
+
+      return true;
+    }
+
+  /*! \brief Matrix-matrix comparison.
+   *
+   * This function compares two matrices.
+   * \return True, if the matrices are different, false otherwise.
+   * */
+  template <class AT, class Type1, class Row1, class Col1, class Type2, class Row2, class Col2> 
+    bool operator!=(const Matrix<Type1,Row1,Col1,AT> &A, const Matrix<Type2,Row2,Col2,AT > &B) {
+
+      if(A.rows() != B.rows() || A.cols() != B.cols())
+        return true;
+
+      for(int i=0; i<A.rows(); i++) 
+        for(int j=0; j<A.cols(); j++)
+          if(A(i,j)!=B(i,j))
+            return true;
+
+      return false;
+    }
 
 
   /*! \brief Maximum value.
@@ -1289,8 +1562,8 @@ namespace fmatvec {
    * This function computes the maximum value of a vector.
    * \return The maximum value.
    * */
-  template <class AT>
-    AT max(const Vector<General<Ref,Fixed<1> >, AT> &x) {
+  template <class Type, class Row, class AT>
+    AT max(const Vector<Type,Row,Fixed<1>,AT> &x) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size() > 0);
@@ -1308,8 +1581,8 @@ namespace fmatvec {
    * This function computes the index of the maximum value of a vector
    * \return The index of the maximum value.
    * */
-  template <class AT>
-    int maxIndex(const Vector<General<Ref,Fixed<1> >, AT> &x) {
+  template <class Type, class Row, class AT>
+    int maxIndex(const Vector<Type,Row,Fixed<1>,AT> &x) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size() > 0);
@@ -1330,8 +1603,8 @@ namespace fmatvec {
    * This function computes the minimum value of a vector.
    * \return The minimum value.
    * */
-  template <class AT>
-    AT min(const Vector<General<Ref,Fixed<1> >, AT> &x) {
+  template <class Type, class Row, class AT>
+    AT min(const Vector<Type,Row,Fixed<1>,AT> &x) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size() > 0);
@@ -1349,8 +1622,8 @@ namespace fmatvec {
    * This function computes the index of the minimum value of a vector
    * \return The index of the minimum value.
    * */
-  template <class AT>
-    int minIndex(const Vector<General<Ref,Fixed<1> >, AT> &x) {
+  template <class Type, class Row, class AT>
+    int minIndex(const Vector<Type,Row,Fixed<1>,AT> &x) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(x.size() > 0);
@@ -1374,16 +1647,16 @@ namespace fmatvec {
    * \param PivotCol Column of A used as sorting index 
    */
   template <class AT>
-    Matrix<General<Ref,Ref>, AT> bubbleSort(const Matrix<General<Ref,Ref>, AT> &A_, int PivotCol) {
+    Matrix<General,Ref,Ref,AT> bubbleSort(const Matrix<General,Ref,Ref,AT> &A_, int PivotCol) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A_.rows()>0);
       assert(A_.cols()>0);
       assert(A_.cols()> PivotCol);
 #endif
-      Matrix<General<Ref,Ref>, AT> A = A_.copy();
+      Matrix<General,Ref,Ref,AT> A = A_.copy();
       int i,j,N;
-      RowVector<General<Fixed<1>,Ref>, AT> tmp;
+      RowVector<General,Fixed<1>,Ref,AT> tmp;
       N = A.rows();
       for (i=1; i<= N-1; i++) {
         for (j=0; j< N-1; j++) {
@@ -1400,7 +1673,7 @@ namespace fmatvec {
   // HR 28.09.2006
   /*! internal function of QuickSortMedian */
   template <class AT>
-    void quicksortmedian_intern(Matrix<General<Ref,Ref>, AT> &A, int PivotCol, RowVector<General<Fixed<1>,Ref>, AT> &tmp, int l, int r){
+    void quicksortmedian_intern(Matrix<General,Ref,Ref,AT> &A, int PivotCol, RowVector<General,Fixed<1>,Ref,AT> &tmp, int l, int r){
 
       if(r>l){
         int i=l-1, j=r;
@@ -1447,10 +1720,10 @@ namespace fmatvec {
    * \param PivotCol Column of A used as sorting index 
    */
   template <class AT>
-    Matrix<General<Ref,Ref>, AT> quickSortMedian(const Matrix<General<Ref,Ref>, AT> &A_, int PivotCol) {
-      Matrix<General<Ref,Ref>, AT> A = A_.copy();
+    Matrix<General,Ref,Ref,AT> quickSortMedian(const Matrix<General,Ref,Ref,AT> &A_, int PivotCol) {
+      Matrix<General,Ref,Ref,AT> A = A_.copy();
       int N = A.rows();
-      RowVector<General<Fixed<1>,Ref>, AT> tmp;
+      RowVector<General,Fixed<1>,Ref,AT> tmp;
       quicksortmedian_intern(A, PivotCol,tmp, 0, N-1);
       return A;
     }
@@ -1461,7 +1734,7 @@ namespace fmatvec {
    * elements are treated as NONZERO!!! (See the storage format for sparse matrix)
    * \return The number of nonzero or diagonal elemets.
    * */
-  template <class AT> int countElements(const SquareMatrix<General<Ref,Ref>, AT> &A) { 
+  template <class AT> int countElements(const SquareMatrix<General,Ref,Ref,AT> &A) { 
     int k=0;
     for(int i=0; i<A.size(); i++) {
       for(int j=0; j<A.size(); j++) {
@@ -1472,6 +1745,51 @@ namespace fmatvec {
     }
     return k;
   }
+
+  template <class Row, class Col, class AT>
+    inline Matrix<Symmetric,Col,Col,AT> JTJ(const Matrix<General,Row,Col,AT> &A) { 
+      Matrix<Symmetric,Col,Col,AT> S(A.cols(),NONINIT);
+      for(int i=0; i<A.cols(); i++) {
+        for(int k=i; k<A.cols(); k++) {
+          S.ej(i,k) = 0;
+          for(int j=0; j<A.rows(); j++) 
+            S.ej(i,k) += A.e(j,i)*A.e(j,k);
+        }
+      }
+      return S;
+    }
+
+  template <class Row, class Col, class AT>
+    inline Matrix<Symmetric,Col,Col,AT> JTMJ(const Matrix<Symmetric,Row,Row,AT> &B, const Matrix<General,Row,Col,AT> &A) {
+
+      Matrix<Symmetric,Col,Col,AT> S(A.cols(),NONINIT);
+      Matrix<General,Row,Col,AT> C = B*A;
+
+      for(int i=0; i<A.cols(); i++) {
+        for(int k=i; k<A.cols(); k++) {
+          S.ej(i,k) = 0;
+          for(int j=0; j<A.rows(); j++) 
+            S.ej(i,k) += A.e(j,i)*C.e(j,k);
+        }
+      }
+      return S;
+    }
+
+  template <class Row, class Col, class AT>
+    inline Matrix<Symmetric,Row,Row,AT> JMJT(const Matrix<General,Row,Col,AT> &A, const Matrix<Symmetric,Col,Col,AT> &B) {
+
+      Matrix<Symmetric,Row,Row,AT> S(A.rows(),NONINIT);
+      Matrix<General,Row,Col,AT> C = A*B;
+
+      for(int i=0; i<S.size(); i++) {
+        for(int k=i; k<S.size(); k++) {
+          S.ej(i,k) = 0;
+          for(int j=0; j<A.cols(); j++) 
+            S.ej(i,k) += C.e(k,j)*A.e(i,j);
+        }
+      }
+      return S;
+    }
 
 
 }

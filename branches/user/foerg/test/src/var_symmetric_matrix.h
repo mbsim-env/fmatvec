@@ -34,7 +34,7 @@ namespace fmatvec {
    * atomic type of the matrix. Valid types are int, float,
    * double, complex<float> and complex<double> 
    * */
-  template <class AT> class Matrix<Symmetric<Var,Var>, AT> {
+  template <class AT> class Matrix<Symmetric,Var,Var,AT> {
 
     protected:
 
@@ -44,7 +44,8 @@ namespace fmatvec {
 
       AT *ele;
 
-      inline void deepCopy(const Matrix<Symmetric<Var,Var>, AT> &A); 
+      template <class Type, class Row, class Col> inline void deepCopy(const Matrix<Type,Row,Col,AT> &A); 
+      template <class Row> inline void deepCopy(const Matrix<Symmetric,Row,Row,AT> &A); 
 
     /// @endcond
 
@@ -81,6 +82,17 @@ namespace fmatvec {
 	}
       }
 
+      Matrix(int m, int n, Initialization ini, const AT a=0) : M(m), ele(new AT[M*M]) {  
+
+	if(ini == INIT)
+	  init(a);
+	else if(ini == EYE) {	 
+	  init(0);
+	  for(int i=0; i<M; i++) 
+	    ej(i,i) = 1;
+	}
+      }
+
       /*! \brief Copy Constructor
        *
        * Constructs a reference to the matrix \em A.
@@ -88,22 +100,22 @@ namespace fmatvec {
        * referenced.
        * \param A The matrix that will be referenced.
        * */
-      Matrix(const Matrix<Symmetric<Var,Var>, AT> &A) : M(A.M), ele(new AT[M*M])  {
+      Matrix(const Matrix<Symmetric,Var,Var,AT> &A) : M(A.M), ele(new AT[M*M])  {
 	deepCopy(A);
       }
 
 
       /*! \brief Element operator
        *
-       * See Matrix(const Matrix<Symmetric<Var,Var>,AT>&) 
+       * See Matrix(const Matrix<Symmetric,Var,Var,T>&) 
        * */
       template<int M>
-      explicit Matrix(const Matrix<General<Fixed<M>,Fixed<M> >, AT>&  A) : M(A.M), ele(new AT[M*M]) {
+      explicit Matrix(const Matrix<General,Fixed<M>,Fixed<M>,AT>&  A) : M(A.M), ele(new AT[M*M]) {
 	deepCopy(A);
       }
 
-      template<class Type>
-      explicit Matrix(const Matrix<Type, AT> &A) : M(A.rows()), ele(new AT[M*M])  {
+      template<class Type, class Row, class Col>
+      explicit Matrix(const Matrix<Type,Row,Col,AT> &A) : M(A.rows()), ele(new AT[M*M])  {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
 	assert(A.rows() == M); 
@@ -125,7 +137,7 @@ namespace fmatvec {
        * \param A The matrix to be assigned. 
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<Symmetric<Var,Var>, AT>& operator=(const Matrix<Symmetric<Var,Var>, AT> &A);
+      inline Matrix<Symmetric,Var,Var,AT>& operator=(const Matrix<Symmetric,Var,Var,AT> &A);
 
       /*! \brief Element operator
        *
@@ -254,7 +266,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<Symmetric<Var,Var>, AT>& init(const AT &a);
+      inline Matrix<Symmetric,Var,Var,AT>& init(const AT &a);
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -264,7 +276,7 @@ namespace fmatvec {
   };
 
   template <class AT>
-    inline Matrix<Symmetric<Var,Var>, AT>& Matrix<Symmetric<Var,Var>, AT>::operator=(const Matrix<Symmetric<Var,Var>, AT> &A) { 
+    inline Matrix<Symmetric,Var,Var,AT>& Matrix<Symmetric,Var,Var,AT>::operator=(const Matrix<Symmetric,Var,Var,AT> &A) { 
 
       deepCopy(A);
 
@@ -272,7 +284,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<Symmetric<Var,Var>, AT>&  Matrix<Symmetric<Var,Var>, AT>::init(const AT& val) {
+    inline Matrix<Symmetric,Var,Var,AT>&  Matrix<Symmetric,Var,Var,AT>::init(const AT& val) {
 
       for(int i=0; i<M; i++) 
         for(int j=i; j<M; j++) 
@@ -282,7 +294,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<Symmetric<Var,Var>, AT>::operator std::vector<std::vector<AT> >() {
+    inline Matrix<Symmetric,Var,Var,AT>::operator std::vector<std::vector<AT> >() {
       std::vector<std::vector<AT> > ret(rows());
       for(int r=0; r<rows(); r++) {
         ret[r].resize(cols());
@@ -294,8 +306,15 @@ namespace fmatvec {
 
   /// @cond NO_SHOW
 
-  template <class AT>
-    inline void Matrix<Symmetric<Var,Var>, AT>::deepCopy(const Matrix<Symmetric<Var,Var>, AT> &A) { 
+  template <class AT> template <class Type, class Row, class Col>
+    inline void Matrix<Symmetric,Var,Var,AT>::deepCopy(const Matrix<Type,Row,Col,AT> &A) { 
+      for(int i=0; i<M; i++) 
+        for(int j=i; j<M; j++) 
+          ej(i,j) = A.e(i,j);
+    }
+
+  template <class AT> template <class Row>
+    inline void Matrix<Symmetric,Var,Var,AT>::deepCopy(const Matrix<Symmetric,Row,Row,AT> &A) { 
       for(int i=0; i<M; i++) 
         for(int j=i; j<M; j++) 
           ej(i,j) = A.ej(i,j);

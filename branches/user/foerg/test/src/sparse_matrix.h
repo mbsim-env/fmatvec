@@ -41,7 +41,7 @@ namespace fmatvec {
    * double, complex<float> and complex<double> 
    * */
   template <class AT>
-    class Matrix<Sparse<Ref,Ref>, AT> {
+    class Matrix<Sparse,Ref,Ref,AT> {
 
       protected:
 
@@ -53,9 +53,9 @@ namespace fmatvec {
 	int *I, *J;
 	int m, n, k;
 
-	void deepCopy(const Matrix<Sparse<Ref,Ref>, AT> &x);
+	void deepCopy(const Matrix<Sparse,Ref,Ref,AT> &x);
 
-	void deepCopy(const SquareMatrix<General<Ref,Ref>, AT> &A);
+	void deepCopy(const SquareMatrix<General,Ref,Ref,AT> &A);
 
     /// @endcond
 
@@ -105,7 +105,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 	 * referenced.
 	 * \param A The matrix that will be referenced.
 	 * */
-	Matrix(const Matrix<Sparse<Ref,Ref>, AT> &A) : memEle(A.memEle), memI(A.memI), memJ(A.memJ), ele(A.ele), I(A.I), J(A.J), m(A.m), n(A.n), k(A.k) {
+	Matrix(const Matrix<Sparse,Ref,Ref,AT> &A) : memEle(A.memEle), memI(A.memI), memJ(A.memJ), ele(A.ele), I(A.I), J(A.J), m(A.m), n(A.n), k(A.k) {
 	}
 
 	/*! \brief Destructor. 
@@ -119,7 +119,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 	 * \param A The matrix to be copied. 
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Sparse<Ref,Ref>, AT>& operator<<(const Matrix<Sparse<Ref,Ref>, AT> &A);
+	Matrix<Sparse,Ref,Ref,AT>& operator<<(const Matrix<Sparse,Ref,Ref,AT> &A);
 
 	/*! \brief Reference operator
 	 *
@@ -127,13 +127,13 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 	 * \param A The matrix to be referenced. 
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Sparse<Ref,Ref>, AT>& operator>>(const Matrix<Sparse<Ref,Ref>, AT> &A);
+	Matrix<Sparse,Ref,Ref,AT>& operator>>(const Matrix<Sparse,Ref,Ref,AT> &A);
 
 	/*! \brief Element operator
 	 *
-	 * See operator<<(const Matrix<Sparse<Ref,Ref>,AT>&) 
+	 * See operator<<(const Matrix<Sparse,Ref,Ref,T>&) 
 	 * */
-	Matrix<Sparse<Ref,Ref>, AT>& operator<<(const SquareMatrix<General<Ref,Ref>, AT> &A);
+	Matrix<Sparse,Ref,Ref,AT>& operator<<(const SquareMatrix<General,Ref,Ref,AT> &A);
 
 	/*! \brief Assignment operator
 	 *
@@ -143,7 +143,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 	 * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
 	 * \sa operator<<(), operator>>()
 	 * */
-	Matrix<Sparse<Ref,Ref>, AT>& operator=(const Matrix<Sparse<Ref,Ref>, AT> &A) {
+	Matrix<Sparse,Ref,Ref,AT>& operator=(const Matrix<Sparse,Ref,Ref,AT> &A) {
 #ifndef FMATVEC_NO_DEEP_ASSIGNMENT 
 	  return operator<<(A);
 #else
@@ -217,14 +217,14 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 	 * The calling matrix returns a \em deep copy of itself.  
 	 * \return The duplicate.
 	 * */
-	Matrix<Sparse<Ref,Ref>, AT> copy() const;
+	Matrix<Sparse,Ref,Ref,AT> copy() const;
 
 	/*! \brief Matrix unsizing.
 	 *
 	 * Resizes the matrix to size zero.  
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Sparse<Ref,Ref>, AT>& resize() {m=0;n=0;k=0;return *this;};
+	Matrix<Sparse,Ref,Ref,AT>& resize() {m=0;n=0;k=0;return *this;};
 
 	/*! \brief Matrix resizing. 
 	 *
@@ -235,7 +235,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 	 * \param k_ The number of nonzero elements.
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Sparse<Ref,Ref>, AT>& resize(int n_, int k_) {
+	Matrix<Sparse,Ref,Ref,AT>& resize(int n_, int k_) {
 	  m=n_;n=n_;k=k_;
 	  memEle.resize(k);
 	  memI.resize(m+1);
@@ -254,14 +254,14 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 	 * \param a Value all elements will be initialized with.
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Sparse<Ref,Ref>, AT>& init(const AT &a);
+	Matrix<Sparse,Ref,Ref,AT>& init(const AT &a);
 
     };
   // ------------------------- Constructors -------------------------------------
   // ----------------------------------------------------------------------------
 
   template <class AT>
-    Matrix<Sparse<Ref,Ref>, AT>& Matrix<Sparse<Ref,Ref>, AT>::operator>>(const Matrix<Sparse<Ref,Ref>, AT> &A) { 
+    Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator>>(const Matrix<Sparse,Ref,Ref,AT> &A) { 
       if(m==0) {
 	m=A.m;
 	n=A.n;
@@ -286,7 +286,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
     }
 
   template <class AT>
-    Matrix<Sparse<Ref,Ref>, AT>& Matrix<Sparse<Ref,Ref>, AT>::operator<<(const Matrix<Sparse<Ref,Ref>, AT> &A) { 
+    Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator<<(const Matrix<Sparse,Ref,Ref,AT> &A) { 
 
      if(A.rows() == 0 || A.cols() == 0)
 	return *this;
@@ -313,7 +313,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
     }
 
   template <class AT>
-    Matrix<Sparse<Ref,Ref>, AT>& Matrix<Sparse<Ref,Ref>, AT>::operator<<(const SquareMatrix<General<Ref,Ref>, AT> &A) { 
+    Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator<<(const SquareMatrix<General,Ref,Ref,AT> &A) { 
 
      if(A.rows() == 0 || A.cols() == 0)
 	return *this;
@@ -339,9 +339,9 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
     }
 
   template <class AT>
-    Matrix<Sparse<Ref,Ref>, AT> Matrix<Sparse<Ref,Ref>, AT>::copy() const {
+    Matrix<Sparse,Ref,Ref,AT> Matrix<Sparse,Ref,Ref,AT>::copy() const {
 
-      Matrix<Sparse<Ref,Ref>, AT> A(m,NONINIT);
+      Matrix<Sparse,Ref,Ref,AT> A(m,NONINIT);
 
       A.deepCopy(*this);
 
@@ -349,7 +349,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
     }
 
   template <class AT>
-    void Matrix<Sparse<Ref,Ref>, AT>::deepCopy(const Matrix<Sparse<Ref,Ref>, AT> &A) { 
+    void Matrix<Sparse,Ref,Ref,AT>::deepCopy(const Matrix<Sparse,Ref,Ref,AT> &A) { 
       for(int i=0; i<=m; i++) {
 	I[i] = A.I[i];
       }
@@ -359,7 +359,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
       }
     }
 
-  template <class AT> void Matrix<Sparse<Ref,Ref>, AT>::deepCopy(const SquareMatrix<General<Ref,Ref>, AT> &A) { 
+  template <class AT> void Matrix<Sparse,Ref,Ref,AT>::deepCopy(const SquareMatrix<General,Ref,Ref,AT> &A) { 
       int k=0;
       int i;
       for(i=0; i<A.size(); i++) {
@@ -385,7 +385,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
     }
 
   template <class AT>
-    Matrix<Sparse<Ref,Ref>, AT>&  Matrix<Sparse<Ref,Ref>, AT>::init(const AT& val) {
+    Matrix<Sparse,Ref,Ref,AT>&  Matrix<Sparse,Ref,Ref,AT>::init(const AT& val) {
 
       for(int i=0; i<k; i++) {
 	ele[i] = val;
@@ -394,7 +394,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
       return *this;
     }
 
-/* template <class AT> template <class Type> void Matrix<Sparse<Ref,Ref>, AT>::deepCopy(const Matrix<Type, AT> &A) { 
+/* template <class AT> template <class Type> void Matrix<Sparse,Ref,Ref,AT>::deepCopy(const Matrix<Type, AT> &A) { 
       k=0;
       AT *eleBuf = new AT[m*n];
       int *JBuf = new int[m*n];
@@ -434,7 +434,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 
     */
 
-  //template <> extern void Matrix<Sparse<Ref,Ref>, double>::deepCopy(const Matrix<Sparse<Ref,Ref>, double> &A);
+  //template <> extern void Matrix<Sparse,Ref,Ref,double>::deepCopy(const Matrix<Sparse,Ref,Ref,double> &A);
 
 }
 
