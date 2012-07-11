@@ -829,6 +829,20 @@ namespace fmatvec {
       }
     }
 
+  template <class Row1, class Type2, class Row2, class Type3, class Row3, class AT> 
+    inline void mult(const Matrix<Symmetric,Row1,Row1,AT> &A, const Vector<Type2,Row2,Fixed<1>,AT> &x, Vector<Type3,Row3,Fixed<1>,AT> &y) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A.cols() == x.size());
+#endif
+      for(int i=0; i<y.size(); i++) {
+        y.e(i) = 0;
+        for(int j=0; j<i; j++) 
+          y.e(i) += A.ei(i,j)*x.e(j);
+        for(int j=i; j<x.size(); j++) 
+          y.e(i) += A.ej(i,j)*x.e(j);
+      }
+    }
+
    // Matrix-Vector
   template <class AT, class Type1, class Type2, class Row1, class Col1, class Row2> 
     inline Vector<General,Var,Fixed<1>,AT> operator*(const Matrix<Type1,Row1,Col1,AT> &A, const Vector<Type2,Row2,Fixed<1>,AT> &x) {
@@ -901,6 +915,20 @@ namespace fmatvec {
         y.e(i) = 0;
         for(int j=0; j<x.size(); j++) 
           y.e(i) += x.e(j)*A.e(j,i);
+      }
+    }
+
+  template <class Type1, class Col1, class Row2, class Type3, class Col3, class AT> 
+    inline void mult(const RowVector<Type1,Fixed<1>,Col1,AT> &x, const Matrix<Symmetric,Row2,Row2,AT> &A, RowVector<Type3,Fixed<1>,Col3,AT> &y) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(x.size() == A.rows());
+#endif
+      for(int i=0; i<y.size(); i++) {
+        y.e(i) = 0;
+        for(int j=0; j<i; j++) 
+          y.e(i) += x.e(j)*A.ej(j,i);
+        for(int j=i; j<x.size(); j++) 
+          y.e(i) += x.e(j)*A.ei(j,i);
       }
     }
 
