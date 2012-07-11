@@ -96,28 +96,12 @@ namespace fmatvec {
       Vector(const Vector<General,Var,Fixed<1>,AT> &x) : Matrix<General,Var,Fixed<1>,AT>(x) {
       }
 
-      /*! \brief Copy Constructor
-       *
-       * Constructs a reference to the vector \em x.
-       * \attention The physical memory of the vector
-       * \em x will not be copied, only referenced.
-       * \param x The vector that will be referenced.
-       * */
-      explicit Vector(const Vector<General,Ref,Ref,AT> &x) : Matrix<General,Var,Fixed<1>,AT>(x) {
+      template<class Row>
+      Vector(const Vector<General,Row,Fixed<1>,AT> &x) : Matrix<General,Var,Fixed<1>,AT>(x) {
       }
 
-      /*! \brief Copy Constructor
-       *
-       * See Vector(const Vector<AT>&) 
-       * */
-      explicit Vector(const Matrix<General,Var,Fixed<1>,AT> &A) : Matrix<General,Var,Fixed<1>,AT>(A) {
-      }
-
-      /*! \brief Copy Constructor
-       *
-       * See Vector(const Vector<AT>&) 
-       * */
-      explicit Vector(const Matrix<General,Ref,Ref,AT> &A) : Matrix<General,Var,Fixed<1>,AT>(A) {
+      template<class Type, class Row, class Col>
+      explicit Vector(const Matrix<Type,Row,Col,AT> &A) : Matrix<General,Var,Fixed<1>,AT>(A) {
       }
 
       Vector<General,Var,Fixed<1>,AT>& resize(int n) {

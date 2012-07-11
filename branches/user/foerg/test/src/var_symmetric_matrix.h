@@ -104,11 +104,11 @@ namespace fmatvec {
 	deepCopy(A);
       }
 
+      template<class Row>
+      Matrix(const Matrix<Symmetric,Row,Row,AT> &A) : M(A.M), ele(new AT[M*M])   {
+	deepCopy(A);
+      }
 
-      /*! \brief Element operator
-       *
-       * See Matrix(const Matrix<Symmetric,Var,Var,T>&) 
-       * */
       template<int M>
       explicit Matrix(const Matrix<General,Fixed<M>,Fixed<M>,AT>&  A) : M(A.M), ele(new AT[M*M]) {
 	deepCopy(A);

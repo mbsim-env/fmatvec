@@ -105,11 +105,17 @@ namespace fmatvec {
 	deepCopy(A);
       }
 
+      template<class Row, class Col>
+      Matrix(const Matrix<General,Row,Col,AT> &A) : M(A.rows()), ele(new AT[M*N]) {
+
+	deepCopy(A);
+      }
+
       template<class Type, class Row, class Col>
       explicit Matrix(const Matrix<Type,Row,Col,AT> &A) : M(A.rows()), ele(new AT[M*N]) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
-	assert(A.rows() == M); 
+	assert(A.cols() == N); 
 #endif
 
 	deepCopy(A);

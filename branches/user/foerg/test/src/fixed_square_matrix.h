@@ -71,10 +71,12 @@ namespace fmatvec {
        *
        * See SquareMatrix(const SquareMatrix<AT>&) 
        * */
-      explicit SquareMatrix(const Matrix<General,Fixed<M>,Fixed<M>,AT>&  A) : Matrix<General,Fixed<M>,Fixed<M>,AT>(A) {
+      template<class Type, class Row, class Col>
+      explicit SquareMatrix(const Matrix<Type,Row,Col,AT>&  A) : Matrix<General,Fixed<M>,Fixed<M>,AT>(A) {
       }
 
-      explicit SquareMatrix(const SquareMatrix<General,Ref,Ref,AT> &A) : Matrix<General,Fixed<M>,Fixed<M>,AT>(A) {
+      template<class Row>
+      SquareMatrix(const SquareMatrix<General,Row,Row,AT> &A) : Matrix<General,Fixed<M>,Fixed<M>,AT>(A) {
       }
 
       /*! \brief Copy operator

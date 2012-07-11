@@ -144,19 +144,16 @@ namespace fmatvec {
       Vector(const Vector<General,Ref,Fixed<1>,AT> &x) : Matrix<General,Ref,Ref,AT>(x) {
       }
 
-      /*! \brief Copy Constructor
-       *
-       * See Vector(const Vector<General,Ref,Fixed<1>,AT>&) 
-       * */
-      explicit Vector(const Matrix<General,Ref,Ref,AT> &x) : Matrix<General,Ref,Ref,AT>(x) {
+      template<class Row>
+      Vector(const Vector<General,Row,Fixed<1>,AT> &x) : Matrix<General,Ref,Ref,AT>(x) {
+      }
+
+      template<class Type, class Row, class Col>
+      explicit Vector(const Matrix<Type,Row,Col,AT> &x) : Matrix<General,Ref,Ref,AT>(x) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
 	assert(x.cols()==1);
 #endif
-      }
-
-     template<class Type, class Row, class Col>
-      explicit Vector(const Matrix<Type,Row,Col,AT> &x) : Matrix<General,Ref,Ref,AT>(x)  {
       }
 
       /*! \brief Copy operator

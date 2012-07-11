@@ -102,11 +102,17 @@ namespace fmatvec {
 	}
       }
 
-      /*! \brief Element operator
-       *
-       * See Matrix(const Matrix<Symmetric,Fixed<M>,Fixed<M>,T>&) 
-       * */
       explicit Matrix(const Matrix<General,Fixed<M>,Fixed<M>,AT>&  A) {
+	deepCopy(A);
+      }
+
+      template<class Row>
+      Matrix(const Matrix<Symmetric,Row,Row,AT> &A) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+	assert(A.size() == M); 
+#endif
+
 	deepCopy(A);
       }
 

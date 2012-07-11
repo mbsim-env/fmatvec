@@ -92,7 +92,16 @@ namespace fmatvec {
        *
        * See RowVector(const RowVector<General,Fixed<1>,Fixed<N>,AT> 
        * */
-      explicit RowVector(const Matrix<General,Fixed<1>,Fixed<N>,AT> &A) : Matrix<General,Fixed<1>,Fixed<N>,AT>(A) {
+      template<class Col>
+      RowVector(const RowVector<General,Fixed<1>,Col,AT> &A) : Matrix<General,Fixed<1>,Fixed<N>,AT>(A) {
+      }
+
+      /*! \brief Copy Constructor
+       *
+       * See Vector(const Vector<General, AT>&) 
+       * */
+      template<class Type, class Row, class Col>
+      explicit RowVector(const Matrix<Type,Row,Col,AT> &A) : Matrix<General,Fixed<1>,Fixed<N>,AT>(A) {
       }
 
       /*! \brief Element operator

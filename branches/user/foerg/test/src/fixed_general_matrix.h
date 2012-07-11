@@ -99,6 +99,16 @@ namespace fmatvec {
 	}
       }
 
+      template<class Row, class Col>
+      Matrix(const Matrix<General,Row,Col,AT> &A) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+	assert(A.rows() == M); 
+	assert(A.cols() == N);
+#endif
+
+	deepCopy(A);
+      }
+
       template<class Type, class Row, class Col>
       explicit Matrix(const Matrix<Type,Row,Col,AT> &A) {
 
