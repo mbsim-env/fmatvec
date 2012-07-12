@@ -1540,7 +1540,7 @@ namespace fmatvec {
 #endif
       Matrix<General,Ref,Ref,AT> A = A_.copy();
       int i,j,N;
-      RowVector<Ref,AT> tmp;
+      RowVector<Ref,AT> tmp(A.cols(),NONINIT);
       N = A.rows();
       for (i=1; i<= N-1; i++) {
         for (j=0; j< N-1; j++) {
@@ -1607,7 +1607,7 @@ namespace fmatvec {
     Matrix<General,Ref,Ref,AT> quickSortMedian(const Matrix<General,Ref,Ref,AT> &A_, int PivotCol) {
       Matrix<General,Ref,Ref,AT> A = A_.copy();
       int N = A.rows();
-      RowVector<Ref,AT> tmp;
+      RowVector<Ref,AT> tmp(A.cols(),NONINIT);
       quicksortmedian_intern(A, PivotCol,tmp, 0, N-1);
       return A;
     }
