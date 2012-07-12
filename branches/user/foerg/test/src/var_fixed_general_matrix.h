@@ -181,6 +181,9 @@ namespace fmatvec {
 
       template <class Type, class Row, class Col>
       inline Matrix<General,Var,Fixed<N>,AT>& operator=(const Matrix<Type,Row,Col,AT> &A);
+      
+      template <class Type, class Row, class Col>
+      inline Matrix<General,Var,Fixed<N>,AT>& operator<<(const Matrix<Type,Row,Col,AT> &A);
 
       /*! \brief Element operator
        *
@@ -325,6 +328,8 @@ namespace fmatvec {
 
       inline const Matrix<General,Fixed<N>,Var,AT> T() const;
 
+      inline void set(int j, const RowVector<General,Fixed<1>,Fixed<N>,AT> &x);
+
       template<int K> 
 	inline void set(const Index &I, const Index &J, const Matrix<General,Var,Fixed<K>,AT> &A);
 
@@ -404,6 +409,23 @@ namespace fmatvec {
       return *this;
     }
 
+  template <int N, class AT> template< class Type, class Row, class Col>
+    inline Matrix<General,Var,Fixed<N>,AT>& Matrix<General,Var,Fixed<N>,AT>::operator<<(const Matrix<Type,Row,Col,AT> &A) { 
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A.cols() == N);
+#endif
+      if(M!=A.rows()) {
+        delete[] ele;
+        M = A.rows();
+        ele = new AT[M*N];
+      }
+
+      deepCopy(A);
+
+      return *this;
+    }
+
   template <int N, class AT>
     inline  Matrix<General,Var,Fixed<N>,AT>& Matrix<General,Var,Fixed<N>,AT>::init(const AT& val) {
 
@@ -437,6 +459,12 @@ namespace fmatvec {
         for(int j=0; j<M; j++)
           A.e(i,j) = e(j,i);
       return A;
+    }
+
+  template <int N, class AT>
+    inline void Matrix<General,Var,Fixed<N>,AT>::set(int j, const RowVector<General,Fixed<1>,Fixed<N>,AT> &x) {
+      for(int i=0; i<N; i++)
+        e(i,j) = x.e(i);
     }
 
   template <int N, class AT> template<int K>

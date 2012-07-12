@@ -310,6 +310,15 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
         ele = (AT*)memEle.get();
         I = (int*)memI.get();
         J = (int*)memJ.get();
+      } else {
+        int k_ = countElements(A);
+        if(k != k_) {
+          k = k_;
+          memEle.resize(k);
+          memJ.resize(k);
+          ele = (AT*)memEle.get();
+          J = (int*)memJ.get();
+        }
       }
 
       deepCopy(A);
@@ -360,7 +369,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 	  }
 	}
       }
-      I[i]=k;
+      if(n) I[i]=k;
     }
 
   template <class AT>

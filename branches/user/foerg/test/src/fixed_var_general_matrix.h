@@ -172,6 +172,9 @@ namespace fmatvec {
       template <class Type, class Row, class Col>
       inline Matrix<General,Fixed<M>,Var,AT>& operator=(const Matrix<Type,Row,Col,AT> &A);
 
+      template<class Type, class Row, class Col>
+      inline Matrix<General,Fixed<M>,Var,AT>& operator<<(const Matrix<Type,Row,Col,AT> &A);
+
       /*! \brief Element operator
        *
        * Returns a reference to the element in the i-th row and the j-th column. 
@@ -363,9 +366,6 @@ namespace fmatvec {
       template<int K> 
 	inline void add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<General,Fixed<K>,Var,AT> &A);
 
-      template<class Type, class Row, class Col>
-      inline void assign(const Matrix<Type,Row,Col,AT> &A);
-
   };
 
   template <int M, class AT> 
@@ -432,6 +432,23 @@ namespace fmatvec {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.cols() == N);
 #endif
+
+      deepCopy(A);
+
+      return *this;
+    }
+
+  template <int M, class AT> template< class Type, class Row, class Col>
+    inline Matrix<General,Fixed<M>,Var,AT>& Matrix<General,Fixed<M>,Var,AT>::operator<<(const Matrix<Type,Row,Col,AT> &A) { 
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A.rows() == M);
+#endif
+      if(N!=A.cols()) {
+        delete[] ele;
+        N = A.cols();
+        ele = new AT[M*N];
+      }
 
       deepCopy(A);
 
@@ -561,19 +578,6 @@ namespace fmatvec {
         for(int c=0; c<cols(); c++)
           e(r,c)=m[r][c];
       }
-    }
-
-  template <int M, class AT> template <class Type, class Row, class Col>
-    inline void Matrix<General,Fixed<M>,Var,AT>::assign(const Matrix<Type,Row,Col,AT> &A) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.rows() == M);
-#endif
-      if(A.cols() != N) {
-        delete[] ele;
-        N = A.cols();
-        ele = new AT[M*N];
-      }
-      deepCopy(A);
     }
 
   /// @cond NO_SHOW

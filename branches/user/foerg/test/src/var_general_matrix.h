@@ -152,6 +152,15 @@ namespace fmatvec {
       template <class Type, class Row, class Col>
       inline Matrix<General,Var,Var,AT>& operator=(const Matrix<Type,Row,Col,AT> &A);
 
+      /*! \brief Copy operator
+       *
+       * Copies the matrix given by \em A.
+       * \param A The matrix to be copied. 
+       * \return A reference to the calling matrix.
+       * */
+      template<class Type, class Row, class Col>
+        inline Matrix<General,Var,Var,AT>& operator<<(const Matrix<Type,Row,Col,AT> &A);
+
       /*! \brief Element operator
        *
        * Returns a reference to the element in the i-th row and the j-th column. 
@@ -334,9 +343,6 @@ namespace fmatvec {
 
       inline void set(int j, const Vector<General,Var,Fixed<1>,AT> &x);
 
-      template<class Type, class Row, class Col>
-      inline void assign(const Matrix<Type,Row,Col,AT> &A);
-
       template<class Type, class Row, class Col> 
         inline void add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
 
@@ -420,6 +426,21 @@ namespace fmatvec {
       return *this;
     }
 
+  template <class AT> template< class Type, class Row, class Col>
+    inline Matrix<General,Var,Var,AT>& Matrix<General,Var,Var,AT>::operator<<(const Matrix<Type,Row,Col,AT> &A) { 
+
+      if(M!=A.rows() || N!=A.cols()) {
+        delete[] ele;
+        M = A.rows(); 
+        N = A.cols();
+        ele = new AT[M*N];
+      }
+
+      deepCopy(A);
+
+      return *this;
+    }
+
   template <class AT> 
     inline const Matrix<General,Var,Var,AT> Matrix<General,Var,Var,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
@@ -485,17 +506,6 @@ namespace fmatvec {
         for(int c=0; c<cols(); c++)
           e(r,c)=m[r][c];
       }
-    }
-
-  template <class AT> template <class Type, class Row, class Col>
-    inline void Matrix<General,Var,Var,AT>::assign(const Matrix<Type,Row,Col,AT> &A) {
-      if(A.rows() != M || A.cols() != N) {
-        delete[] ele;
-        M = A.rows();
-        N = A.cols();
-        ele = new AT[M*N];
-      }
-      deepCopy(A);
     }
 
   template <class AT> template<class Type, class Row, class Col>
