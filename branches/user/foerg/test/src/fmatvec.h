@@ -43,21 +43,21 @@ namespace fmatvec {
    *  
    *  Vec is an abbreviation for vectors of type double.
    * */
-  typedef  Vector<General,Ref,Fixed<1>,double> Vec;
+  typedef  Vector<Ref,double> Vec;
 
   /*! 
    *  \brief Row vector
    *  
    *  RowVec is an abbreviation for row vectors of type double.
    * */
-  typedef  RowVector<General,Fixed<1>,Ref,double> RowVec;
+  typedef  RowVector<Ref,double> RowVec;
 
   /*! 
    *  \brief Square matrix
    *  
    *  SqrMat is an abbreviation for square matrices of type double.
    * */
-  typedef  SquareMatrix<General,Ref,Ref,double> SqrMat;
+  typedef  SquareMatrix<Ref,double> SqrMat;
 
   /*! 
    *  \brief Diagonal matrix
@@ -80,19 +80,21 @@ namespace fmatvec {
    * */
   typedef  Matrix<GeneralBand,Ref,Ref,double> BandMat;
 
-  typedef  Vector<General,Ref,Fixed<1>,int> VecInt;
+  typedef  Matrix<Sparse,Ref,Ref,double> SparseMat;
+
+  typedef  Vector<Ref,int> VecInt;
 
   typedef  Matrix<General,Fixed<3>,Fixed<3>,double> Mat33;
 
   typedef  Matrix<General,Fixed<3>,Fixed<2>,double> Mat32;
 
-  typedef  SquareMatrix<General,Fixed<3>,Fixed<3>,double> SqrMat3;
+  typedef  SquareMatrix<Fixed<3>,double> SqrMat3;
 
-  typedef  Vector<General,Fixed<3>,Fixed<1>,double> Vec3;
+  typedef  Vector<Fixed<3>,double> Vec3;
 
-  typedef  Vector<General,Fixed<2>,Fixed<1>,double> Vec2;
+  typedef  Vector<Fixed<2>,double> Vec2;
 
-  typedef  RowVector<General,Fixed<1>,Fixed<3>,double> RowVec3;
+  typedef  RowVector<Fixed<3>,double> RowVec3;
 
   typedef  Matrix<Symmetric,Fixed<3>,Fixed<3>,double> SymMat3;
 
@@ -100,7 +102,7 @@ namespace fmatvec {
 
   typedef  Matrix<General,Var,Var,double> MatV;
 
-  typedef  Vector<General,Var,Fixed<1>,double> VecV;
+  typedef  Vector<Var,double> VecV;
 
   typedef  Matrix<General,Fixed<3>,Var,double> Mat3V;
 

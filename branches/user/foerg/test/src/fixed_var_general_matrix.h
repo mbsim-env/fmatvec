@@ -332,7 +332,7 @@ namespace fmatvec {
        * \param i The column, that will be returned.  
        * \return A vector containing the i-th column of the calling matrix.
        * */
-      inline const Vector<General,Fixed<M>,Fixed<1>,AT> col(int j) const;
+      inline const Vector<Fixed<M>,AT> col(int j) const;
 
       /*! \brief Initialization.
        *
@@ -358,7 +358,7 @@ namespace fmatvec {
 
       inline const Matrix<General,Var,Fixed<M>,AT> T() const;
 
-      inline void set(int j, const Vector<General,Fixed<M>,Fixed<1>,AT> &x);
+      inline void set(int j, const Vector<Fixed<M>,AT> &x);
 
       template<int K> 
 	inline void set(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<General,Fixed<K>,Var,AT> &A);
@@ -495,14 +495,14 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline const Vector<General,Fixed<M>,Fixed<1>,AT> Matrix<General,Fixed<M>,Var,AT>::col(int j) const {
+    inline const Vector<Fixed<M>,AT> Matrix<General,Fixed<M>,Var,AT>::col(int j) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(j>=0);
       assert(j<N);
 #endif
 
-      Vector<General,Fixed<M>,Fixed<1>,AT> x(NONINIT);
+      Vector<Fixed<M>,AT> x(NONINIT);
 
       for(int i=0; i<M; i++)
         x.e(i) = e(i,j);
@@ -521,7 +521,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline void Matrix<General,Fixed<M>,Var,AT>::set(int j, const Vector<General,Fixed<M>,Fixed<1>,AT> &x) {
+    inline void Matrix<General,Fixed<M>,Var,AT>::set(int j, const Vector<Fixed<M>,AT> &x) {
       for(int i=0; i<M; i++)
         e(i,j) = x.e(i);
     }

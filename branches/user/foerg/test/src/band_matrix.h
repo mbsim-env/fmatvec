@@ -261,7 +261,7 @@ namespace fmatvec {
        *
        * See operator()(int) 
        * */
-      inline const Vector<General,Ref,Ref,AT> operator()(int i) const;
+      inline const Vector<Ref,AT> operator()(int i) const;
 
       /*! \brief Diagonal operator
        *
@@ -270,7 +270,7 @@ namespace fmatvec {
        * \param i The i-th super- and subdiagonal,
        * respectively.
        * */
-      inline Vector<General,Ref,Ref,AT> operator()(int i);
+      inline Vector<Ref,AT> operator()(int i);
 
       /*! \brief Matrix duplicating.
        *
@@ -342,25 +342,25 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Vector<General,Ref,Ref,AT> Matrix<GeneralBand,Ref,Ref,AT>::operator()(int i) {
+    inline Vector<Ref,AT> Matrix<GeneralBand,Ref,Ref,AT>::operator()(int i) {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i<=ku);
       assert(i>=-kl);
 #endif
 
-      //return Vector<General,Ref,Ref,AT>(n-i,ku+kl+1,memory,ele[ku-i + (i>0?i:0)*(kl+ku+1)]);
-      return Vector<General,Ref,Ref,AT>(n-abs(i),ku+kl+1,true,memory,ele+ku-i + (i>0?i:0)*(kl+ku+1));
+      //return Vector<Ref,AT>(n-i,ku+kl+1,memory,ele[ku-i + (i>0?i:0)*(kl+ku+1)]);
+      return Vector<Ref,AT>(n-abs(i),ku+kl+1,true,memory,ele+ku-i + (i>0?i:0)*(kl+ku+1));
       //(ku-i,i>0?i:0));
     }
 
   template <class AT>
-    inline const Vector<General,Ref,Ref,AT> Matrix<GeneralBand,Ref,Ref,AT>::operator()(int i) const {
+    inline const Vector<Ref,AT> Matrix<GeneralBand,Ref,Ref,AT>::operator()(int i) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i<=ku);
       assert(i>=-kl);
 #endif
 
-      return Vector<General,Ref,Ref,AT>(n-abs(i),ku+kl+1,true,memory,ele+ku-i + (i>0?i:0)*(kl+ku+1));
+      return Vector<Ref,AT>(n-abs(i),ku+kl+1,true,memory,ele+ku-i + (i>0?i:0)*(kl+ku+1));
       //(ku-i,i>0?i:0));
     }
 

@@ -302,7 +302,7 @@ namespace fmatvec {
        *
        * see col(int)
        * */
-      inline const Vector<General,Var,Fixed<1>,AT> col(int j) const;
+      inline const Vector<Var,AT> col(int j) const;
 
       /*! \brief Initialization.
        *
@@ -328,7 +328,7 @@ namespace fmatvec {
 
       inline const Matrix<General,Fixed<N>,Var,AT> T() const;
 
-      inline void set(int j, const RowVector<General,Fixed<1>,Fixed<N>,AT> &x);
+      inline void set(int j, const RowVector<Fixed<N>,AT> &x);
 
       template<int K> 
 	inline void set(const Index &I, const Index &J, const Matrix<General,Var,Fixed<K>,AT> &A);
@@ -436,14 +436,14 @@ namespace fmatvec {
     }
 
   template <int N, class AT>
-    inline const Vector<General,Var,Fixed<1>,AT> Matrix<General,Var,Fixed<N>,AT>::col(int j) const {
+    inline const Vector<Var,AT> Matrix<General,Var,Fixed<N>,AT>::col(int j) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(j>=0);
       assert(j<N);
 #endif
 
-      Vector<General,Var,Fixed<1>,AT> x(M,NONINIT);
+      Vector<Var,AT> x(M,NONINIT);
 
       for(int i=0; i<M; i++)
         x.e(i) = e(i,j);
@@ -462,7 +462,7 @@ namespace fmatvec {
     }
 
   template <int N, class AT>
-    inline void Matrix<General,Var,Fixed<N>,AT>::set(int j, const RowVector<General,Fixed<1>,Fixed<N>,AT> &x) {
+    inline void Matrix<General,Var,Fixed<N>,AT>::set(int j, const RowVector<Fixed<N>,AT> &x) {
       for(int i=0; i<N; i++)
         e(i,j) = x.e(i);
     }

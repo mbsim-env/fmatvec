@@ -43,9 +43,9 @@ namespace fmatvec {
 
  /// @cond NO_SHOW
 
-      friend class Vector<General,Ref,Fixed<1>,AT>;
-      friend class RowVector<General,Fixed<1>,Ref,AT>;
-      friend class SquareMatrix<General,Ref,Ref,AT>;
+      friend class Vector<Ref,AT>;
+      friend class RowVector<Ref,AT>;
+      friend class SquareMatrix<Ref,AT>;
       friend class Matrix<Symmetric,Ref,Ref,AT>;
       
       template <class T> friend Matrix<General,Ref,Ref,T> trans(const Matrix<General,Ref,Ref,T> &A);
@@ -415,13 +415,13 @@ namespace fmatvec {
        * \param I Index containing the starting and the ending row. 
        * \return A submatrix of the calling matrix.
        * */
-      inline SquareMatrix<General,Ref,Ref,AT> operator() (const Index &I);
+      inline SquareMatrix<Ref,AT> operator() (const Index &I);
 
       /*! \brief Submatrix operator.
        *
        * See operator()(const Index&)
        * */
-      inline const SquareMatrix<General,Ref,Ref,AT> operator()(const Index &I) const;
+      inline const SquareMatrix<Ref,AT> operator()(const Index &I) const;
 
       /*! \brief Column operator.
        *
@@ -430,13 +430,13 @@ namespace fmatvec {
        * \param i The column, that will be returned.  
        * \return A vector containing the i-th column of the calling matrix.
        * */
-      inline Vector<General,Ref,Fixed<1>,AT> col(int i);
+      inline Vector<Ref,AT> col(int i);
 
       /*! \brief Column operator.
        *
        * see col(int)
        * */
-      inline const Vector<General,Ref,Fixed<1>,AT> col(int i) const;
+      inline const Vector<Ref,AT> col(int i) const;
 
       /*! \brief Row operator.
        *
@@ -445,13 +445,13 @@ namespace fmatvec {
        * \param i The row, that will be returned. 
        * \return A rowvector containing the i-th row of the calling matrix.
        * */
-      inline RowVector<General,Fixed<1>,Ref,AT> row(int i); 
+      inline RowVector<Ref,AT> row(int i); 
 
       /*! \brief Row operator.
        *
        * see row(int)
        * */
-      inline const RowVector<General,Fixed<1>,Ref,AT> row(int i) const;
+      inline const RowVector<Ref,AT> row(int i) const;
 
       /*! \brief Matrix duplicating.
        *
@@ -639,63 +639,63 @@ namespace fmatvec {
     }
 
   template <class AT> 
-    inline const SquareMatrix<General,Ref,Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Index &I) const {
+    inline const SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Index &I) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<m);
 #endif
-      return SquareMatrix<General,Ref,Ref,AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start(),I.start()));
+      return SquareMatrix<Ref,AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start(),I.start()));
     }
 
   template <class AT>
-    inline SquareMatrix<General,Ref,Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Index &I) {
+    inline SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Index &I) {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<m);
 #endif
-      return SquareMatrix<General,Ref,Ref,AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start(),I.start()));
+      return SquareMatrix<Ref,AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start(),I.start()));
     }
 
   template <class AT>
-    inline Vector<General,Ref,Fixed<1>,AT>  Matrix<General,Ref,Ref,AT>::col(int i) {
+    inline Vector<Ref,AT>  Matrix<General,Ref,Ref,AT>::col(int i) {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i>=0);
       assert(i<n);
 #endif
 
-      return Vector<General,Ref,Fixed<1>,AT>(m,lda,tp,memory,elePtr(0,i));
+      return Vector<Ref,AT>(m,lda,tp,memory,elePtr(0,i));
     }
 
   template <class AT>
-    inline const Vector<General,Ref,Fixed<1>,AT>  Matrix<General,Ref,Ref,AT>::col(int i) const {
+    inline const Vector<Ref,AT>  Matrix<General,Ref,Ref,AT>::col(int i) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i>=0);
       assert(i<n);
 #endif
 
-      return Vector<General,Ref,Fixed<1>,AT>(m,lda,tp,memory,elePtr(0,i));
+      return Vector<Ref,AT>(m,lda,tp,memory,elePtr(0,i));
     }
 
   template <class AT>
-    inline RowVector<General,Fixed<1>,Ref,AT>  Matrix<General,Ref,Ref,AT>::row(int i) {
+    inline RowVector<Ref,AT>  Matrix<General,Ref,Ref,AT>::row(int i) {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i>=0);
       assert(i<m);
 #endif
 
-      return RowVector<General,Fixed<1>,Ref,AT>(n,lda,tp,memory,elePtr(i,0));
+      return RowVector<Ref,AT>(n,lda,tp,memory,elePtr(i,0));
     }
 
   template <class AT>
-    inline const RowVector<General,Fixed<1>,Ref,AT>  Matrix<General,Ref,Ref,AT>::row(int i) const {
+    inline const RowVector<Ref,AT>  Matrix<General,Ref,Ref,AT>::row(int i) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i>=0);
       assert(i<m);
 #endif
 
-      return RowVector<General,Fixed<1>,Ref,AT>(n,lda,tp,memory,elePtr(i,0));
+      return RowVector<Ref,AT>(n,lda,tp,memory,elePtr(i,0));
     }
 
   template <class AT>

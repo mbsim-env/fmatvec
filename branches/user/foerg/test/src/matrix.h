@@ -201,13 +201,13 @@ namespace fmatvec {
       return ret;
     }
 
-  template <class Type, class Row, class Col, class AT> class SquareMatrix {
+  template <class Row, class AT> class SquareMatrix {
   };
 
-  template <class Type, class Row, class Col, class AT> class Vector {
+  template <class Row, class AT> class Vector {
   };
 
-  template <class Type, class Row, class Col, class AT> class RowVector {
+  template <class Col, class AT> class RowVector {
   };
 }
 

@@ -34,7 +34,7 @@ namespace fmatvec {
    * atomic type of the rowvector. Valid types are int, float,
    * double, complex<float> and complex<double> 
    * */
-  template <int N, class AT> class RowVector<General,Fixed<1>,Fixed<N>,AT> : public Matrix<General,Fixed<1>,Fixed<N>,AT> {
+  template <int N, class AT> class RowVector<Fixed<N>,AT> : public Matrix<General,Fixed<1>,Fixed<N>,AT> {
 
     using Matrix<General,Fixed<1>,Fixed<N>,AT>::ele;
 
@@ -44,7 +44,7 @@ namespace fmatvec {
     
     protected:
 
-    template<class Type, class Row, class Col> inline void deepCopy(const RowVector<Type,Row,Col,AT> &x);
+    template<class Col> inline void deepCopy(const RowVector<Col,AT> &x);
 
     /// @endcond
 
@@ -63,7 +63,7 @@ namespace fmatvec {
        * notation. The entries are seperated by semicolons.
        * For example
        * \code 
-       * RowVector<General,Fixed<1>,Fixed<N>,AT>e> x("[3,1,2]");
+       * RowVector<Fixed<N>,AT>e> x("[3,1,2]");
        * \endcode
        * constructs the vector
        * \f[ x=\begin{pmatrix}3 1 2\end{pmatrix}  \f]
@@ -90,10 +90,10 @@ namespace fmatvec {
 
       /*! \brief Copy Constructor
        *
-       * See RowVector(const RowVector<General,Fixed<1>,Fixed<N>,AT> 
+       * See RowVector(const RowVector<Fixed<N>,AT> 
        * */
       template<class Col>
-      RowVector(const RowVector<General,Fixed<1>,Col,AT> &A) : Matrix<General,Fixed<1>,Fixed<N>,AT>(A) {
+      RowVector(const RowVector<Col,AT> &A) : Matrix<General,Fixed<1>,Fixed<N>,AT>(A) {
       }
 
       /*! \brief Copy Constructor
@@ -153,7 +153,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling rowvector.
        * */
-      inline RowVector<General,Fixed<1>,Fixed<N>,AT>& init(const AT& a);
+      inline RowVector<Fixed<N>,AT>& init(const AT& a);
 
       /*! \brief Size.
        *
@@ -171,11 +171,11 @@ namespace fmatvec {
 
       using Matrix<General,Fixed<1>,Fixed<N>,AT>::operator();
 
-      inline const Vector<General,Fixed<N>,Fixed<1>,AT> T() const;
+      inline const Vector<Fixed<N>,AT> T() const;
   };
 
   template <int N, class AT>
-    inline RowVector<General,Fixed<1>,Fixed<N>,AT>& RowVector<General,Fixed<1>,Fixed<N>,AT>::init(const AT& val) {
+    inline RowVector<Fixed<N>,AT>& RowVector<Fixed<N>,AT>::init(const AT& val) {
 
       for(int i=0; i<N; i++) 
 	ele[i] = val;
@@ -184,8 +184,8 @@ namespace fmatvec {
     }
 
   template <int N, class AT>
-    inline const Vector<General,Fixed<N>,Fixed<1>,AT> RowVector<General,Fixed<1>,Fixed<N>,AT>::T() const {
-      Vector<General,Fixed<N>,Fixed<1>,AT> x(NONINIT);
+    inline const Vector<Fixed<N>,AT> RowVector<Fixed<N>,AT>::T() const {
+      Vector<Fixed<N>,AT> x(NONINIT);
       for(int i=0; i<N; i++)
         x.e(i) = e(i);
       return x;
@@ -193,8 +193,8 @@ namespace fmatvec {
 
    /// @cond NO_SHOW
  
-  template <int N, class AT> template <class Type, class Row, class Col>
-    inline void RowVector<General,Fixed<1>,Fixed<N>,AT>::deepCopy(const RowVector<Type,Row,Col,AT> &x) {
+  template <int N, class AT> template <class Col>
+    inline void RowVector<Fixed<N>,AT>::deepCopy(const RowVector<Col,AT> &x) {
       for(int i=0; i<N; i++)
         e(i) = x.e(i);
     }
