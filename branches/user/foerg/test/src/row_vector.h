@@ -78,7 +78,7 @@ namespace fmatvec {
        *
        * Constructs a rowvector with no size. 
        * */
-      RowVector() : Matrix<General,Ref,Ref,AT>() {
+      RowVector() : Matrix<General,Ref,Ref,AT>(1,0) {
       }
 
       /*! \brief String Constructor. 

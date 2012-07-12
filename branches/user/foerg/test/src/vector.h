@@ -81,7 +81,7 @@ namespace fmatvec {
        *
        * Constructs a vector with no size. 
        * */
-      Vector() : Matrix<General,Ref,Ref,AT>() {
+      Vector() : Matrix<General,Ref,Ref,AT>(0,1) {
       }
 
       /*! \brief Regular Constructor
