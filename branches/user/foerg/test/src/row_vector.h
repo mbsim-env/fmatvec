@@ -142,20 +142,6 @@ namespace fmatvec {
 
       /*! \brief Rowvector resizing. 
        *
-       * Resizes the rowvector to size n.    
-       * \param n The size.
-       * \return A reference to the calling rowvector.
-       * \remark The rowvector will be initialised to
-       * zero by default. To change this behavior, define
-       * FMATVEC_NO_INITIALIZATION.
-       * */
-      RowVector& resize(int n) {
-	Matrix<General,Ref,Ref,AT>::resize(1,n);
-	return *this;
-      }
-
-      /*! \brief Rowvector resizing. 
-       *
        * Resizes the rowvector to size n. 
        * The vector will be initialized to the value given by \em a
        * (default 0), if ini is set to INIT. If init is set to NONINIT, the
@@ -165,7 +151,7 @@ namespace fmatvec {
        * \param a The value, the rowvector will be initialized with (default 0)
        * \return A reference to the calling rowvector.
        * */
-      RowVector& resize(int n, Initialization ini, const AT &a=0) {
+      RowVector& resize(int n, Initialization ini=INIT, const AT &a=0) {
 	Matrix<General,Ref,Ref,AT>::resize(1,n,ini,a);
 	return *this;
       }
@@ -204,13 +190,7 @@ namespace fmatvec {
        * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
        * \sa operator<<(), operator>>()
        * */
-      RowVector<General,Fixed<1>,Ref,AT>& operator=(const RowVector<General,Fixed<1>,Ref,AT> &x) {
-#ifndef FMATVEC_NO_DEEP_ASSIGNMENT 
-	return operator<<(x);
-#else
-	return operator>>(x);
-#endif
-      }
+      inline RowVector<General,Fixed<1>,Ref,AT>& operator=(const RowVector<General,Fixed<1>,Ref,AT> &x);
 
       /*! \brief Element operator
        *
@@ -330,7 +310,6 @@ namespace fmatvec {
       inline const RowVector<General,Fixed<1>,Ref,AT> operator()(const Index &I) const;
 
       using Matrix<General,Ref,Ref,AT>::operator();
-      using Matrix<General,Ref,Ref,AT>::resize;
 
       Vector<General,Ref,Fixed<1>,AT> T() {
 	return Vector<General,Ref,Fixed<1>,AT>(n,lda,tp?false:true,memory,ele);
@@ -359,23 +338,28 @@ namespace fmatvec {
     }
 
   template <class AT>
+    inline RowVector<General,Fixed<1>,Ref,AT>& RowVector<General,Fixed<1>,Ref,AT>::operator=(const RowVector<General,Fixed<1>,Ref,AT> &x) { 
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(n == x.size());
+#endif
+
+      deepCopy(x);
+
+      return *this;
+    }
+
+  template <class AT>
     inline RowVector<General,Fixed<1>,Ref,AT>& RowVector<General,Fixed<1>,Ref,AT>::operator<<(const RowVector<General,Fixed<1>,Ref,AT> &x) { 
 
-      if(x.size() == 0)
-	return *this;
-
-      if(n==0) {
-	m = x.m; 
-	n = x.n;
+      if(n!=x.size()) {
+	m = 1; 
+	n = x.size();
 	lda = m;
 	tp = false;
 	memory.resize(n);
 	ele = (AT*)memory.get();
-      } else {
-#ifndef FMATVEC_NO_SIZE_CHECK
-	assert(n == x.n);
-#endif
-      }
+      } 
 
       deepCopy(x);
 
@@ -385,15 +369,8 @@ namespace fmatvec {
   template <class AT>
     inline RowVector<General,Fixed<1>,Ref,AT>& RowVector<General,Fixed<1>,Ref,AT>::operator>>(const RowVector<General,Fixed<1>,Ref,AT> &x) { 
 
-      if(n==0) {
-	m = x.m; 
-	n = x.n;
-      } else {
-#ifndef FMATVEC_NO_SIZE_CHECK
-	assert(n == x.n);
-#endif
-      }
-
+      m = 1;
+      n = x.size();
       memory = x.memory;
       ele = x.ele;
       lda = x.lda;

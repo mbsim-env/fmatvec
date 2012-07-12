@@ -163,7 +163,8 @@ namespace fmatvec {
     int m, n;
     char c;
     is >> m >> c >> n >> c;
-    A.resize(m,n,NONINIT);
+    assert(m==A.rows());
+    assert(n==A.cols());
     for (int i=0; i < A.rows(); ++i) 
       for (int j=0; j < A.cols(); ++j) 
 	is >> A.e(i,j);

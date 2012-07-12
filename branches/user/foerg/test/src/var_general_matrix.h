@@ -120,19 +120,28 @@ namespace fmatvec {
 	delete[] ele;
       }
 
-      Matrix<General,Var,Var,AT>& resize(int m, int n) {
+      Matrix<General,Var,Var,AT>& resize(int m, int n, Initialization ini=INIT, const AT &a=0) {
 	delete[] ele;
 	M=m;
 	N=n;
 	ele = new AT[M*N];
 
-#ifndef FMATVEC_NO_INITIALIZATION 
-	init(0);
-#endif
+	if(ini == INIT) {
+          for(int i=0; i<M*N; i++) 
+            e(i) = a;
+        } else if(ini == EYE ) {
+          for(int i=0; i<M; i++) {
+            for(int j=0; j<N; j++) {
+              if (i==j) e(i,j) = 1;
+              else e(i,j) = 0;
+            }
+          }
+        }
+
 	return *this;
       }
 
-      /*! \brief Assignment operator
+     /*! \brief Assignment operator
        *
        * Copies the matrix given by \em A.
        * \param A The matrix to be assigned. 
@@ -391,6 +400,11 @@ namespace fmatvec {
 
   template <class AT>
     inline Matrix<General,Var,Var,AT>& Matrix<General,Var,Var,AT>::operator=(const Matrix<General,Var,Var,AT> &A) { 
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A.rows() == M); 
+      assert(A.cols() == N);
+#endif
 
       deepCopy(A);
 

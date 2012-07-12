@@ -136,30 +136,6 @@ namespace fmatvec {
 
       /*! \brief Matrix resizing. 
        *
-       * Resizes the matrix to size n x n.    
-       * \param n_ The number of rows and columns.
-       * \param kl_ The number of subdiagonals.
-       * \param ku_ The number of superdiagonals.
-       * \return A reference to the calling matrix.
-       * \remark The matrix will be initialised to
-       * zero by default. To change this behavior, define
-       * FMATVEC_NO_INITIALIZATION.
-       * */
-      Matrix<GeneralBand,Ref,Ref,AT>& resize(int n_, int kl_, int ku_) {
-	n=n_;
-	kl=kl_;
-	ku=ku_;
-	memory.resize(n*(kl+ku+1));
-	ele = (AT*)memory.get();
-
-#ifndef FMATVEC_NO_INITIALIZATION 
-	init(0);
-#endif
-	return *this;
-      }
-
-      /*! \brief Matrix resizing. 
-       *
        * Resizes the matrix to size m x n. The matrix will be initialized to the value given by \em a
        * (default 0), if ini is set to INIT. If init is set to NONINIT, the
        * matrix will not be initialized.
@@ -170,7 +146,7 @@ namespace fmatvec {
        * \param a The value, the matrix will be initialized with (default 0)
        * \return A reference to the calling matrix.
        * */
-      Matrix<GeneralBand,Ref,Ref,AT>& resize(int n_, int kl_, int ku_, Initialization ini, const AT &a=0) {
+      Matrix<GeneralBand,Ref,Ref,AT>& resize(int n_, int kl_, int ku_, Initialization ini=INIT, const AT &a=0) {
 	n=n_;
 	kl=kl_;
 	ku=ku_;
@@ -196,13 +172,7 @@ namespace fmatvec {
        * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
        * \sa operator<<(), operator>>()
        * */
-      Matrix<GeneralBand,Ref,Ref,AT>& operator=(const Matrix<GeneralBand,Ref,Ref,AT> &A) {
-#ifndef FMATVEC_NO_DEEP_ASSIGNMENT 
-	return operator<<(A);
-#else
-	return operator>>(A);
-#endif
-      }
+      inline Matrix<GeneralBand,Ref,Ref,AT>& operator=(const Matrix<GeneralBand,Ref,Ref,AT> &A);
 
       /*! \brief Copy operator
        *
@@ -302,13 +272,6 @@ namespace fmatvec {
        * */
       inline Vector<General,Ref,Ref,AT> operator()(int i);
 
-      /*! \brief Matrix unsizing.
-       *
-       * Resizes the matrix to size zero.  
-       * \return A reference to the calling matrix.
-       * */
-      Matrix<GeneralBand,Ref,Ref,AT>& resize() {n=0;return *this;};
-
       /*! \brief Matrix duplicating.
        *
        * The calling matrix returns a \em deep copy of itself.  
@@ -335,14 +298,7 @@ namespace fmatvec {
   template <class AT>
     inline Matrix<GeneralBand,Ref,Ref,AT>& Matrix<GeneralBand,Ref,Ref,AT>::operator>>(const Matrix<GeneralBand,Ref,Ref,AT> &A) { 
 
-      if(n==0) {
-	n=A.n;
-      } else {
-#ifndef FMATVEC_NO_SIZE_CHECK
-	assert(n == A.n);
-#endif
-      }
-
+      n=A.n;
       memory = A.memory;
       ele = A.ele;
 
@@ -350,20 +306,25 @@ namespace fmatvec {
     }
 
   template <class AT>
+    inline Matrix<GeneralBand,Ref,Ref,AT>& Matrix<GeneralBand,Ref,Ref,AT>::operator=(const Matrix<GeneralBand,Ref,Ref,AT> &A) { 
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(n == A.n);
+#endif
+
+      deepCopy(A);
+
+      return *this;
+    }
+
+  template <class AT>
     inline Matrix<GeneralBand,Ref,Ref,AT>& Matrix<GeneralBand,Ref,Ref,AT>::operator<<(const Matrix<GeneralBand,Ref,Ref,AT> &A) { 
 
-      if(A.rows() == 0 || A.cols() == 0)
-	return *this;
-
-      if(n==0) {
+      if(n!=A.n) {
 	n = A.n;
 	memory.resize(n*n);
 	ele = (AT*)memory.get();
-      } else {
-#ifndef FMATVEC_NO_SIZE_CHECK
-	assert(n == A.n);
-#endif
-      }
+      } 
 
       deepCopy(A);
 

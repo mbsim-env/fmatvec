@@ -104,8 +104,8 @@ namespace fmatvec {
       explicit Vector(const Matrix<Type,Row,Col,AT> &A) : Matrix<General,Var,Fixed<1>,AT>(A) {
       }
 
-      Vector<General,Var,Fixed<1>,AT>& resize(int n) {
-	Matrix<General,Var,Fixed<1>,AT>::resize(n,1);
+      Vector<General,Var,Fixed<1>,AT>& resize(int n, Initialization ini=INIT, const AT &a=0 ) {
+	Matrix<General,Var,Fixed<1>,AT>::resize(n,1,ini,a);
 	return *this;
       }
 

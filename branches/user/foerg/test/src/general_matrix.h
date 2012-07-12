@@ -29,11 +29,6 @@
 
 namespace fmatvec {
 
-  template <class AT> class Vector<General,Ref,Fixed<1>,AT>;
-  template <class AT> class RowVector<General,Fixed<1>,Ref,AT>;
-  template <class AT> class SquareMatrix<General,Ref,Ref,AT>;
-  template <class AT> class Matrix<Symmetric,Ref,Ref,AT>;
-
   /*! 
    *  \brief This is a matrix class for general matrices.
    *  
@@ -48,12 +43,12 @@ namespace fmatvec {
 
  /// @cond NO_SHOW
 
+      friend class Vector<General,Ref,Fixed<1>,AT>;
+      friend class RowVector<General,Fixed<1>,Ref,AT>;
+      friend class SquareMatrix<General,Ref,Ref,AT>;
       friend class Matrix<Symmetric,Ref,Ref,AT>;
       
-      template <class T> friend Matrix<General,Ref,Ref,T>  trans(const Matrix<General,Ref,Ref,T> &A);
-      //friend Matrix<General,Ref,Ref,double>  trans(const Matrix<General,Ref,Ref,double> &A);
-      //friend Vector<General,Ref,Fixed<1>,double> trans(const RowVector<General,Fixed<1>,Ref,double> &x);
-      //friend RowVector<General,Fixed<1>,Ref,double> trans(const Vector<General,Ref,Fixed<1>,double> &x);
+      template <class T> friend Matrix<General,Ref,Ref,T> trans(const Matrix<General,Ref,Ref,T> &A);
 
     protected:
 
@@ -179,29 +174,6 @@ namespace fmatvec {
 
       /*! \brief Matrix resizing. 
        *
-       * Resizes the matrix to size m x n.    
-       * \param m_ The number of rows.
-       * \param n_ The number of columns.
-       * \return A reference to the calling matrix.
-       * \remark The matrix will be initialised to
-       * zero by default. To change this behavior, define
-       * FMATVEC_NO_INITIALIZATION.
-       * */
-      Matrix<General,Ref,Ref,AT>& resize(int m_, int n_) {
-	m=m_;n=n_;
-	lda=m;
-	tp = false;
-	memory.resize(m*n);
-	ele = (AT*)memory.get();
-
-#ifndef FMATVEC_NO_INITIALIZATION 
-	init(0);
-#endif
-	return *this;
-      }
-
-      /*! \brief Matrix resizing. 
-       *
        * Resizes the matrix to size m x n. The matrix will be initialized to the value given by \em a
        * (default 0), if ini is set to INIT. If init is set to NONINIT, the
        * matrix will not be initialized.
@@ -211,7 +183,7 @@ namespace fmatvec {
        * \param a The value, the matrix will be initialized with (default 0)
        * \return A reference to the calling matrix.
        * */
-      Matrix<General,Ref,Ref,AT>& resize(int m_, int n_, Initialization ini, const AT &a=0) {
+      Matrix<General,Ref,Ref,AT>& resize(int m_, int n_, Initialization ini=INIT, const AT &a=0) {
 	m=m_;n=n_;
 	lda=m;
 	tp = false;
@@ -240,18 +212,10 @@ namespace fmatvec {
        * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
        * \sa operator<<(), operator>>()
        * */
-      Matrix<General,Ref,Ref,AT>& operator=(const Matrix<General,Ref,Ref,AT> &A) {
-#ifndef FMATVEC_NO_DEEP_ASSIGNMENT 
-	return operator<<(A);
-#else
-	return operator>>(A);
-#endif
-      }
+      inline Matrix<General,Ref,Ref,AT>& operator=(const Matrix<General,Ref,Ref,AT> &A);
 
       template<class Type, class Row, class Col>
-      Matrix<General,Ref,Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
-	return operator<<(A);
-      }
+      Matrix<General,Ref,Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A);
 
       /*! \brief Copy operator
        *
@@ -489,13 +453,6 @@ namespace fmatvec {
        * */
       inline const RowVector<General,Fixed<1>,Ref,AT> row(int i) const;
 
-      /*! \brief Matrix unsizing.
-       *
-       * Resizes the matrix to size zero.  
-       * \return A reference to the calling matrix.
-       * */
-      Matrix<General,Ref,Ref,AT>& resize() {m=0;n=0;return *this;};
-
       /*! \brief Matrix duplicating.
        *
        * The calling matrix returns a \em deep copy of itself.  
@@ -583,16 +540,8 @@ namespace fmatvec {
   template <class AT>
     inline Matrix<General,Ref,Ref,AT>& Matrix<General,Ref,Ref,AT>::operator>>(const Matrix<General,Ref,Ref,AT> &A) { 
 
-      if(m==0) {
-        m=A.m; 
-        n=A.n;
-      } else {
-#ifndef FMATVEC_NO_SIZE_CHECK
-        assert(m == A.m);
-        assert(n == A.n);
-#endif
-      }
-
+      m=A.m; 
+      n=A.n;
       memory = A.memory;
       ele = A.ele;
       lda = A.lda;
@@ -601,24 +550,42 @@ namespace fmatvec {
       return *this;
     }
 
+  template <class AT>
+    inline Matrix<General,Ref,Ref,AT>& Matrix<General,Ref,Ref,AT>::operator=(const Matrix<General,Ref,Ref,AT> &A) { 
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(m == A.rows());
+      assert(n == A.cols());
+#endif
+
+      deepCopy(A);
+
+      return *this;
+    }
+
+  template <class AT> template< class Type, class Row, class Col>
+    inline Matrix<General,Ref,Ref,AT>& Matrix<General,Ref,Ref,AT>::operator=(const Matrix<Type,Row,Col,AT> &A) { 
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(m == A.rows());
+      assert(n == A.cols());
+#endif
+
+      deepCopy(A);
+
+      return *this;
+    }
+
   template <class AT> template< class Type, class Row, class Col>
     inline Matrix<General,Ref,Ref,AT>& Matrix<General,Ref,Ref,AT>::operator<<(const Matrix<Type,Row,Col,AT> &A) { 
 
-      if(A.rows() == 0 || A.cols() == 0)
-        return *this;
-
-      if(m==0) {
+      if(m!=A.rows() || n!=A.cols()) {
         m = A.rows(); 
         n = A.cols();
         lda = m;
         tp = false;
         memory.resize(m*n);
         ele = (AT*)memory.get();
-      } else {
-#ifndef FMATVEC_NO_SIZE_CHECK
-        assert(m == A.rows());
-        assert(n == A.cols());
-#endif
       }
 
       deepCopy(A);

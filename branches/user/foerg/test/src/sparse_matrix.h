@@ -113,13 +113,34 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 	~Matrix() {
 	}
 
+	/*! \brief Matrix resizing. 
+	 *
+	 * Resizes the matrix to size n x n. The matrix will be initialized to the value given by \em a
+	 * (default 0), if ini is set to INIT. If init is set to NONINIT, the
+	 * matrix will not be initialized.
+	 * \param n_ The number of columns/rows.
+	 * \param k_ The number of nonzero elements.
+	 * \return A reference to the calling matrix.
+	 * */
+	Matrix<Sparse,Ref,Ref,AT>& resize(int n_, int k_) {
+	  m=n_;n=n_;k=k_;
+	  memEle.resize(k);
+	  memI.resize(m+1);
+	  memJ.resize(k);
+	  ele = (AT*)memEle.get();
+	  I = (int*)memI.get();
+	  J = (int*)memJ.get();
+
+	  return *this;
+	}
+
 	/*! \brief Copy operator
 	 *
 	 * Copies the sparse matrix given by \em A.
 	 * \param A The matrix to be copied. 
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Sparse,Ref,Ref,AT>& operator<<(const Matrix<Sparse,Ref,Ref,AT> &A);
+	inline Matrix<Sparse,Ref,Ref,AT>& operator<<(const Matrix<Sparse,Ref,Ref,AT> &A);
 
 	/*! \brief Reference operator
 	 *
@@ -127,13 +148,13 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 	 * \param A The matrix to be referenced. 
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Sparse,Ref,Ref,AT>& operator>>(const Matrix<Sparse,Ref,Ref,AT> &A);
+	inline Matrix<Sparse,Ref,Ref,AT>& operator>>(const Matrix<Sparse,Ref,Ref,AT> &A);
 
 	/*! \brief Element operator
 	 *
 	 * See operator<<(const Matrix<Sparse,Ref,Ref,T>&) 
 	 * */
-	Matrix<Sparse,Ref,Ref,AT>& operator<<(const SquareMatrix<General,Ref,Ref,AT> &A);
+	inline Matrix<Sparse,Ref,Ref,AT>& operator<<(const SquareMatrix<General,Ref,Ref,AT> &A);
 
 	/*! \brief Assignment operator
 	 *
@@ -143,13 +164,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 	 * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
 	 * \sa operator<<(), operator>>()
 	 * */
-	Matrix<Sparse,Ref,Ref,AT>& operator=(const Matrix<Sparse,Ref,Ref,AT> &A) {
-#ifndef FMATVEC_NO_DEEP_ASSIGNMENT 
-	  return operator<<(A);
-#else
-	  return operator>>(A);
-#endif
-	}
+	inline Matrix<Sparse,Ref,Ref,AT>& operator=(const Matrix<Sparse,Ref,Ref,AT> &A);
 
 	/*! \brief Pointer operator
 	 *
@@ -219,34 +234,6 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 	 * */
 	Matrix<Sparse,Ref,Ref,AT> copy() const;
 
-	/*! \brief Matrix unsizing.
-	 *
-	 * Resizes the matrix to size zero.  
-	 * \return A reference to the calling matrix.
-	 * */
-	Matrix<Sparse,Ref,Ref,AT>& resize() {m=0;n=0;k=0;return *this;};
-
-	/*! \brief Matrix resizing. 
-	 *
-	 * Resizes the matrix to size n x n. The matrix will be initialized to the value given by \em a
-	 * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-	 * matrix will not be initialized.
-	 * \param n_ The number of columns/rows.
-	 * \param k_ The number of nonzero elements.
-	 * \return A reference to the calling matrix.
-	 * */
-	Matrix<Sparse,Ref,Ref,AT>& resize(int n_, int k_) {
-	  m=n_;n=n_;k=k_;
-	  memEle.resize(k);
-	  memI.resize(m+1);
-	  memJ.resize(k);
-	  ele = (AT*)memEle.get();
-	  I = (int*)memI.get();
-	  J = (int*)memJ.get();
-
-	  return *this;
-	}
-
 	/*! \brief Initialization.
 	 *
 	 * Initializes all elements of the calling matrix with 
@@ -261,19 +248,10 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
   // ----------------------------------------------------------------------------
 
   template <class AT>
-    Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator>>(const Matrix<Sparse,Ref,Ref,AT> &A) { 
-      if(m==0) {
-	m=A.m;
-	n=A.n;
-	k=A.k;
-      } else {
-#ifndef FMATVEC_NO_SIZE_CHECK
-	assert(m == A.m);
-	assert(n == A.n);
-	assert(k == A.k);
-#endif
-      }
-
+    inline Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator>>(const Matrix<Sparse,Ref,Ref,AT> &A) { 
+      m=A.m;
+      n=A.n;
+      k=A.k;
       memEle = A.memEle;
       memI = A.memI;
       memJ = A.memJ;
@@ -286,12 +264,23 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
     }
 
   template <class AT>
-    Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator<<(const Matrix<Sparse,Ref,Ref,AT> &A) { 
+    inline Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator=(const Matrix<Sparse,Ref,Ref,AT> &A) { 
 
-     if(A.rows() == 0 || A.cols() == 0)
-	return *this;
-	
-      if(m==0) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(m == A.m);
+      assert(n == A.n);
+      assert(k == A.k);
+#endif
+
+      deepCopy(A);
+
+      return *this;
+    }
+
+  template <class AT>
+    inline Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator<<(const Matrix<Sparse,Ref,Ref,AT> &A) { 
+
+      if(m!=A.m || n!=A.n || k!=A.k) {
 	m = A.m;
 	n = A.n;
 	k = A.k;
@@ -301,10 +290,6 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 	ele = (AT*)memEle.get();
 	I = (int*)memI.get();
 	J = (int*)memJ.get();
-      } else  {
-	assert(m == A.m);
-	assert(n == A.n);
-	assert(k >= A.k);
       }
 
       deepCopy(A);
@@ -313,25 +298,19 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
     }
 
   template <class AT>
-    Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator<<(const SquareMatrix<General,Ref,Ref,AT> &A) { 
+    inline Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator<<(const SquareMatrix<General,Ref,Ref,AT> &A) { 
 
-     if(A.rows() == 0 || A.cols() == 0)
-	return *this;
-	
-     if(m==0) {
-       m = A.rows();
-       n = A.cols();
-       k = countElements(A);
-       memEle.resize(k);
-       memI.resize(m+1);
-       memJ.resize(k);
-       ele = (AT*)memEle.get();
-       I = (int*)memI.get();
-       J = (int*)memJ.get();
-     } else {
-       assert(m == A.rows());
-       assert(n == A.cols());
-     }
+      if(m!=A.rows() || n!=A.cols()) {
+        m = A.rows();
+        n = A.cols();
+        k = countElements(A);
+        memEle.resize(k);
+        memI.resize(m+1);
+        memJ.resize(k);
+        ele = (AT*)memEle.get();
+        I = (int*)memI.get();
+        J = (int*)memJ.get();
+      }
 
       deepCopy(A);
 

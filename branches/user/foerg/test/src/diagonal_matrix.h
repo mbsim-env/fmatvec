@@ -85,52 +85,6 @@ namespace fmatvec {
 #endif
 	}
 
-	/*! \brief Matrix resizing. 
-	 *
-	 * Resizes the matrix to size n x n.    
-	 * \param n_ The number of rows and columns.
-	 * \return A reference to the calling matrix.
-	 * \remark The matrix will be initialised to
-	 * zero by default. To change this behavior, define
-	 * FMATVEC_NO_INITIALIZATION.
-	 * */
-	Matrix<Diagonal,Ref,Ref,AT>& resize(int n_) {
-	  n = n_;
-
-	  memory.resize(n);
-	  ele = (AT*)memory.get();
-
-#ifndef FMATVEC_NO_INITIALIZATION 
-	  init(0);
-#endif
-	  return *this;
-	}
-
-	/*! \brief Matrix resizing. 
-	 *
-	 * Resizes the matrix to size n x n. The matrix will be initialized to 
-	 * the value given by \em a
-	 * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-	 * matrix will not be initialized.
-	 * \param n_ The number of rows and columns.
-	 * \param ini INIT means initialization, NONINIT means no initialization.
-	 * \param a The value, the matrix will be initialized with (default 0)
-	 * \return A reference to the calling matrix.
-	 * */
-	Matrix<Diagonal,Ref,Ref,AT>& resize(int n_, Initialization ini, const AT &a=0) {
-	  n = n_;
-
-	  memory.resize(n);
-	  ele = (AT*)memory.get();
-
-	  if(ini == INIT)
-	    init(a);
-	  else if(ini == EYE ) 
-	    init(1);
-
-	  return *this;
-	}
-
 	/*! \brief Regular Constructor
 	 *
 	 * Constructs a diagonal matrix of size n x n. The matrix will be initialized to
@@ -169,13 +123,39 @@ namespace fmatvec {
 	~Matrix() {
 	}
 
+	/*! \brief Matrix resizing. 
+	 *
+	 * Resizes the matrix to size n x n. The matrix will be initialized to 
+	 * the value given by \em a
+	 * (default 0), if ini is set to INIT. If init is set to NONINIT, the
+	 * matrix will not be initialized.
+	 * \param n_ The number of rows and columns.
+	 * \param ini INIT means initialization, NONINIT means no initialization.
+	 * \param a The value, the matrix will be initialized with (default 0)
+	 * \return A reference to the calling matrix.
+	 * */
+	Matrix<Diagonal,Ref,Ref,AT>& resize(int n_, Initialization ini=INIT, const AT &a=0) {
+	  n = n_;
+
+	  memory.resize(n);
+	  ele = (AT*)memory.get();
+
+	  if(ini == INIT)
+	    init(a);
+	  else if(ini == EYE ) 
+	    init(1);
+
+	  return *this;
+	}
+ 
+
 	/*! \brief Copy operator
 	 *
 	 * Copies the diagonal matrix given by \em A.
 	 * \param A The matrix to be copied. 
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Diagonal,Ref,Ref,AT>& operator<<(const Matrix<Diagonal,Ref,Ref,AT> &A);
+	inline Matrix<Diagonal,Ref,Ref,AT>& operator<<(const Matrix<Diagonal,Ref,Ref,AT> &A);
 
 	/*! \brief Reference operator
 	 *
@@ -183,7 +163,7 @@ namespace fmatvec {
 	 * \param A The matrix to be referenced. 
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Diagonal,Ref,Ref,AT>& operator>>(const Matrix<Diagonal,Ref,Ref,AT> &A);
+	inline Matrix<Diagonal,Ref,Ref,AT>& operator>>(const Matrix<Diagonal,Ref,Ref,AT> &A);
 
 	/*! \brief Assignment operator
 	 *
@@ -193,13 +173,7 @@ namespace fmatvec {
 	 * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
 	 * \sa operator<<(), operator>>()
 	 * */
-	Matrix<Diagonal,Ref,Ref,AT>& operator=(const Matrix<Diagonal,Ref,Ref,AT> &A) {
-#ifndef FMATVEC_NO_DEEP_ASSIGNMENT 
-	  return operator<<(A);
-#else
-	  return operator>>(A);
-#endif
-	}
+	inline Matrix<Diagonal,Ref,Ref,AT>& operator=(const Matrix<Diagonal,Ref,Ref,AT> &A);
 
 	/*! \brief Element operator
 	 *
@@ -342,11 +316,7 @@ namespace fmatvec {
 
   template <class AT>
     Matrix<Diagonal,Ref,Ref,AT>& Matrix<Diagonal,Ref,Ref,AT>::operator>>(const Matrix<Diagonal,Ref,Ref,AT> &A) { 
-      if(n==0) {
-	n=A.n;
-      } else 
-	assert(n == A.n);
-
+      n=A.n;
       memory = A.memory;
       ele = A.ele;
 
@@ -354,17 +324,26 @@ namespace fmatvec {
     }
 
   template <class AT>
+    Matrix<Diagonal,Ref,Ref,AT>& Matrix<Diagonal,Ref,Ref,AT>::operator=(const Matrix<Diagonal,Ref,Ref,AT> &A) { 
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(n == A.n);
+#endif
+
+      deepCopy(A);
+
+      return *this;
+    }
+
+
+  template <class AT>
     Matrix<Diagonal,Ref,Ref,AT>& Matrix<Diagonal,Ref,Ref,AT>::operator<<(const Matrix<Diagonal,Ref,Ref,AT> &A) { 
 
-      if(A.size() == 0)
-	return *this;
-	
-      if(n==0) {
+      if(n!=A.n) {
 	n = A.n;
 	memory.resize(n);
 	ele = (AT*)memory.get();
-      } else 
-	assert(n == A.n);
+      } 
 
       deepCopy(A);
 

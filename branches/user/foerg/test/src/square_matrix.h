@@ -132,36 +132,6 @@ namespace fmatvec {
 	assert(m == n);
       }
 
-      /*! \brief Matrix resizing. 
-       *
-       * Resizes the matrix to size n x n.    
-       * \param n The number of rows and columns.
-       * \return A reference to the calling matrix.
-       * \remark The matrix will be initialised to
-       * zero by default. To change this behavior, define
-       * FMATVEC_NO_INITIALIZATION.
-       * */
-      SquareMatrix<General,Ref,Ref,AT>& resize(int n) {
-	Matrix<General,Ref,Ref,AT>::resize(n,n);
-	return *this;
-      }
-
-      /*! \brief Matrix resizing. 
-       *
-       * Resizes the matrix to size n x n. The matrix will be initialized
-       * to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * matrix will not be initialized.
-       * \param n The number of rows and columns.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the matrix will be initialized with (default 0)
-       * \return A reference to the calling matrix.
-       * */
-      SquareMatrix<General,Ref,Ref,AT>& resize(int n,Initialization ini, const AT &a=0) {
-	Matrix<General,Ref,Ref,AT>::resize(n,n,ini,a);
-	return *this;
-      }
-
       /*! \brief Copy Constructor
        *
        * Constructs a reference to the matrix \em A.
@@ -186,6 +156,22 @@ namespace fmatvec {
       explicit SquareMatrix(const Matrix<Type,Row,Col,AT> &x) : Matrix<General,Ref,Ref,AT>(x)  {
       }
 
+      /*! \brief Matrix resizing. 
+       *
+       * Resizes the matrix to size n x n. The matrix will be initialized
+       * to the value given by \em a
+       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
+       * matrix will not be initialized.
+       * \param n The number of rows and columns.
+       * \param ini INIT means initialization, NONINIT means no initialization.
+       * \param a The value, the matrix will be initialized with (default 0)
+       * \return A reference to the calling matrix.
+       * */
+      SquareMatrix<General,Ref,Ref,AT>& resize(int n,Initialization ini=INIT, const AT &a=0) {
+	Matrix<General,Ref,Ref,AT>::resize(n,n,ini,a);
+	return *this;
+      }
+
       /*! \brief Assignment operator
        *
        * Copies the matrix given by \em A by calling operator<<().
@@ -195,11 +181,8 @@ namespace fmatvec {
        * \sa operator<<(), operator>>()
        * */
       SquareMatrix<General,Ref,Ref,AT>& operator=(const SquareMatrix<General,Ref,Ref,AT>&  A) {
-#ifndef FMATVEC_NO_DEEP_ASSIGNMENT 
-	return operator<<(A);
-#else
-	return operator>>(A);
-#endif
+	Matrix<General,Ref,Ref,AT>::operator=(A);
+	return *this;
       }
 
       /*! \brief Copy operator
@@ -209,6 +192,9 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       template<class Type, class Row, class Col> SquareMatrix<General,Ref,Ref,AT>& operator<<(const Matrix<Type,Row,Col,AT> &A) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(A.rows() == A.cols());
+#endif
 	Matrix<General,Ref,Ref,AT>::operator<<(A);
 	return *this;
       }
@@ -220,6 +206,14 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       SquareMatrix<General,Ref,Ref,AT>& operator>>(const SquareMatrix<General,Ref,Ref,AT>&  A) {
+	Matrix<General,Ref,Ref,AT>::operator>>(A);
+	return *this;
+      }
+
+      SquareMatrix<General,Ref,Ref,AT>& operator>>(const Matrix<General,Ref,Ref,AT>&  A) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(A.rows() == A.cols());
+#endif
 	Matrix<General,Ref,Ref,AT>::operator>>(A);
 	return *this;
       }
@@ -238,7 +232,6 @@ namespace fmatvec {
       inline SquareMatrix<General,Ref,Ref,AT> copy() const;
 
       using Matrix<General,Ref,Ref,AT>::operator();
-      using Matrix<General,Ref,Ref,AT>::resize;
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
