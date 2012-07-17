@@ -166,7 +166,7 @@ namespace fmatvec {
        * \param a The value, the vector will be initialized with (default 0)
        * \return A reference to the calling vector.
        * */
-      Vector<Ref,AT>& resize(int n, Initialization ini=INIT, const AT &a=0) {
+      Vector<Ref,AT>& resize(int n=0, Initialization ini=INIT, const AT &a=0) {
 	Matrix<General,Ref,Ref,AT>::resize(n,1,ini,a);
 	return *this;
       }
@@ -364,8 +364,23 @@ namespace fmatvec {
   template <class AT>
     inline Vector<Ref,AT>& Vector<Ref,AT>::operator=(const Vector<Ref,AT> &x) { 
 
+#ifndef FMATVEC_RESIZE_VOID
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(m == x.size());
+#endif
+#else
+      if(m==0) {
+        m = x.size(); 
+        n = 1;
+        lda = m;
+        tp = false;
+        memory.resize(m);
+        ele = (AT*)memory.get();
+      } else {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(m == x.size());
+#endif
+      }
 #endif
 
       deepCopy(x);
@@ -376,8 +391,23 @@ namespace fmatvec {
   template <class AT> template<class Row>
     inline Vector<Ref,AT>& Vector<Ref,AT>::operator=(const Vector<Row,AT> &x) { 
 
+#ifndef FMATVEC_RESIZE_VOID
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(m == x.size());
+#endif
+#else
+      if(m==0) {
+        m = x.size(); 
+        n = 1;
+        lda = m;
+        tp = false;
+        memory.resize(m);
+        ele = (AT*)memory.get();
+      } else {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(m == x.size());
+#endif
+      }
 #endif
 
       deepCopy(x);

@@ -120,7 +120,7 @@ namespace fmatvec {
 	delete[] ele;
       }
 
-      Matrix<General,Var,Var,AT>& resize(int m, int n, Initialization ini=INIT, const AT &a=0) {
+      Matrix<General,Var,Var,AT>& resize(int m=0, int n=0, Initialization ini=INIT, const AT &a=0) {
 	delete[] ele;
 	M=m;
 	N=n;
@@ -394,9 +394,23 @@ namespace fmatvec {
   template <class AT> template< class Type, class Row, class Col>
     inline Matrix<General,Var,Var,AT>& Matrix<General,Var,Var,AT>::operator=(const Matrix<Type,Row,Col,AT> &A) { 
 
+#ifndef FMATVEC_RESIZE_VOID
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.rows() == M); 
-      assert(A.cols() == N);
+      assert(M == A.rows());
+      assert(N == A.cols());
+#endif
+#else
+      if(M==0 && N==0) {
+        delete[] ele;
+        M = A.rows(); 
+        N = A.cols();
+        ele = new AT[M*N];
+      } else {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(M == A.rows());
+        assert(N == A.cols());
+#endif
+      }
 #endif
 
       deepCopy(A);
@@ -407,9 +421,23 @@ namespace fmatvec {
   template <class AT>
     inline Matrix<General,Var,Var,AT>& Matrix<General,Var,Var,AT>::operator=(const Matrix<General,Var,Var,AT> &A) { 
 
+#ifndef FMATVEC_RESIZE_VOID
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.rows() == M); 
-      assert(A.cols() == N);
+      assert(M == A.rows());
+      assert(N == A.cols());
+#endif
+#else
+      if(M==0 && N==0) {
+        delete[] ele;
+        M = A.rows(); 
+        N = A.cols();
+        ele = new AT[M*N];
+      } else {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(M == A.rows());
+        assert(N == A.cols());
+#endif
+      }
 #endif
 
       deepCopy(A);

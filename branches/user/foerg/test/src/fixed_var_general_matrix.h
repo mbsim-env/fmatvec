@@ -150,14 +150,23 @@ namespace fmatvec {
        * zero by default. To change this behavior, define
        * FMATVEC_NO_INITIALIZATION.
        * */
-      Matrix<General,Fixed<M>,Var,AT>& resize(int n) {
+      Matrix<General,Fixed<M>,Var,AT>& resize(int n=0, Initialization ini=INIT, const AT &a=0) {
 	delete[] ele;
 	N=n;
 	ele = new AT[M*N];
 
-#ifndef FMATVEC_NO_INITIALIZATION 
-	init(0);
-#endif
+	if(ini == INIT) {
+	  for(int i=0; i<M*N; i++) 
+	    e(i) = a;
+	} else if(ini == EYE ) {
+	  for(int i=0; i<M; i++) {
+	    for(int j=0; j<N; j++) {
+	      if (i==j) e(i,j) = 1;
+	      else e(i,j) = 0;
+	    }
+	  }
+	}
+
 	return *this;
       }
 
@@ -416,9 +425,24 @@ namespace fmatvec {
   template <int M, class AT> template< class Type, class Row, class Col>
     inline Matrix<General,Fixed<M>,Var,AT>& Matrix<General,Fixed<M>,Var,AT>::operator=(const Matrix<Type,Row,Col,AT> &A) { 
 
+#ifndef FMATVEC_RESIZE_VOID
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.rows() == M); 
-      assert(A.cols() == N);
+      assert(M == A.rows()); 
+      assert(N == A.cols());
+#endif
+#else
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(M == A.rows()); 
+#endif
+      if(N==0) {
+        delete[] ele;
+        N = A.cols(); 
+        ele = new AT[M*N];
+      } else {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(N == A.cols());
+#endif
+      }
 #endif
 
       deepCopy(A);
@@ -429,8 +453,20 @@ namespace fmatvec {
   template <int M, class AT>
     inline Matrix<General,Fixed<M>,Var,AT>& Matrix<General,Fixed<M>,Var,AT>::operator=(const Matrix<General,Fixed<M>,Var,AT> &A) { 
 
+#ifndef FMATVEC_RESIZE_VOID
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.cols() == N);
+      assert(N == A.cols());
+#endif
+#else
+      if(N==0) {
+        delete[] ele;
+        N = A.cols(); 
+        ele = new AT[M*N];
+      } else {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(N == A.cols());
+#endif
+      }
 #endif
 
       deepCopy(A);
@@ -442,7 +478,7 @@ namespace fmatvec {
     inline Matrix<General,Fixed<M>,Var,AT>& Matrix<General,Fixed<M>,Var,AT>::operator<<(const Matrix<Type,Row,Col,AT> &A) { 
 
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.rows() == M);
+      assert(M == A.rows());
 #endif
       if(N!=A.cols()) {
         delete[] ele;

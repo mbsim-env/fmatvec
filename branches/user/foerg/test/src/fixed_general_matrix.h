@@ -328,7 +328,7 @@ namespace fmatvec {
 
       inline void set(int j, const Vector<Fixed<M>,AT> &x);
 
-      inline void set(int j, const RowVector<Fixed<N>,AT> &x);
+      inline void set(int i, const RowVector<Fixed<N>,AT> &x);
 
   };
 
@@ -432,17 +432,17 @@ namespace fmatvec {
     }
 
   template <int M, int N, class AT>
-    inline const RowVector<Fixed<N>,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::row(int j) const {
+    inline const RowVector<Fixed<N>,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::row(int i) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
-      assert(j>=0);
-      assert(j<M);
+      assert(i>=0);
+      assert(i<M);
 #endif
 
       RowVector<Fixed<N>,AT> x(NONINIT);
 
-      for(int i=0; i<M; i++)
-        x.e(i) = e(i,j);
+      for(int j=0; j<N; j++)
+        x.e(j) = e(i,j);
 
       return x;
 
@@ -464,9 +464,9 @@ namespace fmatvec {
     }
 
   template <int M, int N, class AT>
-    inline void Matrix<General,Fixed<M>,Fixed<N>,AT>::set(int j, const RowVector<Fixed<N>,AT> &x) {
-      for(int i=0; i<N; i++)
-        e(i,j) = x.e(i);
+    inline void Matrix<General,Fixed<M>,Fixed<N>,AT>::set(int i, const RowVector<Fixed<N>,AT> &x) {
+      for(int j=0; j<N; j++)
+        e(i,j) = x.e(j);
     }
 
   template <int M, int N, class AT>

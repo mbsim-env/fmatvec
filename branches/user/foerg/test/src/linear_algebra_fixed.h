@@ -22,11 +22,6 @@
 #ifndef linear_algebra_fixed_h
 #define linear_algebra_fixed_h
 
-#include "fixed_square_matrix.h"
-#include "fixed_vector.h"
-#include "fixed_row_vector.h"
-#include "fixed_symmetric_matrix.h"
-
 namespace fmatvec {
 
 

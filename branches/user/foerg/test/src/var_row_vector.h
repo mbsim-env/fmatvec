@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef var_vector_h
-#define var_vector_h
+#ifndef var_row_vector_h
+#define var_row_vector_h
 
 #include "var_general_matrix.h"
 #include <vector>
@@ -36,9 +36,9 @@ namespace fmatvec {
    * atomic type of the vector. Valid types are int, float,
    * double, complex<float> and complex<double> 
    * */
-  template <class AT> class Vector<Var,AT> : public Matrix<General,Var,Fixed<1>,AT> {
-    using Matrix<General,Var,Fixed<1>,AT>::M;
-    using Matrix<General,Var,Fixed<1>,AT>::ele;
+  template <class AT> class RowVector<Var,AT> : public Matrix<General,Fixed<1>,Var,AT> {
+    using Matrix<General,Fixed<1>,Var,AT>::N;
+    using Matrix<General,Fixed<1>,Var,AT>::ele;
 
     public:
 
@@ -46,7 +46,7 @@ namespace fmatvec {
 
     protected:
 
-    template<class Row> inline void deepCopy(const Vector<Row,AT> &x);
+    template<class Row> inline void deepCopy(const RowVector<Row,AT> &x);
 
     /// @endcond
     
@@ -56,7 +56,7 @@ namespace fmatvec {
        *
        * Constructs a vector with no size. 
        * */
-      Vector(int m=0) : Matrix<General,Var,Fixed<1>,AT>(m) {
+      RowVector(int m=0) : Matrix<General,Fixed<1>,Var,AT>(m) {
       }
 
       /*! \brief Regular Constructor
@@ -68,7 +68,7 @@ namespace fmatvec {
        * \param ini INIT means initialization, NONINIT means no initialization.
        * \param a The value, the vector will be initialized with (default 0)
        * */
-      Vector(int m, Initialization ini, const AT &a=0) : Matrix<General,Var,Fixed<1>,AT>(m,ini,a) {
+      RowVector(int m, Initialization ini, const AT &a=0) : Matrix<General,Fixed<1>,Var,AT>(m,ini,a) {
       }
 
       /*! \brief String Constructor. 
@@ -77,13 +77,13 @@ namespace fmatvec {
        * notation. The entries are seperated by semicolons.
        * For example
        * \code 
-       * Vector<double> x("[3;1;2]");
+       * RowVector<double> x("[3;1;2]");
        * \endcode
        * constructs the vector
        * \f[ x=\begin{pmatrix}3\\ 1 \\ 2\end{pmatrix}  \f]
        * \param str The string the vector will be initialized with. 
        * */
-      Vector(const char *str) : Matrix<General,Var,Fixed<1>,AT>(str) {
+      RowVector(const char *str) : Matrix<General,Fixed<1>,Var,AT>(str) {
       }
 
       /*! \brief Copy Constructor
@@ -93,19 +93,19 @@ namespace fmatvec {
        * \em x will not be copied, only referenced.
        * \param x The vector that will be referenced.
        * */
-      Vector(const Vector<Var,AT> &x) : Matrix<General,Var,Fixed<1>,AT>(x) {
+      RowVector(const RowVector<Var,AT> &x) : Matrix<General,Fixed<1>,Var,AT>(x) {
       }
 
       template<class Row>
-      Vector(const Vector<Row,AT> &x) : Matrix<General,Var,Fixed<1>,AT>(x) {
+      RowVector(const RowVector<Row,AT> &x) : Matrix<General,Fixed<1>,Var,AT>(x) {
       }
 
       template<class Type, class Row, class Col>
-      explicit Vector(const Matrix<Type,Row,Col,AT> &A) : Matrix<General,Var,Fixed<1>,AT>(A) {
+      explicit RowVector(const Matrix<Type,Row,Col,AT> &A) : Matrix<General,Fixed<1>,Var,AT>(A) {
       }
 
-      Vector<Var,AT>& resize(int m=0, Initialization ini=INIT, const AT &a=0 ) {
-	Matrix<General,Var,Fixed<1>,AT>::resize(m,1,ini,a);
+      RowVector<Var,AT>& resize(int m=0, Initialization ini=INIT, const AT &a=0 ) {
+	Matrix<General,Fixed<1>,Var,AT>::resize(m,1,ini,a);
 	return *this;
       }
 
@@ -115,10 +115,10 @@ namespace fmatvec {
        * \param x The vector to be assigned. 
        * \return A reference to the calling vector.
        * */
-      inline Vector<Var,AT>& operator=(const Vector<Var,AT> &x);
+      inline RowVector<Var,AT>& operator=(const RowVector<Var,AT> &x);
 
       template <class Row>
-      inline Vector<Var,AT>& operator=(const Vector<Row,AT> &x);
+      inline RowVector<Var,AT>& operator=(const RowVector<Row,AT> &x);
 
       /*! \brief Copy operator
        *
@@ -127,7 +127,7 @@ namespace fmatvec {
        * \return A reference to the calling vector.
        * */
       template <class Row>
-        inline Vector<Var,AT>& operator<<(const Vector<Row,AT> &x);
+        inline RowVector<Var,AT>& operator<<(const RowVector<Row,AT> &x);
 
       /*! \brief Element operator
        *
@@ -143,7 +143,7 @@ namespace fmatvec {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
-	assert(i<M);
+	assert(i<N);
 #endif
 
 	return e(i);
@@ -157,7 +157,7 @@ namespace fmatvec {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
-	assert(i<M);
+	assert(i<N);
 #endif
 
 	return e(i);
@@ -182,13 +182,13 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling vector.
        * */
-      Vector<Var,AT>& init(const AT& a); 
+      RowVector<Var,AT>& init(const AT& a); 
 
       /*! \brief Size.
        *
        * \return The size of the vector.
        * */
-      int size() const {return M;};
+      int size() const {return N;};
 
       /*! \brief Increment.
        *
@@ -198,7 +198,7 @@ namespace fmatvec {
        * */
       int inc() const {return 1;};
 
-      using Matrix<General,Var,Fixed<1>,AT>::operator();
+      using Matrix<General,Fixed<1>,Var,AT>::operator();
 
       /*! \brief Cast to std::vector<AT>.
        *
@@ -210,38 +210,38 @@ namespace fmatvec {
        * Constructs and initializes a vector with a std::vector<AT> object.
        * \param v The std::vector<AT> the vector will be initialized with. 
        * */
-      inline Vector(std::vector<AT> v);
+      inline RowVector(std::vector<AT> v);
 
-      inline const RowVector<Var,AT> T() const;
+      inline const Vector<Var,AT> T() const;
 
       template <class Row>
-      inline void set(const Range<Var,Var> &I, const Vector<Row,AT> &x);
+      inline void set(const Range<Var,Var> &I, const RowVector<Row,AT> &x);
   };
 
   template <class AT>
-    inline Vector<Var,AT>& Vector<Var,AT>::init(const AT& val) {
+    inline RowVector<Var,AT>& RowVector<Var,AT>::init(const AT& val) {
 
-      for(int i=0; i<M; i++) 
+      for(int i=0; i<N; i++) 
         e(i) = val; 
 
       return *this;
     }
 
   template <class AT>
-    inline Vector<Var,AT>& Vector<Var,AT>::operator=(const Vector<Var,AT> &x) { 
+    inline RowVector<Var,AT>& RowVector<Var,AT>::operator=(const RowVector<Var,AT> &x) { 
 
 #ifndef FMATVEC_RESIZE_VOID
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(M == x.size());
+      assert(N == x.size());
 #endif
 #else
-      if(M==0) {
+      if(N==0) {
         delete[] ele;
-        M = x.size(); 
-        ele = new AT[M];
+        N = x.size(); 
+        ele = new AT[N];
       } else {
 #ifndef FMATVEC_NO_SIZE_CHECK
-        assert(M == x.size());
+        assert(N == x.size());
 #endif
       }
 #endif
@@ -252,20 +252,20 @@ namespace fmatvec {
     }
 
   template <class AT> template<class Row>
-    inline Vector<Var,AT>& Vector<Var,AT>::operator=(const Vector<Row,AT> &x) { 
+    inline RowVector<Var,AT>& RowVector<Var,AT>::operator=(const RowVector<Row,AT> &x) { 
 
 #ifndef FMATVEC_RESIZE_VOID
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(M == x.size());
+      assert(N == x.size());
 #endif
 #else
-      if(M==0) {
+      if(N==0) {
         delete[] ele;
-        M = x.size(); 
-        ele = new AT[M];
+        N = x.size(); 
+        ele = new AT[N];
       } else {
 #ifndef FMATVEC_NO_SIZE_CHECK
-        assert(M == x.size());
+        assert(N == x.size());
 #endif
       }
 #endif
@@ -276,12 +276,12 @@ namespace fmatvec {
     }
 
   template <class AT> template<class Row>
-    inline Vector<Var,AT>& Vector<Var,AT>::operator<<(const Vector<Row,AT> &x) { 
+    inline RowVector<Var,AT>& RowVector<Var,AT>::operator<<(const RowVector<Row,AT> &x) { 
 
-      if(M!=x.size()) {
+      if(N!=x.size()) {
         delete[] ele;
-        M = x.size(); 
-        ele = new AT[M];
+        N = x.size(); 
+        ele = new AT[N];
       }
 
       deepCopy(x);
@@ -290,27 +290,27 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline const RowVector<Var,AT> Vector<Var,AT>::T() const {
-      RowVector<Var,AT> x(M,NONINIT);
-      for(int i=0; i<M; i++)
+    inline const Vector<Var,AT> RowVector<Var,AT>::T() const {
+      Vector<Var,AT> x(NONINIT);
+      for(int i=0; i<N; i++)
         x.e(i) = e(i);
       return x;
     }
 
   template <class AT>
-    inline Vector<Var,AT>::operator std::vector<AT>() {
+    inline RowVector<Var,AT>::operator std::vector<AT>() {
       std::vector<AT> ret(size());
       if(size()>0) memcpy(&ret[0], &operator()(0), sizeof(AT)*size());
       return ret;
     }
 
   template <class AT>
-    inline Vector<Var,AT>::Vector(std::vector<AT> v) : Matrix<General,Var,Fixed<1>,AT>(v.size(),1) {
+    inline RowVector<Var,AT>::RowVector(std::vector<AT> v) : Matrix<General,Fixed<1>,Var,AT>(v.size(),1) {
       if(size()>0) memcpy(&operator()(0), &v[0], sizeof(AT)*size());
     }
 
   template <class AT> template <class Row>
-    inline void Vector<Var,AT>::set(const Range<Var,Var> &I, const Vector<Row,AT> &x) {
+    inline void RowVector<Var,AT>::set(const Range<Var,Var> &I, const RowVector<Row,AT> &x) {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<size());
       assert(I.size()==x.size());
@@ -323,8 +323,8 @@ namespace fmatvec {
   /// @cond NO_SHOW
 
   template <class AT> template <class Row>
-    inline void Vector<Var,AT>::deepCopy(const Vector<Row,AT> &x) {
-      for(int i=0; i<M; i++)
+    inline void RowVector<Var,AT>::deepCopy(const RowVector<Row,AT> &x) {
+      for(int i=0; i<N; i++)
         e(i) = x.e(i);
     }
 

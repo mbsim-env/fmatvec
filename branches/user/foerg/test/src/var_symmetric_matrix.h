@@ -131,6 +131,23 @@ namespace fmatvec {
 	delete[] ele;
       }
 
+      Matrix<Symmetric,Var,Var,AT>& resize(int m=0, Initialization ini=INIT, const AT &a=0) {
+        delete[] ele;
+        M=m;
+        ele = new AT[M*M];
+
+        if(ini == INIT)
+          init(a);
+        else if(ini == EYE) {	 
+          init(0);
+          for(int i=0; i<M; i++) 
+            ej(i,i) = 1;
+        }
+
+        return *this;
+      }
+
+
       /*! \brief Assignment operator
        *
        * Copies the symmetric matrix given by \em A.
@@ -138,6 +155,12 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       inline Matrix<Symmetric,Var,Var,AT>& operator=(const Matrix<Symmetric,Var,Var,AT> &A);
+
+      template<class Type, class Row, class Col>
+        inline Matrix<Symmetric,Var,Var,AT>& operator=(const Matrix<Type,Row,Col,AT> &A);
+
+      template<class Type, class Row, class Col>
+        inline Matrix<Symmetric,Var,Var,AT>& operator<<(const Matrix<Type,Row,Col,AT> &A);
 
       /*! \brief Element operator
        *
@@ -277,6 +300,66 @@ namespace fmatvec {
 
   template <class AT>
     inline Matrix<Symmetric,Var,Var,AT>& Matrix<Symmetric,Var,Var,AT>::operator=(const Matrix<Symmetric,Var,Var,AT> &A) { 
+
+#ifndef FMATVEC_RESIZE_VOID
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(M == A.size());
+#endif
+#else
+      if(M==0) {
+        delete[] ele;
+        M = A.size(); 
+        ele = new AT[M*M];
+      } else {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(M == A.size());
+#endif
+      }
+#endif
+
+      deepCopy(A);
+
+      return *this;
+    }
+
+  template <class AT> template <class Type, class Row, class Col>
+    inline Matrix<Symmetric,Var,Var,AT>& Matrix<Symmetric,Var,Var,AT>::operator=(const Matrix<Type,Row,Col,AT> &A) { 
+
+#ifndef FMATVEC_RESIZE_VOID
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A.rows() == A.cols());
+      assert(M == A.rows());
+#endif
+#else
+      if(M==0) {
+        delete[] ele;
+        M = A.rows(); 
+        ele = new AT[M*M];
+      } else {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(A.rows() == A.cols());
+        assert(M == A.rows());
+#endif
+      }
+#endif
+
+      deepCopy(A);
+
+      return *this;
+    }
+
+  template <class AT> template <class Type, class Row, class Col>
+    inline Matrix<Symmetric,Var,Var,AT>& Matrix<Symmetric,Var,Var,AT>::operator<<(const Matrix<Type,Row,Col,AT> &A) { 
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A.rows() == A.cols());
+#endif
+
+      if(M!=A.rows()) {
+        delete[] ele;
+        M = A.rows(); 
+        ele = new AT[M*M];
+      } 
 
       deepCopy(A);
 

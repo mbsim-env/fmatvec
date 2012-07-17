@@ -151,9 +151,9 @@ namespace fmatvec {
        * zero by default. To change this behavior, define
        * FMATVEC_NO_INITIALIZATION.
        * */
-      Matrix<General,Var,Fixed<N>,AT>& resize(int n, Initialization ini=INIT, const AT &a=0) {
+      Matrix<General,Var,Fixed<N>,AT>& resize(int m=0, Initialization ini=INIT, const AT &a=0) {
         delete[] ele;
-        N=n;
+        M=m;
         ele = new AT[M*N];
 
 	if(ini == INIT) {
@@ -387,9 +387,24 @@ namespace fmatvec {
   template <int N, class AT> template< class Type, class Row, class Col>
     inline Matrix<General,Var,Fixed<N>,AT>& Matrix<General,Var,Fixed<N>,AT>::operator=(const Matrix<Type,Row,Col,AT> &A) { 
 
+#ifndef FMATVEC_RESIZE_VOID
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.rows() == M); 
-      assert(A.cols() == N);
+      assert(M == A.rows()); 
+      assert(N == A.cols());
+#endif
+#else
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(N == A.cols()); 
+#endif
+      if(M==0) {
+        delete[] ele;
+        M = A.rows(); 
+        ele = new AT[M*N];
+      } else {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(M == A.rows());
+#endif
+      }
 #endif
 
       deepCopy(A);
@@ -400,8 +415,20 @@ namespace fmatvec {
   template <int N, class AT>
     inline Matrix<General,Var,Fixed<N>,AT>& Matrix<General,Var,Fixed<N>,AT>::operator=(const Matrix<General,Var,Fixed<N>,AT> &A) { 
 
+#ifndef FMATVEC_RESIZE_VOID
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.rows() == M);
+      assert(M == A.rows()); 
+#endif
+#else
+      if(M==0) {
+        delete[] ele;
+        M = A.rows(); 
+        ele = new AT[M*N];
+      } else {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(M == A.rows());
+#endif
+      }
 #endif
 
       deepCopy(A);
@@ -413,7 +440,7 @@ namespace fmatvec {
     inline Matrix<General,Var,Fixed<N>,AT>& Matrix<General,Var,Fixed<N>,AT>::operator<<(const Matrix<Type,Row,Col,AT> &A) { 
 
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.cols() == N);
+      assert(N == A.cols());
 #endif
       if(M!=A.rows()) {
         delete[] ele;

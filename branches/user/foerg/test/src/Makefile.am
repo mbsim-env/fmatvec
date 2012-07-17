@@ -22,10 +22,6 @@ fmatvecinclude_HEADERS = blas_extensions_double.h \
 			 general_matrix.h \
 			 linear_algebra_double.h \
 			 linear_algebra.h \
-			 linear_algebra_fixed.h \
-			 linear_algebra_var.h \
-			 linear_algebra_fixed_var.h \
-			 linear_algebra_var_fixed.h \
 			 matrix.h \
 			 _memory.h \
 			 row_vector.h \
@@ -44,6 +40,7 @@ fmatvecinclude_HEADERS = blas_extensions_double.h \
 			 var_general_matrix.h\
 			 var_symmetric_matrix.h\
 			 var_vector.h\
+			 var_row_vector.h\
 			 fixed_var_general_matrix.h\
 			 var_fixed_general_matrix.h\
 			 wrapper.h

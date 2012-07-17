@@ -151,7 +151,7 @@ namespace fmatvec {
        * \param a The value, the rowvector will be initialized with (default 0)
        * \return A reference to the calling rowvector.
        * */
-      RowVector& resize(int n, Initialization ini=INIT, const AT &a=0) {
+      RowVector& resize(int n=0, Initialization ini=INIT, const AT &a=0) {
 	Matrix<General,Ref,Ref,AT>::resize(1,n,ini,a);
 	return *this;
       }
@@ -191,6 +191,9 @@ namespace fmatvec {
        * \sa operator<<(), operator>>()
        * */
       inline RowVector<Ref,AT>& operator=(const RowVector<Ref,AT> &x);
+
+      template <class Row>
+      inline RowVector<Ref,AT>& operator=(const RowVector<Row,AT> &x);
 
       /*! \brief Element operator
        *
@@ -340,8 +343,50 @@ namespace fmatvec {
   template <class AT>
     inline RowVector<Ref,AT>& RowVector<Ref,AT>::operator=(const RowVector<Ref,AT> &x) { 
 
+#ifndef FMATVEC_RESIZE_VOID
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(n == x.size());
+#endif
+#else
+      if(n==0) {
+        m = 1;
+        n = x.size();
+        lda = m;
+        tp = false;
+        memory.resize(m);
+        ele = (AT*)memory.get();
+      } else {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(n == x.size());
+#endif
+      }
+#endif
+
+      deepCopy(x);
+
+      return *this;
+    }
+
+  template <class AT> template<class Row>
+    inline RowVector<Ref,AT>& RowVector<Ref,AT>::operator=(const RowVector<Row,AT> &x) { 
+
+#ifndef FMATVEC_RESIZE_VOID
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(n == x.size());
+#endif
+#else
+      if(n==0) {
+        m = 1;
+        n = x.size();
+        lda = m;
+        tp = false;
+        memory.resize(m);
+        ele = (AT*)memory.get();
+      } else {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(n == x.size());
+#endif
+      }
 #endif
 
       deepCopy(x);
@@ -370,7 +415,7 @@ namespace fmatvec {
     inline RowVector<Ref,AT>& RowVector<Ref,AT>::operator>>(const RowVector<Ref,AT> &x) { 
 
       m = 1;
-      n = x.size();
+      n = x.n;
       memory = x.memory;
       ele = x.ele;
       lda = x.lda;

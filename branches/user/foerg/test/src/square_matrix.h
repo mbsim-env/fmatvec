@@ -167,7 +167,7 @@ namespace fmatvec {
        * \param a The value, the matrix will be initialized with (default 0)
        * \return A reference to the calling matrix.
        * */
-      SquareMatrix<Ref,AT>& resize(int n,Initialization ini=INIT, const AT &a=0) {
+      SquareMatrix<Ref,AT>& resize(int n=0,Initialization ini=INIT, const AT &a=0) {
 	Matrix<General,Ref,Ref,AT>::resize(n,n,ini,a);
 	return *this;
       }

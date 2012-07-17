@@ -22,9 +22,6 @@
 #ifndef linear_algebra_var_fixed_h
 #define linear_algebra_var_fixed_h
 
-#include "var_fixed_general_matrix.h"
-#include "fixed_vector.h"
-#include "var_vector.h"
 
 namespace fmatvec {
 

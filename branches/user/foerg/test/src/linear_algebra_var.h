@@ -22,11 +22,6 @@
 #ifndef linear_algebra_var_h
 #define linear_algebra_var_h
 
-#include "var_general_matrix.h"
-//#include "var_square_matrix.h"
-#include "var_vector.h"
-//#include "var_row_vector.h"
-//#include "var_symmetric_matrix.h"
 
 namespace fmatvec {
 

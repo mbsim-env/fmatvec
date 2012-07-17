@@ -134,7 +134,7 @@ namespace fmatvec {
 	 * \param a The value, the matrix will be initialized with (default 0)
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Diagonal,Ref,Ref,AT>& resize(int n_, Initialization ini=INIT, const AT &a=0) {
+	Matrix<Diagonal,Ref,Ref,AT>& resize(int n_=0, Initialization ini=INIT, const AT &a=0) {
 	  n = n_;
 
 	  memory.resize(n);

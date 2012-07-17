@@ -23,9 +23,19 @@
 #define linear_algebra_h
 
 #include "square_matrix.h"
-#include "fixed_vector.h"
 #include "vector.h"
 #include "row_vector.h"
+#include "fixed_square_matrix.h"
+#include "fixed_vector.h"
+#include "fixed_row_vector.h"
+#include "fixed_symmetric_matrix.h"
+#include "var_general_matrix.h"
+#include "var_symmetric_matrix.h"
+#include "var_vector.h"
+#include "var_row_vector.h"
+#include "var_fixed_general_matrix.h"
+#include "fixed_var_general_matrix.h"
+
 namespace fmatvec {
 
 /////////////////////////////////// vecvecadd //////////////////////////////

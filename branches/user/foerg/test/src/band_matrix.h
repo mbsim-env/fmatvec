@@ -146,7 +146,7 @@ namespace fmatvec {
        * \param a The value, the matrix will be initialized with (default 0)
        * \return A reference to the calling matrix.
        * */
-      Matrix<GeneralBand,Ref,Ref,AT>& resize(int n_, int kl_, int ku_, Initialization ini=INIT, const AT &a=0) {
+      Matrix<GeneralBand,Ref,Ref,AT>& resize(int n_=0, int kl_=0, int ku_=0, Initialization ini=INIT, const AT &a=0) {
 	n=n_;
 	kl=kl_;
 	ku=ku_;

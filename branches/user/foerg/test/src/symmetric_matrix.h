@@ -207,7 +207,7 @@ namespace fmatvec {
        * \param a The value, the matrix will be initialized with (default 0)
        * \return A reference to the calling matrix.
        * */
-      Matrix<Symmetric,Ref,Ref,AT>& resize(int n_, Initialization ini=INIT, const AT &a=0) {
+      Matrix<Symmetric,Ref,Ref,AT>& resize(int n_=0, Initialization ini=INIT, const AT &a=0) {
 	n=n_;
 	lda=n;
 	memory.resize(n*n);
@@ -235,7 +235,7 @@ namespace fmatvec {
       inline Matrix<Symmetric,Ref,Ref,AT>& operator=(const Matrix<Symmetric,Ref,Ref,AT> &A);
 
       template<class Type, class Row, class Col>
-      inline Matrix<Symmetric,Ref,Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A);
+        inline Matrix<Symmetric,Ref,Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A);
 
       /*! \brief Copy operator
        *
@@ -467,8 +467,21 @@ namespace fmatvec {
   template <class AT>
     inline Matrix<Symmetric,Ref,Ref,AT>& Matrix<Symmetric,Ref,Ref,AT>::operator=(const Matrix<Symmetric,Ref,Ref,AT> &A) { 
 
+#ifndef FMATVEC_RESIZE_VOID
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(n == A.n);
+      assert(n == A.size());
+#endif
+#else
+      if(n==0) {
+        n = A.size();
+        lda = n;
+        memory.resize(n*n);
+        ele = (AT*)memory.get();
+      } else {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(n == A.size());
+#endif
+      }
 #endif
 
       deepCopy(A);
@@ -479,9 +492,23 @@ namespace fmatvec {
   template <class AT> template< class Type, class Row, class Col>
     inline Matrix<Symmetric,Ref,Ref,AT>& Matrix<Symmetric,Ref,Ref,AT>::operator=(const Matrix<Type,Row,Col,AT> &A) { 
       
+#ifndef FMATVEC_RESIZE_VOID
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.rows() == A.cols());
       assert(n == A.rows());
+#endif
+#else
+      if(n==0) {
+        n = A.rows();
+        lda = n;
+        memory.resize(n*n);
+        ele = (AT*)memory.get();
+      } else {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(A.rows() == A.cols());
+        assert(n == A.rows());
+#endif
+      }
 #endif
 
       deepCopy(A);

@@ -122,7 +122,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
 	 * \param k_ The number of nonzero elements.
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Sparse,Ref,Ref,AT>& resize(int n_, int k_) {
+	Matrix<Sparse,Ref,Ref,AT>& resize(int n_=0, int k_=0) {
 	  m=n_;n=n_;k=k_;
 	  memEle.resize(k);
 	  memI.resize(m+1);
