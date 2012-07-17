@@ -61,12 +61,6 @@ namespace fmatvec {
 #endif
       }
 
-      Matrix(int m, int n) {
-#ifndef FMATVEC_NO_INITIALIZATION 
-	init(0);
-#endif
-      }
-
       Matrix(Initialization ini, const AT &a=0) {  
 
 	if(ini == INIT) {
