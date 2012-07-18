@@ -82,15 +82,7 @@ namespace fmatvec {
 	}
       }
 
-      Matrix(int m, int n, Initialization ini, const AT a=0) : M(m), ele(new AT[M*M]) {  
-
-	if(ini == INIT)
-	  init(a);
-	else if(ini == EYE) {	 
-	  init(0);
-	  for(int i=0; i<M; i++) 
-	    ej(i,i) = 1;
-	}
+      Matrix(int m, int n, NOINIT) : M(m), ele(new AT[M*M]) {  
       }
 
       /*! \brief Copy Constructor

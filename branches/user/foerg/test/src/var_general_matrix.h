@@ -77,6 +77,9 @@ namespace fmatvec {
 	}
       }
 
+      Matrix(int m, int n, NOINIT) : M(m), N(n), ele(new AT[M*N]) {  
+      }
+
       /*! \brief Copy Constructor
        *
        * Constructs a reference to the matrix \em A.

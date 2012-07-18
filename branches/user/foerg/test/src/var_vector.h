@@ -71,6 +71,9 @@ namespace fmatvec {
       Vector(int m, Initialization ini, const AT &a=0) : Matrix<General,Var,Fixed<1>,AT>(m,ini,a) {
       }
 
+      Vector(int m, NOINIT ini) : Matrix<General,Var,Fixed<1>,AT>(m,1,ini) {
+      }
+
       /*! \brief String Constructor. 
        *
        * Constructs and initializes a vector with a string in a matlab-like

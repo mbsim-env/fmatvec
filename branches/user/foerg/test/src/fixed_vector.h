@@ -70,7 +70,7 @@ namespace fmatvec {
       Vector(Initialization ini, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini,a) {
       }
 
-      Vector(int m, Initialization ini, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<1>,AT>(m,1,ini,a) {
+      Vector(int m, NOINIT ini) : Matrix<General,Fixed<M>,Fixed<1>,AT>(m,1,ini) {
       }
 
       /*! \brief String Constructor. 

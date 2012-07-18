@@ -101,6 +101,9 @@ namespace fmatvec {
 #endif
       }
 
+      Matrix(int m_, int n_, NOINIT) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) {  
+      }
+
       /*! \brief Regular Constructor
        *
        * Constructs a matrix of size m x n. The matrix will be initialized to the value given by \em a

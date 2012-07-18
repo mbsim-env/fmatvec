@@ -104,6 +104,9 @@ namespace fmatvec {
       SquareMatrix(int m, AT* ele) : Matrix<General,Ref,Ref,AT>(m,m,ele) {
       }
 
+      SquareMatrix(int m, NOINIT ini) : Matrix<General,Ref,Ref,AT>(m,m,ini) {
+      }
+
       /*! \brief Regular Constructor
        *
        * Constructs a matrix of size m x m. The matrix will be 

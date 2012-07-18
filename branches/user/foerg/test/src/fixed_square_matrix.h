@@ -61,10 +61,7 @@ namespace fmatvec {
       SquareMatrix(Initialization ini, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) {
       }
 
-      SquareMatrix(int m, Initialization ini, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<M>,AT>(m,m,ini,a) {
-      }
-
-      SquareMatrix(int m, int n, Initialization ini, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<M>,AT>(m,n,ini,a) {
+      SquareMatrix(int m, NOINIT ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(m,m,ini) {
       }
 
       /*! \brief Copy Constructor

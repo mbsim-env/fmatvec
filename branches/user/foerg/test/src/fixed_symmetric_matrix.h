@@ -80,15 +80,7 @@ namespace fmatvec {
 	}
       }
 
-      Matrix(int m, Initialization ini, const AT &a=0) {  
-
-	if(ini == INIT)
-	  init(a);
-	else if(ini == EYE) {	 
-	  init(0);
-	  for(int i=0; i<M; i++) 
-	    ej(i,i) = 1;
-	}
+      Matrix(int m, int n, NOINIT) {  
       }
 
       Matrix(int m, int n, Initialization ini, const AT &a=0) {  

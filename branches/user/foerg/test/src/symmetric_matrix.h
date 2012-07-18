@@ -105,6 +105,9 @@ namespace fmatvec {
 #endif
       }
 
+      Matrix(int m_, int n_, NOINIT) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) {  
+      }
+
       /*! \brief Regular Constructor
        *
        * Constructs a symmetric matrix of size n x n. The matrix will be 

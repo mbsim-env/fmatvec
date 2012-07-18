@@ -35,6 +35,9 @@
  * */
 namespace fmatvec {
 
+  class NOINIT {
+  };
+
   /*! Enumerate for initialization of matrices
   */
   enum Initialization{INIT,NONINIT,EYE};

@@ -119,6 +119,9 @@ namespace fmatvec {
       RowVector(int n, AT* ele) : Matrix<General,Ref,Ref,AT>(1,n,ele) {
       }
 
+      RowVector(int n, NOINIT ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) {
+      }
+
       /*! \brief Regular Constructor
        *
        * Constructs a vector of size n. The rowvector will be initialized 

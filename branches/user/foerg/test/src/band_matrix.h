@@ -82,6 +82,10 @@ namespace fmatvec {
 #endif
       }
 
+      Matrix(int n_, int kl_, int ku_, NOINIT) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) {  
+
+      }
+
       /*! \brief Regular Constructor
        *
        * Constructs a band matrix of size n x n. 

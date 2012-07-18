@@ -104,6 +104,9 @@ namespace fmatvec {
       Vector(int m, AT* ele) : Matrix<General,Ref,Ref,AT>(m,1,ele) { 
       }
 
+      Vector(int m, NOINIT ini) : Matrix<General,Ref,Ref,AT>(m,1,ini) { 
+      }
+
       /*! \brief Regular Constructor
        *
        * Constructs a vector of size m. The vector will be initialized to the value given by \em a
