@@ -92,11 +92,17 @@ namespace fmatvec {
        * zero by default. This default behavior can be changed by defining 
        * FMATVEC_NO_INITIALIZATION.
        * */
-Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) {
+        Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) {
 #ifndef FMATVEC_NO_INITIALIZATION 
 	init(0);
 #endif
 	}
+
+	Matrix(NOINIT) : memEle(), memI(), memJ(), ele(0), I(0), J(0), m(0), n(0), k(0) { }
+	Matrix(int n_, NOINIT) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { }
+        Matrix(int n_, int k_, NOINIT) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) { }
+	Matrix(int n_, SCALAR, const AT &a=0) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { init(a); }
+        Matrix(int n_, int k_, SCALAR, const AT &a=0) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) { init(a); }
 
 	/*! \brief Copy Constructor
 	 *
@@ -329,7 +335,7 @@ Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()
   template <class AT>
     Matrix<Sparse,Ref,Ref,AT> Matrix<Sparse,Ref,Ref,AT>::copy() const {
 
-      Matrix<Sparse,Ref,Ref,AT> A(m,NONINIT);
+      Matrix<Sparse,Ref,Ref,AT> A(m,NOINIT());
 
       A.deepCopy(*this);
 

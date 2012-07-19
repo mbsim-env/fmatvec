@@ -75,10 +75,10 @@ namespace fmatvec {
 	}
       }
 
-      Matrix(int m, int n, NOINIT) {}
       Matrix(NOINIT) {}
-      Matrix(int m, int n, SCALAR, const AT &a=0) { init(a); }
+      Matrix(int m, int n, NOINIT) {}
       Matrix(SCALAR, const AT &a=0) { init(a); }
+      Matrix(int m, int n, SCALAR, const AT &a=0) { init(a); }
 
       template<class Row, class Col>
       Matrix(const Matrix<General,Row,Col,AT> &A) {
@@ -377,7 +377,7 @@ namespace fmatvec {
       assert(I.end()<M);
       assert(J.end()<N);
 #endif
-      Matrix<General,Var,Var,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
+      Matrix<General,Var,Var,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NOINIT());
 
       for(int i=0; i<A.rows(); i++) 
         for(int j=0; j<A.cols(); j++)
@@ -394,7 +394,7 @@ namespace fmatvec {
       assert(i<M);
 #endif
 
-      RowVector<Fixed<N>,AT> x(NONINIT);
+      RowVector<Fixed<N>,AT> x(0,NOINIT());
 
       for(int j=0; j<N; j++)
         x.e(j) = e(i,j);
@@ -411,7 +411,7 @@ namespace fmatvec {
       assert(j<N);
 #endif
 
-      Vector<Fixed<M>,AT> x(NONINIT);
+      Vector<Fixed<M>,AT> x(0,NOINIT());
 
       for(int i=0; i<M; i++)
         x.e(i) = e(i,j);
@@ -422,7 +422,7 @@ namespace fmatvec {
 
   template <int M, int N, class AT>
     inline const Matrix<General,Fixed<M>,Fixed<N>,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::T() const {
-      Matrix<General,Fixed<N>,Fixed<M>,AT> A(NONINIT);
+      Matrix<General,Fixed<N>,Fixed<M>,AT> A(0,0,NOINIT());
       for(int i=0; i<N; i++)
         for(int j=0; j<M; j++)
           A.e(i,j) = e(j,i);

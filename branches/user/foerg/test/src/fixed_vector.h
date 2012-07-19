@@ -70,8 +70,10 @@ namespace fmatvec {
       Vector(Initialization ini, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini,a) {
       }
 
-      Vector(int m, NOINIT ini) : Matrix<General,Fixed<M>,Fixed<1>,AT>(m,1,ini) {
-      }
+      Vector(NOINIT ini) : Matrix<General,Fixed<M>,Fixed<1>,AT>(0,1,ini) { }
+      Vector(int m, NOINIT ini) : Matrix<General,Fixed<M>,Fixed<1>,AT>(m,1,ini) { }
+      Vector(SCALAR ini, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<1>,AT>(0,1,ini,a) { }
+      Vector(int m, SCALAR ini, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<1>,AT>(m,1,ini,a) { }
 
       /*! \brief String Constructor. 
        *
@@ -214,7 +216,7 @@ namespace fmatvec {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(M2<M);
 #endif
-      Vector<Fixed<M2-M1+1>,AT> x(NONINIT);
+      Vector<Fixed<M2-M1+1>,AT> x(0,NOINIT());
 
       for(int i=0; i<x.size(); i++) 
         x.e(i) = e(M1+i);
@@ -236,7 +238,7 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline const RowVector<Fixed<M>,AT> Vector<Fixed<M>,AT>::T() const {
-      RowVector<Fixed<M>,AT> x(NONINIT);
+      RowVector<Fixed<M>,AT> x(0,NOINIT());
       for(int i=0; i<M; i++)
 	x.e(i) = e(i);
       return x;

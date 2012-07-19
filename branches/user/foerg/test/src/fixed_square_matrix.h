@@ -61,8 +61,10 @@ namespace fmatvec {
       SquareMatrix(Initialization ini, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) {
       }
 
-      SquareMatrix(int m, NOINIT ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(m,m,ini) {
-      }
+      SquareMatrix(NOINIT ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
+      SquareMatrix(int m, NOINIT ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(m,m,ini) { }
+      SquareMatrix(SCALAR ini, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { }
+      SquareMatrix(int m, SCALAR ini, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<M>,AT>(m,m,ini,a) { }
 
       /*! \brief Copy Constructor
        *
@@ -108,7 +110,7 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline const SquareMatrix<Fixed<M>,AT> SquareMatrix<Fixed<M>,AT>::T() const {
-      SquareMatrix<Fixed<M>,AT> A(NONINIT);
+      SquareMatrix<Fixed<M>,AT> A(0,NOINIT());
       for(int i=0; i<M; i++)
         for(int j=0; j<M; j++)
           A.e(i,j) = e(j,i);

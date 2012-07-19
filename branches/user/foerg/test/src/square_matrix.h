@@ -91,8 +91,9 @@ namespace fmatvec {
       SquareMatrix(int m, AT* ele) : Matrix<General,Ref,Ref,AT>(m,m,ele) {
       }
 
-      SquareMatrix(int m, NOINIT ini) : Matrix<General,Ref,Ref,AT>(m,m,ini) {
-      }
+      SquareMatrix(int m, NOINIT ini) : Matrix<General,Ref,Ref,AT>(m,m,ini) { }
+      SquareMatrix(NOINIT ini) : Matrix<General,Ref,Ref,AT>(ini) { }
+      SquareMatrix(int m, SCALAR ini, const AT &a=0) : Matrix<General,Ref,Ref,AT>(m,m,ini,a) { }
 
       /*! \brief Regular Constructor
        *
@@ -226,7 +227,7 @@ namespace fmatvec {
   template <class AT>
     inline SquareMatrix<Ref,AT> SquareMatrix<Ref,AT>::copy() const {
 
-      SquareMatrix<Ref,AT> A(m,NONINIT);
+      SquareMatrix<Ref,AT> A(m,NOINIT());
       A.deepCopy(*this);
 
       return A;

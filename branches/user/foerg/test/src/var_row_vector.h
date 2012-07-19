@@ -71,8 +71,9 @@ namespace fmatvec {
       RowVector(int m, Initialization ini, const AT &a=0) : Matrix<General,Fixed<1>,Var,AT>(m,ini,a) {
       }
 
-      RowVector(int m, NOINIT ini) : Matrix<General,Fixed<1>,Var,AT>(1,m,ini) {
-      }
+      RowVector(NOINIT ini) : Matrix<General,Fixed<1>,Var,AT>(1,0,ini) { }
+      RowVector(int n, NOINIT ini) : Matrix<General,Fixed<1>,Var,AT>(1,n,ini) { }
+      RowVector(int n, SCALAR ini, const AT &a=0) : Matrix<General,Fixed<1>,Var,AT>(1,n,ini,a) { }
 
       /*! \brief String Constructor. 
        *
@@ -294,7 +295,7 @@ namespace fmatvec {
 
   template <class AT>
     inline const Vector<Var,AT> RowVector<Var,AT>::T() const {
-      Vector<Var,AT> x(NONINIT);
+      Vector<Var,AT> x(NOINIT());
       for(int i=0; i<N; i++)
         x.e(i) = e(i);
       return x;

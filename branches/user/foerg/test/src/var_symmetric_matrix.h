@@ -71,7 +71,7 @@ namespace fmatvec {
        * \param ini INIT means initialization, NONINIT means no initialization.
        * \param a The value, the matrix will be initialized with (default 0)
        * */
-      Matrix(int m, Initialization ini, const AT a=0) : M(m), ele(new AT[M*M]) {  
+      Matrix(int m, Initialization ini, const AT &a=0) : M(m), ele(new AT[M*M]) {  
 
 	if(ini == INIT)
 	  init(a);
@@ -82,8 +82,11 @@ namespace fmatvec {
 	}
       }
 
-      Matrix(int m, int n, NOINIT) : M(m), ele(new AT[M*M]) {  
-      }
+      Matrix(NOINIT) : M(0), ele(0) { }
+      Matrix(int m, NOINIT) : M(m), ele(new AT[M*M]) { }
+      Matrix(int m, int n, NOINIT) : M(m), ele(new AT[M*M]) { }
+      Matrix(int m, SCALAR, const AT &a=0) : M(m), ele(new AT[M*M]) { init(a); }
+      Matrix(int m, int n, SCALAR, const AT &a=0) : M(m), ele(new AT[M*M]) { init(a); }
 
       /*! \brief Copy Constructor
        *

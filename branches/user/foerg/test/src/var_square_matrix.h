@@ -61,8 +61,9 @@ namespace fmatvec {
       SquareMatrix(int m, Initialization ini, const AT &a=0) : Matrix<General,Var,Var,AT>(m,m,ini,a) {
       }
 
-      SquareMatrix(int m, NOINIT ini) : Matrix<General,Var,Var,AT>(m,m,ini) {
-      }
+      SquareMatrix(NOINIT ini) : Matrix<General,Var,Var,AT>(ini) { }
+      SquareMatrix(int m, NOINIT ini) : Matrix<General,Var,Var,AT>(m,m,ini) { }
+      SquareMatrix(int m, SCALAR ini, const AT &a=0) : Matrix<General,Var,Var,AT>(m,m,ini,a) { }
 
       /*! \brief Copy Constructor
        *
@@ -108,7 +109,7 @@ namespace fmatvec {
 
   template <class AT>
     inline const SquareMatrix<Var,AT> SquareMatrix<Var,AT>::T() const {
-      SquareMatrix<Var,AT> A(NONINIT);
+      SquareMatrix<Var,AT> A(NOINIT());
       for(int i=0; i<M; i++)
         for(int j=0; j<M; j++)
           A.e(i,j) = e(j,i);

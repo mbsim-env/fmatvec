@@ -80,8 +80,12 @@ namespace fmatvec {
 	}
       }
 
-      Matrix(int m, int n, NOINIT) {  
-      }
+      Matrix(NOINIT) { }
+      Matrix(int n, NOINIT) { }
+      Matrix(int m, int n, NOINIT) { }
+      Matrix(SCALAR, const AT &a=0) { init(a); }
+      Matrix(int n, SCALAR, const AT &a=0) { init(a); }
+      Matrix(int m, int n, SCALAR, const AT &a=0) { init(a); }
 
       Matrix(int m, int n, Initialization ini, const AT &a=0) {  
 

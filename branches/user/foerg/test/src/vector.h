@@ -104,8 +104,9 @@ namespace fmatvec {
       Vector(int m, AT* ele) : Matrix<General,Ref,Ref,AT>(m,1,ele) { 
       }
 
-      Vector(int m, NOINIT ini) : Matrix<General,Ref,Ref,AT>(m,1,ini) { 
-      }
+      Vector(int m, NOINIT ini) : Matrix<General,Ref,Ref,AT>(m,1,ini) { }
+      Vector(NOINIT ini) : Matrix<General,Ref,Ref,AT>(0,1,ini) { }
+      Vector(int m, SCALAR ini, const AT &a=0) : Matrix<General,Ref,Ref,AT>(m,1,ini,a) { }
 
       /*! \brief Regular Constructor
        *
@@ -467,7 +468,7 @@ namespace fmatvec {
   template <class AT>
     inline Vector<Ref,AT> Vector<Ref,AT>::copy() const {
 
-      Vector<Ref,AT> x(m,NONINIT);
+      Vector<Ref,AT> x(m,NOINIT());
       x.deepCopy(*this);
 
       return x;

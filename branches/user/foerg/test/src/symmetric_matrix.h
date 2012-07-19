@@ -105,8 +105,11 @@ namespace fmatvec {
 #endif
       }
 
-      Matrix(int m_, int n_, NOINIT) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) {  
-      }
+      Matrix(NOINIT) : memory(), ele(0), n(0), lda(0) { }
+      Matrix(int n_, NOINIT) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { }
+      Matrix(int m_, int n_, NOINIT) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { }
+      Matrix(int n_, SCALAR, const AT &a=0) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(a); }
+      Matrix(int m_, int n_, SCALAR, const AT &a=0) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(a); }
 
       /*! \brief Regular Constructor
        *
@@ -552,7 +555,7 @@ namespace fmatvec {
   template <class AT>
     inline Matrix<Symmetric,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::copy() const {
 
-      Matrix<Symmetric,Ref,Ref,AT> A(n,NONINIT);
+      Matrix<Symmetric,Ref,Ref,AT> A(n,NOINIT());
       A.deepCopy(*this);
 
       return A;

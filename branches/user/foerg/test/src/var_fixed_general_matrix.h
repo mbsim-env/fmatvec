@@ -78,8 +78,11 @@ namespace fmatvec {
 	}
       }
 
-      Matrix(int m, int n, NOINIT) : M(m), ele(new AT[M*N]) {  
-      }
+      Matrix(NOINIT) : M(0), ele(0) { }
+      Matrix(int m, NOINIT) : M(m), ele(new AT[M*N]) { }
+      Matrix(int m, int n, NOINIT) : M(m), ele(new AT[M*N]) { }
+      Matrix(int m, SCALAR, const AT &a=0) : M(m), ele(new AT[M*N]) { init(a); }
+      Matrix(int m, int n, SCALAR, const AT &a=0) : M(m), ele(new AT[M*N]) { init(a); }
 
 
       /*! \brief Copy Constructor
@@ -455,7 +458,7 @@ namespace fmatvec {
       assert(I.end()<M);
       assert(J.end()<N);
 #endif
-      Matrix<General,Var,Var,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
+      Matrix<General,Var,Var,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NOINIT());
 
       for(int i=0; i<A.rows(); i++) 
         for(int j=0; j<A.cols(); j++)
@@ -472,7 +475,7 @@ namespace fmatvec {
       assert(i<M);
 #endif
 
-      RowVector<Fixed<N>,AT> x(NONINIT);
+      RowVector<Fixed<N>,AT> x(0,NOINIT());
 
       for(int j=0; j<N; j++)
         x.e(j) = e(i,j);
@@ -489,7 +492,7 @@ namespace fmatvec {
       assert(j<N);
 #endif
 
-      Vector<Var,AT> x(M,NONINIT);
+      Vector<Var,AT> x(M,NOINIT());
 
       for(int i=0; i<M; i++)
         x.e(i) = e(i,j);
@@ -500,7 +503,7 @@ namespace fmatvec {
 
   template <int N, class AT>
     inline const Matrix<General,Fixed<N>,Var,AT> Matrix<General,Var,Fixed<N>,AT>::T() const {
-      Matrix<General,Fixed<N>,Var,AT> A(rows(),NONINIT);
+      Matrix<General,Fixed<N>,Var,AT> A(rows(),NOINIT());
       for(int i=0; i<N; i++)
         for(int j=0; j<M; j++)
           A.e(i,j) = e(j,i);

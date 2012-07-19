@@ -122,7 +122,6 @@ namespace fmatvec {
 
       RowVector(NOINIT ini) : Matrix<General,Ref,Ref,AT>(1,0,ini) { }
       RowVector(int n, NOINIT ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) { }
-      RowVector(SCALAR ini, const AT &a=0) : Matrix<General,Ref,Ref,AT>(1,0,ini,a) { }
       RowVector(int n, SCALAR ini, const AT &a=0) : Matrix<General,Ref,Ref,AT>(1,n,ini,a) { }
 
       /*! \brief Regular Constructor
@@ -433,7 +432,7 @@ namespace fmatvec {
   template <class AT>
     inline RowVector<Ref,AT> RowVector<Ref,AT>::copy() const {
 
-      RowVector<Ref,AT> x(n,NONINIT);
+      RowVector<Ref,AT> x(n,NOINIT());
       x.deepCopy(*this);
 
       return x;
