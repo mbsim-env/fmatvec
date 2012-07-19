@@ -64,9 +64,7 @@ namespace fmatvec {
       Matrix(Initialization ini, const AT &a=0) {  
 
 	if(ini == INIT) {
-          for(int i=0; i<M; i++)
-            for(int j=0; j<N; j++)
-              e(i,j) = a;
+          init(a);
 	} else if(ini == EYE ) {
 	  for(int i=0; i<M; i++) {
 	    for(int j=0; j<N; j++) {
@@ -77,8 +75,10 @@ namespace fmatvec {
 	}
       }
 
-      Matrix(int m, int n, NOINIT) {  
-      }
+      Matrix(int m, int n, NOINIT) {}
+      Matrix(NOINIT) {}
+      Matrix(int m, int n, SCALAR, const AT &a=0) { init(a); }
+      Matrix(SCALAR, const AT &a=0) { init(a); }
 
       template<class Row, class Col>
       Matrix(const Matrix<General,Row,Col,AT> &A) {
@@ -271,17 +271,8 @@ namespace fmatvec {
        * */
       inline const Matrix<General,Var,Var,AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const;
 
-      /*! \brief Column operator.
-       *
-       * see col(int)
-       * */
-      inline const Vector<Fixed<M>,AT> col(int j) const;
-
-      /*! \brief Column operator.
-       *
-       * see col(int)
-       * */
       inline const RowVector<Fixed<N>,AT> row(int j) const;
+      inline const Vector<Fixed<M>,AT> col(int i) const;
 
       /*! \brief Initialization.
        *
@@ -396,23 +387,6 @@ namespace fmatvec {
     }
 
   template <int M, int N, class AT>
-    inline const Vector<Fixed<M>,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::col(int j) const {
-
-#ifndef FMATVEC_NO_BOUNDS_CHECK
-      assert(j>=0);
-      assert(j<N);
-#endif
-
-      Vector<Fixed<M>,AT> x(NONINIT);
-
-      for(int i=0; i<M; i++)
-        x.e(i) = e(i,j);
-
-      return x;
-
-    }
-
-  template <int M, int N, class AT>
     inline const RowVector<Fixed<N>,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::row(int i) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
@@ -424,6 +398,23 @@ namespace fmatvec {
 
       for(int j=0; j<N; j++)
         x.e(j) = e(i,j);
+
+      return x;
+
+    }
+
+  template <int M, int N, class AT>
+    inline const Vector<Fixed<M>,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::col(int j) const {
+
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(j>=0);
+      assert(j<N);
+#endif
+
+      Vector<Fixed<M>,AT> x(NONINIT);
+
+      for(int i=0; i<M; i++)
+        x.e(i) = e(i,j);
 
       return x;
 

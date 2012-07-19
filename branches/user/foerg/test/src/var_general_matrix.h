@@ -311,6 +311,7 @@ namespace fmatvec {
        * */
       inline const Matrix<General,Var,Var,AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const;
 
+      inline const RowVector<Var,AT> row(int i) const;
       /*! \brief Column operator.
        *
        * Returns a vector containing the i-th column of the calling matrix. 
@@ -485,6 +486,23 @@ namespace fmatvec {
           A.e(i,j) = e(I.start()+i,J.start()+j);
 
       return A;
+    }
+
+  template <class AT>
+    inline const RowVector<Var,AT> Matrix<General,Var,Var,AT>::row(int i) const {
+
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(i>=0);
+      assert(i<M);
+#endif
+
+      RowVector<Var,AT> x(N,NONINIT);
+
+      for(int j=0; j<N; j++)
+        x.e(j) = e(i,j);
+
+      return x;
+
     }
 
   template <class AT>

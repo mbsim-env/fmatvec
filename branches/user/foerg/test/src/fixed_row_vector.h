@@ -85,8 +85,10 @@ namespace fmatvec {
       RowVector(Initialization ini, const AT &a=0) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini,a) {
       }
 
-      RowVector(int n, NOINIT ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(1,n,ini) {
-      }
+      RowVector(int n, NOINIT ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(1,n,ini) { }
+      RowVector(NOINIT ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(1,0,ini) { }
+      RowVector(int n, SCALAR ini, const AT &a=0) : Matrix<General,Fixed<1>,Fixed<N>,AT>(1,n,ini,a) { }
+      RowVector(SCALAR ini, const AT &a=0) : Matrix<General,Fixed<1>,Fixed<N>,AT>(1,0,ini,a) { }
 
       /*! \brief Copy Constructor
        *

@@ -81,19 +81,6 @@ namespace fmatvec {
       SquareMatrix(int m) : Matrix<General,Ref,Ref,AT>(m,m) {
       }
 
-     /*! \brief Regular Constructor
-       *
-       * Constructs a matrix of size m x n, where m must be equal to n.
-       * \param m The number of rows and columns.
-       * \param n The number of rows and columns.
-       * \remark The matrix will be initialised to
-       * zero by default. This default behavior can be changed by defining 
-       * FMATVEC_NO_INITIALIZATION.
-       * */
-      SquareMatrix(int m, int n) : Matrix<General,Ref,Ref,AT>(m,m) {
-	assert(m == n);
-      }
-
       /*! \brief Regular Constructor
        *
        * Constructs a matrix of size m x m with the pyhsical
@@ -118,21 +105,6 @@ namespace fmatvec {
        * \param a The value, the matrix will be initialized with (default 0)
        * */
       SquareMatrix(int m, Initialization ini, const AT &a=0) : Matrix<General,Ref,Ref,AT>(m,m,ini,a) {
-      }
-
-      /*! \brief Regular Constructor
-       *
-       * Constructs a matrix of size m x n, where m must be equal to n.
-       * The matrix will be initialized to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * matrix will not be initialized.
-       * \param m The number of rows and columns.
-       * \param n The number of rows and columns.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the matrix will be initialized with (default 0)
-       * */
-      SquareMatrix(int m, int n, Initialization ini, const AT &a=0) : Matrix<General,Ref,Ref,AT>(m,m,ini,a) {
-	assert(m == n);
       }
 
       /*! \brief Copy Constructor

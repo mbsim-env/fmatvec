@@ -58,7 +58,7 @@ namespace fmatvec {
        * \param ini INIT means initialization, NONINIT means no initialization.
        * \param a The value, the matrix will be initialized with (default 0)
        * */
-      SquareMatrix(Initialization ini, const AT &a=0) : Matrix<General,Var,Var,AT>(ini,a) {
+      SquareMatrix(int m, Initialization ini, const AT &a=0) : Matrix<General,Var,Var,AT>(m,m,ini,a) {
       }
 
       SquareMatrix(int m, NOINIT ini) : Matrix<General,Var,Var,AT>(m,m,ini) {

@@ -58,6 +58,7 @@ namespace fmatvec {
     protected:
 
     inline void deepCopy(const RowVector<Ref,AT> &x);
+    template<class Col> inline void deepCopy(const RowVector<Col,AT> &x);
 
     const AT* elePtr(int i) const {
       return tp ? ele+i : ele+lda*i;
@@ -119,8 +120,10 @@ namespace fmatvec {
       RowVector(int n, AT* ele) : Matrix<General,Ref,Ref,AT>(1,n,ele) {
       }
 
-      RowVector(int n, NOINIT ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) {
-      }
+      RowVector(NOINIT ini) : Matrix<General,Ref,Ref,AT>(1,0,ini) { }
+      RowVector(int n, NOINIT ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) { }
+      RowVector(SCALAR ini, const AT &a=0) : Matrix<General,Ref,Ref,AT>(1,0,ini,a) { }
+      RowVector(int n, SCALAR ini, const AT &a=0) : Matrix<General,Ref,Ref,AT>(1,n,ini,a) { }
 
       /*! \brief Regular Constructor
        *
@@ -488,8 +491,18 @@ namespace fmatvec {
       }
     }
 
+  template <class AT> template <class Col>
+    inline void RowVector<Ref,AT>::deepCopy(const RowVector<Col,AT> &x) {
+      if(tp) 
+	for(int i=0; i<size(); i++)
+	  et(i) = x.e(i);
+      else 
+	for(int i=0; i<size(); i++)
+	  er(i) = x.e(i);
+    }
+
   /// @endcond
 
-
 }
+
 #endif

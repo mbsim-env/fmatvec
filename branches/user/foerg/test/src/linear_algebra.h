@@ -1356,15 +1356,29 @@ namespace fmatvec {
 
   template <class Row, class AT>
     inline SquareMatrix<Row,AT> trans(const SquareMatrix<Row,AT> &A) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.rows() == A.cols());
-#endif
       SquareMatrix<Row,AT> B(A.cols(),NOINIT());
       for(int i=0; i<B.size(); i++)
         for(int j=0; j<B.size(); j++)
           B.e(i,j) = A.e(j,i);
       return B;
     }
+
+  template <class Row, class AT>
+    inline RowVector<Row,AT> trans(const Vector<Row,AT> &x) {
+      RowVector<Row,AT> y(x.cols(),NOINIT());
+      for(int i=0; i<y.size(); i++)
+          y.e(i) = x.e(i);
+      return y;
+    }
+
+  template <class Row, class AT>
+    inline Vector<Row,AT> trans(const RowVector<Row,AT> &x) {
+      Vector<Row,AT> y(x.cols(),NOINIT());
+      for(int i=0; i<y.size(); i++)
+          y.e(i) = x.e(i);
+      return y;
+    }
+
   /////////////////////////////////// end transpose //////////////////////////////
 
   template <class Row, class AT>

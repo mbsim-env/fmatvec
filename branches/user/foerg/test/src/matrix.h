@@ -35,6 +35,9 @@
  * */
 namespace fmatvec {
 
+  class SCALAR {
+  };
+
   class NOINIT {
   };
 

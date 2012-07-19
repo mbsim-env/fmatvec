@@ -98,6 +98,8 @@ namespace fmatvec {
 
   typedef  Matrix<General,Var,Var,double> MatV;
 
+  typedef  SquareMatrix<Var,double> SqrMatV;
+
   typedef  Vector<Var,double> VecV;
 
   typedef  Matrix<General,Fixed<3>,Var,double> Mat3V;

@@ -286,10 +286,9 @@ namespace fmatvec {
 	return  CblasColMajor;
       };
 
-      /*! \brief Column operator.
-       *
-       * see col(int)
-       * */
+      inline const Matrix<General,Var,Var,AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const;
+
+      inline const RowVector<Fixed<N>,AT> row(int j) const;
       inline const Vector<Var,AT> col(int j) const;
 
       /*! \brief Initialization.
@@ -448,6 +447,38 @@ namespace fmatvec {
         e(i) = val;
 
       return *this;
+    }
+
+  template <int N, class AT>
+    inline const Matrix<General,Var,Var,AT> Matrix<General,Var,Fixed<N>,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(I.end()<M);
+      assert(J.end()<N);
+#endif
+      Matrix<General,Var,Var,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
+
+      for(int i=0; i<A.rows(); i++) 
+        for(int j=0; j<A.cols(); j++)
+          A.e(i,j) = e(I.start()+i,J.start()+j);
+
+      return A;
+    }
+
+  template <int N, class AT>
+    inline const RowVector<Fixed<N>,AT> Matrix<General,Var,Fixed<N>,AT>::row(int i) const {
+
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(i>=0);
+      assert(i<M);
+#endif
+
+      RowVector<Fixed<N>,AT> x(NONINIT);
+
+      for(int j=0; j<N; j++)
+        x.e(j) = e(i,j);
+
+      return x;
+
     }
 
   template <int N, class AT>

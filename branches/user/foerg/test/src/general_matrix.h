@@ -101,8 +101,10 @@ namespace fmatvec {
 #endif
       }
 
-      Matrix(int m_, int n_, NOINIT) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) {  
-      }
+      Matrix(int m_, int n_, NOINIT) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) {  }
+      Matrix(NOINIT) : memory(0), ele((AT*)memory.get()), m(0), n(0), lda(0), tp(false) {  }
+      Matrix(int m_, int n_, SCALAR, const AT &a=0) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) {  init(a); }
+      Matrix(SCALAR, const AT &a=0) : memory(0), ele((AT*)memory.get()), m(0), n(0), lda(0), tp(false) { init(a); }
 
       /*! \brief Regular Constructor
        *
