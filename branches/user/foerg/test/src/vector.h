@@ -70,8 +70,7 @@ namespace fmatvec {
       return tp ? ele+lda*i : ele+i;
     };
 
-    Vector(int n_, int lda_, bool tp, Memory<AT> memory, const AT* ele_) : Matrix<General,Ref,Ref,AT>(n_, 1, lda_, tp, memory, ele_) {
-    }
+    Vector(int n_, int lda_, bool tp, Memory<AT> memory, const AT* ele_) : Matrix<General,Ref,Ref,AT>(n_, 1, lda_, tp, memory, ele_) { }
 
     /// @endcond
     
@@ -81,19 +80,18 @@ namespace fmatvec {
        *
        * Constructs a vector with no size. 
        * */
-      Vector() : Matrix<General,Ref,Ref,AT>(0,1) {
-      }
+      Vector() : Matrix<General,Ref,Ref,AT>() { n=1; }
 
-      /*! \brief Regular Constructor
-       *
-       * Constructs a vector of size m. 
-       * \param m The size.
-       * \remark The vector will be initialised to
-       * zero by default. This default behavior can be
-       * changed by defining FMATVEC_NO_INITIALIZATION.
-       * */
-      Vector(int m) : Matrix<General,Ref,Ref,AT>(m,1) {
-      }
+//      template<class Ini=All<AT> >
+//        Vector(int m, Ini ini=All<AT>()) : Matrix<General,Ref,Ref,AT>(m,1,ini) { } 
+
+      Vector(int m) : Matrix<General,Ref,Ref,AT>(m,1) { } 
+      Vector(int m, const Noinit &ini) : Matrix<General,Ref,Ref,AT>(m,1,ini) { } 
+      Vector(int m, const All<AT> &ini) : Matrix<General,Ref,Ref,AT>(m,1,ini) { } 
+      Vector(int m, const Eye<AT> &ini) : Matrix<General,Ref,Ref,AT>(m,1,ini) { } 
+
+      // For compatibility
+      Vector(int m, const All<AT> &ini, const AT &a) : Matrix<General,Ref,Ref,AT>(m,1,ini,a) { } 
 
       /*! \brief Regular Constructor
        *
@@ -102,22 +100,6 @@ namespace fmatvec {
        * \param ele The physical memory the vector will point to.
        * */
       Vector(int m, AT* ele) : Matrix<General,Ref,Ref,AT>(m,1,ele) { 
-      }
-
-      Vector(int m, NOINIT ini) : Matrix<General,Ref,Ref,AT>(m,1,ini) { }
-      Vector(NOINIT ini) : Matrix<General,Ref,Ref,AT>(0,1,ini) { }
-      Vector(int m, SCALAR ini, const AT &a=0) : Matrix<General,Ref,Ref,AT>(m,1,ini,a) { }
-
-      /*! \brief Regular Constructor
-       *
-       * Constructs a vector of size m. The vector will be initialized to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * vector will not be initialized.
-       * \param m The size.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the vector will be initialized with (default 0)
-       * */
-      Vector(int m, Initialization ini, const AT &a=0) : Matrix<General,Ref,Ref,AT>(m,1,ini,a) {
       }
 
       /*! \brief String Constructor. 
@@ -160,19 +142,27 @@ namespace fmatvec {
 #endif
       }
 
-      /*! \brief Vector resizing. 
-       *
-       * Resizes the vector to size n. The vector will be initialized to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * vector will not be initialized.
-       * \param n The size.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the vector will be initialized with (default 0)
-       * \return A reference to the calling vector.
-       * */
-      Vector<Ref,AT>& resize(int n=0, Initialization ini=INIT, const AT &a=0) {
-	Matrix<General,Ref,Ref,AT>::resize(n,1,ini,a);
-	return *this;
+//      template<class Ini=All<AT> >
+//        Vector<Ref,AT>& resize(int m=0, Ini ini=All<AT>()) {
+//          Matrix<General,Ref,Ref,AT>::resize(m,1,ini);
+//          return *this;
+//        }
+
+      Vector<Ref,AT>& resize(int m=0) {
+        Matrix<General,Ref,Ref,AT>::resize(m,1);
+        return *this;
+      }
+
+      template<class Ini>
+        Vector<Ref,AT>& resize(int m, const Ini &ini) {
+          Matrix<General,Ref,Ref,AT>::resize(m,1,ini);
+          return *this;
+        }
+
+      // For compatibility
+      Vector<Ref,AT>& resize(int m, const All<AT> &ini, const AT &a) {
+        Matrix<General,Ref,Ref,AT>::resize(m,1,ini,a);
+        return *this;
       }
 
       /*! \brief Copy operator
@@ -273,6 +263,9 @@ namespace fmatvec {
        * \return A reference to the calling vector.
        * */
       inline Vector<Ref,AT>& init(const AT& a); 
+      inline Vector<Ref,AT>& init(const All<AT> &all) { return init(all.a); }
+      inline Vector<Ref,AT>& init(Eye<AT> eye);
+      inline Vector<Ref,AT>& init(Noinit) { return *this; }
 
       /*! \brief Size.
        *
@@ -353,15 +346,13 @@ namespace fmatvec {
   };
 
   template <class AT>
-    inline Vector<Ref,AT>& Vector<Ref,AT>::init(const AT& val) {
-
+    inline Vector<Ref,AT>& Vector<Ref,AT>::init(const AT &val) {
       if(tp) 
         for(int i=0; i<m; i++) 
           et(i) = val;
       else 
         for(int i=0; i<m; i++) 
           er(i) = val;
-
       return *this;
     }
 
@@ -468,7 +459,7 @@ namespace fmatvec {
   template <class AT>
     inline Vector<Ref,AT> Vector<Ref,AT>::copy() const {
 
-      Vector<Ref,AT> x(m,NOINIT());
+      Vector<Ref,AT> x(m,NONINIT);
       x.deepCopy(*this);
 
       return x;

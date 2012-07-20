@@ -67,46 +67,19 @@ namespace fmatvec {
 	 *
 	 * Construckts a matrix with no size.
 	 * */
-	Matrix() : memory(), ele(0), n(0) {
-	}
+	Matrix() : memory(), ele(0), n(0) { }
 
-	/*! \brief Regular Constructor
-	 *
-	 * Constructs a diagonal matrix of size n x n.
-	 * \param n_ The number of rows and columns.
-	 * \remark The matrix will be initialised to
-	 * zero by default. This default behavior can be changed by defining 
-	 * FMATVEC_NO_INITIALIZATION.
-	 * */
-	Matrix(int n_) : memory(n_), ele((AT*)memory.get()), n(n_) {  
+//        template<class Ini=All<AT> >
+//          Matrix(int n_, Ini ini=All<AT>()) : memory(n_), ele((AT*)memory.get()), n(n_) { init(ini); }
+//        template<class Ini=All<AT> >
+//          Matrix(int m_, int n_, Ini ini=All<AT>()) : memory(n_), ele((AT*)memory.get()), n(n_) { init(ini); }
 
-#ifndef FMATVEC_NO_INITIALIZATION 
-	  init(0);
-#endif
-	}
-
-	/*! \brief Regular Constructor
-	 *
-	 * Constructs a diagonal matrix of size n x n. The matrix will be initialized to
-	 * the value given by \em a
-	 * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-	 * matrix will not be initialized.
-	 * \param n_ The number of rows and columns.
-	 * \param ini INIT means initialization, NONINIT means no initialization.
-	 * \param a The value, the matrix will be initialized with (default 0)
-	 * */
-	Matrix(int n_, Initialization ini, const AT& a=0) : memory(n_), ele((AT*)memory.get()), n(n_) {  
-
-	  if(ini == INIT) {
-	    AT *el=ele;
-	    for(int i=0; i<n; i++)
-	      *el++=a;
-	  } else if(ini == EYE ) {
-	    AT *el=ele;
-	    for(int i=0; i<n; i++) 
-	      *el++= 1;
-	  }  
-	}
+        Matrix(int n_) : memory(n_), ele((AT*)memory.get()), n(n_) { init(All<AT>()); }
+        Matrix(int n_, const Noinit &ini) : memory(n_), ele((AT*)memory.get()), n(n_) { }
+        Matrix(int n_, const All<AT> &ini) : memory(n_), ele((AT*)memory.get()), n(n_) { init(ini); }
+        Matrix(int n_, const Eye<AT> &ini) : memory(n_), ele((AT*)memory.get()), n(n_) { init(ini); }
+        Matrix(int m_, int n_, const Noinit &ini) : memory(n_), ele((AT*)memory.get()), n(n_) { }
+        Matrix(int n_, const All<AT> &ini, const AT &a=0) : memory(n_), ele((AT*)memory.get()), n(n_) { init(All<AT>(a)); }
 
 	/*! \brief Copy Constructor
 	 *
@@ -123,32 +96,26 @@ namespace fmatvec {
 	~Matrix() {
 	}
 
-	/*! \brief Matrix resizing. 
-	 *
-	 * Resizes the matrix to size n x n. The matrix will be initialized to 
-	 * the value given by \em a
-	 * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-	 * matrix will not be initialized.
-	 * \param n_ The number of rows and columns.
-	 * \param ini INIT means initialization, NONINIT means no initialization.
-	 * \param a The value, the matrix will be initialized with (default 0)
-	 * \return A reference to the calling matrix.
-	 * */
-	Matrix<Diagonal,Ref,Ref,AT>& resize(int n_=0, Initialization ini=INIT, const AT &a=0) {
-	  n = n_;
+//        template<class Ini=All<AT> >
+//          Matrix<Diagonal,Ref,Ref,AT>& resize(int n_=0, Ini ini=All<AT>()) {
+//            n = n_;
+//            memory.resize(n);
+//            ele = (AT*)memory.get();
+//            init(ini);
+//            return *this;
+//          }
 
-	  memory.resize(n);
-	  ele = (AT*)memory.get();
-
-	  if(ini == INIT)
-	    init(a);
-	  else if(ini == EYE ) 
-	    init(1);
-
-	  return *this;
-	}
+        Matrix<Diagonal,Ref,Ref,AT>& resize(int n=0) { return resize(n,All<AT>()); }
  
-
+        template<class Ini>
+          Matrix<Diagonal,Ref,Ref,AT>& resize(int n_, const Ini &ini) {
+            n = n_;
+            memory.resize(n);
+            ele = (AT*)memory.get();
+            init(ini);
+            return *this;
+          }
+ 
 	/*! \brief Copy operator
 	 *
 	 * Copies the diagonal matrix given by \em A.
@@ -306,6 +273,9 @@ namespace fmatvec {
 	 * \return A reference to the calling matrix.
 	 * */
 	Matrix<Diagonal,Ref,Ref,AT>& init(const AT &a);
+        inline Matrix<Diagonal,Ref,Ref,AT>& init(const All<AT> &all);
+        inline Matrix<Diagonal,Ref,Ref,AT>& init(Eye<AT> eye);
+        inline Matrix<Diagonal,Ref,Ref,AT>& init(Noinit) { return *this; }
 
         /*! \brief Cast to std::vector<std::vector<AT> >.
          *
@@ -352,11 +322,21 @@ namespace fmatvec {
 
   template <class AT>
     Matrix<Diagonal,Ref,Ref,AT>&  Matrix<Diagonal,Ref,Ref,AT>::init(const AT &val) {
+      return init(All<AT>(val));
+    }
 
-      for(int i=0; i<rows(); i++)
-        e(i) = val;
+  template <class AT>
+    inline Matrix<Diagonal,Ref,Ref,AT>&  Matrix<Diagonal,Ref,Ref,AT>::init(const All<AT> &all) {
+
+      for(int i=0; i<rows(); i++) 
+        e(i) = all.a;
 
       return *this;
+    }
+
+  template <class AT>
+    inline Matrix<Diagonal,Ref,Ref,AT>&  Matrix<Diagonal,Ref,Ref,AT>::init(Eye<AT> eye) {
+      return init(All<AT>(eye.val));
     }
 
  

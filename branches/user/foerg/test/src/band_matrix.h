@@ -65,51 +65,21 @@ namespace fmatvec {
       Matrix() : memory(), ele(0), n(0), kl(0), ku(0) {
       }
 
-      /*! \brief Regular Constructor
-       *
-       * Constructs a band matrix of size n x n.
-       * \param n_ The number of rows and columns.
-       * \param kl_ The number of subdiagonals.
-       * \param ku_ The number of superdiagonals.
-       * \remark The matrix will be initialised to
-       * zero by default. This default behavior can be changed by defining 
-       * FMATVEC_NO_INITIALIZATION.
-       * */
-      Matrix(int n_, int kl_, int ku_) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) {  
+//      template<class Ini=All<AT> >
+//        Matrix(int n_, int kl_, int ku_, Ini ini=All<AT>()) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) {  
+//          init(ini);
+//        }
+//      template<class Ini=All<AT> >
+//        Matrix(int m_, int n_, Ini ini=All<AT>()) : memory(n_*(n_+n_+1)), ele((AT*)memory.get()), n(n_), kl(n_), ku(n_) {  
+//          init(ini);
+//        }
 
-#ifndef FMATVEC_NO_INITIALIZATION 
-	init(0);
-#endif
-      }
+      Matrix(int n_, int kl_, int ku_) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) {  init(0); }
+      Matrix(int n_, int kl_, int ku_, const Noinit &ini) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { }
+      Matrix(int n_, int kl_, int ku_, const All<AT> &ini) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(ini); }
+      Matrix(int n_, int kl_, int ku_, const Eye<AT> &ini) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(ini); }
 
-      Matrix(int n_, int kl_, int ku_, NOINIT) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) {  
-
-      }
-
-      /*! \brief Regular Constructor
-       *
-       * Constructs a band matrix of size n x n. 
-       * The matrix will be initialized to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * matrix will not be initialized.
-       * \param n_ The number of rows and columns.
-       * \param kl_ The number of subdiagonals.
-       * \param ku_ The number of superdiagonals.
-       * \remark The matrix will be initialised to
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the matrix will be initialized with (default 0)
-       * */
-      Matrix(int n_, int kl_, int ku_, Initialization ini, const AT &a=0) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) {  
-
-	if(ini == INIT)
-	  init(a);
-	else if(ini == EYE){
-	  init(0);
-	  for(int i=0; i<n; i++)
-	    ele[ku+i+i*(kl+ku)] = 1;
-	} 
-
-      }
+      Matrix(int m_, int n_, const Noinit &ini) : memory(n_*(n_+n_+1)), ele((AT*)memory.get()), n(n_), kl(n_), ku(n_) { }
 
       /*! \brief Copy Constructor
        *
@@ -138,35 +108,20 @@ namespace fmatvec {
       ~Matrix() {
       }
 
-      /*! \brief Matrix resizing. 
-       *
-       * Resizes the matrix to size m x n. The matrix will be initialized to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * matrix will not be initialized.
-       * \param n_ The number of rows and columns.
-       * \param kl_ The number of subdiagonals.
-       * \param ku_ The number of superdiagonals.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the matrix will be initialized with (default 0)
-       * \return A reference to the calling matrix.
-       * */
-      Matrix<GeneralBand,Ref,Ref,AT>& resize(int n_=0, int kl_=0, int ku_=0, Initialization ini=INIT, const AT &a=0) {
-	n=n_;
-	kl=kl_;
-	ku=ku_;
-	memory.resize(n*(kl+ku+1));
-	ele = (AT*)memory.get();
+      Matrix<GeneralBand,Ref,Ref,AT>& resize(int n=0, int kl=0, int ku=0) { return resize(n,kl,ku,All<AT>()); }
 
-	if(ini == INIT)
-	  init(a);
-	else if(ini == EYE){
-	  init(0);
-	  for(int i=0; i<n; i++)
-	    ele[ku+i+i*(kl+ku)] = 1;
-	}
+      template<class Ini>
+        Matrix<GeneralBand,Ref,Ref,AT>& resize(int n_, int kl_, int ku_, const Ini &ini) {
+          n=n_;
+          kl=kl_;
+          ku=ku_;
+          memory.resize(n*(kl+ku+1));
+          ele = (AT*)memory.get();
 
-	return *this;
-      }
+          init(ini);
+
+          return *this;
+        }
 
       /*! \brief Assignment operator
        *
@@ -291,6 +246,9 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       inline Matrix<GeneralBand,Ref,Ref,AT>& init(const AT &a);
+      inline Matrix<GeneralBand,Ref,Ref,AT>& init(const All<AT> &all);
+      inline Matrix<GeneralBand,Ref,Ref,AT>& init(Eye<AT> eye);
+      inline Matrix<GeneralBand,Ref,Ref,AT>& init(Noinit) { return *this; }
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -337,11 +295,21 @@ namespace fmatvec {
 
   template <class AT>
     inline Matrix<GeneralBand,Ref,Ref,AT>&  Matrix<GeneralBand,Ref,Ref,AT>::init(const AT& val) {
+      return init(All<AT>(val));
+    }
 
+  template <class AT>
+    inline Matrix<GeneralBand,Ref,Ref,AT>&  Matrix<GeneralBand,Ref,Ref,AT>::init(const All<AT> &all) {
       for(int i=0; i<kl+ku+1; i++)
 	for(int j=0; j<n; j++)
-	  ele[i+j*(kl+ku+1)] = val;
+	  ele[i+j*(kl+ku+1)] = all.a;
+      return *this;
+    }
 
+  template <class AT>
+    inline Matrix<GeneralBand,Ref,Ref,AT>&  Matrix<GeneralBand,Ref,Ref,AT>::init(Eye<AT> eye) {
+      for(int i=0; i<n; i++)
+        ele[i] = eye.a;
       return *this;
     }
 

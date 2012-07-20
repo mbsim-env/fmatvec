@@ -1567,7 +1567,7 @@ namespace fmatvec {
 
     int is = A.rows() < A.cols() ? A.rows() : A.cols();
     if(ipiv.size() != is) {
-      ipiv.resize(is);
+      ipiv.resize(is,All<int>(0));
     }
 
     int info = dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv());
@@ -1588,7 +1588,7 @@ namespace fmatvec {
 
     int is = A.size();
     if(ipiv.size() != is) {
-      ipiv.resize(is);
+      ipiv.resize(is,All<int>(0));
     }
 
     int info = dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv());
@@ -1778,8 +1778,8 @@ namespace fmatvec {
     const int dim=A.size();
     double *w = new double[dim];
     SquareMatrix<Ref,double> B_(dim);
-    eigenvectors.resize(dim);
-    eigenvalues.resize(dim);
+    eigenvectors.resize(dim,All<double>(0));
+    eigenvalues.resize(dim,All<double>(0));
     for (int z=0; z<dim; z++)
       for (int s=0; s<=z; s++) {
         eigenvectors(z,s)=A(z,s);

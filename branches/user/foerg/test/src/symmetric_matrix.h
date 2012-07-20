@@ -72,90 +72,23 @@ namespace fmatvec {
       Matrix() : memory(), ele(0), n(0), lda(0) {
       }
 
-      /*! \brief Regular Constructor
-       *
-       * Constructs a symmetric matrix of size n x n.
-       * \param n_ The number of rows and columns.
-       * \remark The matrix will be initialised to
-       * zero by default. This default behavior can be changed by defining 
-       * FMATVEC_NO_INITIALIZATION.
-       * */
-      Matrix(int n_) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) {  
+//      template<class Ini=All<AT> >
+//        Matrix(int n_, Ini ini=All<AT>()) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) {
+//          init(ini);
+//        }
+//      template<class Ini=All<AT> >
+//        Matrix(int m_, int n_, Ini ini=All<AT>()) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) {
+//          init(ini);
+//        }
 
-#ifndef FMATVEC_NO_INITIALIZATION 
-	init(0);
-#endif
-      }
+      Matrix(int n_) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(0); }
+      Matrix(int n_, const Noinit &ini) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { }
+      Matrix(int n_, const All<AT> &ini) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(ini); }
+      Matrix(int n_, const Eye<AT> &ini) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(ini); }
+      Matrix(int m_, int n_, const Noinit &ini) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { }
 
-      /*! \brief Regular Constructor
-       *
-       * Constructs a symmetric matrix of size m x n, 
-       * where m must be equal to n.
-       * \param m_ The number of rows and columns.
-       * \param n_ The number of rows and columns.
-       * \remark The matrix will be initialised to
-       * zero by default. This default behavior can be changed by defining 
-       * FMATVEC_NO_INITIALIZATION.
-       * */
-      Matrix(int m_, int n_) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) {  
-	assert(m_ == n_);
-
-#ifndef FMATVEC_NO_INITIALIZATION 
-	init(0);
-#endif
-      }
-
-      Matrix(NOINIT) : memory(), ele(0), n(0), lda(0) { }
-      Matrix(int n_, NOINIT) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { }
-      Matrix(int m_, int n_, NOINIT) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { }
-      Matrix(int n_, SCALAR, const AT &a=0) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(a); }
-      Matrix(int m_, int n_, SCALAR, const AT &a=0) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(a); }
-
-      /*! \brief Regular Constructor
-       *
-       * Constructs a symmetric matrix of size n x n. The matrix will be 
-       * initialized to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * matrix will not be initialized.
-       * \param n_ The number of rows and columns.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the matrix will be initialized with (default 0)
-       * */
-      Matrix(int n_, Initialization ini, const AT &a=0) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) {  
-
-	if(ini == INIT)
-	  init(a);
-	else if(ini == EYE) {	 
-	  init(0);
-	  for(int i=0; i<n; i++) 
-	    ele[i+i*lda] = 1; // operator()(i,i) = 1;
-	}
-      }
-
-      /*! \brief Regular Constructor
-       *
-       * Constructs a symmetric matrix of size m x n, where m must be equal to n.
-       * The matrix will be initialized to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * matrix will not be initialized.
-       * \param m_ The number of rows and columns.
-       * \param n_ The number of rows and columns.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the matrix will be initialized with (default 0)
-       * */
-      Matrix(int m_, int n_, Initialization ini, const AT &a=0) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) {  
-
-	assert(m_ == n_);
-
-	if(ini == INIT)
-	  init(a);
-	else if(ini == EYE) {
-	  init(0);
-          for(int i=0; i<n; i++) 
-	    ej(i,i) = 1;
-        }
-
-      }
+      // For compatibility
+      Matrix(int n_, const All<AT> &ini, const AT &a) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(a); }
 
       /*! \brief Copy Constructor
        *
@@ -164,8 +97,7 @@ namespace fmatvec {
        * referenced.
        * \param A The matrix that will be referenced.
        * */
-      Matrix(const Matrix<Symmetric,Ref,Ref,AT> &A) : memory(A.memory), ele(A.ele) , n(A.n), lda(A.lda) {
-      }
+      Matrix(const Matrix<Symmetric,Ref,Ref,AT> &A) : memory(A.memory), ele(A.ele) , n(A.n), lda(A.lda) { }
 
 
       /*! \brief Element operator
@@ -194,40 +126,32 @@ namespace fmatvec {
        * \param n_ The number of rows and columns.
        * \param ele_ The physical memory the matrix will point to.
        * */
-      Matrix(int n_, AT* ele_) : memory(), ele(ele_), n(n_), lda(n_) { 
-      }
+      Matrix(int n_, AT* ele_) : memory(), ele(ele_), n(n_), lda(n_) { }
 
       /*! \brief Destructor. 
        * */
-      ~Matrix() {
-      }
+      ~Matrix() { }
 
-      /*! \brief Matrix resizing. 
-       *
-       * Resizes the matrix to size n x n. The matrix will be initialized
-       * to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * matrix will not be initialized.
-       * \param n_ The number of rows and columns.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the matrix will be initialized with (default 0)
-       * \return A reference to the calling matrix.
-       * */
-      Matrix<Symmetric,Ref,Ref,AT>& resize(int n_=0, Initialization ini=INIT, const AT &a=0) {
+//      template<class Ini=All<AT> >
+//      Matrix<Symmetric,Ref,Ref,AT>& resize(int n_=0, Ini ini=All<AT>()) {
+//	n=n_;
+//	lda=n;
+//	memory.resize(n*n);
+//	ele = (AT*)memory.get();
+//        init(ini);
+//        return *this;
+//      }
+
+      Matrix<Symmetric,Ref,Ref,AT>& resize(int n=0) { return resize(n,All<AT>()); }
+
+      template<class Ini>
+      Matrix<Symmetric,Ref,Ref,AT>& resize(int n_, const Ini &ini) {
 	n=n_;
 	lda=n;
 	memory.resize(n*n);
 	ele = (AT*)memory.get();
-
-	if(ini == INIT)
-	  init(a);
-	else if(ini == EYE) {
-	  init(0);
-          for(int i=0; i<n; i++) 
-	    ele[i+i*lda] = 1; // operator()(i,i) = 1;
-        }
-
-	return *this;
+        init(ini);
+        return *this;
       }
 
       /*! \brief Assignment operator
@@ -393,7 +317,10 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<Symmetric,Ref,Ref,AT>& init(const AT &a);
+      inline Matrix<Symmetric,Ref,Ref,AT>& init(const AT &a); 
+      inline Matrix<Symmetric,Ref,Ref,AT>& init(const All<AT> &all) { return init(all.a); };
+      inline Matrix<Symmetric,Ref,Ref,AT>& init(Eye<AT> eye);
+      inline Matrix<Symmetric,Ref,Ref,AT>& init(Noinit) { return *this; }
 
       /*! \brief Submatrix operator.
        *
@@ -543,7 +470,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<Symmetric,Ref,Ref,AT>&  Matrix<Symmetric,Ref,Ref,AT>::init(const AT& val) {
+    inline Matrix<Symmetric,Ref,Ref,AT>&  Matrix<Symmetric,Ref,Ref,AT>::init(const AT &val) {
 
       for(int i=0; i<rows(); i++) 
         for(int j=i; j<cols(); j++) 
@@ -553,9 +480,21 @@ namespace fmatvec {
     }
 
   template <class AT>
+    inline Matrix<Symmetric,Ref,Ref,AT>&  Matrix<Symmetric,Ref,Ref,AT>::init(Eye<AT> eye) {
+
+      for(int i=0; i<rows(); i++) {
+        ej(i,i) = eye.a;
+        for(int j=0; j<i; j++) {
+          ej(i,j) = 0; 
+        }
+      }
+      return *this;
+    }
+
+  template <class AT>
     inline Matrix<Symmetric,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::copy() const {
 
-      Matrix<Symmetric,Ref,Ref,AT> A(n,NOINIT());
+      Matrix<Symmetric,Ref,Ref,AT> A(n,NONINIT);
       A.deepCopy(*this);
 
       return A;

@@ -39,32 +39,16 @@ namespace fmatvec {
 
     public:
 
-    public:
+//      template<class Ini=All<AT> >
+//      SquareMatrix(Ini ini=All<AT>()) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
+//      template<class Ini=All<AT> >
+//      SquareMatrix(int m, Ini ini=All<AT>()) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { } 
 
-      /*! \brief Standard constructor
-       *
-       * Constructs a squarematrix with no size. 
-       * */
-      SquareMatrix() : Matrix<General,Fixed<M>,Fixed<M>,AT>() {
-      }
-
-      /*! \brief Regular Constructor
-       *
-       * Constructs a matrix of size m x m. The matrix will be 
-       * initialized to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * matrix will not be initialized.
-       * \param m The number of rows and columns.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the matrix will be initialized with (default 0)
-       * */
-      SquareMatrix(Initialization ini, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) {
-      }
-
-      SquareMatrix(NOINIT ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
-      SquareMatrix(int m, NOINIT ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(m,m,ini) { }
-      SquareMatrix(SCALAR ini, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { }
-      SquareMatrix(int m, SCALAR ini, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<M>,AT>(m,m,ini,a) { }
+      SquareMatrix() : Matrix<General,Fixed<M>,Fixed<M>,AT>() { }
+      SquareMatrix(const Noinit &ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
+      SquareMatrix(const All<AT> &ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
+      SquareMatrix(const Eye<AT> &ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
+      SquareMatrix(int m, const Noinit &ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { } 
 
       /*! \brief Copy Constructor
        *
@@ -110,7 +94,7 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline const SquareMatrix<Fixed<M>,AT> SquareMatrix<Fixed<M>,AT>::T() const {
-      SquareMatrix<Fixed<M>,AT> A(0,NOINIT());
+      SquareMatrix<Fixed<M>,AT> A(NONINIT);
       for(int i=0; i<M; i++)
         for(int j=0; j<M; j++)
           A.e(i,j) = e(j,i);

@@ -54,36 +54,25 @@ namespace fmatvec {
  
     public:
 
-      /*! \brief Standard constructor
-       *
-       * */
-      Matrix(int m=0) : M(m), ele(new AT[M*N]) {
-#ifndef FMATVEC_NO_INITIALIZATION 
-	init(0);
-#endif
-      }
+      Matrix() : M(0), ele(0) { }
 
-      Matrix(int m, Initialization ini, const AT &a=0) : M(m), ele(new AT[M*N]) {  
+//      template<class Ini=All<AT> >
+//      Matrix(int m, Ini ini=All<AT>()) :  M(m), ele(new AT[M*N]) {
+//        init(ini);
+//      }
+//      template<class Ini=All<AT> >
+//      Matrix(int m, int n, Ini ini=All<AT>()) :  M(m), ele(new AT[M*N]) {
+//        init(ini);
+//      }
 
-	if(ini == INIT) {
-	  for(int i=0; i<M*N; i++) 
-	    e(i) = a;
-	} else if(ini == EYE ) {
-	  for(int i=0; i<M; i++) {
-	    for(int j=0; j<N; j++) {
-	      if (i==j) e(i,j) = 1;
-	      else e(i,j) = 0;
-	    }
-	  }
-	}
-      }
+      Matrix(int m) : M(m), ele(new AT[M*N]) { init(0); }
+      Matrix(int m, const Noinit &ini) : M(m), ele(new AT[M*N]) { }
+      Matrix(int m, const All<AT> &ini) : M(m), ele(new AT[M*N]) { init(ini); }
+      Matrix(int m, const Eye<AT> &ini) : M(m), ele(new AT[M*N]) { init(ini); }
+      Matrix(int m, int n, const Noinit &ini) : M(m), ele(new AT[M*N]) { }
 
-      Matrix(NOINIT) : M(0), ele(0) { }
-      Matrix(int m, NOINIT) : M(m), ele(new AT[M*N]) { }
-      Matrix(int m, int n, NOINIT) : M(m), ele(new AT[M*N]) { }
-      Matrix(int m, SCALAR, const AT &a=0) : M(m), ele(new AT[M*N]) { init(a); }
-      Matrix(int m, int n, SCALAR, const AT &a=0) : M(m), ele(new AT[M*N]) { init(a); }
-
+      // For compatibility
+      Matrix(int m, const All<AT> &ini, const AT &a) :  M(m), ele(new AT[M*N]) { init(a); }
 
       /*! \brief Copy Constructor
        *
@@ -132,33 +121,23 @@ namespace fmatvec {
 	delete[] ele;
       }
 
-      /*! \brief Matrix resizing. 
-       *
-       * Resizes the matrix to size m x n.    
-       * \param m_ The number of rows.
-       * \param n_ The number of columns.
-       * \return A reference to the calling matrix.
-       * \remark The matrix will be initialised to
-       * zero by default. To change this behavior, define
-       * FMATVEC_NO_INITIALIZATION.
-       * */
-      Matrix<General,Var,Fixed<N>,AT>& resize(int m=0, Initialization ini=INIT, const AT &a=0) {
-        delete[] ele;
-        M=m;
-        ele = new AT[M*N];
+//      template<class Ini=All<AT> >
+//      Matrix<General,Var,Fixed<N>,AT>& resize(int m=0, Ini ini=All<AT>()) {
+//	delete[] ele;
+//	M=m;
+//	ele = new AT[M*N];
+//        init(ini);
+//        return *this;
+//      }
 
-	if(ini == INIT) {
-	  for(int i=0; i<M*N; i++) 
-	    e(i) = a;
-	} else if(ini == EYE ) {
-	  for(int i=0; i<M; i++) {
-	    for(int j=0; j<N; j++) {
-	      if (i==j) e(i,j) = 1;
-	      else e(i,j) = 0;
-	    }
-	  }
-	}
+      Matrix<General,Var,Fixed<N>,AT>& resize(int m=0) { return resize(m,All<AT>()); }
 
+      template<class Ini>
+      Matrix<General,Var,Fixed<N>,AT>& resize(int m, const Ini &ini) {
+	delete[] ele;
+	M=m;
+	ele = new AT[M*N];
+        init(ini);
         return *this;
       }
 
@@ -301,7 +280,10 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<General,Var,Fixed<N>,AT>& init(const AT &a);
+      inline Matrix<General,Var,Fixed<N>,AT>& init(const AT &a=0); 
+      inline Matrix<General,Var,Fixed<N>,AT>& init(const All<AT> &all) { return init(all.a); }
+      inline Matrix<General,Var,Fixed<N>,AT>& init(Eye<AT> eye);
+      inline Matrix<General,Var,Fixed<N>,AT>& init(Noinit) { return *this; }
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -444,11 +426,20 @@ namespace fmatvec {
     }
 
   template <int N, class AT>
-    inline  Matrix<General,Var,Fixed<N>,AT>& Matrix<General,Var,Fixed<N>,AT>::init(const AT& val) {
-
+    inline Matrix<General,Var,Fixed<N>,AT>&  Matrix<General,Var,Fixed<N>,AT>::init(const AT &val) {
       for(int i=0; i<M*N; i++) 
         e(i) = val;
+      return *this;
+    }
 
+  template <int N, class AT>
+    inline Matrix<General,Var,Fixed<N>,AT>&  Matrix<General,Var,Fixed<N>,AT>::init(Eye<AT> eye) {
+      for(int i=0; i<M; i++) {
+        e(i,i) = eye.a;
+        for(int j=0; j<i; j++) {
+          e(i,j) = e(j,i) = 0; 
+        }
+      }
       return *this;
     }
 
@@ -458,7 +449,7 @@ namespace fmatvec {
       assert(I.end()<M);
       assert(J.end()<N);
 #endif
-      Matrix<General,Var,Var,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NOINIT());
+      Matrix<General,Var,Var,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
         for(int j=0; j<A.cols(); j++)
@@ -475,7 +466,7 @@ namespace fmatvec {
       assert(i<M);
 #endif
 
-      RowVector<Fixed<N>,AT> x(0,NOINIT());
+      RowVector<Fixed<N>,AT> x(NONINIT);
 
       for(int j=0; j<N; j++)
         x.e(j) = e(i,j);
@@ -492,7 +483,7 @@ namespace fmatvec {
       assert(j<N);
 #endif
 
-      Vector<Var,AT> x(M,NOINIT());
+      Vector<Var,AT> x(M,NONINIT);
 
       for(int i=0; i<M; i++)
         x.e(i) = e(i,j);
@@ -503,7 +494,7 @@ namespace fmatvec {
 
   template <int N, class AT>
     inline const Matrix<General,Fixed<N>,Var,AT> Matrix<General,Var,Fixed<N>,AT>::T() const {
-      Matrix<General,Fixed<N>,Var,AT> A(rows(),NOINIT());
+      Matrix<General,Fixed<N>,Var,AT> A(rows(),NONINIT);
       for(int i=0; i<N; i++)
         for(int j=0; j<M; j++)
           A.e(i,j) = e(j,i);

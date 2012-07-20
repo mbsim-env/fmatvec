@@ -66,43 +66,24 @@ namespace fmatvec {
 	 *
 	 * Constructs a matrix with no size. 
 	 * */
-	Matrix() : memEle(), memI(), memJ(), ele(0), I(0), J(0), m(0), n(0), k(0) {
-	}
+	Matrix() : memEle(), memI(), memJ(), ele(0), I(0), J(0), m(0), n(0), k(0) { }
 
-      /*! \brief Regular Constructor
-       *
-       * Constructs a matrix of size n x n.
-       * \param n_ The number of columns/rows.
-       * \remark The matrix will be initialised to
-       * zero by default. This default behavior can be changed by defining 
-       * FMATVEC_NO_INITIALIZATION.
-       * */
-	Matrix(int n_) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) {
-#ifndef FMATVEC_NO_INITIALIZATION 
-	init(0);
-#endif
-	}
+//        template<class Ini=All<AT> >
+//          Matrix(int n_, Ini ini=All<AT>()) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) {
+//            init(ini);
+//          }
+//        template<class Ini=All<AT> >
+//          Matrix(int m_, int n_, Ini ini) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) {  
+//            init(ini);
+//          }
 
-	/*! \brief Regular Constructor
-       *
-       * Constructs a matrix of size n x n.
-       * \param n_ The number of columns/rows.
-       * \param k_ The number of nonzero elements.
-       * \remark The matrix will be initialised to
-       * zero by default. This default behavior can be changed by defining 
-       * FMATVEC_NO_INITIALIZATION.
-       * */
-        Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) {
-#ifndef FMATVEC_NO_INITIALIZATION 
-	init(0);
-#endif
-	}
+        Matrix(int n_) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { init(0); }
+        Matrix(int n_, int k_) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) {  init(0); }
+        Matrix(int n_, const Noinit &ini) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { }
+        Matrix(int n_, const All<AT> &ini) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { init(ini); }
+        Matrix(int n_, const Eye<AT> &ini) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { init(ini); }
 
-	Matrix(NOINIT) : memEle(), memI(), memJ(), ele(0), I(0), J(0), m(0), n(0), k(0) { }
-	Matrix(int n_, NOINIT) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { }
-        Matrix(int n_, int k_, NOINIT) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) { }
-	Matrix(int n_, SCALAR, const AT &a=0) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { init(a); }
-        Matrix(int n_, int k_, SCALAR, const AT &a=0) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) { init(a); }
+        Matrix(int m_, int n_, const Noinit &ini) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { }
 
 	/*! \brief Copy Constructor
 	 *
@@ -128,17 +109,35 @@ namespace fmatvec {
 	 * \param k_ The number of nonzero elements.
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Sparse,Ref,Ref,AT>& resize(int n_=0, int k_=0) {
-	  m=n_;n=n_;k=k_;
-	  memEle.resize(k);
-	  memI.resize(m+1);
-	  memJ.resize(k);
-	  ele = (AT*)memEle.get();
-	  I = (int*)memI.get();
-	  J = (int*)memJ.get();
+//        template<class Ini=All<AT> >
+//          Matrix<Sparse,Ref,Ref,AT>& resize(int n_=0, int k_=0, Ini ini=All<AT>()) {
+//            m=n_;n=n_;k=k_;
+//            memEle.resize(k);
+//            memI.resize(m+1);
+//            memJ.resize(k);
+//            ele = (AT*)memEle.get();
+//            I = (int*)memI.get();
+//            J = (int*)memJ.get();
+//            init(ini);
+//
+//            return *this;
+//          }
 
-	  return *this;
-	}
+        Matrix<Sparse,Ref,Ref,AT>& resize(int n=0, int k=0) { return resize(n,k,All<AT>()); }
+
+        template<class Ini>
+          Matrix<Sparse,Ref,Ref,AT>& resize(int n_, int k_, const Ini &ini) {
+            m=n_;n=n_;k=k_;
+            memEle.resize(k);
+            memI.resize(m+1);
+            memJ.resize(k);
+            ele = (AT*)memEle.get();
+            I = (int*)memI.get();
+            J = (int*)memJ.get();
+            init(ini);
+
+            return *this;
+          }
 
 	/*! \brief Copy operator
 	 *
@@ -248,6 +247,9 @@ namespace fmatvec {
 	 * \return A reference to the calling matrix.
 	 * */
 	Matrix<Sparse,Ref,Ref,AT>& init(const AT &a);
+        inline Matrix<Sparse,Ref,Ref,AT>& init(const All<AT> &all);
+        inline Matrix<Sparse,Ref,Ref,AT>& init(Eye<AT> eye);
+        inline Matrix<Sparse,Ref,Ref,AT>& init(Noinit) { return *this; }
 
     };
   // ------------------------- Constructors -------------------------------------
@@ -335,7 +337,7 @@ namespace fmatvec {
   template <class AT>
     Matrix<Sparse,Ref,Ref,AT> Matrix<Sparse,Ref,Ref,AT>::copy() const {
 
-      Matrix<Sparse,Ref,Ref,AT> A(m,NOINIT());
+      Matrix<Sparse,Ref,Ref,AT> A(m,NONINIT);
 
       A.deepCopy(*this);
 
@@ -380,11 +382,20 @@ namespace fmatvec {
 
   template <class AT>
     Matrix<Sparse,Ref,Ref,AT>&  Matrix<Sparse,Ref,Ref,AT>::init(const AT& val) {
+      return init(All<AT>(val));
+    }
 
+  template <class AT>
+    inline Matrix<Sparse,Ref,Ref,AT>&  Matrix<Sparse,Ref,Ref,AT>::init(const All<AT> &all) {
       for(int i=0; i<k; i++) {
-	ele[i] = val;
+	ele[i] = all.a;
       }
+      return *this;
+    }
 
+  template <class AT>
+    inline Matrix<Sparse,Ref,Ref,AT>&  Matrix<Sparse,Ref,Ref,AT>::init(Eye<AT> eye) {
+      throw;
       return *this;
     }
 

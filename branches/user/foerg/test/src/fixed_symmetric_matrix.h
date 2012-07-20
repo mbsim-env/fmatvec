@@ -49,54 +49,20 @@ namespace fmatvec {
 
     public:
 
-      /*! \brief Standard constructor
-       *
-       * Constructs a matrix with no size. 
-       * */
-      Matrix() {
-#ifndef FMATVEC_NO_INITIALIZATION 
-	init(0);
-#endif
-      }
+//      template<class Ini=All<AT> >
+//      Matrix(Ini ini=All<AT>()) {
+//        init(ini);
+//      }
+//      template<class Ini=All<AT> >
+//      Matrix(int m_, int n_, Ini ini=All<AT>()) {
+//        init(ini);
+//      }
 
-      /*! \brief Regular Constructor
-       *
-       * Constructs a symmetric matrix of size n x n. The matrix will be 
-       * initialized to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * matrix will not be initialized.
-       * \param n_ The number of rows and columns.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the matrix will be initialized with (default 0)
-       * */
-      Matrix(Initialization ini, const AT &a=0) {  
-
-	if(ini == INIT)
-	  init(a);
-	else if(ini == EYE) {	 
-	  init(0);
-	  for(int i=0; i<M; i++) 
-	    ej(i,i) = 1;
-	}
-      }
-
-      Matrix(NOINIT) { }
-      Matrix(int n, NOINIT) { }
-      Matrix(int m, int n, NOINIT) { }
-      Matrix(SCALAR, const AT &a=0) { init(a); }
-      Matrix(int n, SCALAR, const AT &a=0) { init(a); }
-      Matrix(int m, int n, SCALAR, const AT &a=0) { init(a); }
-
-      Matrix(int m, int n, Initialization ini, const AT &a=0) {  
-
-	if(ini == INIT)
-	  init(a);
-	else if(ini == EYE) {	 
-	  init(0);
-	  for(int i=0; i<M; i++) 
-	    ej(i,i) = 1;
-	}
-      }
+      Matrix() { init(0); }
+      Matrix(const Noinit &ini) { init(ini); }
+      Matrix(const All<AT> &ini) { init(ini); }
+      Matrix(const Eye<AT> &ini) { init(ini); }
+      Matrix(int m_, int n_, const Noinit &ini) { }
 
       explicit Matrix(const Matrix<General,Fixed<M>,Fixed<M>,AT>&  A) {
 	deepCopy(A);
@@ -250,7 +216,10 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& init(const AT &a);
+      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& init(const AT &a); 
+      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& init(const All<AT> &all) { return init(all.a); }
+      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& init(Eye<AT> eye);
+      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& init(Noinit) { return *this; }
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -260,12 +229,24 @@ namespace fmatvec {
   };
 
   template <int M, class AT>
-    inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>&  Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>::init(const AT& val) {
+    inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>&  Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>::init(const AT &val) {
 
       for(int i=0; i<M; i++) 
         for(int j=i; j<M; j++) 
-          ej(i,j) = val; 
+          ej(i,j) = val;
 
+      return *this;
+    }
+
+  template <int M, class AT>
+    inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>&  Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>::init(Eye<AT> eye) {
+
+      for(int i=0; i<M; i++) {
+        ej(i,i) = eye.a;
+        for(int j=0; j<i; j++) {
+          ej(i,j) = 0; 
+        }
+      }
       return *this;
     }
 

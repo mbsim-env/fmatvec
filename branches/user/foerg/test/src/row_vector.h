@@ -79,7 +79,26 @@ namespace fmatvec {
        *
        * Constructs a rowvector with no size. 
        * */
-      RowVector() : Matrix<General,Ref,Ref,AT>(1,0) {
+      RowVector() : Matrix<General,Ref,Ref,AT>() { m=1; }
+
+//      template<class Ini=All<AT> >
+//        RowVector(int n, Ini ini=All<AT>()) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
+
+      RowVector(int n) : Matrix<General,Ref,Ref,AT>(1,n) { } 
+      RowVector(int n, const Noinit &ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
+      RowVector(int n, const All<AT> &ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
+      RowVector(int n, const Eye<AT> &ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
+
+      // For compatibility
+      RowVector(int n, const All<AT> &ini, const AT &a) : Matrix<General,Ref,Ref,AT>(1,n,ini,a) { } 
+
+      /*! \brief Regular Constructor
+       *
+       * Constructs a rowvector of size m with the pyhsical memory given by \em ele_;
+       * \param n The size.
+       * \param ele The physical memory the rowvector will point to.
+       * */
+      RowVector(int n, AT* ele) : Matrix<General,Ref,Ref,AT>(1,n,ele) {
       }
 
       /*! \brief String Constructor. 
@@ -100,43 +119,6 @@ namespace fmatvec {
 #endif
       }
 
-      /*! \brief Regular Constructor
-       *
-       * Constructs a rowvector of size n. 
-       * \param n The size.
-       * \remark The rowvector will be initialised to
-       * zero by default. This default behavior can be
-       * changed by defining FMATVEC_NO_INITIALIZATION.
-       * */
-      RowVector(int n) : Matrix<General,Ref,Ref,AT>(1,n) {
-      }
-
-      /*! \brief Regular Constructor
-       *
-       * Constructs a rowvector of size m with the pyhsical memory given by \em ele_;
-       * \param n The size.
-       * \param ele The physical memory the rowvector will point to.
-       * */
-      RowVector(int n, AT* ele) : Matrix<General,Ref,Ref,AT>(1,n,ele) {
-      }
-
-      RowVector(NOINIT ini) : Matrix<General,Ref,Ref,AT>(1,0,ini) { }
-      RowVector(int n, NOINIT ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) { }
-      RowVector(int n, SCALAR ini, const AT &a=0) : Matrix<General,Ref,Ref,AT>(1,n,ini,a) { }
-
-      /*! \brief Regular Constructor
-       *
-       * Constructs a vector of size n. The rowvector will be initialized 
-       * to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * rowvector will not be initialized.
-       * \param n The size.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the rowvector will be initialized with (default 0)
-       * */
-      RowVector(int n, Initialization ini, const AT &a=0) : Matrix<General,Ref,Ref,AT>(1,n,ini,a) {
-      }
-
       /*! \brief Copy Constructor
        *
        * See RowVector(const RowVector<Ref,AT>&) 
@@ -145,20 +127,21 @@ namespace fmatvec {
 	LogicAssert(x.rows()==1,"Number of cols() must be 1 in RowVector<Ref,AT>::RowVector(const Matrix<General,Ref,Ref,AT> &x)");
       }
 
-      /*! \brief Rowvector resizing. 
-       *
-       * Resizes the rowvector to size n. 
-       * The vector will be initialized to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * vector will not be initialized.
-       * \param n The size.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the rowvector will be initialized with (default 0)
-       * \return A reference to the calling rowvector.
-       * */
-      RowVector& resize(int n=0, Initialization ini=INIT, const AT &a=0) {
-	Matrix<General,Ref,Ref,AT>::resize(1,n,ini,a);
-	return *this;
+//      template<class Ini=All<AT> >
+//        RowVector<Ref,AT>& resize(int n=0, Ini ini=All<AT>()) {
+//          Matrix<General,Ref,Ref,AT>::resize(1,n,ini);
+//          return *this;
+//      }
+
+      RowVector<Ref,AT>& resize(int n=0) {
+        Matrix<General,Ref,Ref,AT>::resize(1,n);
+        return *this;
+      }
+
+      template<class Ini>
+        RowVector<Ref,AT>& resize(int n, const Ini &ini) {
+          Matrix<General,Ref,Ref,AT>::resize(1,n,ini);
+          return *this;
       }
 
       /*! \brief Copy Constructor
@@ -261,7 +244,10 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling rowvector.
        * */
-      inline RowVector<Ref,AT>& init(const AT& a);
+      inline RowVector<Ref,AT>& init(const AT& a); 
+      inline RowVector<Ref,AT>& init(const All<AT> &all) { return init(all.a); }
+      inline RowVector<Ref,AT>& init(Eye<AT> eye);
+      inline RowVector<Ref,AT>& init(Noinit) { return *this; }
 
       /*! \brief Size.
        *
@@ -330,12 +316,13 @@ namespace fmatvec {
 
   /////////////////////////////////////////////////////////////////////
 
+
   template <class AT>
-    inline RowVector<Ref,AT>& RowVector<Ref,AT>::init(const AT& val) {
+    inline RowVector<Ref,AT>& RowVector<Ref,AT>::init(const AT &val) {
 
       if(tp) {
 	for(int i=0; i<n; i++) 
-	  ele[i] = val; // operator()(i) = val;
+	  ele[i] = val; 
       }
       else {
 	for(int i=0; i<n; i++) 
@@ -432,7 +419,7 @@ namespace fmatvec {
   template <class AT>
     inline RowVector<Ref,AT> RowVector<Ref,AT>::copy() const {
 
-      RowVector<Ref,AT> x(n,NOINIT());
+      RowVector<Ref,AT> x(n,NONINIT);
       x.deepCopy(*this);
 
       return x;

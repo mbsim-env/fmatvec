@@ -82,54 +82,21 @@ namespace fmatvec {
        *
        * Constructs a matrix with no size. 
        * */
-      Matrix() : memory(), ele(0), m(0), n(0), lda(0) {
-      }
+      Matrix() : memory(), ele(0), m(0), n(0), lda(0) { }
 
-      /*! \brief Regular Constructor
-       *
-       * Constructs a matrix of size m x n.
-       * \param m_ The number of rows.
-       * \param n_ The number of columns.
-       * \remark The matrix will be initialised to
-       * zero by default. This default behavior can be changed by defining 
-       * FMATVEC_NO_INITIALIZATION.
-       * */
-      Matrix(int m_, int n_) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) {  
+// Works with -std=gnu++0x only
+//      template<class Ini=All<AT> >
+//      Matrix(int m_, int n_, Ini ini=All<AT>()) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) {
+//        init(ini);
+//      }
 
-#ifndef FMATVEC_NO_INITIALIZATION 
-	init(0);
-#endif
-      }
+      Matrix(int m_, int n_) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) { init(0); }
+      Matrix(int m_, int n_, const Noinit &ini) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) { }
+      Matrix(int m_, int n_, const All<AT> &ini) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) { init(ini); }
+      Matrix(int m_, int n_, const Eye<AT> &ini) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) { init(ini); }
 
-      Matrix(NOINIT) : memory(), ele(0), m(0), n(0), lda(0), tp(false) { }
-      Matrix(int m_, int n_, NOINIT) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) { }
-      Matrix(int m_, int n_, SCALAR, const AT &a=0) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) { init(a); }
-
-      /*! \brief Regular Constructor
-       *
-       * Constructs a matrix of size m x n. The matrix will be initialized to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * matrix will not be initialized.
-       * \param m_ The number of rows.
-       * \param n_ The number of columns.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the matrix will be initialized with (default 0)
-       * */
-      Matrix(int m_, int n_, Initialization ini, const AT &a=0) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) {  
-
-	if(ini == INIT) {
-	  AT *el=ele;
-	  for(int i=0; i<m*n; i++)
-	    *el++=a;
-	} else if(ini == EYE ) {
-	  for(int i=0; i<m; i++) {
-	    for(int j=0; j<n; j++) {
-	      if (i==j) er(i,j) = 1; 
-	      else er(i,j) = 0; 
-	    }
-	  }
-	}  
-      }
+      // For compatibility
+      Matrix(int m_, int n_, const All<AT> &ini, const AT &a) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) { init(a); }
 
       /*! \brief Copy Constructor
        *
@@ -176,37 +143,32 @@ namespace fmatvec {
 	deepCopy(A);
       }
 
-      /*! \brief Matrix resizing. 
-       *
-       * Resizes the matrix to size m x n. The matrix will be initialized to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * matrix will not be initialized.
-       * \param m_ The number of rows.
-       * \param n_ The number of columns.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the matrix will be initialized with (default 0)
-       * \return A reference to the calling matrix.
-       * */
-      Matrix<General,Ref,Ref,AT>& resize(int m_=0, int n_=0, Initialization ini=INIT, const AT &a=0) {
+      //template<class Ini=All<AT> >
+      //Matrix<General,Ref,Ref,AT>& resize(int m_=0, int n_=0, Ini ini=All<AT>()) {
+      //  m=m_;n=n_;
+      //  lda=m;
+      //  tp = false;
+      //  memory.resize(m*n);
+      //  ele = (AT*)memory.get();
+      //  init(ini);
+      //  return *this;
+      //}
+      
+      Matrix<General,Ref,Ref,AT>& resize(int m=0, int n=0) { return resize(m,n,All<AT>()); }
+
+      template<class Ini>
+      Matrix<General,Ref,Ref,AT>& resize(int m_, int n_, const Ini &ini) {
 	m=m_;n=n_;
 	lda=m;
 	tp = false;
 	memory.resize(m*n);
 	ele = (AT*)memory.get();
-
-	if(ini == INIT)
-	  init(a);
-	else if(ini == EYE ) {
-	  for(int i=0; i<m; i++) {
-	    for(int j=0; j<n; j++) {
-	      if (i==j) er(i,j) = 1; 
-	      else er(i,j) = 0; 
-	    }
-	  }
-	}
-
-	return *this;
+        init(ini);
+        return *this;
       }
+
+      // For compatibility
+      Matrix<General,Ref,Ref,AT>& resize(int m, int n, const All<AT> &ini, const AT &a) { return resize(m,n,All<AT>(a)); }
 
       /*! \brief Assignment operator
        *
@@ -471,7 +433,10 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<General,Ref,Ref,AT>& init(const AT &a);
+      inline Matrix<General,Ref,Ref,AT>& init(const AT &a=0);
+      inline Matrix<General,Ref,Ref,AT>& init(const All<AT> &all) { return init(all.a); }
+      inline Matrix<General,Ref,Ref,AT>& init(Eye<AT> eye);
+      inline Matrix<General,Ref,Ref,AT>& init(Noinit) { return *this; }
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -630,7 +595,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<General,Ref,Ref,AT>&  Matrix<General,Ref,Ref,AT>::init(const AT& val) {
+    inline Matrix<General,Ref,Ref,AT>&  Matrix<General,Ref,Ref,AT>::init(const AT &val) {
 
       if(tp) {
         for(int i=0; i<rows(); i++) 
@@ -643,6 +608,17 @@ namespace fmatvec {
             er(i,j) = val; 
       }
 
+      return *this;
+    }
+
+  template <class AT>
+    inline Matrix<General,Ref,Ref,AT>&  Matrix<General,Ref,Ref,AT>::init(Eye<AT> eye) {
+      for(int i=0; i<m; i++) {
+        er(i,i) = eye.a;
+        for(int j=0; j<i; j++) {
+          er(i,j) = er(j,i) = 0; 
+        }
+      }
       return *this;
     }
 
@@ -737,7 +713,7 @@ namespace fmatvec {
   template <class AT>
     inline Matrix<General,Ref,Ref,AT> Matrix<General,Ref,Ref,AT>::copy() const {
 
-      Matrix<General,Ref,Ref,AT> A(m,n,NOINIT());
+      Matrix<General,Ref,Ref,AT> A(m,n,NONINIT);
       A.deepCopy(*this);
 
       return A;

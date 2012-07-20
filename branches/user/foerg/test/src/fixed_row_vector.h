@@ -50,12 +50,16 @@ namespace fmatvec {
 
     public:
 
-      /*! \brief Standard constructor
-       *
-       * Constructs a rowvector with no size. 
-       * */
-      RowVector() : Matrix<General,Fixed<1>,Fixed<N>,AT>() {
-      }
+//      template<class Ini=All<AT> >
+//        RowVector(Ini ini=All<AT>()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
+//      template<class Ini=All<AT> >
+//        RowVector(int n, Ini ini=All<AT>()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
+
+      RowVector() : Matrix<General,Fixed<1>,Fixed<N>,AT>() { }
+      RowVector(const Noinit &ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
+      RowVector(const All<AT> &ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
+      RowVector(const Eye<AT> &ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
+      RowVector(int n, const Noinit &ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
 
       /*! \brief String Constructor. 
        *
@@ -71,24 +75,6 @@ namespace fmatvec {
        * */
       RowVector(const char *str) : Matrix<General,Fixed<1>,Fixed<N>,AT>(str) {
       }
-
-      /*! \brief Regular Constructor
-       *
-       * Constructs a vector of size n. The rowvector will be initialized 
-       * to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * rowvector will not be initialized.
-       * \param n The size.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the rowvector will be initialized with (default 0)
-       * */
-      RowVector(Initialization ini, const AT &a=0) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini,a) {
-      }
-
-      RowVector(NOINIT ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(1,0,ini) { }
-      RowVector(int n, NOINIT ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(1,n,ini) { }
-      RowVector(SCALAR ini, const AT &a=0) : Matrix<General,Fixed<1>,Fixed<N>,AT>(1,0,ini,a) { }
-      RowVector(int n, SCALAR ini, const AT &a=0) : Matrix<General,Fixed<1>,Fixed<N>,AT>(1,n,ini,a) { }
 
       /*! \brief Copy Constructor
        *
@@ -155,7 +141,10 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling rowvector.
        * */
-      inline RowVector<Fixed<N>,AT>& init(const AT& a);
+      inline RowVector<Fixed<N>,AT>& init(const AT& a); 
+      inline RowVector<Fixed<N>,AT>& init(const All<AT> &all) { return init(all.a); }
+      inline RowVector<Fixed<N>,AT>& init(Eye<AT> eye);
+      inline RowVector<Fixed<N>,AT>& init(Noinit) { return *this; }
 
       /*! \brief Size.
        *
@@ -177,17 +166,15 @@ namespace fmatvec {
   };
 
   template <int N, class AT>
-    inline RowVector<Fixed<N>,AT>& RowVector<Fixed<N>,AT>::init(const AT& val) {
-
+    inline RowVector<Fixed<N>,AT>& RowVector<Fixed<N>,AT>::init(const AT &val) {
       for(int i=0; i<N; i++) 
-	ele[i] = val;
-
+	e(i) = val; 
       return *this;
     }
 
   template <int N, class AT>
     inline const Vector<Fixed<N>,AT> RowVector<Fixed<N>,AT>::T() const {
-      Vector<Fixed<N>,AT> x(0,NOINIT());
+      Vector<Fixed<N>,AT> x(NONINIT);
       for(int i=0; i<N; i++)
         x.e(i) = e(i);
       return x;

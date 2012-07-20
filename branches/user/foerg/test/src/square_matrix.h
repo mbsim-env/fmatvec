@@ -67,19 +67,18 @@ namespace fmatvec {
        *
        * Constructs a squarematrix with no size. 
        * */
-      SquareMatrix() : Matrix<General,Ref,Ref,AT>() {
-      }
+      SquareMatrix() : Matrix<General,Ref,Ref,AT>() { }
 
-     /*! \brief Regular Constructor
-       *
-       * Constructs a matrix of size m x m.
-       * \param m The number of rows and columns.
-       * \remark The matrix will be initialised to
-       * zero by default. This default behavior can be changed by defining 
-       * FMATVEC_NO_INITIALIZATION.
-       * */
-      SquareMatrix(int m) : Matrix<General,Ref,Ref,AT>(m,m) {
-      }
+//      template<class Ini=All<AT> >
+//      SquareMatrix(int m, Ini ini=All<AT>()) : Matrix<General,Ref,Ref,AT>(m,m,ini) { } 
+
+      SquareMatrix(int m) : Matrix<General,Ref,Ref,AT>(m,m) { } 
+      SquareMatrix(int m, const Noinit &ini) : Matrix<General,Ref,Ref,AT>(m,m,ini) { } 
+      SquareMatrix(int m, const All<AT> &ini) : Matrix<General,Ref,Ref,AT>(m,m,ini) { } 
+      SquareMatrix(int m, const Eye<AT> &ini) : Matrix<General,Ref,Ref,AT>(m,m,ini) { } 
+
+      // For compatibility
+      SquareMatrix(int m, const All<AT> &ini, const AT &a) : Matrix<General,Ref,Ref,AT>(m,m,ini,a) { } 
 
       /*! \brief Regular Constructor
        *
@@ -88,25 +87,7 @@ namespace fmatvec {
        * \param m The number of rows and columns.
        * \param ele The physical memory the matrix will point to.
        * */
-      SquareMatrix(int m, AT* ele) : Matrix<General,Ref,Ref,AT>(m,m,ele) {
-      }
-
-      SquareMatrix(int m, NOINIT ini) : Matrix<General,Ref,Ref,AT>(m,m,ini) { }
-      SquareMatrix(NOINIT ini) : Matrix<General,Ref,Ref,AT>(ini) { }
-      SquareMatrix(int m, SCALAR ini, const AT &a=0) : Matrix<General,Ref,Ref,AT>(m,m,ini,a) { }
-
-      /*! \brief Regular Constructor
-       *
-       * Constructs a matrix of size m x m. The matrix will be 
-       * initialized to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * matrix will not be initialized.
-       * \param m The number of rows and columns.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the matrix will be initialized with (default 0)
-       * */
-      SquareMatrix(int m, Initialization ini, const AT &a=0) : Matrix<General,Ref,Ref,AT>(m,m,ini,a) {
-      }
+      SquareMatrix(int m, AT* ele) : Matrix<General,Ref,Ref,AT>(m,m,ele) { }
 
       /*! \brief Copy Constructor
        *
@@ -115,8 +96,7 @@ namespace fmatvec {
        * referenced.
        * \param A The matrix that will be referenced.
        * */
-      SquareMatrix(const SquareMatrix<Ref,AT>&  A) : Matrix<General,Ref,Ref,AT>(A) {
-      }
+      SquareMatrix(const SquareMatrix<Ref,AT>&  A) : Matrix<General,Ref,Ref,AT>(A) { }
 
       /*! \brief Copy Constructor
        *
@@ -128,25 +108,26 @@ namespace fmatvec {
 #endif
       }
 
-     template<class Type, class Row, class Col>
-      explicit SquareMatrix(const Matrix<Type,Row,Col,AT> &x) : Matrix<General,Ref,Ref,AT>(x)  {
+      template<class Type, class Row, class Col>
+        explicit SquareMatrix(const Matrix<Type,Row,Col,AT> &x) : Matrix<General,Ref,Ref,AT>(x)  {
+        }
+     
+//     template<class Ini=All<AT> >
+//       SquareMatrix<Ref,AT>& resize(int m=0, Ini ini=All<AT>()) {
+//         Matrix<General,Ref,Ref,AT>::resize(m,m,ini);
+//         return *this;
+//       }
+
+      SquareMatrix<Ref,AT>& resize(int m=0) {
+        Matrix<General,Ref,Ref,AT>::resize(m,m);
+        return *this;
       }
 
-      /*! \brief Matrix resizing. 
-       *
-       * Resizes the matrix to size n x n. The matrix will be initialized
-       * to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * matrix will not be initialized.
-       * \param n The number of rows and columns.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the matrix will be initialized with (default 0)
-       * \return A reference to the calling matrix.
-       * */
-      SquareMatrix<Ref,AT>& resize(int n=0,Initialization ini=INIT, const AT &a=0) {
-	Matrix<General,Ref,Ref,AT>::resize(n,n,ini,a);
-	return *this;
-      }
+      template<class Ini>
+        SquareMatrix<Ref,AT>& resize(int m, const Ini &ini) {
+          Matrix<General,Ref,Ref,AT>::resize(m,m,ini);
+          return *this;
+        }
 
       /*! \brief Assignment operator
        *
@@ -227,7 +208,7 @@ namespace fmatvec {
   template <class AT>
     inline SquareMatrix<Ref,AT> SquareMatrix<Ref,AT>::copy() const {
 
-      SquareMatrix<Ref,AT> A(m,NOINIT());
+      SquareMatrix<Ref,AT> A(m,NONINIT);
       A.deepCopy(*this);
 
       return A;

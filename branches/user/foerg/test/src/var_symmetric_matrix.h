@@ -55,38 +55,23 @@ namespace fmatvec {
        *
        * Constructs a matrix with no size. 
        * */
-      Matrix(int m=0) : M(m), ele(new AT[M*M]) {
-#ifndef FMATVEC_NO_INITIALIZATION 
-	init(0);
-#endif
+      Matrix() : M(0), ele(0) {
       }
 
-      /*! \brief Regular Constructor
-       *
-       * Constructs a symmetric matrix of size n x n. The matrix will be 
-       * initialized to the value given by \em a
-       * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-       * matrix will not be initialized.
-       * \param n_ The number of rows and columns.
-       * \param ini INIT means initialization, NONINIT means no initialization.
-       * \param a The value, the matrix will be initialized with (default 0)
-       * */
-      Matrix(int m, Initialization ini, const AT &a=0) : M(m), ele(new AT[M*M]) {  
+//      template<class Ini=All<AT> >
+//        Matrix(int m, Ini ini=All<AT>()) : M(m), ele(new AT[M*M]) { 
+//          init(ini);
+//        }
+//      template<class Ini=All<AT> >
+//        Matrix(int m, int n, Ini ini=All<AT>()) : M(m), ele(new AT[M*M]) {
+//          init(ini);
+//        }
 
-	if(ini == INIT)
-	  init(a);
-	else if(ini == EYE) {	 
-	  init(0);
-	  for(int i=0; i<M; i++) 
-	    ej(i,i) = 1;
-	}
-      }
-
-      Matrix(NOINIT) : M(0), ele(0) { }
-      Matrix(int m, NOINIT) : M(m), ele(new AT[M*M]) { }
-      Matrix(int m, int n, NOINIT) : M(m), ele(new AT[M*M]) { }
-      Matrix(int m, SCALAR, const AT &a=0) : M(m), ele(new AT[M*M]) { init(a); }
-      Matrix(int m, int n, SCALAR, const AT &a=0) : M(m), ele(new AT[M*M]) { init(a); }
+      Matrix(int m) : M(m), ele(new AT[M*M]) { init(0); }
+      Matrix(int m, const Noinit &ini) : M(m), ele(new AT[M*M]) { }
+      Matrix(int m, const All<AT> &ini) : M(m), ele(new AT[M*M]) { init(ini); }
+      Matrix(int m, const Eye<AT> &ini) : M(m), ele(new AT[M*M]) { init(ini); }
+      Matrix(int m, int n, const Noinit &ini) : M(m), ele(new AT[M*M]) { }
 
       /*! \brief Copy Constructor
        *
@@ -126,22 +111,25 @@ namespace fmatvec {
 	delete[] ele;
       }
 
-      Matrix<Symmetric,Var,Var,AT>& resize(int m=0, Initialization ini=INIT, const AT &a=0) {
+//      template<class Ini=All<AT> >
+//      Matrix<Symmetric,Var,Var,AT>& resize(int m=0, Ini ini=All<AT>()) {
+//        delete[] ele;
+//        M=m;
+//        ele = new AT[M*M];
+//        init(ini);
+//        return *this;
+//      }
+
+      Matrix<Symmetric,Var,Var,AT>& resize(int m=0) { return resize(m,All<AT>()); }
+
+      template<class Ini>
+      Matrix<Symmetric,Var,Var,AT>& resize(int m, const Ini &ini) {
         delete[] ele;
         M=m;
         ele = new AT[M*M];
-
-        if(ini == INIT)
-          init(a);
-        else if(ini == EYE) {	 
-          init(0);
-          for(int i=0; i<M; i++) 
-            ej(i,i) = 1;
-        }
-
+        init(ini);
         return *this;
       }
-
 
       /*! \brief Assignment operator
        *
@@ -284,7 +272,10 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<Symmetric,Var,Var,AT>& init(const AT &a);
+      inline Matrix<Symmetric,Var,Var,AT>& init(const AT &a); 
+      inline Matrix<Symmetric,Var,Var,AT>& init(const All<AT> &all) { return init(all.a); }
+      inline Matrix<Symmetric,Var,Var,AT>& init(Eye<AT> eye);
+      inline Matrix<Symmetric,Var,Var,AT>& init(Noinit) { return *this; }
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -362,12 +353,24 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<Symmetric,Var,Var,AT>&  Matrix<Symmetric,Var,Var,AT>::init(const AT& val) {
+    inline Matrix<Symmetric,Var,Var,AT>&  Matrix<Symmetric,Var,Var,AT>::init(const AT &val) {
 
       for(int i=0; i<M; i++) 
         for(int j=i; j<M; j++) 
-          ej(i,j) = val; 
+          ej(i,j) = val;
 
+      return *this;
+    }
+
+  template <class AT>
+    inline Matrix<Symmetric,Var,Var,AT>&  Matrix<Symmetric,Var,Var,AT>::init(Eye<AT> eye) {
+
+      for(int i=0; i<M; i++) {
+        ej(i,i) = eye.a;
+        for(int j=0; j<i; j++) {
+          ej(i,j) = 0; 
+        }
+      }
       return *this;
     }
 
