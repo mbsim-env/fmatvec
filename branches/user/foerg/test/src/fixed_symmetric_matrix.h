@@ -58,11 +58,12 @@ namespace fmatvec {
 //        init(ini);
 //      }
 
-      Matrix() { init(0); }
-      Matrix(const Noinit &ini) { init(ini); }
-      Matrix(const All<AT> &ini) { init(ini); }
-      Matrix(const Eye<AT> &ini) { init(ini); }
-      Matrix(int m_, int n_, const Noinit &ini) { }
+      Matrix(Noinit ini) { }
+      Matrix(Init ini=INIT, const AT &a=0) { init(a); }
+      Matrix(Eye ini, const AT &a=1) { init(ini,a); }
+      Matrix(int m, int n, Noinit ini) { }
+      Matrix(int m, int n, Init ini, const AT &a=0) { init(a); }
+      Matrix(int m, int n, Eye ini, const AT &a=1) { init(ini,a); }
 
       explicit Matrix(const Matrix<General,Fixed<M>,Fixed<M>,AT>&  A) {
 	deepCopy(A);
@@ -216,10 +217,10 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& init(const AT &a); 
-      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& init(const All<AT> &all) { return init(all.a); }
-      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& init(Eye<AT> eye);
-      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& init(Noinit) { return *this; }
+      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& init(const AT &a=0); 
+      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& init(Init, const AT &a=0) { return init(a); }
+      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& init(Eye, const AT &a=1);
+      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& init(Noinit, const AT &a=0) { return *this; }
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -239,10 +240,10 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>&  Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>::init(Eye<AT> eye) {
+    inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>&  Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>::init(Eye, const AT &val) {
 
       for(int i=0; i<M; i++) {
-        ej(i,i) = eye.a;
+        ej(i,i) = val;
         for(int j=0; j<i; j++) {
           ej(i,j) = 0; 
         }

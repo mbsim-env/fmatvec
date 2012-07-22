@@ -81,14 +81,12 @@ namespace fmatvec {
 //          init(ini);
 //        }
 
-      Matrix(int n_) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(0); }
-      Matrix(int n_, const Noinit &ini) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { }
-      Matrix(int n_, const All<AT> &ini) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(ini); }
-      Matrix(int n_, const Eye<AT> &ini) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(ini); }
-      Matrix(int m_, int n_, const Noinit &ini) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { }
-
-      // For compatibility
-      Matrix(int n_, const All<AT> &ini, const AT &a) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(a); }
+      Matrix(int n_, Noinit) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { }
+      Matrix(int n_, Init ini=INIT, const AT &a=0) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(a); }
+      Matrix(int n_, Eye ini, const AT &a=1) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(ini,a); }
+      Matrix(int m_, int n_, Noinit) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { }
+      Matrix(int m_, int n_, Init ini=INIT, const AT &a=0) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(a); }
+      Matrix(int m_, int n_, Eye ini, const AT &a=1) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(ini,a); }
 
       /*! \brief Copy Constructor
        *
@@ -142,10 +140,10 @@ namespace fmatvec {
 //        return *this;
 //      }
 
-      Matrix<Symmetric,Ref,Ref,AT>& resize(int n=0) { return resize(n,All<AT>()); }
+      Matrix<Symmetric,Ref,Ref,AT>& resize(int n=0) { return resize(n,INIT,0); }
 
       template<class Ini>
-      Matrix<Symmetric,Ref,Ref,AT>& resize(int n_, const Ini &ini) {
+      Matrix<Symmetric,Ref,Ref,AT>& resize(int n_, Ini ini, const AT &a=0) {
 	n=n_;
 	lda=n;
 	memory.resize(n*n);
@@ -318,9 +316,9 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       inline Matrix<Symmetric,Ref,Ref,AT>& init(const AT &a); 
-      inline Matrix<Symmetric,Ref,Ref,AT>& init(const All<AT> &all) { return init(all.a); };
-      inline Matrix<Symmetric,Ref,Ref,AT>& init(Eye<AT> eye);
-      inline Matrix<Symmetric,Ref,Ref,AT>& init(Noinit) { return *this; }
+      inline Matrix<Symmetric,Ref,Ref,AT>& init(Init, const AT &a=0) { return init(a); };
+      inline Matrix<Symmetric,Ref,Ref,AT>& init(Eye, const AT &a=1);
+      inline Matrix<Symmetric,Ref,Ref,AT>& init(Noinit, const AT &a=0) { return *this; }
 
       /*! \brief Submatrix operator.
        *
@@ -480,10 +478,10 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<Symmetric,Ref,Ref,AT>&  Matrix<Symmetric,Ref,Ref,AT>::init(Eye<AT> eye) {
+    inline Matrix<Symmetric,Ref,Ref,AT>&  Matrix<Symmetric,Ref,Ref,AT>::init(Eye, const AT &val) {
 
       for(int i=0; i<rows(); i++) {
-        ej(i,i) = eye.a;
+        ej(i,i) = val;
         for(int j=0; j<i; j++) {
           ej(i,j) = 0; 
         }

@@ -85,13 +85,8 @@ namespace fmatvec {
 //      template<class Ini=All<AT> >
 //        Vector(int m, Ini ini=All<AT>()) : Matrix<General,Ref,Ref,AT>(m,1,ini) { } 
 
-      Vector(int m) : Matrix<General,Ref,Ref,AT>(m,1) { } 
-      Vector(int m, const Noinit &ini) : Matrix<General,Ref,Ref,AT>(m,1,ini) { } 
-      Vector(int m, const All<AT> &ini) : Matrix<General,Ref,Ref,AT>(m,1,ini) { } 
-      Vector(int m, const Eye<AT> &ini) : Matrix<General,Ref,Ref,AT>(m,1,ini) { } 
-
-      // For compatibility
-      Vector(int m, const All<AT> &ini, const AT &a) : Matrix<General,Ref,Ref,AT>(m,1,ini,a) { } 
+      Vector(int m, Noinit ini) : Matrix<General,Ref,Ref,AT>(m,1,ini) { } 
+      Vector(int m, Init ini=INIT, const AT &a=0) : Matrix<General,Ref,Ref,AT>(m,1,ini,a) { } 
 
       /*! \brief Regular Constructor
        *
@@ -153,14 +148,8 @@ namespace fmatvec {
         return *this;
       }
 
-      template<class Ini>
-        Vector<Ref,AT>& resize(int m, const Ini &ini) {
-          Matrix<General,Ref,Ref,AT>::resize(m,1,ini);
-          return *this;
-        }
-
-      // For compatibility
-      Vector<Ref,AT>& resize(int m, const All<AT> &ini, const AT &a) {
+      template<class Init>
+      Vector<Ref,AT>& resize(int m, Init ini, const AT &a=0) {
         Matrix<General,Ref,Ref,AT>::resize(m,1,ini,a);
         return *this;
       }
@@ -262,10 +251,9 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling vector.
        * */
-      inline Vector<Ref,AT>& init(const AT& a); 
-      inline Vector<Ref,AT>& init(const All<AT> &all) { return init(all.a); }
-      inline Vector<Ref,AT>& init(Eye<AT> eye);
-      inline Vector<Ref,AT>& init(Noinit) { return *this; }
+      inline Vector<Ref,AT>& init(const AT& a=0); 
+      inline Vector<Ref,AT>& init(Init, const AT& a=0) { return init(a); }
+      inline Vector<Ref,AT>& init(Noinit, const AT& a=0) { return *this; }
 
       /*! \brief Size.
        *

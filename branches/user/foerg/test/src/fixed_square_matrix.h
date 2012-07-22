@@ -44,11 +44,12 @@ namespace fmatvec {
 //      template<class Ini=All<AT> >
 //      SquareMatrix(int m, Ini ini=All<AT>()) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { } 
 
-      SquareMatrix() : Matrix<General,Fixed<M>,Fixed<M>,AT>() { }
-      SquareMatrix(const Noinit &ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
-      SquareMatrix(const All<AT> &ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
-      SquareMatrix(const Eye<AT> &ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
-      SquareMatrix(int m, const Noinit &ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { } 
+      SquareMatrix(Noinit ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
+      SquareMatrix(Init ini=INIT, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { }
+      SquareMatrix(Eye ini, const AT &a=1) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { }
+      SquareMatrix(int m, Noinit ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
+      SquareMatrix(int m, Init ini=INIT, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { }
+      SquareMatrix(int m, Eye ini, const AT &a=1) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { }
 
       /*! \brief Copy Constructor
        *

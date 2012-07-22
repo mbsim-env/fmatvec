@@ -65,10 +65,9 @@ namespace fmatvec {
 //        init(ini);
 //      }
 
-      Matrix(int m, int n) :  M(m), N(n), ele(new AT[M*N]) { init(0); }
-      Matrix(int m, int n, const Noinit &ini) :  M(m), N(n), ele(new AT[M*N]) { }
-      Matrix(int m, int n, const All<AT> &ini) :  M(m), N(n), ele(new AT[M*N]) { init(ini); }
-      Matrix(int m, int n, const Eye<AT> &ini) :  M(m), N(n), ele(new AT[M*N]) { init(ini); }
+      Matrix(int m, int n, Noinit) :  M(m), N(n), ele(new AT[M*N]) { }
+      Matrix(int m, int n, Init ini=INIT, const AT &a=0) :  M(m), N(n), ele(new AT[M*N]) { init(a); }
+      Matrix(int m, int n, Eye ini, const AT &a=1) :  M(m), N(n), ele(new AT[M*N]) { init(ini,a); }
 
       /*! \brief Copy Constructor
        *
@@ -123,15 +122,15 @@ namespace fmatvec {
 //        return *this;
 //      }
 
-      Matrix<General,Var,Var,AT>& resize(int m=0, int n=0) { return resize(m,All<AT>()); }
+      Matrix<General,Var,Var,AT>& resize(int m=0, int n=0) { return resize(m,n,INIT,0); }
 
       template<class Ini>
-      Matrix<General,Var,Var,AT>& resize(int m, int n, const Ini &ini) {
+      Matrix<General,Var,Var,AT>& resize(int m, int n, Ini ini, const AT &a=0) {
 	delete[] ele;
 	M=m;
 	N=n;
 	ele = new AT[M*N];
-        init(ini);
+        init(ini,a);
         return *this;
       }
 
@@ -320,9 +319,9 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       inline Matrix<General,Var,Var,AT>& init(const AT &a=0);
-      inline Matrix<General,Var,Var,AT>& init(const All<AT> &all) { return init(all.a); }
-      inline Matrix<General,Var,Var,AT>& init(Eye<AT> eye);
-      inline Matrix<General,Var,Var,AT>& init(Noinit) { return *this; }
+      inline Matrix<General,Var,Var,AT>& init(Init all, const AT &a=0) { return init(a); }
+      inline Matrix<General,Var,Var,AT>& init(Eye eye, const AT &a=1);
+      inline Matrix<General,Var,Var,AT>& init(Noinit, const AT &a=0) { return *this; }
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -451,9 +450,9 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<General,Var,Var,AT>&  Matrix<General,Var,Var,AT>::init(Eye<AT> eye) {
+    inline Matrix<General,Var,Var,AT>&  Matrix<General,Var,Var,AT>::init(Eye eye, const AT &val) {
       for(int i=0; i<M; i++) {
-        e(i,i) = eye.a;
+        e(i,i) = val;
         for(int j=0; j<i; j++) {
           e(i,j) = e(j,i) = 0; 
         }

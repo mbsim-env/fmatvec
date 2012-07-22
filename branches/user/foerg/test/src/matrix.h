@@ -35,26 +35,13 @@
  * */
 namespace fmatvec {
 
-  class Noinit {
-  };
-
-  template <class AT>
-  class All {
-    public:
-    const AT a;
-    All(const AT &a_=0) : a(a_) {}
-  };
-
-  template<class AT>
-  class Eye {
-    public:
-    const AT a;
-    Eye(const AT &a_=1) : a(a_) {}
-  };
+  class Noinit { };
+  class Init { };
+  class Eye { };
 
   static Noinit NONINIT = Noinit();
-  static All<double> INIT = All<double>();
-  static Eye<double> EYE = Eye<double>();
+  static Init INIT = Init();
+  static Eye EYE = Eye();
 
   /*! Enumerate for initialization of matrices
   */

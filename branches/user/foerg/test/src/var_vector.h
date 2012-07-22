@@ -61,13 +61,8 @@ namespace fmatvec {
 //      template<class Ini=All<AT> >
 //        Vector(int m, Ini ini=All<AT>()) : Matrix<General,Var,Fixed<1>,AT>(m,ini) { } 
 
-      Vector(int m) : Matrix<General,Var,Fixed<1>,AT>(m) { } 
-      Vector(int m, const Noinit &ini) : Matrix<General,Var,Fixed<1>,AT>(m,ini) { } 
-      Vector(int m, const All<AT> &ini) : Matrix<General,Var,Fixed<1>,AT>(m,ini) { } 
-      Vector(int m, const Eye<AT> &ini) : Matrix<General,Var,Fixed<1>,AT>(m,ini) { } 
-
-      // For compatibility
-      Vector(int m, const All<AT> &ini, const AT &a) : Matrix<General,Var,Fixed<1>,AT>(m,ini,a) { } 
+      Vector(int m, Noinit ini) : Matrix<General,Var,Fixed<1>,AT>(m,ini) { } 
+      Vector(int m, Init ini=INIT, const AT &a=0) : Matrix<General,Var,Fixed<1>,AT>(m,ini,a) { } 
 
       /*! \brief String Constructor. 
        *
@@ -109,13 +104,13 @@ namespace fmatvec {
 //        }
 
       Vector<Var,AT>& resize(int m=0) {
-        Matrix<General,Var,Fixed<1>,AT>::resize(m,1);
+        Matrix<General,Var,Fixed<1>,AT>::resize(m,INIT,1);
         return *this;
       }
 
       template<class Ini>
-        Vector<Var,AT>& resize(int m, const Ini &ini) {
-          Matrix<General,Var,Fixed<1>,AT>::resize(m,1,ini);
+        Vector<Var,AT>& resize(int m, Ini ini, const AT &a=0) {
+          Matrix<General,Var,Fixed<1>,AT>::resize(m,1,ini,a);
           return *this;
         }
 
@@ -192,10 +187,9 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling vector.
        * */
-      inline Vector<Var,AT>& init(const AT& a);
-      inline Vector<Var,AT>& init(const All<AT> &all) { return init(all.a); }
-      inline Vector<Var,AT>& init(Eye<AT> eye);
-      inline Vector<Var,AT>& init(Noinit) { return *this; }
+      inline Vector<Var,AT>& init(const AT& a=0);
+      inline Vector<Var,AT>& init(Init, const AT& a=0) { return init(a); }
+      inline Vector<Var,AT>& init(Noinit, const AT& a=0) { return *this; }
 
       /*! \brief Size.
        *

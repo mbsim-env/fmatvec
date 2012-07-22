@@ -84,13 +84,8 @@ namespace fmatvec {
 //      template<class Ini=All<AT> >
 //        RowVector(int n, Ini ini=All<AT>()) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
 
-      RowVector(int n) : Matrix<General,Ref,Ref,AT>(1,n) { } 
-      RowVector(int n, const Noinit &ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
-      RowVector(int n, const All<AT> &ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
-      RowVector(int n, const Eye<AT> &ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
-
-      // For compatibility
-      RowVector(int n, const All<AT> &ini, const AT &a) : Matrix<General,Ref,Ref,AT>(1,n,ini,a) { } 
+      RowVector(int n, Noinit ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
+      RowVector(int n, Init ini=INIT, const AT &a=0) : Matrix<General,Ref,Ref,AT>(1,n,ini,a) { } 
 
       /*! \brief Regular Constructor
        *
@@ -139,8 +134,8 @@ namespace fmatvec {
       }
 
       template<class Ini>
-        RowVector<Ref,AT>& resize(int n, const Ini &ini) {
-          Matrix<General,Ref,Ref,AT>::resize(1,n,ini);
+        RowVector<Ref,AT>& resize(int n, Ini ini, const AT &a=0) {
+          Matrix<General,Ref,Ref,AT>::resize(1,n,ini,a);
           return *this;
       }
 
@@ -245,9 +240,8 @@ namespace fmatvec {
        * \return A reference to the calling rowvector.
        * */
       inline RowVector<Ref,AT>& init(const AT& a); 
-      inline RowVector<Ref,AT>& init(const All<AT> &all) { return init(all.a); }
-      inline RowVector<Ref,AT>& init(Eye<AT> eye);
-      inline RowVector<Ref,AT>& init(Noinit) { return *this; }
+      inline RowVector<Ref,AT>& init(Init, const AT &a=0) { return init(a); }
+      inline RowVector<Ref,AT>& init(Noinit, const AT &a=0) { return *this; }
 
       /*! \brief Size.
        *

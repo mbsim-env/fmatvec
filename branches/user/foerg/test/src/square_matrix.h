@@ -72,13 +72,9 @@ namespace fmatvec {
 //      template<class Ini=All<AT> >
 //      SquareMatrix(int m, Ini ini=All<AT>()) : Matrix<General,Ref,Ref,AT>(m,m,ini) { } 
 
-      SquareMatrix(int m) : Matrix<General,Ref,Ref,AT>(m,m) { } 
-      SquareMatrix(int m, const Noinit &ini) : Matrix<General,Ref,Ref,AT>(m,m,ini) { } 
-      SquareMatrix(int m, const All<AT> &ini) : Matrix<General,Ref,Ref,AT>(m,m,ini) { } 
-      SquareMatrix(int m, const Eye<AT> &ini) : Matrix<General,Ref,Ref,AT>(m,m,ini) { } 
-
-      // For compatibility
-      SquareMatrix(int m, const All<AT> &ini, const AT &a) : Matrix<General,Ref,Ref,AT>(m,m,ini,a) { } 
+      SquareMatrix(int m, Noinit ini) : Matrix<General,Ref,Ref,AT>(m,m,ini) { } 
+      SquareMatrix(int m, Init ini=INIT, const AT &a=0) : Matrix<General,Ref,Ref,AT>(m,m,ini,a) { } 
+      SquareMatrix(int m, Eye ini, const AT &a=1) : Matrix<General,Ref,Ref,AT>(m,m,ini,a) { } 
 
       /*! \brief Regular Constructor
        *
@@ -124,8 +120,8 @@ namespace fmatvec {
       }
 
       template<class Ini>
-        SquareMatrix<Ref,AT>& resize(int m, const Ini &ini) {
-          Matrix<General,Ref,Ref,AT>::resize(m,m,ini);
+        SquareMatrix<Ref,AT>& resize(int m, Ini ini, const AT &a=0) {
+          Matrix<General,Ref,Ref,AT>::resize(m,m,ini,a);
           return *this;
         }
 

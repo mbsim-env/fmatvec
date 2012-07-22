@@ -74,12 +74,12 @@ namespace fmatvec {
 //          init(ini);
 //        }
 
-      Matrix(int n_, int kl_, int ku_) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) {  init(0); }
-      Matrix(int n_, int kl_, int ku_, const Noinit &ini) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { }
-      Matrix(int n_, int kl_, int ku_, const All<AT> &ini) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(ini); }
-      Matrix(int n_, int kl_, int ku_, const Eye<AT> &ini) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(ini); }
-
-      Matrix(int m_, int n_, const Noinit &ini) : memory(n_*(n_+n_+1)), ele((AT*)memory.get()), n(n_), kl(n_), ku(n_) { }
+      Matrix(int n_, int kl_, int ku_, Noinit) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { }
+      Matrix(int n_, int kl_, int ku_, Init ini=INIT, const AT &a=0) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(a); }
+      Matrix(int n_, int kl_, int ku_, Eye ini, const AT &a=1) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(ini,a); }
+      Matrix(int m_, int n_, int kl_, int ku_, Noinit) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { }
+      Matrix(int m_, int n_, int kl_, int ku_, Init ini=INIT, const AT &a=0) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(a); }
+      Matrix(int m_, int n_, int kl_, int ku_, Eye ini, const AT &a=1) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(ini,a); }
 
       /*! \brief Copy Constructor
        *
@@ -108,17 +108,17 @@ namespace fmatvec {
       ~Matrix() {
       }
 
-      Matrix<GeneralBand,Ref,Ref,AT>& resize(int n=0, int kl=0, int ku=0) { return resize(n,kl,ku,All<AT>()); }
+      Matrix<GeneralBand,Ref,Ref,AT>& resize(int n=0, int kl=0, int ku=0) { return resize(n,kl,ku,INIT,0); }
 
       template<class Ini>
-        Matrix<GeneralBand,Ref,Ref,AT>& resize(int n_, int kl_, int ku_, const Ini &ini) {
+        Matrix<GeneralBand,Ref,Ref,AT>& resize(int n_, int kl_, int ku_, Ini ini, const AT &a=0) {
           n=n_;
           kl=kl_;
           ku=ku_;
           memory.resize(n*(kl+ku+1));
           ele = (AT*)memory.get();
 
-          init(ini);
+          init(ini,a);
 
           return *this;
         }
@@ -245,10 +245,10 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<GeneralBand,Ref,Ref,AT>& init(const AT &a);
-      inline Matrix<GeneralBand,Ref,Ref,AT>& init(const All<AT> &all);
-      inline Matrix<GeneralBand,Ref,Ref,AT>& init(Eye<AT> eye);
-      inline Matrix<GeneralBand,Ref,Ref,AT>& init(Noinit) { return *this; }
+      inline Matrix<GeneralBand,Ref,Ref,AT>& init(const AT &a=0);
+      inline Matrix<GeneralBand,Ref,Ref,AT>& init(Init, const AT &a=0) { return init(a); }
+      inline Matrix<GeneralBand,Ref,Ref,AT>& init(Eye, const AT &a=1);
+      inline Matrix<GeneralBand,Ref,Ref,AT>& init(Noinit, const AT &a=0) { return *this; }
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -295,21 +295,16 @@ namespace fmatvec {
 
   template <class AT>
     inline Matrix<GeneralBand,Ref,Ref,AT>&  Matrix<GeneralBand,Ref,Ref,AT>::init(const AT& val) {
-      return init(All<AT>(val));
-    }
-
-  template <class AT>
-    inline Matrix<GeneralBand,Ref,Ref,AT>&  Matrix<GeneralBand,Ref,Ref,AT>::init(const All<AT> &all) {
       for(int i=0; i<kl+ku+1; i++)
 	for(int j=0; j<n; j++)
-	  ele[i+j*(kl+ku+1)] = all.a;
+	  ele[i+j*(kl+ku+1)] = val;
       return *this;
     }
 
   template <class AT>
-    inline Matrix<GeneralBand,Ref,Ref,AT>&  Matrix<GeneralBand,Ref,Ref,AT>::init(Eye<AT> eye) {
+    inline Matrix<GeneralBand,Ref,Ref,AT>&  Matrix<GeneralBand,Ref,Ref,AT>::init(Eye, const AT &val) {
       for(int i=0; i<n; i++)
-        ele[i] = eye.a;
+        ele[i] = val;
       return *this;
     }
 

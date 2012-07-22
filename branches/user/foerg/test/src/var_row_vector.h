@@ -62,10 +62,8 @@ namespace fmatvec {
 //      template<class Ini=All<AT> >
 //        RowVector(int n, Ini ini=All<AT>()) : Matrix<General,Fixed<1>,Var,AT>(n,ini) { } 
 
-      RowVector(int n) : Matrix<General,Fixed<1>,Var,AT>(n) { } 
-      RowVector(int n, Noinit &ini) : Matrix<General,Fixed<1>,Var,AT>(n,ini) { } 
-      RowVector(int n, const All<AT> &ini) : Matrix<General,Fixed<1>,Var,AT>(n,ini) { } 
-      RowVector(int n, const Eye<AT> &ini) : Matrix<General,Fixed<1>,Var,AT>(n,ini) { } 
+      RowVector(int n, Noinit ini) : Matrix<General,Fixed<1>,Var,AT>(n,ini) { } 
+      RowVector(int n, Init ini=INIT, const AT &a=0) : Matrix<General,Fixed<1>,Var,AT>(n,ini,a) { } 
 
       /*! \brief String Constructor. 
        *
@@ -107,13 +105,13 @@ namespace fmatvec {
 //      }
 
       RowVector<Var,AT>& resize(int n=0) {
-        Matrix<General,Fixed<1>,Var,AT>::resize(1,n);
+        Matrix<General,Fixed<1>,Var,AT>::resize(1,n,INIT,0);
         return *this;
       }
 
       template<class Ini>
-        RowVector<Var,AT>& resize(int n, const Ini &ini) {
-          Matrix<General,Fixed<1>,Var,AT>::resize(1,n,ini);
+        RowVector<Var,AT>& resize(int n, Ini ini, const AT &a=0) {
+          Matrix<General,Fixed<1>,Var,AT>::resize(1,n,ini,a);
           return *this;
       }
 
@@ -190,10 +188,9 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling vector.
        * */
-      inline RowVector<Var,AT>& init(const AT& a);
-      inline RowVector<Var,AT>& init(const All<AT> &all) { return init(all.a); }
-      inline RowVector<Var,AT>& init(Eye<AT> eye);
-      inline RowVector<Var,AT>& init(Noinit) { return *this; }
+      inline RowVector<Var,AT>& init(const AT& a=0);
+      inline RowVector<Var,AT>& init(Init, const AT &a=0) { return init(a); }
+      inline RowVector<Var,AT>& init(Noinit, const AT &a=0) { return *this; }
 
       /*! \brief Size.
        *
