@@ -301,6 +301,15 @@ namespace fmatvec {
        * */
       inline const Matrix<General,Var,Var,AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const;
 
+      template <int M1, int M2, int N1, int N2>
+      inline const Matrix<General,Fixed<M2-M1+1>,Fixed<N2-N1+1>,AT> operator()(const Range<Fixed<M1>,Fixed<M2> > &I, const Range<Fixed<N1>,Fixed<N2> > &J) const;
+
+      template <int M1, int M2>
+      inline const Matrix<General,Fixed<M2-M1+1>,Var,AT> operator()(const Range<Fixed<M1>,Fixed<M2> > &I, const Range<Var,Var > &J) const;
+
+      template <int N1, int N2>
+      inline const Matrix<General,Var,Fixed<N2-N1+1>,AT> operator()(const Range<Var,Var> &I, const Range<Fixed<N1>,Fixed<N2> > &J) const;
+
       inline const RowVector<Var,AT> row(int i) const;
       /*! \brief Column operator.
        *
@@ -482,6 +491,51 @@ namespace fmatvec {
       assert(J.end()<N);
 #endif
       Matrix<General,Var,Var,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
+
+      for(int i=0; i<A.rows(); i++) 
+        for(int j=0; j<A.cols(); j++)
+          A.e(i,j) = e(I.start()+i,J.start()+j);
+
+      return A;
+    }
+
+ template <class AT> template <int M1, int M2, int N1, int N2>
+    inline const Matrix<General,Fixed<M2-M1+1>,Fixed<N2-N1+1>,AT> Matrix<General,Var,Var,AT>::operator()(const Range<Fixed<M1>,Fixed<M2> > &I, const Range<Fixed<N1>,Fixed<N2> > &J) const {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(M2<M);
+      assert(N2<N);
+#endif
+      Matrix<General,Fixed<M2-M1+1>,Fixed<N2-N1+1>,AT> A(NONINIT);
+
+      for(int i=0; i<A.rows(); i++) 
+        for(int j=0; j<A.cols(); j++)
+          A.e(i,j) = e(I.start()+i,J.start()+j);
+
+      return A;
+    }
+
+ template <class AT> template <int M1, int M2>
+    inline const Matrix<General,Fixed<M2-M1+1>,Var,AT> Matrix<General,Var,Var,AT>::operator()(const Range<Fixed<M1>,Fixed<M2> > &I, const Range<Var,Var> &J) const {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(M2<M);
+      assert(J.end()<N);
+#endif
+      Matrix<General,Fixed<M2-M1+1>,Var,AT> A(J.end()-J.start()+1,NONINIT);
+
+      for(int i=0; i<A.rows(); i++) 
+        for(int j=0; j<A.cols(); j++)
+          A.e(i,j) = e(I.start()+i,J.start()+j);
+
+      return A;
+    }
+
+  template <class AT> template <int N1, int N2>
+    inline const Matrix<General,Var,Fixed<N2-N1+1>,AT> Matrix<General,Var,Var,AT>::operator()(const Range<Var,Var> &I, const Range<Fixed<N1>,Fixed<N2> > &J) const {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(I.end()<M);
+      assert(N2<N);
+#endif
+      Matrix<General,Var,Fixed<N2-N1+1>,AT> A(I.end()-I.start()+1,NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
         for(int j=0; j<A.cols(); j++)

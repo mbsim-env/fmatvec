@@ -54,6 +54,8 @@ namespace fmatvec {
       SquareMatrix(int m, Init ini=INIT, const AT &a=0) : Matrix<General,Var,Var,AT>(m,m,ini,a) { } 
       SquareMatrix(int m, Eye ini, const AT &a=1) : Matrix<General,Var,Var,AT>(m,m,ini,a) { } 
 
+      SquareMatrix(const char *str) : Matrix<General,Var,Var,AT>(str) { }
+
       /*! \brief Copy Constructor
        *
        * See SquareMatrix(const SquareMatrix<AT>&) 

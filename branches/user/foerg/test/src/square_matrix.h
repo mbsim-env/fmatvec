@@ -85,6 +85,8 @@ namespace fmatvec {
        * */
       SquareMatrix(int m, AT* ele) : Matrix<General,Ref,Ref,AT>(m,m,ele) { }
 
+      SquareMatrix(const char *str) : Matrix<General,Ref,Ref,AT>(str) { }
+
       /*! \brief Copy Constructor
        *
        * Constructs a reference to the matrix \em A.
