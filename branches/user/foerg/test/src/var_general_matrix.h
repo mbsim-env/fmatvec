@@ -311,13 +311,6 @@ namespace fmatvec {
       inline const Matrix<General,Var,Fixed<N2-N1+1>,AT> operator()(const Range<Var,Var> &I, const Range<Fixed<N1>,Fixed<N2> > &J) const;
 
       inline const RowVector<Var,AT> row(int i) const;
-      /*! \brief Column operator.
-       *
-       * Returns a vector containing the i-th column of the calling matrix. 
-       * \attention The vector and the calling matrix will share the same physical memory.
-       * \param i The column, that will be returned.  
-       * \return A vector containing the i-th column of the calling matrix.
-       * */
       inline const Vector<Var,AT> col(int j) const;
 
       /*! \brief Initialization.
@@ -347,10 +340,17 @@ namespace fmatvec {
 
       inline const Matrix<General,Var,Var,AT> T() const;
 
-      inline void set(int j, const Vector<Var,AT> &x);
+      template<class Row> inline void set(int j, const Vector<Row,AT> &x);
 
-      template<class Type, class Row, class Col> 
-        inline void add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+      template<class Col> inline void set(int i, const RowVector<Col,AT> &x);
+
+      template<class Type, class Row, class Col> inline void set(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+
+      template<class Row> inline void add(int j, const Vector<Row,AT> &x);
+
+      template<class Col> inline void add(int i, const RowVector<Col,AT> &x);
+
+      template<class Type, class Row, class Col> inline void add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
 
   };
 
@@ -587,10 +587,74 @@ namespace fmatvec {
       return A;
     }
 
-  template <class AT>
-    inline void Matrix<General,Var,Var,AT>::set(int j, const Vector<Var,AT> &x) {
-      for(int i=0; i<M; i++)
+  template <class AT> template <class Row>
+    inline void Matrix<General,Var,Var,AT>::set(int j, const Vector<Row,AT> &x) {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(j<cols());
+      assert(rows()==x.size());
+#endif
+      for(int i=0; i<rows(); i++)
         e(i,j) = x.e(i);
+    }
+
+  template <class AT> template <class Col>
+    inline void Matrix<General,Var,Var,AT>::set(int i, const RowVector<Col,AT> &x) {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(i<rows());
+      assert(cols()==x.size());
+#endif
+      for(int j=0; j<cols(); j++)
+        e(i,j) = x.e(j);
+    }
+
+  template <class AT> template<class Type, class Row, class Col>
+    inline void Matrix<General,Var,Var,AT>::set(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
+
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(I.end()<rows());
+      assert(J.end()<cols());
+      assert(I.size()==A.rows());
+      assert(J.size()==A.cols());
+#endif
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
+          e(i,j) = A.e(ii,jj);
+    }
+
+  template <class AT> template <class Row>
+    inline void Matrix<General,Var,Var,AT>::add(int j, const Vector<Row,AT> &x) {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(j<cols());
+      assert(rows()==x.size());
+#endif
+      for(int i=0; i<rows(); i++)
+        e(i,j) += x.e(i);
+    }
+
+  template <class AT> template <class Col>
+    inline void Matrix<General,Var,Var,AT>::add(int i, const RowVector<Col,AT> &x) {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(i<rows());
+      assert(cols()==x.size());
+#endif
+      for(int j=0; j<cols(); j++)
+        e(i,j) += x.e(j);
+    }
+
+  template <class AT> template<class Type, class Row, class Col>
+    inline void Matrix<General,Var,Var,AT>::add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
+
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(I.end()<rows());
+      assert(J.end()<cols());
+      assert(I.size()==A.rows());
+      assert(J.size()==A.cols());
+#endif
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
+          e(i,j) += A.e(ii,jj);
     }
 
   template <class AT>
@@ -612,22 +676,6 @@ namespace fmatvec {
           e(r,c)=m[r][c];
       }
     }
-
-  template <class AT> template<class Type, class Row, class Col>
-    inline void Matrix<General,Var,Var,AT>::add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
-
-#ifndef FMATVEC_NO_BOUNDS_CHECK
-      assert(I.end()<rows());
-      assert(J.end()<cols());
-      assert(I.size()==A.rows());
-      assert(J.size()==A.cols());
-#endif
-
-      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
-        for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
-          e(i,j) += A.e(ii,jj);
-    }
-
 
   /// @cond NO_SHOW
 
