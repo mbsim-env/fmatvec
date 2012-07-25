@@ -291,11 +291,10 @@ namespace fmatvec {
   template <class Row1, class Row2, class Row3, class AT> 
     inline void add(const Matrix<Symmetric,Row1,Row1,AT> &A1, const Matrix<Symmetric,Row2,Row2,AT> &A2, Matrix<Symmetric,Row3,Row3,AT> &A3) {
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A1.rows() == A2.rows());
-      assert(A1.cols() == A2.cols());
+      assert(A1.size() == A2.size());
 #endif
       for(int i=0; i<A1.size(); i++)
-        for(int j=0; j<A2.size(); j++)
+        for(int j=i; j<A2.size(); j++)
           A3.ej(i,j) = A1.ej(i,j) + A2.ej(i,j);
     }
 
@@ -313,11 +312,10 @@ namespace fmatvec {
   template <class Row1, class Row2, class AT> 
     inline void add(Matrix<Symmetric,Row1,Row1,AT> &A1, const Matrix<Symmetric,Row2,Row2,AT> &A2) {
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A1.rows() == A2.rows());
-      assert(A1.cols() == A2.cols());
+      assert(A1.size() == A2.size());
 #endif
       for(int i=0; i<A1.size(); i++)
-        for(int j=0; j<A2.size(); j++)
+        for(int j=i; j<A2.size(); j++)
           A1.ej(i,j) += A2.ej(i,j);
     }
 
@@ -335,11 +333,10 @@ namespace fmatvec {
   template <class Row1, class Row2, class Row3, class AT> 
     inline void sub(const Matrix<Symmetric,Row1,Row1,AT> &A1, const Matrix<Symmetric,Row2,Row2,AT> &A2, Matrix<Symmetric,Row3,Row3,AT> &A3) {
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A1.rows() == A2.rows());
-      assert(A1.cols() == A2.cols());
+      assert(A1.size() == A2.size());
 #endif
       for(int i=0; i<A1.size(); i++)
-        for(int j=0; j<A2.size(); j++)
+        for(int j=i; j<A2.size(); j++)
           A3.ej(i,j) = A1.ej(i,j) - A2.ej(i,j);
     }
 
@@ -357,11 +354,10 @@ namespace fmatvec {
   template <class Row1, class Row2, class AT> 
     inline void sub(Matrix<Symmetric,Row1,Row1,AT> &A1, const Matrix<Symmetric,Row2,Row2,AT> &A2) {
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A1.rows() == A2.rows());
-      assert(A1.cols() == A2.cols());
+      assert(A1.size() == A2.size());
 #endif
       for(int i=0; i<A1.size(); i++)
-        for(int j=0; j<A2.size(); j++)
+        for(int j=i; j<A2.size(); j++)
           A1.ej(i,j) -= A2.ej(i,j);
     }
 

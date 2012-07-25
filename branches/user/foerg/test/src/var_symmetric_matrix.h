@@ -366,9 +366,9 @@ namespace fmatvec {
   template <class AT>
     inline Matrix<Symmetric,Var,Var,AT>&  Matrix<Symmetric,Var,Var,AT>::init(Eye, const AT &val) {
 
-      for(int i=0; i<M; i++) {
+      for(int i=0; i<size(); i++) {
         ej(i,i) = val;
-        for(int j=0; j<i; j++) {
+        for(int j=i+1; j<size(); j++) {
           ej(i,j) = 0; 
         }
       }
