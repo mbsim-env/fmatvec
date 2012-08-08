@@ -112,27 +112,24 @@ namespace fmatvec {
 	delete[] ele;
       }
 
-//      template<class Ini=All<AT> >
-//      Matrix<General,Var,Var,AT>& resize(int m=0, int n=0, Ini ini=All<AT>()) {
-//	delete[] ele;
-//	M=m;
-//	N=n;
-//	ele = new AT[M*N];
-//        init(ini);
-//        return *this;
-//      }
-
-      Matrix<General,Var,Var,AT>& resize(int m=0, int n=0) { return resize(m,n,INIT,0); }
-
-      template<class Ini>
-      Matrix<General,Var,Var,AT>& resize(int m, int n, Ini ini, const AT &a=0) {
+       Matrix<General,Var,Var,AT>& resize() {
 	delete[] ele;
-	M=m;
-	N=n;
-	ele = new AT[M*N];
-        init(ini,a);
+	M = N = 0;
+	ele = 0;
         return *this;
       }
+
+       Matrix<General,Var,Var,AT>& resize(int m, int n, Noinit) {
+	delete[] ele;
+	M = m;
+	N = n;
+	ele = new AT[M*N];
+        return *this;
+      }
+
+      Matrix<General,Var,Var,AT>& resize(int m, int n, Init ini=INIT, const AT &a=0) { return resize(m,n,Noinit()).init(a); }
+
+      Matrix<General,Var,Var,AT>& resize(int m, int n, Eye ini, const AT &a=1) { return resize(m,n,Noinit()).init(ini,a); } 
 
      /*! \brief Assignment operator
        *
@@ -400,13 +397,7 @@ namespace fmatvec {
   template <class AT> template< class Type, class Row, class Col>
     inline Matrix<General,Var,Var,AT>& Matrix<General,Var,Var,AT>::operator=(const Matrix<Type,Row,Col,AT> &A) { 
 
-#ifndef FMATVEC_RESIZE_VOID
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(M == A.rows());
-      assert(N == A.cols());
-#endif
-#else
-      if(M==0 && N==0) {
+      if(!ele) {
         delete[] ele;
         M = A.rows(); 
         N = A.cols();
@@ -417,7 +408,6 @@ namespace fmatvec {
         assert(N == A.cols());
 #endif
       }
-#endif
 
       deepCopy(A);
 
@@ -427,13 +417,7 @@ namespace fmatvec {
   template <class AT>
     inline Matrix<General,Var,Var,AT>& Matrix<General,Var,Var,AT>::operator=(const Matrix<General,Var,Var,AT> &A) { 
 
-#ifndef FMATVEC_RESIZE_VOID
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(M == A.rows());
-      assert(N == A.cols());
-#endif
-#else
-      if(M==0 && N==0) {
+      if(!ele) {
         delete[] ele;
         M = A.rows(); 
         N = A.cols();
@@ -444,7 +428,6 @@ namespace fmatvec {
         assert(N == A.cols());
 #endif
       }
-#endif
 
       deepCopy(A);
 

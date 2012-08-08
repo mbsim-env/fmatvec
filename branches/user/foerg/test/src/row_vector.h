@@ -122,23 +122,21 @@ namespace fmatvec {
 	LogicAssert(x.rows()==1,"Number of cols() must be 1 in RowVector<Ref,AT>::RowVector(const Matrix<General,Ref,Ref,AT> &x)");
       }
 
-//      template<class Ini=All<AT> >
-//        RowVector<Ref,AT>& resize(int n=0, Ini ini=All<AT>()) {
-//          Matrix<General,Ref,Ref,AT>::resize(1,n,ini);
-//          return *this;
-//      }
-
-      RowVector<Ref,AT>& resize(int n=0) {
-        Matrix<General,Ref,Ref,AT>::resize(1,n);
+      RowVector<Ref,AT>& resize() {
+        Matrix<General,Ref,Ref,AT>::resize();
         return *this;
       }
 
-      template<class Ini>
-        RowVector<Ref,AT>& resize(int n, Ini ini, const AT &a=0) {
-          Matrix<General,Ref,Ref,AT>::resize(1,n,ini,a);
-          return *this;
+      RowVector<Ref,AT>& resize(int n, Noinit) {
+        Matrix<General,Ref,Ref,AT>::resize(1,n,Noinit());
+        return *this;
       }
 
+      RowVector<Ref,AT>& resize(int n, Init ini=INIT, const AT &a=0) {
+        Matrix<General,Ref,Ref,AT>::resize(1,n,ini,a);
+        return *this;
+      }
+      
       /*! \brief Copy Constructor
        *
        * Constructs a reference to the rowvector \em x.
@@ -329,12 +327,7 @@ namespace fmatvec {
   template <class AT>
     inline RowVector<Ref,AT>& RowVector<Ref,AT>::operator=(const RowVector<Ref,AT> &x) { 
 
-#ifndef FMATVEC_RESIZE_VOID
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(n == x.size());
-#endif
-#else
-      if(n==0) {
+      if(!ele) {
         m = 1;
         n = x.size();
         lda = m;
@@ -346,7 +339,6 @@ namespace fmatvec {
         assert(n == x.size());
 #endif
       }
-#endif
 
       deepCopy(x);
 
@@ -356,12 +348,7 @@ namespace fmatvec {
   template <class AT> template<class Row>
     inline RowVector<Ref,AT>& RowVector<Ref,AT>::operator=(const RowVector<Row,AT> &x) { 
 
-#ifndef FMATVEC_RESIZE_VOID
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(n == x.size());
-#endif
-#else
-      if(n==0) {
+      if(!ele) {
         m = 1;
         n = x.size();
         lda = m;
@@ -373,7 +360,6 @@ namespace fmatvec {
         assert(n == x.size());
 #endif
       }
-#endif
 
       deepCopy(x);
 

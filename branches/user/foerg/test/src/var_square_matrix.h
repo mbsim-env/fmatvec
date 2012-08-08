@@ -68,19 +68,25 @@ namespace fmatvec {
       SquareMatrix(const SquareMatrix<Row,AT> &A) : Matrix<General,Var,Var,AT>(A) {
       }
 
-//      template<class Ini=All<AT> >
-//        SquareMatrix<Var,AT>& resize(int m=0, Ini ini=All<AT>()) {
-//          Matrix<General,Var,Var,AT>::resize(m,m,ini);
-//          return *this;
-//        }
+      SquareMatrix<Var,AT>& resize() {
+        Matrix<General,Var,Var,AT>::resize();
+        return *this;
+      }
 
-      SquareMatrix<Var,AT>& resize(int m=0) { return resize(m,INIT,0); }
+      SquareMatrix<Var,AT>& resize(int m, Noinit) {
+        Matrix<General,Var,Var,AT>::resize(m,m,Noinit());
+        return *this;
+      }
 
-      template<class Ini>
-        SquareMatrix<Var,AT>& resize(int m, Ini ini, const AT &a=0) {
-          Matrix<General,Var,Var,AT>::resize(m,m,ini,a);
-          return *this;
-        }
+      SquareMatrix<Var,AT>& resize(int m, Init ini=INIT, const AT &a=0) {
+        Matrix<General,Var,Var,AT>::resize(m,m,ini,a);
+        return *this;
+      }
+
+      SquareMatrix<Var,AT>& resize(int m, Eye ini, const AT &a=1) {
+        Matrix<General,Var,Var,AT>::resize(m,m,ini,a);
+        return *this;
+      }
 
       /*! \brief Copy operator
        *

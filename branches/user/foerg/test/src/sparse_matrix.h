@@ -102,44 +102,27 @@ namespace fmatvec {
 	~Matrix() {
 	}
 
-	/*! \brief Matrix resizing. 
-	 *
-	 * Resizes the matrix to size n x n. The matrix will be initialized to the value given by \em a
-	 * (default 0), if ini is set to INIT. If init is set to NONINIT, the
-	 * matrix will not be initialized.
-	 * \param n_ The number of columns/rows.
-	 * \param k_ The number of nonzero elements.
-	 * \return A reference to the calling matrix.
-	 * */
-//        template<class Ini=All<AT> >
-//          Matrix<Sparse,Ref,Ref,AT>& resize(int n_=0, int k_=0, Ini ini=All<AT>()) {
-//            m=n_;n=n_;k=k_;
-//            memEle.resize(k);
-//            memI.resize(m+1);
-//            memJ.resize(k);
-//            ele = (AT*)memEle.get();
-//            I = (int*)memI.get();
-//            J = (int*)memJ.get();
-//            init(ini);
-//
-//            return *this;
-//          }
+        Matrix<Sparse,Ref,Ref,AT>& resize() {
+            m = n = k = 0;
+            memEle.resize(0);
+            memI.resize(0);
+            memJ.resize(0);
+            ele = I = J = 0;
+            return *this;
+        }
 
-        Matrix<Sparse,Ref,Ref,AT>& resize(int n=0, int k=0) { return resize(n,k,INIT,0); }
-
-        template<class Ini>
-          Matrix<Sparse,Ref,Ref,AT>& resize(int n_, int k_, Ini ini, const AT &a=0) {
-            m=n_;n=n_;k=k_;
+        Matrix<Sparse,Ref,Ref,AT>& resize(int n_, int k_, Noinit) {
+            m = n_; n = n_; k = k_;
             memEle.resize(k);
             memI.resize(m+1);
             memJ.resize(k);
             ele = (AT*)memEle.get();
             I = (int*)memI.get();
             J = (int*)memJ.get();
-            init(ini,a);
-
             return *this;
-          }
+        }
+
+        Matrix<Sparse,Ref,Ref,AT>& resize(int n, int k, Init ini=INIT, const AT &a=0) { return resize(m,k,Noinit()).init(a); }
 
 	/*! \brief Copy operator
 	 *
@@ -258,6 +241,7 @@ namespace fmatvec {
 
   template <class AT>
     inline Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator>>(const Matrix<Sparse,Ref,Ref,AT> &A) { 
+
       m=A.m;
       n=A.n;
       k=A.k;
@@ -275,11 +259,24 @@ namespace fmatvec {
   template <class AT>
     inline Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator=(const Matrix<Sparse,Ref,Ref,AT> &A) { 
 
+      if(!ele) {
+	m = A.m;
+	n = A.n;
+	k = A.k;
+	memEle.resize(k);
+	memI.resize(m+1);
+	memJ.resize(k);
+	ele = (AT*)memEle.get();
+	I = (int*)memI.get();
+	J = (int*)memJ.get();
+      }
+      else {
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(m == A.m);
-      assert(n == A.n);
-      assert(k == A.k);
+        assert(m == A.m);
+        assert(n == A.n);
+        assert(k == A.k);
 #endif
+      }
 
       deepCopy(A);
 

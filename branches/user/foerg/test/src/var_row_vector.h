@@ -98,21 +98,19 @@ namespace fmatvec {
       explicit RowVector(const Matrix<Type,Row,Col,AT> &A) : Matrix<General,Fixed<1>,Var,AT>(A) {
       }
 
-//      template<class Ini=All<AT> >
-//        RowVector<Var,AT>& resize(int n=0, Ini ini=All<AT>()) {
-//          Matrix<General,Fixed<1>,Var,AT>::resize(1,n,ini);
-//          return *this;
-//      }
-
-      RowVector<Var,AT>& resize(int n=0) {
-        Matrix<General,Fixed<1>,Var,AT>::resize(1,n,INIT,0);
+      RowVector<Var,AT>& resize() {
+        Matrix<General,Fixed<1>,Var,AT>::resize();
         return *this;
       }
 
-      template<class Ini>
-        RowVector<Var,AT>& resize(int n, Ini ini, const AT &a=0) {
-          Matrix<General,Fixed<1>,Var,AT>::resize(1,n,ini,a);
-          return *this;
+      RowVector<Var,AT>& resize(int n, Noinit) {
+        Matrix<General,Fixed<1>,Var,AT>::resize(n,Noinit());
+        return *this;
+      }
+
+      RowVector<Var,AT>& resize(int n, Init ini=INIT, const AT &a=0) {
+        Matrix<General,Fixed<1>,Var,AT>::resize(n,ini,a);
+        return *this;
       }
 
       /*! \brief Assignment operator
@@ -236,12 +234,7 @@ namespace fmatvec {
   template <class AT>
     inline RowVector<Var,AT>& RowVector<Var,AT>::operator=(const RowVector<Var,AT> &x) { 
 
-#ifndef FMATVEC_RESIZE_VOID
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(N == x.size());
-#endif
-#else
-      if(N==0) {
+      if(!ele) {
         delete[] ele;
         N = x.size(); 
         ele = new AT[N];
@@ -250,7 +243,6 @@ namespace fmatvec {
         assert(N == x.size());
 #endif
       }
-#endif
 
       deepCopy(x);
 
@@ -260,12 +252,7 @@ namespace fmatvec {
   template <class AT> template<class Row>
     inline RowVector<Var,AT>& RowVector<Var,AT>::operator=(const RowVector<Row,AT> &x) { 
 
-#ifndef FMATVEC_RESIZE_VOID
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(N == x.size());
-#endif
-#else
-      if(N==0) {
+      if(!ele) {
         delete[] ele;
         N = x.size(); 
         ele = new AT[N];
@@ -274,7 +261,6 @@ namespace fmatvec {
         assert(N == x.size());
 #endif
       }
-#endif
 
       deepCopy(x);
 

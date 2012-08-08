@@ -108,20 +108,23 @@ namespace fmatvec {
       ~Matrix() {
       }
 
-      Matrix<GeneralBand,Ref,Ref,AT>& resize(int n=0, int kl=0, int ku=0) { return resize(n,kl,ku,INIT,0); }
+      Matrix<GeneralBand,Ref,Ref,AT>& resize() { 
+          n = kl = ku = 0;
+          memory.resize(0);
+          ele = 0;
+          return *this;
+      }
 
-      template<class Ini>
-        Matrix<GeneralBand,Ref,Ref,AT>& resize(int n_, int kl_, int ku_, Ini ini, const AT &a=0) {
-          n=n_;
-          kl=kl_;
-          ku=ku_;
+      Matrix<GeneralBand,Ref,Ref,AT>& resize(int n_, int kl_, int ku_, Noinit) { 
+          n = n_; kl = kl_; ku = ku_;
           memory.resize(n*(kl+ku+1));
           ele = (AT*)memory.get();
-
-          init(ini,a);
-
           return *this;
-        }
+      }
+
+      Matrix<GeneralBand,Ref,Ref,AT>& resize(int n, int kl, int ku=0, Init ini=INIT, const AT &a=0) { return resize(n,kl,ku,Noinit()).init(a); }
+
+      Matrix<GeneralBand,Ref,Ref,AT>& resize(int n, int kl, int ku, Eye ini, const AT &a=1) { return resize(n,kl,ku,Noinit()).init(a); }
 
       /*! \brief Assignment operator
        *
@@ -270,9 +273,16 @@ namespace fmatvec {
   template <class AT>
     inline Matrix<GeneralBand,Ref,Ref,AT>& Matrix<GeneralBand,Ref,Ref,AT>::operator=(const Matrix<GeneralBand,Ref,Ref,AT> &A) { 
 
+     if(!ele) {
+       n = A.n;
+       memory.resize(n*n);
+       ele = (AT*)memory.get();
+    } 
+     else {
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(n == A.n);
+       assert(n == A.n);
 #endif
+     }
 
       deepCopy(A);
 

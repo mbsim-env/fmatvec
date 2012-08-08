@@ -130,27 +130,23 @@ namespace fmatvec {
        * */
       ~Matrix() { }
 
-//      template<class Ini=All<AT> >
-//      Matrix<Symmetric,Ref,Ref,AT>& resize(int n_=0, Ini ini=All<AT>()) {
-//	n=n_;
-//	lda=n;
-//	memory.resize(n*n);
-//	ele = (AT*)memory.get();
-//        init(ini);
-//        return *this;
-//      }
-
-      Matrix<Symmetric,Ref,Ref,AT>& resize(int n=0) { return resize(n,INIT,0); }
-
-      template<class Ini>
-      Matrix<Symmetric,Ref,Ref,AT>& resize(int n_, Ini ini, const AT &a=0) {
-	n=n_;
-	lda=n;
-	memory.resize(n*n);
-	ele = (AT*)memory.get();
-        init(ini);
+      Matrix<Symmetric,Ref,Ref,AT>& resize() { 
+	n = lda = 0;
+	memory.resize(0);
+	ele = 0;
         return *this;
       }
+
+      Matrix<Symmetric,Ref,Ref,AT>& resize(int n_, Noinit) { 
+	n = n_; lda = n;
+	memory.resize(n*n);
+	ele = (AT*)memory.get();
+        return *this;
+      }
+
+      Matrix<Symmetric,Ref,Ref,AT>& resize(int n, Init ini=INIT, const AT &a=0) { return resize(n,Noinit()).init(a); }
+
+      Matrix<Symmetric,Ref,Ref,AT>& resize(int n, Eye ini, const AT &a=1) { return resize(n,Noinit()).init(ini,a); }
 
       /*! \brief Assignment operator
        *
@@ -398,12 +394,7 @@ namespace fmatvec {
   template <class AT>
     inline Matrix<Symmetric,Ref,Ref,AT>& Matrix<Symmetric,Ref,Ref,AT>::operator=(const Matrix<Symmetric,Ref,Ref,AT> &A) { 
 
-#ifndef FMATVEC_RESIZE_VOID
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(n == A.size());
-#endif
-#else
-      if(n==0) {
+      if(!ele) {
         n = A.size();
         lda = n;
         memory.resize(n*n);
@@ -413,7 +404,6 @@ namespace fmatvec {
         assert(n == A.size());
 #endif
       }
-#endif
 
       deepCopy(A);
 
@@ -423,13 +413,7 @@ namespace fmatvec {
   template <class AT> template< class Type, class Row, class Col>
     inline Matrix<Symmetric,Ref,Ref,AT>& Matrix<Symmetric,Ref,Ref,AT>::operator=(const Matrix<Type,Row,Col,AT> &A) { 
       
-#ifndef FMATVEC_RESIZE_VOID
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.rows() == A.cols());
-      assert(n == A.rows());
-#endif
-#else
-      if(n==0) {
+      if(!ele) {
         n = A.rows();
         lda = n;
         memory.resize(n*n);
@@ -440,7 +424,6 @@ namespace fmatvec {
         assert(n == A.rows());
 #endif
       }
-#endif
 
       deepCopy(A);
 

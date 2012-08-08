@@ -97,22 +97,20 @@ namespace fmatvec {
       explicit Vector(const Matrix<Type,Row,Col,AT> &A) : Matrix<General,Var,Fixed<1>,AT>(A) {
       }
 
-//      template<class Ini=All<AT> >
-//        Vector<Var,AT>& resize(int m=0, Ini ini=All<AT>()) {
-//          Matrix<General,Var,Fixed<1>,AT>::resize(m,1,ini);
-//          return *this;
-//        }
-
-      Vector<Var,AT>& resize(int m=0) {
-        Matrix<General,Var,Fixed<1>,AT>::resize(m,INIT,1);
+      Vector<Var,AT>& resize() {
+        Matrix<General,Var,Fixed<1>,AT>::resize();
         return *this;
       }
 
-      template<class Ini>
-        Vector<Var,AT>& resize(int m, Ini ini, const AT &a=0) {
-          Matrix<General,Var,Fixed<1>,AT>::resize(m,1,ini,a);
-          return *this;
-        }
+      Vector<Var,AT>& resize(int m, Noinit) {
+        Matrix<General,Var,Fixed<1>,AT>::resize(m,Noinit());
+        return *this;
+      }
+
+      Vector<Var,AT>& resize(int m, Init ini=INIT, const AT &a=0) {
+        Matrix<General,Var,Fixed<1>,AT>::resize(m,ini,a);
+        return *this;
+      }
 
       /*! \brief Assignment operator
        *
@@ -235,12 +233,7 @@ namespace fmatvec {
   template <class AT>
     inline Vector<Var,AT>& Vector<Var,AT>::operator=(const Vector<Var,AT> &x) { 
 
-#ifndef FMATVEC_RESIZE_VOID
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(M == x.size());
-#endif
-#else
-      if(M==0) {
+      if(!ele) {
         delete[] ele;
         M = x.size(); 
         ele = new AT[M];
@@ -249,7 +242,6 @@ namespace fmatvec {
         assert(M == x.size());
 #endif
       }
-#endif
 
       deepCopy(x);
 
@@ -259,12 +251,7 @@ namespace fmatvec {
   template <class AT> template<class Row>
     inline Vector<Var,AT>& Vector<Var,AT>::operator=(const Vector<Row,AT> &x) { 
 
-#ifndef FMATVEC_RESIZE_VOID
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(M == x.size());
-#endif
-#else
-      if(M==0) {
+      if(!ele) {
         delete[] ele;
         M = x.size(); 
         ele = new AT[M];
@@ -273,7 +260,6 @@ namespace fmatvec {
         assert(M == x.size());
 #endif
       }
-#endif
 
       deepCopy(x);
 

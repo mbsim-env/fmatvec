@@ -137,23 +137,21 @@ namespace fmatvec {
 #endif
       }
 
-//      template<class Ini=All<AT> >
-//        Vector<Ref,AT>& resize(int m=0, Ini ini=All<AT>()) {
-//          Matrix<General,Ref,Ref,AT>::resize(m,1,ini);
-//          return *this;
-//        }
-
-      Vector<Ref,AT>& resize(int m=0) {
-        Matrix<General,Ref,Ref,AT>::resize(m,1);
+      Vector<Ref,AT>& resize() {
+        Matrix<General,Ref,Ref,AT>::resize();
         return *this;
       }
 
-      template<class Init>
-      Vector<Ref,AT>& resize(int m, Init ini, const AT &a=0) {
+      Vector<Ref,AT>& resize(int m, Noinit) {
+        Matrix<General,Ref,Ref,AT>::resize(m,1,Noinit());
+        return *this;
+      }
+
+      Vector<Ref,AT>& resize(int m, Init ini=INIT, const AT &a=0) {
         Matrix<General,Ref,Ref,AT>::resize(m,1,ini,a);
         return *this;
       }
-
+      
       /*! \brief Copy operator
        *
        * Copies the vector given by \em x.
@@ -347,12 +345,7 @@ namespace fmatvec {
   template <class AT>
     inline Vector<Ref,AT>& Vector<Ref,AT>::operator=(const Vector<Ref,AT> &x) { 
 
-#ifndef FMATVEC_RESIZE_VOID
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(m == x.size());
-#endif
-#else
-      if(m==0) {
+      if(!ele) {
         m = x.size(); 
         n = 1;
         lda = m;
@@ -364,7 +357,6 @@ namespace fmatvec {
         assert(m == x.size());
 #endif
       }
-#endif
 
       deepCopy(x);
 
@@ -374,12 +366,7 @@ namespace fmatvec {
   template <class AT> template<class Row>
     inline Vector<Ref,AT>& Vector<Ref,AT>::operator=(const Vector<Row,AT> &x) { 
 
-#ifndef FMATVEC_RESIZE_VOID
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(m == x.size());
-#endif
-#else
-      if(m==0) {
+      if(!ele) {
         m = x.size(); 
         n = 1;
         lda = m;
@@ -391,7 +378,6 @@ namespace fmatvec {
         assert(m == x.size());
 #endif
       }
-#endif
 
       deepCopy(x);
 

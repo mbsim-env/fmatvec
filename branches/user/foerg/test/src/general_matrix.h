@@ -139,29 +139,25 @@ namespace fmatvec {
 	deepCopy(A);
       }
 
-      //template<class Ini=All<AT> >
-      //Matrix<General,Ref,Ref,AT>& resize(int m_=0, int n_=0, Ini ini=All<AT>()) {
-      //  m=m_;n=n_;
-      //  lda=m;
-      //  tp = false;
-      //  memory.resize(m*n);
-      //  ele = (AT*)memory.get();
-      //  init(ini);
-      //  return *this;
-      //}
-      
-      Matrix<General,Ref,Ref,AT>& resize(int m=0, int n=0) { return resize(m,n,INIT,0); }
-
-      template<class Ini>
-      Matrix<General,Ref,Ref,AT>& resize(int m_, int n_, Ini ini, const AT &a=0) {
-	m=m_;n=n_;
-	lda=m;
+      Matrix<General,Ref,Ref,AT>& resize() {
+	m = n = lda = 0;
+	tp = false;
+	memory.resize(0);
+	ele = 0;
+        return *this;
+      }
+       
+      Matrix<General,Ref,Ref,AT>& resize(int m_, int n_, Noinit) {
+	m = m_; n = n_; lda = m;
 	tp = false;
 	memory.resize(m*n);
 	ele = (AT*)memory.get();
-        init(ini,a);
         return *this;
       }
+
+      Matrix<General,Ref,Ref,AT>& resize(int m, int n, Init ini=INIT, const AT &a=0) { return resize(m,n,Noinit()).init0(a); }
+
+      Matrix<General,Ref,Ref,AT>& resize(int m, int n, Eye ini, const AT &a=1) { return resize(m,n,Noinit()).init(ini,a); } 
 
       /*! \brief Assignment operator
        *
@@ -517,13 +513,7 @@ namespace fmatvec {
   template <class AT>
     inline Matrix<General,Ref,Ref,AT>& Matrix<General,Ref,Ref,AT>::operator=(const Matrix<General,Ref,Ref,AT> &A) { 
 
-#ifndef FMATVEC_RESIZE_VOID
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(m == A.rows());
-      assert(n == A.cols());
-#endif
-#else
-      if(m==0 && n==0) {
+      if(!ele) {
         m = A.rows(); 
         n = A.cols();
         lda = m;
@@ -536,7 +526,6 @@ namespace fmatvec {
         assert(n == A.cols());
 #endif
       }
-#endif
 
       deepCopy(A);
 
@@ -546,13 +535,7 @@ namespace fmatvec {
   template <class AT> template< class Type, class Row, class Col>
     inline Matrix<General,Ref,Ref,AT>& Matrix<General,Ref,Ref,AT>::operator=(const Matrix<Type,Row,Col,AT> &A) { 
 
-#ifndef FMATVEC_RESIZE_VOID
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(m == A.rows());
-      assert(n == A.cols());
-#endif
-#else
-      if(m==0 && n==0) {
+      if(!ele) {
         m = A.rows(); 
         n = A.cols();
         lda = m;
@@ -565,7 +548,6 @@ namespace fmatvec {
         assert(n == A.cols());
 #endif
       }
-#endif
 
       deepCopy(A);
 

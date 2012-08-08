@@ -94,25 +94,22 @@ namespace fmatvec {
 	~Matrix() {
 	}
 
-//        template<class Ini=All<AT> >
-//          Matrix<Diagonal,Ref,Ref,AT>& resize(int n_=0, Ini ini=All<AT>()) {
-//            n = n_;
-//            memory.resize(n);
-//            ele = (AT*)memory.get();
-//            init(ini);
-//            return *this;
-//          }
+        Matrix<Diagonal,Ref,Ref,AT>& resize() { 
+          n = 0;
+          memory.resize(0);
+          ele = 0;
+          return *this;
+        }
 
-        Matrix<Diagonal,Ref,Ref,AT>& resize(int n=0) { return resize(n,INIT,0); }
+        Matrix<Diagonal,Ref,Ref,AT>& resize(int n_, Noinit) { 
+          n = n_;
+          memory.resize(n);
+          ele = (AT*)memory.get();
+          return *this;
+        }
  
-        template<class Ini>
-          Matrix<Diagonal,Ref,Ref,AT>& resize(int n_, Ini ini, const AT &a=0) {
-            n = n_;
-            memory.resize(n);
-            ele = (AT*)memory.get();
-            init(ini);
-            return *this;
-          }
+        Matrix<Diagonal,Ref,Ref,AT>& resize(int n, Init ini=INIT, const AT &a=0) { resize(n,Noinit()).init(a); }
+        Matrix<Diagonal,Ref,Ref,AT>& resize(int n, Eye ini, const AT &a=1) { resize(n,Noinit()).init(ini,a); }
  
 	/*! \brief Copy operator
 	 *
@@ -293,10 +290,16 @@ namespace fmatvec {
 
   template <class AT>
     Matrix<Diagonal,Ref,Ref,AT>& Matrix<Diagonal,Ref,Ref,AT>::operator=(const Matrix<Diagonal,Ref,Ref,AT> &A) { 
-
+      if(!ele) {
+	n = A.n;
+	memory.resize(n);
+	ele = (AT*)memory.get();
+      } 
+      else {
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(n == A.n);
+        assert(n == A.n);
 #endif
+      }
 
       deepCopy(A);
 
