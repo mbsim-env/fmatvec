@@ -107,7 +107,8 @@ namespace fmatvec {
             memEle.resize(0);
             memI.resize(0);
             memJ.resize(0);
-            ele = I = J = 0;
+            ele = 0;
+            I = J = 0;
             return *this;
         }
 
