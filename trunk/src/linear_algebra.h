@@ -1209,7 +1209,7 @@ namespace fmatvec {
   
   template <class Row, class AT>
    inline Matrix<Symmetric,Row,Row,AT> operator*(const AT &alpha, const Matrix<Symmetric,Row,Row,AT> &A) {
-     Matrix<Symmetric,Row,Row,AT> B(A.size(),NONINIT);
+     Matrix<Symmetric,Row,Row,AT> B(A.size(),A.size(),NONINIT);
      for(int i=0; i<A.size(); i++)
        for(int j=i; j<A.size(); j++)
          B.ej(i,j) = A.ej(i,j)*alpha;
@@ -1218,7 +1218,7 @@ namespace fmatvec {
 
   template <class Row, class AT>
     inline Matrix<Symmetric,Row,Row,AT> operator*(const Matrix<Symmetric,Row,Row,AT> &A, const AT &alpha) {
-      Matrix<Symmetric,Row,Row,AT> B(A.size(),NONINIT);
+      Matrix<Symmetric,Row,Row,AT> B(A.size(),A.size(),NONINIT);
       for(int i=0; i<A.size(); i++)
         for(int j=i; j<A.size(); j++)
           B.ej(i,j) = A.ej(i,j)*alpha;
@@ -1255,7 +1255,7 @@ namespace fmatvec {
 
   template <class Row, class AT>
     inline Matrix<Symmetric,Row,Row,AT> operator/(const Matrix<Symmetric,Row,Row,AT> &A, const AT &alpha) {
-      Matrix<Symmetric,Row,Row,AT> B(A.size(),NONINIT);
+      Matrix<Symmetric,Row,Row,AT> B(A.size(),A.size(),NONINIT);
       for(int i=0; i<A.size(); i++)
         for(int j=i; j<A.size(); j++)
           B.ej(i,j) = A.ej(i,j)/alpha;
@@ -1799,7 +1799,7 @@ namespace fmatvec {
 
   template <class Row, class Col, class AT>
     inline Matrix<Symmetric,Col,Col,AT> JTJ(const Matrix<General,Row,Col,AT> &A) { 
-      Matrix<Symmetric,Col,Col,AT> S(A.cols(),NONINIT);
+      Matrix<Symmetric,Col,Col,AT> S(A.cols(),A.cols(),NONINIT);
       for(int i=0; i<A.cols(); i++) {
         for(int k=i; k<A.cols(); k++) {
           S.ej(i,k) = 0;
@@ -1813,7 +1813,7 @@ namespace fmatvec {
   template <class Row, class Col, class AT>
     inline Matrix<Symmetric,Col,Col,AT> JTMJ(const Matrix<Symmetric,Row,Row,AT> &B, const Matrix<General,Row,Col,AT> &A) {
 
-      Matrix<Symmetric,Col,Col,AT> S(A.cols(),NONINIT);
+      Matrix<Symmetric,Col,Col,AT> S(A.cols(),A.cols(),NONINIT);
       Matrix<General,Row,Col,AT> C = B*A;
 
       for(int i=0; i<A.cols(); i++) {
@@ -1829,7 +1829,7 @@ namespace fmatvec {
   template <class Row, class Col, class AT>
     inline Matrix<Symmetric,Row,Row,AT> JMJT(const Matrix<General,Row,Col,AT> &A, const Matrix<Symmetric,Col,Col,AT> &B) {
 
-      Matrix<Symmetric,Row,Row,AT> S(A.rows(),NONINIT);
+      Matrix<Symmetric,Row,Row,AT> S(A.rows(),A.rows(),NONINIT);
       Matrix<General,Row,Col,AT> C = A*B;
 
       for(int i=0; i<S.size(); i++) {
