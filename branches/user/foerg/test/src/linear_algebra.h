@@ -697,13 +697,13 @@ namespace fmatvec {
 //  SquareMatrix-SquareMatrix
   template <class AT, class Row1, class Row2> 
     inline SquareMatrix<Var,AT> operator+(const SquareMatrix<Row1,AT> &A1, const SquareMatrix<Row2,AT> &A2) {
-      SquareMatrix<Var,AT> A3(A1.rows(),NONINIT);
+      SquareMatrix<Var,AT> A3(A1.size(),NONINIT);
       add(A1,A2,A3);
       return A3;
     }
   template <class AT, class Row> 
     inline SquareMatrix<Row,AT> operator+(const SquareMatrix<Row,AT> &A1, const SquareMatrix<Row,AT> &A2) {
-      SquareMatrix<Row,AT> A3(A1.rows(),NONINIT);
+      SquareMatrix<Row,AT> A3(A1.size(),NONINIT);
       add(A1,A2,A3);
       return A3;
     }
@@ -711,13 +711,13 @@ namespace fmatvec {
 //  SquareMatrix-SquareMatrix
   template <class AT, class Row1, class Row2> 
     inline SquareMatrix<Var,AT> operator-(const SquareMatrix<Row1,AT> &A1, const SquareMatrix<Row2,AT> &A2) {
-      SquareMatrix<Var,AT> A3(A1.rows(),NONINIT);
+      SquareMatrix<Var,AT> A3(A1.size(),NONINIT);
       sub(A1,A2,A3);
       return A3;
     }
   template <class AT, class Row> 
     inline SquareMatrix<Row,AT> operator-(const SquareMatrix<Row,AT> &A1, const SquareMatrix<Row,AT> &A2) {
-      SquareMatrix<Row,AT> A3(A1.rows(),NONINIT);
+      SquareMatrix<Row,AT> A3(A1.size(),NONINIT);
       sub(A1,A2,A3);
       return A3;
     }
@@ -820,25 +820,25 @@ namespace fmatvec {
 
   template <class AT, class Type2, class Col2, class Row1, class Col1> 
     inline RowVector<Var,AT> operator*(const RowVector<Col2,AT> &x, const Matrix<Type2,Row1,Col1,AT> &A) {
-      RowVector<Var,AT> y(A.rows(),NONINIT);
+      RowVector<Var,AT> y(A.cols(),NONINIT);
       mult(x,A,y);
       return y;
     }
   template <class AT, class Type2, class Row, class Col> 
     inline RowVector<Col,AT> operator*(const RowVector<Col,AT> &x, const Matrix<Type2,Row,Col,AT> &A) {
-      RowVector<Col,AT> y(A.rows(),NONINIT);
+      RowVector<Col,AT> y(A.cols(),NONINIT);
       mult(x,A,y);
       return y;
     }
   template <class AT, int N, class Type2, class Col1, class Row2> 
     inline RowVector<Fixed<N>,AT> operator*(const RowVector<Col1,AT> &x, const Matrix<Type2,Row2,Fixed<N>,AT> &A) {
-      RowVector<Fixed<N>,AT> y(A.rows(),NONINIT);
+      RowVector<Fixed<N>,AT> y(A.cols(),NONINIT);
       mult(x,A,y);
       return y;
     }
   template <class AT, int N, class Type2> 
     inline RowVector<Fixed<N>,AT> operator*(const RowVector<Fixed<N>,AT> &x, const Matrix<Type2,Fixed<N>,Fixed<N>,AT> &A) {
-      RowVector<Fixed<N>,AT> y(A.rows(),NONINIT);
+      RowVector<Fixed<N>,AT> y(A.cols(),NONINIT);
       mult(x,A,y);
       return y;
     }
@@ -860,7 +860,7 @@ namespace fmatvec {
   template <class Row1, class Type2, class Row2, class Col2, class Type3, class Row3, class Col3, class AT> 
     inline void mult(const Matrix<Symmetric,Row1,Row1,AT> &A1, const Matrix<Type2,Row2,Col2,AT> &A2, Matrix<Type3,Row3,Col3,AT> &A3) {
 #ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A1.cols() == A2.rows());
+      assert(A1.size() == A2.rows());
 #endif
       for(int i=0; i<A3.rows(); i++) {
         for(int k=0; k<A3.cols(); k++) {
@@ -939,12 +939,6 @@ namespace fmatvec {
       mult(A1,A2,A3);
       return A3;
     }
- // template <class AT, int M, int K, int N, class Type> 
- //   inline Matrix<Type,Fixed<M>,Fixed<N>,AT> operator*(const Matrix<Type,Fixed<M>,Fixed<K>,AT> &A1, const Matrix<Type,Fixed<K>,Fixed<N>,AT> &A2) {
- //     Matrix<Type,Fixed<M>,Fixed<N>,AT> A3(A1.rows(),A2.cols(),NONINIT);
- //     mult(A1,A2,A3);
- //     return A3;
- //   }
   template <class AT, int M, class Type> 
     inline Matrix<Type,Fixed<M>,Fixed<M>,AT> operator*(const Matrix<Type,Fixed<M>,Fixed<M>,AT> &A1, const Matrix<Type,Fixed<M>,Fixed<M>,AT> &A2) {
       Matrix<Type,Fixed<M>,Fixed<M>,AT> A3(A1.rows(),A2.cols(),NONINIT);
@@ -955,16 +949,31 @@ namespace fmatvec {
 //  SquareMatrix-SquareMatrix
   template <class AT, class Row1, class Row2> 
     inline SquareMatrix<Var,AT> operator*(const SquareMatrix<Row1,AT> &A1, const SquareMatrix<Row2,AT> &A2) {
-      SquareMatrix<Var,AT> A3(A1.rows(),NONINIT);
+      SquareMatrix<Var,AT> A3(A1.size(),NONINIT);
       mult(A1,A2,A3);
       return A3;
     }
   template <class AT, class Row> 
     inline SquareMatrix<Row,AT> operator*(const SquareMatrix<Row,AT> &A1, const SquareMatrix<Row,AT> &A2) {
-      SquareMatrix<Row,AT> A3(A1.rows(),NONINIT);
+      SquareMatrix<Row,AT> A3(A1.size(),NONINIT);
       mult(A1,A2,A3);
       return A3;
     }
+
+  // SymmetricMatrix-SymmetricMatrix
+  template <class AT, class Row1, class Row2> 
+    inline Matrix<General,Var,Var,AT> operator*(const Matrix<Symmetric,Row1,Row1,AT> &A1, const Matrix<Symmetric,Row2,Row2,AT> &A2) {
+      Matrix<General,Var,Var,AT> A3(A1.rows(),A2.cols(),NONINIT);
+      mult(A1,A2,A3);
+      return A3;
+    }
+  template <class AT, class Row> 
+    inline Matrix<General,Row,Row,AT> operator*(const Matrix<Symmetric,Row,Row,AT> &A1, const Matrix<Symmetric,Row,Row,AT> &A2) {
+      Matrix<General,Row,Row,AT> A3(A1.rows(),A2.cols(),NONINIT);
+      mult(A1,A2,A3);
+      return A3;
+    }
+
   /////////////////////////////////// end vecscalmult //////////////////////////////
 
   /*! \brief Vector-scalar multiplication.
@@ -1000,26 +1009,26 @@ namespace fmatvec {
     }
 
   template <class Row, class AT>
-    inline Vector<Row,AT> operator*=(const Vector<Row,AT> &x_, const AT &a) {
+    inline Vector<Row,AT> operator*=(const Vector<Row,AT> &x_, const AT &alpha) {
       Vector<Row,AT> &x = const_cast<Vector<Row,AT> &>(x_);
       for(int i=0; i<x.size(); i++)
-	x.e(i) *= a;
+	x.e(i) *= alpha;
       return x;
     }
 
   template <class Row, class AT>
-    inline Vector<Row,AT> operator/(const Vector<Row,AT> &x, const AT &a) {
+    inline Vector<Row,AT> operator/(const Vector<Row,AT> &x, const AT &alpha) {
       Vector<Row,AT> y(x.size(),NONINIT);
       for(int i=0; i<x.size(); i++)
-	y.e(i) = x.e(i)/a;
+	y.e(i) = x.e(i)/alpha;
       return y;
     }
 
   template <class Row, class AT>
-    inline Vector<Row,AT> operator/=(const Vector<Row,AT> &x_, const AT &a) {
+    inline Vector<Row,AT> operator/=(const Vector<Row,AT> &x_, const AT &alpha) {
       Vector<Row,AT> &x = const_cast<Vector<Row,AT> &>(x_);
       for(int i=0; i<x.size(); i++)
-	x.e(i) /= a;
+	x.e(i) /= alpha;
       return x;
     }
   /*! \brief Rowvector-scalar multiplication.
@@ -1055,10 +1064,10 @@ namespace fmatvec {
     }
 
   template <class Col, class AT>
-    inline RowVector<Col,AT> operator*=(const RowVector<Col,AT> &x_, const AT &a) {
+    inline RowVector<Col,AT> operator*=(const RowVector<Col,AT> &x_, const AT &alpha) {
       RowVector<Col,AT> &x = const_cast<RowVector<Col,AT> &>(x_);
       for(int i=0; i<x.size(); i++)
-	x.e(i) *= a;
+	x.e(i) *= alpha;
       return x;
     }
 
@@ -1199,24 +1208,159 @@ namespace fmatvec {
     }
   
   template <class Row, class AT>
-   inline Matrix<Symmetric,Row,Row,AT> operator*(const AT &a, const Matrix<Symmetric,Row,Row,AT> &A) {
-     Matrix<Symmetric,Row,Row,AT> B(A.size(),A.size(),NONINIT);
+   inline Matrix<Symmetric,Row,Row,AT> operator*(const AT &alpha, const Matrix<Symmetric,Row,Row,AT> &A) {
+     Matrix<Symmetric,Row,Row,AT> B(A.size(),NONINIT);
      for(int i=0; i<A.size(); i++)
        for(int j=i; j<A.size(); j++)
-         B.ej(i,j) = a*A.ej(i,j);
+         B.ej(i,j) = A.ej(i,j)*alpha;
      return B;
    }
 
   template <class Row, class AT>
-    inline Matrix<Symmetric,Row,Row,AT> operator*(const Matrix<Symmetric,Row,Row,AT> &A, const AT &a) {
-      Matrix<Symmetric,Row,Row,AT> B(A.size(),A.size(),NONINIT);
+    inline Matrix<Symmetric,Row,Row,AT> operator*(const Matrix<Symmetric,Row,Row,AT> &A, const AT &alpha) {
+      Matrix<Symmetric,Row,Row,AT> B(A.size(),NONINIT);
       for(int i=0; i<A.size(); i++)
         for(int j=i; j<A.size(); j++)
-          B.ej(i,j) = a*A.ej(i,j);
+          B.ej(i,j) = A.ej(i,j)*alpha;
       return B;
     }
 
-  /////////////////////////////////// end matscalmult //////////////////////////////
+  template <class Row, class AT>
+   inline Matrix<Diagonal,Row,Row,AT> operator*(const AT &alpha, const Matrix<Diagonal,Row,Row,AT> &A) {
+     Matrix<Diagonal,Row,Row,AT> B(A.size(),A.size(),NONINIT);
+     for(int i=0; i<A.size(); i++)
+       B.e(i) = A.e(i)*alpha;
+     return B;
+   }
+
+  template <class Row, class AT>
+    inline Matrix<Diagonal,Row,Row,AT> operator*(const Matrix<Diagonal,Row,Row,AT> &A, const AT &alpha) {
+      Matrix<Diagonal,Row,Row,AT> B(A.size(),A.size(),NONINIT);
+      for(int i=0; i<A.size(); i++)
+        B.e(i) = A.e(i)*alpha;
+      return B;
+    }
+
+   template <class Type, class Row, class Col, class AT>
+    Matrix<Type,Row,Col,AT> operator/(const Matrix<Type,Row,Col,AT > &A, const AT &alpha) {
+
+      Matrix<Type,Row,Col,AT> B(A.rows(),A.cols(),NONINIT);
+
+      for(int i=0; i<A.rows(); i++) 
+        for(int j=0; j<A.cols(); j++) 
+          B.e(i,j) = A.e(i,j)/alpha;
+
+      return B;
+    }
+
+  template <class Row, class AT>
+    inline Matrix<Symmetric,Row,Row,AT> operator/(const Matrix<Symmetric,Row,Row,AT> &A, const AT &alpha) {
+      Matrix<Symmetric,Row,Row,AT> B(A.size(),NONINIT);
+      for(int i=0; i<A.size(); i++)
+        for(int j=i; j<A.size(); j++)
+          B.ej(i,j) = A.ej(i,j)/alpha;
+      return B;
+    }
+
+  template <class Row, class AT>
+    inline Matrix<Diagonal,Row,Row,AT> operator/(const Matrix<Diagonal,Row,Row,AT> &A, const AT &alpha) {
+      Matrix<Diagonal,Row,Row,AT> B(A.size(),A.size(),NONINIT);
+      for(int i=0; i<A.size(); i++)
+        B.e(i) = A.e(i)/alpha;
+      return B;
+    }
+
+  template <class Row, class AT>
+    SquareMatrix<Row,AT> operator*(const SquareMatrix<Row,AT > &A, const AT &alpha) {
+
+      SquareMatrix<Row,AT> B(A.size(),NONINIT);
+
+      for(int i=0; i<A.size(); i++) 
+        for(int j=0; j<A.size(); j++) 
+          B.e(i,j) = A.e(i,j)*alpha;
+
+      return B;
+    }
+
+  template <class Row, class AT>
+    SquareMatrix<Row,AT> operator*(const AT &alpha, const SquareMatrix<Row,AT > &A) {
+
+      SquareMatrix<Row,AT> B(A.size(),NONINIT);
+
+      for(int i=0; i<A.size(); i++) 
+        for(int j=0; j<A.size(); j++) 
+          B.e(i,j) = A.e(i,j)*alpha;
+
+      return B;
+    }
+  
+   template <class Row, class AT>
+    SquareMatrix<Row,AT> operator/(const SquareMatrix<Row,AT > &A, const AT &alpha) {
+
+      SquareMatrix<Row,AT> B(A.size(),NONINIT);
+
+      for(int i=0; i<A.size(); i++) 
+        for(int j=0; j<A.size(); j++) 
+          B.e(i,j) = A.e(i,j)/alpha;
+
+      return B;
+    }
+
+   template <class Type, class Row, class Col, class AT>
+     Matrix<Type,Row,Col,AT> operator*=(const Matrix<Type,Row,Col,AT > &A_, const AT &alpha) {
+       Matrix<Type,Row,Col,AT> A = const_cast<Matrix<Type,Row,Col,AT> &>(A_);
+       for(int i=0; i<A.rows(); i++) 
+         for(int j=0; j<A.cols(); j++) 
+           A.e(i,j) *= alpha;
+
+       return A;
+     }
+
+   template <class Row, class AT>
+     inline Matrix<Symmetric,Row,Row,AT> operator*=(const Matrix<Symmetric,Row,Row,AT> &A_, const AT &alpha) {
+       Matrix<Symmetric,Row,Row,AT> A = const_cast<Matrix<Symmetric,Row,Row,AT> &>(A_);
+       for(int i=0; i<A.size(); i++)
+         for(int j=i; j<A.size(); j++)
+           A.ej(i,j) *= alpha;
+       return A;
+     }
+
+   template <class Row, class AT>
+     inline Matrix<Diagonal,Row,Row,AT> operator*=(const Matrix<Diagonal,Row,Row,AT> &A_, const AT &alpha) {
+      Matrix<Diagonal,Row,Row,AT> A = const_cast<Matrix<Diagonal,Row,Row,AT> &>(A_);
+       for(int i=0; i<A.size(); i++)
+         A.e(i) *= alpha;
+       return A;
+     }
+
+   template <class Type, class Row, class Col, class AT>
+     Matrix<Type,Row,Col,AT> operator/=(const Matrix<Type,Row,Col,AT > &A_, const AT &alpha) {
+       Matrix<Type,Row,Col,AT> A = const_cast<Matrix<Type,Row,Col,AT> &>(A_);
+       for(int i=0; i<A.rows(); i++) 
+         for(int j=0; j<A.cols(); j++) 
+           A.e(i,j) /= alpha;
+
+       return A;
+     }
+
+   template <class Row, class AT>
+     inline Matrix<Symmetric,Row,Row,AT> operator/=(const Matrix<Symmetric,Row,Row,AT> &A_, const AT &alpha) {
+       Matrix<Symmetric,Row,Row,AT> A = const_cast<Matrix<Symmetric,Row,Row,AT> &>(A_);
+       for(int i=0; i<A.size(); i++)
+         for(int j=i; j<A.size(); j++)
+           A.ej(i,j) /= alpha;
+       return A;
+     }
+
+   template <class Row, class AT>
+     inline Matrix<Diagonal,Row,Row,AT> operator/=(const Matrix<Diagonal,Row,Row,AT> &A_, const AT &alpha) {
+      Matrix<Diagonal,Row,Row,AT> A = const_cast<Matrix<Diagonal,Row,Row,AT> &>(A_);
+       for(int i=0; i<A.size(); i++)
+         A.e(i) /= alpha;
+       return A;
+     }
+
+ /////////////////////////////////// end matscalmult //////////////////////////////
 
   /////////////////////////////////// negation //////////////////////////////
 
@@ -1262,8 +1406,8 @@ namespace fmatvec {
 
       SquareMatrix<Row,AT> B(A.size(),NONINIT);
 
-      for(int i=0; i<A.rows(); i++)
-        for(int j=0; j<A.cols(); j++)
+      for(int i=0; i<A.size(); i++)
+        for(int j=0; j<A.size(); j++)
           B.e(i,j)=-A.e(i,j);
 
       return B;
@@ -1352,7 +1496,7 @@ namespace fmatvec {
 
   template <class Row, class AT>
     inline SquareMatrix<Row,AT> trans(const SquareMatrix<Row,AT> &A) {
-      SquareMatrix<Row,AT> B(A.cols(),NONINIT);
+      SquareMatrix<Row,AT> B(A.size(),NONINIT);
       for(int i=0; i<B.size(); i++)
         for(int j=0; j<B.size(); j++)
           B.e(i,j) = A.e(j,i);
@@ -1655,7 +1799,7 @@ namespace fmatvec {
 
   template <class Row, class Col, class AT>
     inline Matrix<Symmetric,Col,Col,AT> JTJ(const Matrix<General,Row,Col,AT> &A) { 
-      Matrix<Symmetric,Col,Col,AT> S(A.cols(),A.cols(),NONINIT);
+      Matrix<Symmetric,Col,Col,AT> S(A.cols(),NONINIT);
       for(int i=0; i<A.cols(); i++) {
         for(int k=i; k<A.cols(); k++) {
           S.ej(i,k) = 0;
@@ -1669,7 +1813,7 @@ namespace fmatvec {
   template <class Row, class Col, class AT>
     inline Matrix<Symmetric,Col,Col,AT> JTMJ(const Matrix<Symmetric,Row,Row,AT> &B, const Matrix<General,Row,Col,AT> &A) {
 
-      Matrix<Symmetric,Col,Col,AT> S(A.cols(),A.cols(),NONINIT);
+      Matrix<Symmetric,Col,Col,AT> S(A.cols(),NONINIT);
       Matrix<General,Row,Col,AT> C = B*A;
 
       for(int i=0; i<A.cols(); i++) {
@@ -1685,7 +1829,7 @@ namespace fmatvec {
   template <class Row, class Col, class AT>
     inline Matrix<Symmetric,Row,Row,AT> JMJT(const Matrix<General,Row,Col,AT> &A, const Matrix<Symmetric,Col,Col,AT> &B) {
 
-      Matrix<Symmetric,Row,Row,AT> S(A.rows(),A.rows(),NONINIT);
+      Matrix<Symmetric,Row,Row,AT> S(A.rows(),NONINIT);
       Matrix<General,Row,Col,AT> C = A*B;
 
       for(int i=0; i<S.size(); i++) {

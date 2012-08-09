@@ -459,12 +459,9 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline Matrix<General,Fixed<M>,Var,AT>&  Matrix<General,Fixed<M>,Var,AT>::init(Eye eye, const AT &val) {
-      for(int i=0; i<M; i++) {
-        e(i,i) = val;
-        for(int j=0; j<i; j++) {
-          e(i,j) = e(j,i) = 0; 
-        }
-      }
+      for(int i=0; i<M; i++)
+        for(int j=0; j<N; j++)
+          e(i,j) = (i==j) ? val : 0;
       return *this;
     }
 

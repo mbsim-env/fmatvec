@@ -171,12 +171,12 @@ namespace fmatvec {
     int m, n;
     char c;
     is >> m >> c >> n >> c;
-    assert(m==A.rows());
-    assert(n==A.cols());
-    for (int i=0; i < A.rows(); ++i) 
-      for (int j=0; j < A.cols(); ++j) 
-	is >> A.e(i,j);
+    Matrix<General,Var,Var,AT> B(m,n,NONINIT);
+    for (int i=0; i < B.rows(); ++i) 
+      for (int j=0; j < B.cols(); ++j) 
+	is >> B.e(i,j);
     is >> c;
+    A = B;
     return is;
   }
 
