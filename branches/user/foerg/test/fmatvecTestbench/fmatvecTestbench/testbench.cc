@@ -90,7 +90,13 @@ namespace fmatvec {
       GenMat1=GenMat5-GenMat2*GenMat3-GenMat4*GenMat1-GenMat5*GenMat3;
     }
   }
-
+  
+  void Testbench::operate_MultibodyDynamics() {
+    for(int i=0; i<NumRuns; i++){
+      Vec1 = Vec2 + GenMat1*Vec3 + GenMat2*Vec4;
+    }
+  }
+  
   void Testbench::operate_SymMatSymMat() {
     for(int i=0; i<NumRuns; i++){
       GenMat1=SymMat5-SymMat2*SymMat3-SymMat4*SymMat1-SymMat5*SymMat3;
@@ -146,6 +152,12 @@ namespace fmatvec {
     }
   }
   
+  void Testbench::operate_G() {
+    for(int i=0; i<NumRuns; i++){
+      SqrMat1 = SqrMat(GenMat1.T()*slvLLFac(hposdefSymFacLLMat1,GenMat2));
+    }
+  }
+
   void Testbench::operate_slvLU() {
     for(int i=0; i<NumRuns; i++){
       Vec1 = slvLU(SqrMat1,Vec2);
