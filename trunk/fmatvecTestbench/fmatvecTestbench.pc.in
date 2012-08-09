@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: fmatvecTestbench
+Description: fmatvecTestbench is a testbench for testing the fmatvec.
+Requires: fmatvec
+Version: @VERSION@
+Libs: -L${libdir} -lfmatvecTestbench
+Cflags: -I${includedir}
+
+
