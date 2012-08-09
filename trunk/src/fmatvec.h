@@ -41,6 +41,8 @@ namespace fmatvec {
    * */
   typedef  Vector<double> Vec;
 
+  typedef  Vector<int> VecInt;
+
   /*! 
    *  \brief Row vector
    *  
@@ -75,6 +77,8 @@ namespace fmatvec {
    *  BandMat is an abbreviation for band matrices of type double.
    * */
   typedef  Matrix<GeneralBand, double> BandMat;
+
+  typedef  Matrix<Sparse, double> SparseMat;
 }
 
 #endif
