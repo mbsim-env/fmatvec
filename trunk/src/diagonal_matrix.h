@@ -344,8 +344,6 @@ namespace fmatvec {
         e(i) = A.e(i);
     }
 
-  template <> void Matrix<Diagonal,Ref,Ref,double>::deepCopy(const Matrix<Diagonal,Ref,Ref,double> &A);
-
   template <class AT>
     Matrix<Diagonal,Ref,Ref,AT>::operator std::vector<std::vector<AT> >() {
       std::vector<std::vector<AT> > ret(rows());
