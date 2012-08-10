@@ -298,6 +298,15 @@ namespace fmatvec {
           A3.ej(i,j) = A1.ej(i,j) + A2.ej(i,j);
     }
 
+  template <class Row1, class Row2, class Row3, class AT> 
+    inline void add(const Matrix<Diagonal,Row1,Row1,AT> &A1, const Matrix<Diagonal,Row2,Row2,AT> &A2, Matrix<Diagonal,Row3,Row3,AT> &A3) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A1.size() == A2.size());
+#endif
+      for(int i=0; i<A3.size(); i++)
+        A3.e(i) = A1.e(i) + A2.e(i);
+    }
+
   template <class Type1, class Row1, class Col1, class Type2, class Row2, class Col2, class AT> 
     inline void add(Matrix<Type1,Row1,Col1,AT> &A1, const Matrix<Type2,Row2,Col2,AT> &A2) {
 #ifndef FMATVEC_NO_SIZE_CHECK
@@ -338,6 +347,15 @@ namespace fmatvec {
       for(int i=0; i<A1.size(); i++)
         for(int j=i; j<A2.size(); j++)
           A3.ej(i,j) = A1.ej(i,j) - A2.ej(i,j);
+    }
+
+  template <class Row1, class Row2, class Row3, class AT> 
+    inline void sub(const Matrix<Diagonal,Row1,Row1,AT> &A1, const Matrix<Diagonal,Row2,Row2,AT> &A2, Matrix<Diagonal,Row3,Row3,AT> &A3) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A1.size() == A2.size());
+#endif
+      for(int i=0; i<A3.size(); i++)
+        A3.e(i) = A1.e(i) - A2.e(i);
     }
 
   template <class Type1, class Row1, class Col1, class Type2, class Row2, class Col2, class AT> 
@@ -871,6 +889,14 @@ namespace fmatvec {
             A3.e(i,k) += A1.ej(i,j)*A2.e(j,k);
         }
       }
+    }
+  template <class Row1, class Row2, class Row3, class AT> 
+    inline void mult(const Matrix<Diagonal,Row1,Row1,AT> &A1, const Matrix<Diagonal,Row2,Row2,AT> &A2, Matrix<Diagonal,Row3,Row3,AT> &A3) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+      assert(A1.size() == A2.size());
+#endif
+      for(int i=0; i<A3.size(); i++)
+        A3.e(i) = A1.e(i)*A2.e(i);
     }
 
   template <class AT, class Type1, class Type2, class Row1, class Col1, class Row2, class Col2> 
