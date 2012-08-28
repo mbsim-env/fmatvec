@@ -86,7 +86,7 @@ namespace fmatvec {
       }
 
       template<class Row>
-      Matrix(const Matrix<Symmetric,Row,Row,AT> &A) : M(A.M), ele(new AT[M*M])   {
+      Matrix(const Matrix<Symmetric,Row,Row,AT> &A) : M(A.size()), ele(new AT[M*M])   {
 	deepCopy(A);
       }
 
