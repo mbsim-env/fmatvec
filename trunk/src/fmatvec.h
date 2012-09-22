@@ -102,6 +102,8 @@ namespace fmatvec {
 
   typedef  Vector<Var,double> VecV;
 
+  typedef  RowVector<Var,double> RowVecV;
+
   typedef  Matrix<General,Fixed<3>,Var,double> Mat3V;
 
   typedef  Matrix<General,Var,Fixed<3>,double> MatV3;
