@@ -35,6 +35,7 @@
 #include "var_row_vector.h"
 #include "var_fixed_general_matrix.h"
 #include "fixed_var_general_matrix.h"
+#include <cmath>
 
 namespace fmatvec {
 
