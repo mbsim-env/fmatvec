@@ -6,7 +6,7 @@ AC_INIT(fmatvec, 2.0.0, martin.o.foerg@googlemail.com)
 AC_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([src/fmatvec.h])
-AC_PROG_LIBTOOL
+LT_INIT([win32-dll])
 AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_LANG([C++])
@@ -236,6 +236,9 @@ elif test $threadsafety = no; then
 else
   AC_MSG_ERROR([Unknown thread safety type specified by --enable-threadsafety.])
 fi
+
+# from now on only libtool is used for linking
+LDFLAGS="$LDFLAGS -no-undefined"
 
 AC_SUBST(LIBS)
 AC_SUBST([INCDIRS])
