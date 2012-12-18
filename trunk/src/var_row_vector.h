@@ -227,7 +227,7 @@ namespace fmatvec {
   template <class AT>
     inline RowVector<Var,AT>& RowVector<Var,AT>::init(const AT &val) {
       for(int i=0; i<N; i++) 
-        e[i] = val; 
+        e(i) = val; 
       return *this;
     }
 
