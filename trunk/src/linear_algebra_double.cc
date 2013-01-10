@@ -157,6 +157,30 @@ namespace fmatvec {
     return y;  
   }
 
+  Vector<Ref,double> slvLU(const SquareMatrix<Ref,double> &A, const Vector<Ref,double> &x, int & info) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+    assert(A.size() == x.size());
+#endif
+
+    Vector<Ref,double> y = x.copy();
+
+#ifndef FMATVEC_NO_VOID_CHECK
+    if(x.size() == 0)
+      return y;
+#endif
+
+    SquareMatrix<Ref,double> B = A.copy();
+
+    int *ipiv = new int[A.size()];
+
+    info = dgesv(B.blasOrder(), B.size(), 1, B(), B.ldim(), ipiv, y(), y.size());
+
+    delete [] ipiv;
+
+    return y;
+  }
+
   Vector<Ref,double> slvLUFac(const SquareMatrix<Ref,double> &A, const Vector<Ref,double> &x, const Vector<Ref,int> &ipiv) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
