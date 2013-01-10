@@ -100,6 +100,18 @@ namespace fmatvec {
    * */
   Vector<Ref,double> slvLU(const SquareMatrix<Ref,double> &A, const Vector<Ref,double> &b);
 
+  /*! \brief System of linear equations
+   *
+   * This function solves a system of linear equations
+   * according to \f[\boldsymbol{A}\,\boldsymbol{x}=\boldsymbol{b} \f]
+   * by a LU decompostion.
+   * \param A    A square matrix.
+   * \param b    A vector containing the right hand side.
+   * \param info Information about the success of the routine (0 = success)
+   * \return A vector containig the solution.
+   * */
+  Vector<Ref,double> slvLU(const SquareMatrix<Ref,double> &A, const Vector<Ref,double> &x, int & info);
+
   /*! \brief Systems of linear equations
    *
    * This function solves systems of linear equations 
