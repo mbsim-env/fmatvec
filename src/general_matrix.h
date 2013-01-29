@@ -452,48 +452,51 @@ namespace fmatvec {
   };
 
   template <class AT> 
-    Matrix<General,Ref,Ref,AT>::Matrix(const char *strs) {
-    // if 'strs' is a single scalar, surround it first with '[' and ']'.
-    // This is more Matlab-like, because e.g. '5' and '[5]' is just the same.
-    // (This functionallitiy is needed e.g. by MBXMLUtils (OpenMBV,MBSim))
-    std::istringstream iss(strs);
-    char c;
-    iss>>c;
-    if(c=='[') iss.str(strs);
-    else iss.str(std::string("[")+strs+"]");
+    Matrix<General,Ref,Ref,AT>::Matrix(const char *strs) : memory(), ele(0), m(0), n(0), lda(0) {
+      // if 'strs' is a single scalar, surround it first with '[' and ']'.
+      // This is more Matlab-like, because e.g. '5' and '[5]' is just the same.
+      // (This functionallitiy is needed e.g. by MBXMLUtils (OpenMBV,MBSim))
+      std::istringstream iss(strs);
+      char c;
+      iss>>c;
+      if(c=='[') iss.str(strs);
+      else iss.str(std::string("[")+strs+"]");
 
-    m = 0,n=0;
-    int buf=0;
-    iss >> c;
-    AT x;
-    do {
-      iss >> x;
+      int buf=0;
       iss >> c;
-      if(c==';') {
-	if(buf)
-	  assert(buf == n);
+      iss >> c;
+      if(c!=']') {
+        iss.putback(c);
+        AT x;
+        do {
+          iss >> x;
+          iss >> c;
+          if(c==';') {
+            if(buf)
+              assert(buf == n);
 
-	buf=n;
-	n=0;
-	m++;
-      }
-      else if(c==',')
-	n++;
-      c='0';
-    } while(iss);
+            buf=n;
+            n=0;
+            m++;
+          }
+          else if(c==',')
+            n++;
+          c='0';
+        } while(iss);
 
-    n++; m++;
-    lda=m;
-    tp = false;
-    memory.resize(m*n);
-    ele = (AT*)memory.get();
-    iss.clear();
-    iss.seekg(0);
-    iss >> c;
-    for(int i=0; i<m; i++)
-      for(int j=0; j<n; j++) {
-        iss >> er(i,j); 
+        n++; m++;
+        lda=m;
+        tp = false;
+        memory.resize(m*n);
+        ele = (AT*)memory.get();
+        iss.clear();
+        iss.seekg(0);
         iss >> c;
+        for(int i=0; i<m; i++)
+          for(int j=0; j<n; j++) {
+            iss >> er(i,j); 
+            iss >> c;
+          }
       }
     }
 

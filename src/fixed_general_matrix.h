@@ -326,34 +326,38 @@ namespace fmatvec {
       int m=0, n=0;
       int buf=0;
       iss >> c;
-      AT x;
-      do {
-        iss >> x;
+      iss >> c;
+      if(c!=']') {
+        iss.putback(c);
+        AT x;
+        do {
+          iss >> x;
+          iss >> c;
+          if(c==';') {
+            if(buf)
+              assert(buf == n);
+
+            buf=n;
+            n=0;
+            m++;
+          }
+          else if(c==',')
+            n++;
+          c='0';
+        } while(iss);
+
+        n++; m++;
+        iss.clear();
+        iss.seekg(0);
         iss >> c;
-        if(c==';') {
-          if(buf)
-            assert(buf == n);
-
-          buf=n;
-          n=0;
-          m++;
-        }
-        else if(c==',')
-          n++;
-        c='0';
-      } while(iss);
-
-      n++; m++;
+        for(int i=0; i<M; i++)
+          for(int j=0; j<N; j++) {
+            iss >> e(i,j);
+            iss >> c;
+          }
+      }
       assert(m==M);
       assert(n==N);
-      iss.clear();
-      iss.seekg(0);
-      iss >> c;
-      for(int i=0; i<M; i++)
-        for(int j=0; j<N; j++) {
-          iss >> e(i,j);
-          iss >> c;
-        }
     }
 
   template <int M, int N, class AT> template<class Type, class Row, class Col>
