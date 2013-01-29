@@ -82,7 +82,7 @@ namespace fmatvec {
        *
        * Constructs a matrix with no size. 
        * */
-      Matrix() : memory(), ele(0), m(0), n(0), lda(0) { }
+      Matrix() : memory(), ele(0), m(0), n(0), lda(0), tp(false) { }
 
 // Works with -std=gnu++0x only
 //      template<class Ini=All<AT> >

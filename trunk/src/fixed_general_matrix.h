@@ -160,13 +160,13 @@ namespace fmatvec {
        * Returns the pointer to the first element.
        * \return The pointer to the first element.
        * */
-      AT* operator()() {return ele;};
+      AT* operator()() {return &(ele[0][0]);};
 
       /*! \brief Pointer operator
        *
        * See operator()() 
        * */
-      const AT* operator()() const {return ele;};
+      const AT* operator()() const {return &(ele[0][0]);};
 
       /*! \brief Number of rows.
        *

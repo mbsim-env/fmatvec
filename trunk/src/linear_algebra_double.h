@@ -36,14 +36,13 @@
 
 namespace fmatvec {
 
-
   /*! \brief Eigenvalues
    *
    * This function computes the complex eigenvalues of a square matrix.
    * \param A A square matrix. 
    * \return A vector containig the eigenvalues.
    * */
-  Vector<Ref,std::complex<double> > eigval(const SquareMatrix<Ref,double> &A); 
+  Vector<Ref, std::complex<double> > eigval(const SquareMatrix<Ref, double> &A);
 
   /*! \brief Eigenvectors and Eigenvalues
    *
@@ -55,7 +54,7 @@ namespace fmatvec {
    * \param eigenvalues A vector in the size of A, containing the Eigenvalues at the end of the function
    * \return void
    * */
-  int eigvec(const Matrix<Symmetric,Ref,Ref,double> &A, const Matrix<Symmetric,Ref,Ref,double> &B, SquareMatrix<Ref,double> &eigenvectors, Vector<Ref,double> &eigenvalues); 
+  int eigvec(const Matrix<Symmetric, Ref, Ref, double> &A, const Matrix<Symmetric, Ref, Ref, double> &B, SquareMatrix<Ref, double> &eigenvectors, Vector<Ref, double> &eigenvalues);
 
   /*! \brief Eigenvalues
    *
@@ -63,7 +62,7 @@ namespace fmatvec {
    * \param A A symmetric matrix. 
    * \return A vector containig the eigenvalues.
    * */
-  Vector<Ref,double> eigval(const Matrix<Symmetric,Ref,Ref,double> &A); 
+  Vector<Ref, double> eigval(const Matrix<Symmetric, Ref, Ref, double> &A);
 
   /*! \brief Eigenvalues
    *
@@ -76,7 +75,30 @@ namespace fmatvec {
    * \param abstol The absolute error tolerance for the eigenvalues
    * \return A vector containig the eigenvalues.
    * */
-  Vector<Ref,double> eigvalSel(const Matrix<Symmetric,Ref,Ref,double> &A, int il, int iu, double abstol=0);
+  Vector<Ref, double> eigvalSel(const Matrix<Symmetric, Ref, Ref, double> &A, int il, int iu, double abstol = 0);
+
+  /*!
+   * \brief solve linear system with LU decomposed matrix
+   * \param *LU       Pointer to the first element of the matrix whose elements form the lower and upper triangular matrix factors of A
+   * \param *B        Pointer to the column vector, (n x 1) matrix, B.
+   * \param  pivot[]  The i-th element is the pivot row interchanged with row i
+   * \param *x        Solution to the equation Ax = B
+   * \param  n        The number of rows or columns of the matrix LU
+   * \return success of routine (1 = Success, -1 Failure (matrix LU is singular)
+   *
+   * This routine uses Doolittle's method to solve the linear equation
+   * Ax = B.  This routine is called after the matrix A has been decomposed
+   * into a product of a unit lower triangular matrix L and an upper
+   * triangular matrix U with pivoting.  The argument LU is a pointer to the
+   * matrix the subdiagonal part of which is L and the superdiagonal
+   * together with the diagonal part is U. (The diagonal part of L is 1 and
+   * is not stored.)   The matrix A = LU.
+   * The solution proceeds by solving the linear equation Ly = B for y and
+   * subsequently solving the linear equation Ux = y for x.
+   *
+   * REMARK: Copied and fitted on 28.01.2013 of http://www.mymathlib.com/c_source/matrices/linearsystems/doolittle_pivot.c
+   */
+  int Doolittle_LU_with_Pivoting_Solve(double *A, double B[], int pivot[], double x[], int n);
 
   /*! \brief Systems of linear equations
    *
@@ -87,7 +109,7 @@ namespace fmatvec {
    * \param B A general matrix containing the right hand sides.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General,Ref,Ref,double> slvLU(const SquareMatrix<Ref,double> &A, const Matrix<General,Ref,Ref,double> &B);
+  Matrix<General, Ref, Ref, double> slvLU(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &B);
 
   /*! \brief System of linear equations
    *
@@ -98,7 +120,7 @@ namespace fmatvec {
    * \param b A vector containing the right hand side.
    * \return A vector containig the solution.
    * */
-  Vector<Ref,double> slvLU(const SquareMatrix<Ref,double> &A, const Vector<Ref,double> &b);
+  Vector<Ref, double> slvLU(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &b);
 
   /*! \brief System of linear equations
    *
@@ -110,7 +132,7 @@ namespace fmatvec {
    * \param info Information about the success of the routine (0 = success)
    * \return A vector containig the solution.
    * */
-  Vector<Ref,double> slvLU(const SquareMatrix<Ref,double> &A, const Vector<Ref,double> &x, int & info);
+  Vector<Ref, double> slvLU(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &x, int & info);
 
   /*! \brief Systems of linear equations
    *
@@ -122,7 +144,7 @@ namespace fmatvec {
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General,Ref,Ref,double> slvLUFac(const SquareMatrix<Ref,double> &A, const Matrix<General,Ref,Ref,double> &B, const Vector<Ref,int> &ipiv);
+  Matrix<General, Ref, Ref, double> slvLUFac(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &B, const Vector<Ref, int> &ipiv);
 
   /*! \brief System of linear equations
    *
@@ -134,7 +156,7 @@ namespace fmatvec {
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A vector containig the solution.
    * */
-  Vector<Ref,double> slvLUFac(const SquareMatrix<Ref,double> &A, const Vector<Ref,double> &b, const Vector<Ref,int> &ipiv);
+  Vector<Ref, double> slvLUFac(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &b, const Vector<Ref, int> &ipiv);
 
   /*! \brief Systems of linear equations
    *
@@ -145,7 +167,7 @@ namespace fmatvec {
    * \param B A general matrix containing the right hand sides.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General,Ref,Ref,double> slvLL(const Matrix<Symmetric,Ref,Ref,double> &A, const Matrix<General,Ref,Ref,double> &B);
+  Matrix<General, Ref, Ref, double> slvLL(const Matrix<Symmetric, Ref, Ref, double> &A, const Matrix<General, Ref, Ref, double> &B);
 
   /*! \brief System of linear equations
    *
@@ -156,8 +178,7 @@ namespace fmatvec {
    * \param b A vector containing the right hand side.
    * \return A vector containig the solution.
    * */
-  Vector<Ref,double> slvLL(const Matrix<Symmetric,Ref,Ref,double> &A, const Vector<Ref,double> &b);
-
+  Vector<Ref, double> slvLL(const Matrix<Symmetric, Ref, Ref, double> &A, const Vector<Ref, double> &b);
 
   /*! \brief Systems of linear equations
    *
@@ -168,7 +189,7 @@ namespace fmatvec {
    * \param B A general matrix containing the right hand sides.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General,Ref,Ref,double> slvQR(const SquareMatrix<Ref,double> &A, const Matrix<General,Ref,Ref,double> &B);
+  Matrix<General, Ref, Ref, double> slvQR(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &B);
 
   /*! \brief System of linear equations
    *
@@ -179,7 +200,7 @@ namespace fmatvec {
    * \param b A vector containing the right hand side.
    * \return A vector containig the solution.
    * */
-  Vector<Ref,double> slvQR(const SquareMatrix<Ref,double> &A, const Vector<Ref,double> &b);
+  Vector<Ref, double> slvQR(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &b);
 
   /*! \brief Inverse
    *
@@ -188,7 +209,7 @@ namespace fmatvec {
    * \param A A square matrix. 
    * \return A square matrix containig the result.
    * */
-  SquareMatrix<Ref,double> inv(const SquareMatrix<Ref,double> &A);
+  SquareMatrix<Ref, double> inv(const SquareMatrix<Ref, double> &A);
 
   /*! \brief Inverse
    *
@@ -197,7 +218,7 @@ namespace fmatvec {
    * \param A A symmetric matrix. 
    * \return A symmetric matrix containig the result.
    * */
-  Matrix<Symmetric,Ref,Ref,double> inv(const Matrix<Symmetric,Ref,Ref,double> &A);
+  Matrix<Symmetric, Ref, Ref, double> inv(const Matrix<Symmetric, Ref, Ref, double> &A);
 
   /*! \brief Inverse
    *
@@ -206,7 +227,7 @@ namespace fmatvec {
    * \param A A diagonal matrix. 
    * \return A diagonal matrix containig the result.
    * */
-  Matrix<Diagonal,Ref,Ref,double> inv(const Matrix<Diagonal,Ref,Ref,double> &A);
+  Matrix<Diagonal, Ref, Ref, double> inv(const Matrix<Diagonal, Ref, Ref, double> &A);
 
   /*! \brief LU decomposition
    *
@@ -216,7 +237,7 @@ namespace fmatvec {
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A general matrix containig the result.
    * */
-  Matrix<General,Ref,Ref,double> facLU(const Matrix<General,Ref,Ref,double> &A, Vector<Ref,int> &ipiv);
+  Matrix<General, Ref, Ref, double> facLU(const Matrix<General, Ref, Ref, double> &A, Vector<Ref, int> &ipiv);
 
   /*! \brief LU decomposition
    *
@@ -226,8 +247,21 @@ namespace fmatvec {
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A square matrix containig the result.
    * */
-  SquareMatrix<Ref,double> facLU(const SquareMatrix<Ref,double> &A, Vector<Ref,int> &ipiv);
+  SquareMatrix<Ref, double> facLU(const SquareMatrix<Ref, double> &A, Vector<Ref, int> &ipiv);
 
+  /*! \brief LU decomposition
+   *
+   * This function computes the LU decomposition of a square matrix
+   * according to \f[\boldsymbol{A}=\boldsymbol{P}\,\boldsymbol{L}\,\boldsymbol{U} \f]
+   * \param A Pointer to first element of a square matrix.
+   * \param ipiv A vector of integers containing the pivot indices.
+   * \param info Information about success of routine
+   * \return A square matrix containig the result.
+   *
+   * Copied and fitted on 28.01.2013 of http://www.mymathlib.com/c_source/matrices/linearsystems/doolittle_pivot.c
+   * */
+  int facLU(double *A, int pivot[], int n);
+  
   /*! \brief LL decomposition
    *
    * This function computes the Cholesky decomposition of a symmetric matrix 
@@ -235,7 +269,7 @@ namespace fmatvec {
    * \param A A symmetric matrix. 
    * \return A symmetric matrix containig the result.
    * */
-  Matrix<Symmetric,Ref,Ref,double> facLL(const Matrix<Symmetric,Ref,Ref,double> &A);
+  Matrix<Symmetric, Ref, Ref, double> facLL(const Matrix<Symmetric, Ref, Ref, double> &A);
 
   /*! \brief 1-norm
    *
@@ -243,7 +277,7 @@ namespace fmatvec {
    * \param x A vector.
    * \return A scalar containig the result.
    * */
-  double nrm1(const Vector<Ref,double> &x);
+  double nrm1(const Vector<Ref, double> &x);
 
   /*! \brief 2-norm
    *
@@ -251,7 +285,7 @@ namespace fmatvec {
    * \param x A vector.
    * \return A scalar containig the result.
    * */
-  double nrm2(const Vector<Ref,double> &x);
+  double nrm2(const Vector<Ref, double> &x);
 
   /*! \brief Infinity-norm
    *
@@ -259,8 +293,8 @@ namespace fmatvec {
    * \param x A vector.
    * \return A scalar containig the result.
    * */
-  double nrmInf(const Vector<Ref,double> &x);
-
+  double nrmInf(const Vector<Ref, double> &x);
+  
   /*! \brief 1-norm
    *
    * This function computes the largest column sum of the absolute 
@@ -268,7 +302,7 @@ namespace fmatvec {
    * \param A A general matrix.
    * \return A scalar containig the result.
    * */
-  double nrm1(const Matrix<General,Ref,Ref,double> &A);
+  double nrm1(const Matrix<General, Ref, Ref, double> &A);
 
   /*! \brief 2-norm
    *
@@ -276,7 +310,7 @@ namespace fmatvec {
    * \param A A general matrix.
    * \return A scalar containig the result.
    * */
-  double nrm2(const Matrix<General,Ref,Ref,double> &A);
+  double nrm2(const Matrix<General, Ref, Ref, double> &A);
 
   /*! \brief Infinity-norm
    *
@@ -285,7 +319,7 @@ namespace fmatvec {
    * \param A A general matrix.
    * \return A scalar containig the result.
    * */
-  double nrmInf(const Matrix<General,Ref,Ref,double> &A);
+  double nrmInf(const Matrix<General, Ref, Ref, double> &A);
 
   /*! \brief Frobenius-norm
    *
@@ -293,7 +327,7 @@ namespace fmatvec {
    * \param A A general matrix.
    * \return A scalar containig the result.
    * */
-  double nrmFro(const Matrix<General,Ref,Ref,double> &A);
+  double nrmFro(const Matrix<General, Ref, Ref, double> &A);
 
   /*! \brief Spectral radius
    *
@@ -301,7 +335,7 @@ namespace fmatvec {
    * \param A A square matrix.
    * \return A scalar containig the result.
    * */
-  double rho(const SquareMatrix<Ref,double> &A);
+  double rho(const SquareMatrix<Ref, double> &A);
 
   /*! \brief Spectral radius
    *
@@ -309,26 +343,60 @@ namespace fmatvec {
    * \param A A symmetric matrix.
    * \return A scalar containig the result.
    * */
-  double rho(const Matrix<Symmetric,Ref,Ref,double> &A);
+  double rho(const Matrix<Symmetric, Ref, Ref, double> &A);
+
+  Vector<Ref, double> slvLLFac(const Matrix<Symmetric, Ref, Ref, double> &A, const Vector<Ref, double> &x);
+
+  Matrix<General, Ref, Ref, double> slvLLFac(const Matrix<Symmetric, Ref, Ref, double> &A, const Matrix<General, Ref, Ref, double> &X);
+
+  Matrix<General, Ref, Ref, double> slvLS(const Matrix<General, Ref, Ref, double> &A, const Matrix<General, Ref, Ref, double> &B, double rcond = -1);
   
-  Vector<Ref,double> slvLLFac(const Matrix<Symmetric,Ref,Ref,double> &A, const Vector<Ref,double> &x);
+  Vector<Ref, double> slvLS(const Matrix<General, Ref, Ref, double> &A, const Vector<Ref, double> &b, double rcond = -1);
 
-  Matrix<General,Ref,Ref,double> slvLLFac(const Matrix<Symmetric,Ref,Ref,double> &A, const Matrix<General,Ref,Ref,double> &X);
-
-  Matrix<General,Ref,Ref,double> slvLS(const Matrix<General,Ref,Ref,double> &A, const Matrix<General,Ref,Ref,double> &B, double rcond=-1);
-
-  Vector<Ref,double> slvLS(const Matrix<General,Ref,Ref,double> &A, const Vector<Ref,double> &b, double rcond=-1);
-
-  //Matrix<General,Ref,Ref,double> slvLU(CBLAS_SIDE side, CBLAS_UPLO uplo, CBLAS_DIAG unit, const SquareMatrix<Ref,double> &A, const Matrix<General,Ref,Ref,double> &X, const Vector<Ref,int> &ipiv );
+//Matrix<General,Ref,Ref,double> slvLU(CBLAS_SIDE side, CBLAS_UPLO uplo, CBLAS_DIAG unit, const SquareMatrix<Ref,double> &A, const Matrix<General,Ref,Ref,double> &X, const Vector<Ref,int> &ipiv );
 
   /*! \brief Row interchanges
    *
    * This function performs a series of row interchanges on a general matrix.
-   * \param A A general matrix. 
+   * \param A A general matrix.
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A Matrix containig the result.
    * */
-  //Matrix<General,Ref,Ref,double> swap(const Matrix<General,Ref,Ref,double> &A, const Vector<Ref,int> &ipiv );
+//Matrix<General,Ref,Ref,double> swap(const Matrix<General,Ref,Ref,double> &A, const Vector<Ref,int> &ipiv );
+
+  /*! \brief System of linear equations
+   *
+   * This function solves a system of linear equations
+   * according to \f[\boldsymbol{A}\,\boldsymbol{x}=\boldsymbol{b} \f]
+   * by a LU decompostion.
+   * \param A    A square matrix.
+   * \param b    A vector containing the right hand side.
+   * \param info Information about the success of the routine (0 = success)
+   * \return A vector containig the solution.
+   * */
+  template <int size>
+  Vector<Fixed<size>, double> slvLU(const SquareMatrix<Fixed<size>, double> &A, const Vector<Fixed<size>, double> &b, int & info) {
+
+#ifndef FMATVEC_NO_VOID_CHECK
+    if (size == 0)
+      return b;
+#endif
+
+    int ipiv[size];
+
+    SquareMatrix<Fixed<size>, double> LU = A;
+
+    info = facLU(LU(), ipiv, size);
+
+    Vector<Fixed<size>, double> x = b;
+    Vector<Fixed<size>, double> y = b;
+
+    info = Doolittle_LU_with_Pivoting_Solve(LU(), y(), ipiv, x(), size);
+
+    return x;
+
+  }
+
 }
 
 #endif
