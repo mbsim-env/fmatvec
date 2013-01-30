@@ -296,16 +296,34 @@ namespace fmatvec {
        * */
       Matrix(std::vector<std::vector<AT> > m);
 
-      inline const Matrix<General,Fixed<M>,Fixed<N>,AT> T() const;
+      inline const Matrix<General,Fixed<N>,Fixed<M>,AT> T() const;
 
+      /*!
+       * \brief set Column j of matrix to given Vector
+       */
       template<class Row> inline void set(int j, const Vector<Row,AT> &x);
 
+      /*!
+       * \brief set Row i of matrix to given RowVector
+       */
       template<class Col> inline void set(int i, const RowVector<Col,AT> &x);
 
+      /*!
+       * \brief set the submatrix - specified by the Range operators - to the values of A
+       * \param I Range of starting and ending row
+       * \param J Range of starting and ending column
+       * \param A Matrix with the values the submatrix should take
+       */
       template<class Type, class Row, class Col> inline void set(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
 
+      /*!
+       * \brief add to Column j of the matrix the given Vector
+       */
       template<class Row> inline void add(int j, const Vector<Row,AT> &x);
 
+      /*!
+       * \brief add to Row i of the matrix the given RowVector
+       */
       template<class Col> inline void add(int i, const RowVector<Col,AT> &x);
 
       template<class Type, class Row, class Col> inline void add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
@@ -484,7 +502,7 @@ namespace fmatvec {
     }
 
   template <int M, int N, class AT>
-    inline const Matrix<General,Fixed<M>,Fixed<N>,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::T() const {
+    inline const Matrix<General,Fixed<N>,Fixed<M>,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::T() const {
       Matrix<General,Fixed<N>,Fixed<M>,AT> A(NONINIT);
       for(int i=0; i<N; i++)
         for(int j=0; j<M; j++)
