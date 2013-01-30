@@ -36,7 +36,8 @@ namespace fmatvec {
    * atomic type of the vector. Valid types are int, float,
    * double, complex<float> and complex<double> 
    * */
-  template <int M, class AT> class Vector<Fixed<M>,AT> : public Matrix<General,Fixed<M>,Fixed<1>,AT> {
+  template <int M, class AT>
+  class Vector<Fixed<M>,AT> : public Matrix<General,Fixed<M>,Fixed<1>,AT> {
     using Matrix<General,Fixed<M>,Fixed<1>,AT>::ele;
 
     public:
@@ -186,7 +187,16 @@ namespace fmatvec {
        * */
       inline Vector(std::vector<AT> v);
 
+      /*!
+       * \brief return the transpose of the Vector, i.e. a RowVector
+       */
       inline const RowVector<Fixed<M>,AT> T() const;
+
+      /*!
+       * \brief set a subvector - specified by the range - to the given vector
+       */
+      template<class Type, class Row, class Col>
+      inline void set(const Range<Var,Var> &I, const Matrix<Type,Row,Col,AT> &A);
 
   };
 
@@ -251,6 +261,11 @@ namespace fmatvec {
     }
 
   /// @endcond
+
+  template<int M, class AT> template<class Type, class Row, class Col>
+  inline void Vector<Fixed<M>,AT>::set(const Range<Var,Var> &I, const Matrix<Type,Row,Col,AT> &A) {
+      Matrix<General,Fixed<M>,Fixed<1>,AT>::set(I, Index(0,0), A);
+  }
 
 }
 
