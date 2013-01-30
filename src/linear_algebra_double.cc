@@ -373,7 +373,7 @@ namespace fmatvec {
 
   int facLU(double *A, int pivot[], int n) {
       int i, j, k;
-      double *p_k, *p_row, *p_col;
+      double *p_k, *p_row, *p_col = NULL;
       double max;
 
       //         For each row and column, k = 0, ..., n-1,
