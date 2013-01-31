@@ -1,0 +1,6 @@
+0.9.2
+	Building fmatvec without ATLAS: now, fmatvec can be built without ATLAS. In
+	that case only the reference BLAS and LAPACK libraries are needed, thus making
+	fmatvec platform independent. By default ATLAS is disabled. To enable it, use
+	--enable-atlas with configure (see ./configure --help).
+	
