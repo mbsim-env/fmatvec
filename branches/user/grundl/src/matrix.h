@@ -35,25 +35,28 @@
  * */
 namespace fmatvec {
 
-  class Noinit { };
-  class Init { };
-  class Eye { };
+  class Noinit {
+  };
+  class Init {
+  };
+  class Eye {
+  };
 
   static Noinit NONINIT = Noinit();
   static Init INIT = Init();
   static Eye EYE = Eye();
 
   /*! Enumerate for initialization of matrices
-  */
+   */
   //enum Initialization{INIT,NONINIT,EYE};
-
   /*! 
    *  \brief This is the basic matrix class for arbitrary matrices.
    *
    * Template class Matrix with shape type ST and atomic type AT. The first template parameter defines the shape type, the second parameter the
    * atomic type of the matrix. Valid shape types are General, Symmetric, GeneralBand, Diagonal and Sparse. Valid atomic types are int, float, double, complex<float> and complex<double> 
    * */
-  template <class Type, class Row, class Col, class AT> class Matrix {
+  template <class Type, class Row, class Col, class AT>
+  class Matrix {
 
     protected:
 
@@ -61,7 +64,7 @@ namespace fmatvec {
 
       //AT* ele;
 
-      void deepCopy(const Matrix<Type,Row,Col,AT> &A);
+      void deepCopy(const Matrix<Type, Row, Col, AT> &A);
 
       /// @endcond
 
@@ -74,6 +77,11 @@ namespace fmatvec {
 //       * */
 //      Matrix(int m, int n) {};
 
+      /*!
+       * \brief standard virtual destructor
+       */
+      virtual ~Matrix() {}
+
       /*! \brief Element operator
        *
        * Returns a reference to the element in the i-th row and the j-th column. 
@@ -84,13 +92,13 @@ namespace fmatvec {
        * */
       AT& operator()(int i, int j) {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
-	assert(i>=0);
-	assert(j>=0);
-	assert(i<rows());
-	assert(j<cols());
+        assert(i>=0);
+        assert(j>=0);
+        assert(i<rows());
+        assert(j<cols());
 #endif
 
-	return e(i,j);
+        return e(i, j);
       }
 
       /*! \brief Element operator
@@ -99,13 +107,13 @@ namespace fmatvec {
        * */
       const AT& operator()(int i, int j) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
-	assert(i>=0);
-	assert(j>=0);
-	assert(i<rows());
-	assert(j<cols());
+        assert(i>=0);
+        assert(j>=0);
+        assert(i<rows());
+        assert(j<cols());
 #endif
 
-	return e(i,j);
+        return e(i, j);
       }
 
       AT& e(int i, int j);
@@ -131,12 +139,10 @@ namespace fmatvec {
       operator std::vector<std::vector<AT> >();
   };
 
-
-
-  template <class Type, class Row, class Col, class AT> void Matrix<Type,Row,Col,AT>::deepCopy(const Matrix<Type,Row,Col,AT> &A) { 
-    for(int i=0; i<rows(); i++) 
-      for(int j=0; j<cols(); j++) 
-	e(i,j) = A.e(i,j);
+  template <class Type, class Row, class Col, class AT> void Matrix<Type, Row, Col, AT>::deepCopy(const Matrix<Type, Row, Col, AT> &A) {
+    for (int i = 0; i < rows(); i++)
+      for (int j = 0; j < cols(); j++)
+        e(i, j) = A.e(i, j);
   }
 
   /*! \brief Matrix output 
@@ -146,15 +152,15 @@ namespace fmatvec {
    * \param A A matrix of any shape and type.
    * \return A reference to the output stream.
    * */
-  template <class Type, class Row, class Col, class AT> std::ostream& operator<<(std::ostream &os, const Matrix<Type,Row,Col,AT> &A) {
+  template <class Type, class Row, class Col, class AT> std::ostream& operator<<(std::ostream &os, const Matrix<Type, Row, Col, AT> &A) {
     os << A.rows() << " x " << A.cols() << std::endl;
     os << "[ ";
-    for (int i=0; i < A.rows(); ++i) {
-      for (int j=0; j < A.cols(); ++j) 
-	os << std::setw(14) << A.e(i,j);
+    for (int i = 0; i < A.rows(); ++i) {
+      for (int j = 0; j < A.cols(); ++j)
+        os << std::setw(14) << A.e(i, j);
 
       if (i != A.rows() - 1)
-	os << std::endl  << "  ";
+        os << std::endl << "  ";
     }
     os << " ]";
     return os;
@@ -167,14 +173,14 @@ namespace fmatvec {
    * \param A A matrix of any shape and type.
    * \return A reference to the input stream.
    * */
-  template <class Type, class Row, class Col, class AT> std::istream& operator>>(std::istream &is, Matrix<Type,Row,Col,AT> &A) {
+  template <class Type, class Row, class Col, class AT> std::istream& operator>>(std::istream &is, Matrix<Type, Row, Col, AT> &A) {
     int m, n;
     char c;
     is >> m >> c >> n >> c;
-    Matrix<General,Var,Var,AT> B(m,n,NONINIT);
-    for (int i=0; i < B.rows(); ++i) 
-      for (int j=0; j < B.cols(); ++j) 
-	is >> B.e(i,j);
+    Matrix<General, Var, Var, AT> B(m, n, NONINIT);
+    for (int i = 0; i < B.rows(); ++i)
+      for (int j = 0; j < B.cols(); ++j)
+        is >> B.e(i, j);
     is >> c;
     A = B;
     return is;
@@ -186,28 +192,28 @@ namespace fmatvec {
    * \param is The filename.
    * \param A A matrix of any shape and type.
    * */
-  template <class Type, class Row, class Col, class AT> void dump(const char* str, const Matrix<Type,Row,Col,AT> &A) {
+  template <class Type, class Row, class Col, class AT> void dump(const char* str, const Matrix<Type, Row, Col, AT> &A) {
     std::ofstream os(str);
-    for (int i=0; i < A.rows(); ++i) {
-      for (int j=0; j < A.cols(); ++j) 
-	os << std::setw(14) << A.e(i,j);
+    for (int i = 0; i < A.rows(); ++i) {
+      for (int j = 0; j < A.cols(); ++j)
+        os << std::setw(14) << A.e(i, j);
 
       if (i != A.rows() - 1)
-	os << std::endl;
+        os << std::endl;
     }
     os.close();
   }
 
   template <class Type, class Row, class Col, class AT>
-    Matrix<Type,Row,Col,AT>::operator std::vector<std::vector<AT> >() {
-      std::vector<std::vector<AT> > ret(rows());
-      for(int r=0; r<rows(); r++) {
-	ret[r].resize(cols());
-	for(int c=0; c<cols(); c++)
-	  ret[r][c]=e(r,c);
-      }
-      return ret;
+  Matrix<Type, Row, Col, AT>::operator std::vector<std::vector<AT> >() {
+    std::vector<std::vector<AT> > ret(rows());
+    for (int r = 0; r < rows(); r++) {
+      ret[r].resize(cols());
+      for (int c = 0; c < cols(); c++)
+        ret[r][c] = e(r, c);
     }
+    return ret;
+  }
 
   template <class Row, class AT> class SquareMatrix {
   };

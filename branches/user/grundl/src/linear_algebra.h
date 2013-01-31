@@ -1877,6 +1877,23 @@ namespace fmatvec {
     return S;
   }
 
+  //TODO: correct? what is JTMJ
+  template <class Row, class Col, class AT>
+  inline Matrix<Symmetric, Col, Col, AT> JTMJ(const Matrix<Symmetric, Row, Row, AT> &B, const SquareMatrix< Row, AT> &A) {
+
+    Matrix<Symmetric, Row, Row, AT> S(A.cols(), A.cols(), NONINIT);
+    Matrix<General, Row, Col, AT> C = B * A;
+
+    for (int i = 0; i < A.cols(); i++) {
+      for (int k = i; k < A.cols(); k++) {
+        S.ej(i, k) = 0;
+        for (int j = 0; j < A.rows(); j++)
+          S.ej(i, k) += A.e(j, i) * C.e(j, k);
+      }
+    }
+    return S;
+  }
+
   template <class Row, class Col, class AT>
   inline Matrix<Symmetric, Row, Row, AT> JMJT(const Matrix<General, Row, Col, AT> &A, const Matrix<Symmetric, Col, Col, AT> &B) {
 
