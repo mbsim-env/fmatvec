@@ -105,8 +105,9 @@ namespace fmatvec {
   //General Matrices
   typedef Matrix<General, Fixed<2>, Fixed<3>, double> Mat2x3;
 
-  typedef Matrix<General, Fixed<3>, Fixed<3>, double> Mat3x3;
   typedef Matrix<General, Fixed<3>, Fixed<2>, double> Mat3x2;
+  typedef Matrix<General, Fixed<3>, Fixed<3>, double> Mat3x3;
+  typedef Matrix<General, Fixed<3>, Fixed<6>, double> Mat3x6;
   typedef Matrix<General, Fixed<3>, Fixed<11>, double> Mat3x11;
   typedef Matrix<General, Fixed<3>, Fixed<16>, double> Mat3x16;
 
@@ -121,6 +122,7 @@ namespace fmatvec {
 
   typedef Matrix<General, Fixed<16>, Fixed<3>, double> Mat16x3;
   typedef Matrix<General, Fixed<16>, Fixed<4>, double> Mat16x4;
+  typedef Matrix<General, Fixed<16>, Fixed<6>, double> Mat16x6;
   typedef Matrix<General, Fixed<16>, Fixed<8>, double> Mat16x8;
 
   //Square Matrices
@@ -162,10 +164,19 @@ namespace fmatvec {
   typedef Matrix<General, Ref, Fixed<3>, double> MatRef3;
 
   /*Typedefs for Ranges*/
+  typedef Range<Fixed<0>, Fixed<1> > Range0x1;
   typedef Range<Fixed<0>, Fixed<2> > Range0x2;
   typedef Range<Fixed<0>, Fixed<4> > Range0x4;
+  typedef Range<Fixed<0>, Fixed<9> > Range0x9;
+  typedef Range<Fixed<3>, Fixed<5> > Range3x5;
+  typedef Range<Fixed<3>, Fixed<10> > Range3x10;
   typedef Range<Fixed<5>, Fixed<7> > Range5x7;
+  typedef Range<Fixed<6>, Fixed<8> > Range6x8;
+  typedef Range<Fixed<7>, Fixed<14> > Range7x14;
+  typedef Range<Fixed<9>, Fixed<11> > Range9x11;
   typedef Range<Fixed<10>, Fixed<12> > Range10x12;
+  typedef Range<Fixed<10>, Fixed<15> > Range10x15;
+  typedef Range<Fixed<13>, Fixed<15> > Range13x15;
 
 
   /*HELPER Function --> TODO: Move or better: avoid!!*/

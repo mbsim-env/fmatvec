@@ -110,7 +110,8 @@ namespace fmatvec {
       /*!
        * \brief standard virtual destructor
        */
-      virtual ~Vector() {}
+      virtual ~Vector() {
+      }
 
       template <class Row>
       inline Vector<Fixed<M>, AT>& operator=(const Vector<Row, AT> &x);
@@ -228,7 +229,14 @@ namespace fmatvec {
       template <class Type, class Row, class Col>
       inline void set(const Range<Var, Var> &I, const Matrix<Type, Row, Col, AT> &A);
 
-  }; // END Class definition
+      /*!
+       * \brief set a subvector - specified by the range - to the given vector
+       */
+      template <int M1, int M2, class Row>
+      inline void set(const Range<Fixed<M1>, Fixed<M2> > &I, const Vector<Row, AT> &A);
+
+  };
+  // END Class definition
 
   template <int M, class AT>
   inline Vector<Fixed<M>, AT>& Vector<Fixed<M>, AT>::init(const AT &val) {
@@ -242,7 +250,7 @@ namespace fmatvec {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
     assert(M2 < M);
 #endif
-    Vector < Fixed<M2 - M1 + 1>, AT > x(NONINIT);
+    Vector<Fixed<M2 - M1 + 1>, AT> x(NONINIT);
 
     for (int i = 0; i < x.size(); i++)
       x.e(i) = e(M1 + i);
@@ -264,7 +272,7 @@ namespace fmatvec {
 
   template <int M, class AT>
   inline const RowVector<Fixed<M>, AT> Vector<Fixed<M>, AT>::T() const {
-    RowVector < Fixed<M>, AT > x(NONINIT);
+    RowVector<Fixed<M>, AT> x(NONINIT);
     for (int i = 0; i < M; i++)
       x.e(i) = e(i);
     return x;
@@ -297,7 +305,18 @@ namespace fmatvec {
 
   template <int M, class AT> template <class Type, class Row, class Col>
   inline void Vector<Fixed<M>, AT>::set(const Range<Var, Var> &I, const Matrix<Type, Row, Col, AT> &A) {
-    Matrix < General, Fixed<M>, Fixed<1>, AT > ::set(I, Index(0, 0), A);
+    Matrix<General, Fixed<M>, Fixed<1>, AT>::set(I, Index(0, 0), A);
+  }
+
+  template <int M, class AT>
+  template <int M1, int M2, class Row>
+  inline void Vector<Fixed<M>, AT>::set(const Range<Fixed<M1>, Fixed<M2> > &I, const Vector<Row, AT> &x) {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(M2-M1+1 == x.size());
+#endif
+      for(int i = M1; i < M2; i++)
+        e(i) = x.e(i-M1);
+
   }
 
 }
