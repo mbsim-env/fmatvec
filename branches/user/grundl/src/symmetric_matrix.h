@@ -36,32 +36,35 @@ namespace fmatvec {
    * atomic type of the matrix. Valid types are int, float,
    * double, complex<float> and complex<double> 
    * */
-  template <class AT> class Matrix<Symmetric,Ref,Ref,AT> {
+  template <class AT> class Matrix<Symmetric, Ref, Ref, AT> {
 
     protected:
 
-    /// @cond NO_SHOW
+      /// @cond NO_SHOW
 
       Memory<AT> memory;
       AT *ele;
       int n;
       int lda;
 
-      template <class Type, class Row, class Col> inline void deepCopy(const Matrix<Type,Row,Col,AT> &A); 
-      inline void deepCopy(const Matrix<Symmetric,Ref,Ref,AT> &A); 
+      template <class Type, class Row, class Col> inline void deepCopy(const Matrix<Type, Row, Col, AT> &A);
+      inline void deepCopy(const Matrix<Symmetric, Ref, Ref, AT> &A);
 
       const AT* elePtr(int i, int j) const {
-	return  j > i ? ele+i*lda+j : ele+i+j*lda; 
-      };
+        return j > i ? ele + i * lda + j : ele + i + j * lda;
+      }
+      ;
 
       AT* elePtr(int i, int j) {
-	return  j > i ? ele+i*lda+j : ele+i+j*lda; 
-      };
+        return j > i ? ele + i * lda + j : ele + i + j * lda;
+      }
+      ;
 
-      Matrix(int n_, int lda_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_), lda(lda_) {
+      Matrix(int n_, int lda_, Memory<AT> memory_, const AT* ele_) :
+          memory(memory_), ele((AT*) ele_), n(n_), lda(lda_) {
       }
 
-    /// @endcond
+      /// @endcond
 
     public:
 
@@ -69,7 +72,8 @@ namespace fmatvec {
        *
        * Constructs a matrix with no size. 
        * */
-      Matrix() : memory(), ele(0), n(0), lda(0) {
+      Matrix() :
+          memory(), ele(0), n(0), lda(0) {
       }
 
 //      template<class Ini=All<AT> >
@@ -81,12 +85,28 @@ namespace fmatvec {
 //          init(ini);
 //        }
 
-      Matrix(int n_, Noinit) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { }
-      Matrix(int n_, Init ini=INIT, const AT &a=0) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(a); }
-      Matrix(int n_, Eye ini, const AT &a=1) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(ini,a); }
-      Matrix(int m_, int n_, Noinit) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { }
-      Matrix(int m_, int n_, Init ini=INIT, const AT &a=0) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(a); }
-      Matrix(int m_, int n_, Eye ini, const AT &a=1) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(ini,a); }
+      Matrix(int n_, Noinit) :
+          memory(n_ * n_), ele((AT*) memory.get()), n(n_), lda(n_) {
+      }
+      Matrix(int n_, Init ini = INIT, const AT &a = 0) :
+          memory(n_ * n_), ele((AT*) memory.get()), n(n_), lda(n_) {
+        init(a);
+      }
+      Matrix(int n_, Eye ini, const AT &a = 1) :
+          memory(n_ * n_), ele((AT*) memory.get()), n(n_), lda(n_) {
+        init(ini, a);
+      }
+      Matrix(int m_, int n_, Noinit) :
+          memory(n_ * n_), ele((AT*) memory.get()), n(n_), lda(n_) {
+      }
+      Matrix(int m_, int n_, Init ini = INIT, const AT &a = 0) :
+          memory(n_ * n_), ele((AT*) memory.get()), n(n_), lda(n_) {
+        init(a);
+      }
+      Matrix(int m_, int n_, Eye ini, const AT &a = 1) :
+          memory(n_ * n_), ele((AT*) memory.get()), n(n_), lda(n_) {
+        init(ini, a);
+      }
 
       /*! \brief Copy Constructor
        *
@@ -95,26 +115,29 @@ namespace fmatvec {
        * referenced.
        * \param A The matrix that will be referenced.
        * */
-      Matrix(const Matrix<Symmetric,Ref,Ref,AT> &A) : memory(A.memory), ele(A.ele) , n(A.n), lda(A.lda) { }
-
+      Matrix(const Matrix<Symmetric, Ref, Ref, AT> &A) :
+          memory(A.memory), ele(A.ele), n(A.n), lda(A.lda) {
+      }
 
       /*! \brief Element operator
        *
        * See Matrix(const Matrix<Symmetric,Ref,Ref,T>&) 
        * */
-      explicit Matrix(const Matrix<General,Ref,Ref,AT>&  A) : memory(A.memory), ele(A.ele) , n(A.n), lda(A.lda) {
+      explicit Matrix(const Matrix<General, Ref, Ref, AT>& A) :
+          memory(A.memory), ele(A.ele), n(A.n), lda(A.lda) {
 #ifndef FMATVEC_NO_SIZE_CHECK
-	assert(A.rows() == A.cols());
+        assert(A.rows() == A.cols());
 #endif
       }
 
-      template<class Type, class Row, class Col>
-      explicit Matrix(const Matrix<Type,Row,Col,AT> &A) : memory(A.rows()*A.cols()), ele((AT*)memory.get()), n(A.cols()), lda(A.cols()) {
+      template <class Type, class Row, class Col>
+      explicit Matrix(const Matrix<Type, Row, Col, AT> &A) :
+          memory(A.rows() * A.cols()), ele((AT*) memory.get()), n(A.cols()), lda(A.cols()) {
 #ifndef FMATVEC_NO_SIZE_CHECK
-	assert(A.rows() == A.cols());
+        assert(A.rows() == A.cols());
 #endif
 
-	deepCopy(A);
+        deepCopy(A);
       }
 
       /*! \brief Regular Constructor
@@ -124,29 +147,37 @@ namespace fmatvec {
        * \param n_ The number of rows and columns.
        * \param ele_ The physical memory the matrix will point to.
        * */
-      Matrix(int n_, AT* ele_) : memory(), ele(ele_), n(n_), lda(n_) { }
+      Matrix(int n_, AT* ele_) :
+          memory(), ele(ele_), n(n_), lda(n_) {
+      }
 
       /*! \brief Destructor. 
        * */
-      ~Matrix() { }
+      ~Matrix() {
+      }
 
-      Matrix<Symmetric,Ref,Ref,AT>& resize() { 
-	n = lda = 0;
-	memory.resize(0);
-	ele = 0;
+      Matrix<Symmetric, Ref, Ref, AT>& resize() {
+        n = lda = 0;
+        memory.resize(0);
+        ele = 0;
         return *this;
       }
 
-      Matrix<Symmetric,Ref,Ref,AT>& resize(int n_, Noinit) { 
-	n = n_; lda = n;
-	memory.resize(n*n);
-	ele = (AT*)memory.get();
+      Matrix<Symmetric, Ref, Ref, AT>& resize(int n_, Noinit) {
+        n = n_;
+        lda = n;
+        memory.resize(n * n);
+        ele = (AT*) memory.get();
         return *this;
       }
 
-      Matrix<Symmetric,Ref,Ref,AT>& resize(int n, Init ini=INIT, const AT &a=0) { return resize(n,Noinit()).init(a); }
+      Matrix<Symmetric, Ref, Ref, AT>& resize(int n, Init ini = INIT, const AT &a = 0) {
+        return resize(n, Noinit()).init(a);
+      }
 
-      Matrix<Symmetric,Ref,Ref,AT>& resize(int n, Eye ini, const AT &a=1) { return resize(n,Noinit()).init(ini,a); }
+      Matrix<Symmetric, Ref, Ref, AT>& resize(int n, Eye ini, const AT &a = 1) {
+        return resize(n, Noinit()).init(ini, a);
+      }
 
       /*! \brief Assignment operator
        *
@@ -156,10 +187,10 @@ namespace fmatvec {
        * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
        * \sa operator<<(), operator>>()
        * */
-      inline Matrix<Symmetric,Ref,Ref,AT>& operator=(const Matrix<Symmetric,Ref,Ref,AT> &A);
+      inline Matrix<Symmetric, Ref, Ref, AT>& operator=(const Matrix<Symmetric, Ref, Ref, AT> &A);
 
-      template<class Type, class Row, class Col>
-        inline Matrix<Symmetric,Ref,Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A);
+      template <class Type, class Row, class Col>
+      inline Matrix<Symmetric, Ref, Ref, AT>& operator=(const Matrix<Type, Row, Col, AT> &A);
 
       /*! \brief Copy operator
        *
@@ -167,8 +198,8 @@ namespace fmatvec {
        * \param A The matrix to be copied. 
        * \return A reference to the calling matrix.
        * */
-      template<class Type, class Row, class Col>
-        inline Matrix<Symmetric,Ref,Ref,AT>& operator<<(const Matrix<Type,Row,Col,AT> &A);
+      template <class Type, class Row, class Col>
+      inline Matrix<Symmetric, Ref, Ref, AT>& operator<<(const Matrix<Type, Row, Col, AT> &A);
 
       /*! \brief Reference operator
        *
@@ -176,7 +207,7 @@ namespace fmatvec {
        * \param A The matrix to be referenced. 
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<Symmetric,Ref,Ref,AT>& operator>>(const Matrix<Symmetric,Ref,Ref,AT> &A);
+      inline Matrix<Symmetric, Ref, Ref, AT>& operator>>(const Matrix<Symmetric, Ref, Ref, AT> &A);
 
       /*! \brief Element operator
        *
@@ -191,13 +222,14 @@ namespace fmatvec {
        * */
       AT& operator()(int i, int j) {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
-	assert(i>=0);
-	assert(j>=0);
-	assert(i<n);
-	assert(j<n);
+        assert(i>=0);
+        assert(j>=0);
+        assert(i<n);
+        assert(j<n);
 #endif
-	return e(i,j);
-      };
+        return e(i, j);
+      }
+      ;
 
       /*! \brief Element operator
        *
@@ -205,75 +237,100 @@ namespace fmatvec {
        * */
       const AT& operator()(int i, int j) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
-	assert(i>=0);
-	assert(j>=0);
-	assert(i<n);
-	assert(j<n);
+        assert(i>=0);
+        assert(j>=0);
+        assert(i<n);
+        assert(j<n);
 #endif
 
-	return e(i,j);
-      };
+        return e(i, j);
+      }
+      ;
 
       AT& ei(int i, int j) {
-	return ele[i+j*lda];
-      };
+        return ele[i + j * lda];
+      }
+      ;
 
       const AT& ei(int i, int j) const {
-	return ele[i+j*lda];
-      };
+        return ele[i + j * lda];
+      }
+      ;
 
       AT& ej(int i, int j) {
-	return ele[i*lda+j];
-      };
+        return ele[i * lda + j];
+      }
+      ;
 
       const AT& ej(int i, int j) const {
-	return ele[i*lda+j];
-      };
+        return ele[i * lda + j];
+      }
+      ;
 
       AT& e(int i, int j) {
-	return j > i ? ej(i,j) : ei(i,j);
-      };
+        return j > i ? ej(i, j) : ei(i, j);
+      }
+      ;
 
       const AT& e(int i, int j) const {
-	return j > i ? ej(i,j) : ei(i,j);
-      };
+        return j > i ? ej(i, j) : ei(i, j);
+      }
+      ;
 
       /*! \brief Pointer operator.
        *
        * Returns the pointer to the first element.
        * \return The pointer to the first element.
        * */
-      AT* operator()() {return ele;};
+      AT* operator()() {
+        return ele;
+      }
+      ;
 
       /*! \brief Pointer operator
        *
        * See operator()() 
        * */
-      const AT* operator()() const {return ele;};
+      const AT* operator()() const {
+        return ele;
+      }
+      ;
 
       /*! \brief Size.
        *
        * \return The number of rows and columns of the matrix
        * */
-      int size() const {return n;};
+      int size() const {
+        return n;
+      }
+      ;
 
       /*! \brief Number of rows.
        *
        * \return The number of rows of the matrix
        * */
-      int rows() const {return n;};
+      int rows() const {
+        return n;
+      }
+      ;
 
       /*! \brief Number of columns.
        *
        * \return The number of columns of the matrix
        * */
-      int cols() const {return n;};
+      int cols() const {
+        return n;
+      }
+      ;
 
       /*! \brief Leading dimension.
        *
        * \return The leading dimension of the matrix
        * */
-      int ldim() const {return lda;};
+      int ldim() const {
+        return lda;
+      }
+      ;
 
       /*! \brief Storage convention.
        *
@@ -283,8 +340,9 @@ namespace fmatvec {
        * \return CblasColMajor.
        * */
       const CBLAS_ORDER blasOrder() const {
-	return  CblasColMajor;
-      };
+        return CblasColMajor;
+      }
+      ;
 
       /*! \brief Symmetry convention.
        *
@@ -294,15 +352,16 @@ namespace fmatvec {
        * \return CblasLower.
        * */
       const CBLAS_UPLO blasUplo() const {
-	return  CblasLower;
-      };
+        return CblasLower;
+      }
+      ;
 
-     /*! \brief Matrix duplicating.
+      /*! \brief Matrix duplicating.
        *
        * The calling matrix returns a \em deep copy of itself.  
        * \return The duplicate.
        * */
-      inline Matrix<Symmetric,Ref,Ref,AT> copy() const;
+      inline Matrix<Symmetric, Ref, Ref, AT> copy() const;
 
       /*! \brief Initialization.
        *
@@ -311,10 +370,15 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<Symmetric,Ref,Ref,AT>& init(const AT &a); 
-      inline Matrix<Symmetric,Ref,Ref,AT>& init(Init, const AT &a=0) { return init(a); };
-      inline Matrix<Symmetric,Ref,Ref,AT>& init(Eye, const AT &a=1);
-      inline Matrix<Symmetric,Ref,Ref,AT>& init(Noinit, const AT &a=0) { return *this; }
+      inline Matrix<Symmetric, Ref, Ref, AT>& init(const AT &a);
+      inline Matrix<Symmetric, Ref, Ref, AT>& init(Init, const AT &a = 0) {
+        return init(a);
+      }
+      ;
+      inline Matrix<Symmetric, Ref, Ref, AT>& init(Eye, const AT &a = 1);
+      inline Matrix<Symmetric, Ref, Ref, AT>& init(Noinit, const AT &a = 0) {
+        return *this;
+      }
 
       /*! \brief Submatrix operator.
        *
@@ -327,13 +391,13 @@ namespace fmatvec {
        * \param J Index containing the starting and the ending column. 
        * \return A submatrix of the calling matrix.
        * */
-      inline Matrix<General,Ref,Ref,AT> operator()(const Index &I, const Index &J);
+      inline Matrix<General, Ref, Ref, AT> operator()(const Index &I, const Index &J);
 
       /*! \brief Submatrix operator.
        *
        * See operator()(const Index&, const Index&)
        * */
-      inline const Matrix<General,Ref,Ref,AT> operator()(const Index &I, const Index &J) const;
+      inline const Matrix<General, Ref, Ref, AT> operator()(const Index &I, const Index &J) const;
 
       /*! \brief Submatrix operator.
        *
@@ -346,13 +410,13 @@ namespace fmatvec {
        * ending row and column. 
        * \return A submatrix of the calling matrix.
        * */
-      inline Matrix<Symmetric,Ref,Ref,AT> operator()(const Index &I);
+      inline Matrix<Symmetric, Ref, Ref, AT> operator()(const Index &I);
 
       /*! \brief Submatrix operator.
        *
        * See operator()(const Index&)
        * */
-      inline const Matrix<Symmetric,Ref,Ref,AT> operator()(const Index &I) const;
+      inline const Matrix<Symmetric, Ref, Ref, AT> operator()(const Index &I) const;
 
       /*! \brief Submatrix operator.
        *
@@ -365,13 +429,13 @@ namespace fmatvec {
        * \param j2 The ending column.
        * \return A submatrix of the calling matrix.
        * */
-      inline Matrix<General,Ref,Ref,AT> operator()(int i1, int j1, int i2, int j2);
+      inline Matrix<General, Ref, Ref, AT> operator()(int i1, int j1, int i2, int j2);
 
       /*! \brief Submatrix operator.
        *
        * See operator()(int,int,int,int);
        * */
-      inline const Matrix<General,Ref,Ref,AT> operator()(int i1, int j1, int i2, int j2) const;
+      inline const Matrix<General, Ref, Ref, AT> operator()(int i1, int j1, int i2, int j2) const;
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *
@@ -381,195 +445,197 @@ namespace fmatvec {
   };
 
   template <class AT>
-    inline Matrix<Symmetric,Ref,Ref,AT>& Matrix<Symmetric,Ref,Ref,AT>::operator>>(const Matrix<Symmetric,Ref,Ref,AT> &A) { 
+  inline Matrix<Symmetric, Ref, Ref, AT>& Matrix<Symmetric, Ref, Ref, AT>::operator>>(const Matrix<Symmetric, Ref, Ref, AT> &A) {
 
-      n=A.n;
-      memory = A.memory;
-      ele = A.ele;
-      lda = A.lda;
+    n = A.n;
+    memory = A.memory;
+    ele = A.ele;
+    lda = A.lda;
 
-      return *this;
-    }
+    return *this;
+  }
 
   template <class AT>
-    inline Matrix<Symmetric,Ref,Ref,AT>& Matrix<Symmetric,Ref,Ref,AT>::operator=(const Matrix<Symmetric,Ref,Ref,AT> &A) { 
+  inline Matrix<Symmetric, Ref, Ref, AT>& Matrix<Symmetric, Ref, Ref, AT>::operator=(const Matrix<Symmetric, Ref, Ref, AT> &A) {
 
-      if(!ele) {
-        n = A.size();
-        lda = n;
-        memory.resize(n*n);
-        ele = (AT*)memory.get();
-      } else {
+    if (!ele) {
+      n = A.size();
+      lda = n;
+      memory.resize(n * n);
+      ele = (AT*) memory.get();
+    }
+    else {
 #ifndef FMATVEC_NO_SIZE_CHECK
-        assert(n == A.size());
+      assert(n == A.size());
 #endif
-      }
-
-      deepCopy(A);
-
-      return *this;
     }
 
-  template <class AT> template< class Type, class Row, class Col>
-    inline Matrix<Symmetric,Ref,Ref,AT>& Matrix<Symmetric,Ref,Ref,AT>::operator=(const Matrix<Type,Row,Col,AT> &A) { 
-      
-      if(!ele) {
-        n = A.rows();
-        lda = n;
-        memory.resize(n*n);
-        ele = (AT*)memory.get();
-      } else {
-#ifndef FMATVEC_NO_SIZE_CHECK
-        assert(A.rows() == A.cols());
-        assert(n == A.rows());
-#endif
-      }
+    deepCopy(A);
 
-      deepCopy(A);
+    return *this;
+  }
 
-      return *this;
+  template <class AT> template <class Type, class Row, class Col>
+  inline Matrix<Symmetric, Ref, Ref, AT>& Matrix<Symmetric, Ref, Ref, AT>::operator=(const Matrix<Type, Row, Col, AT> &A) {
+
+    if (!ele) {
+      n = A.rows();
+      lda = n;
+      memory.resize(n * n);
+      ele = (AT*) memory.get();
     }
-
-
-  template <class AT> template< class Type, class Row, class Col>
-    inline Matrix<Symmetric,Ref,Ref,AT>& Matrix<Symmetric,Ref,Ref,AT>::operator<<(const Matrix<Type,Row,Col,AT> &A) { 
-      
+    else {
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.rows() == A.cols());
+      assert(n == A.rows());
+#endif
+    }
+
+    deepCopy(A);
+
+    return *this;
+  }
+
+  template <class AT> template <class Type, class Row, class Col>
+  inline Matrix<Symmetric, Ref, Ref, AT>& Matrix<Symmetric, Ref, Ref, AT>::operator<<(const Matrix<Type, Row, Col, AT> &A) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+    assert(A.rows() == A.cols());
 #endif
 
-      if(n!=A.rows()) {
-	n = A.rows();
-	lda = n;
-	memory.resize(n*n);
-	ele = (AT*)memory.get();
-      } 
-
-      deepCopy(A);
-
-      return *this;
+    if (n != A.rows()) {
+      n = A.rows();
+      lda = n;
+      memory.resize(n * n);
+      ele = (AT*) memory.get();
     }
+
+    deepCopy(A);
+
+    return *this;
+  }
 
   template <class AT>
-    inline Matrix<Symmetric,Ref,Ref,AT>&  Matrix<Symmetric,Ref,Ref,AT>::init(const AT &val) {
+  inline Matrix<Symmetric, Ref, Ref, AT>& Matrix<Symmetric, Ref, Ref, AT>::init(const AT &val) {
 
-      for(int i=0; i<rows(); i++) 
-        for(int j=i; j<cols(); j++) 
-          ej(i,j) = val;
+    for (int i = 0; i < rows(); i++)
+      for (int j = i; j < cols(); j++)
+        ej(i, j) = val;
 
-      return *this;
-    }
-
-  template <class AT>
-    inline Matrix<Symmetric,Ref,Ref,AT>&  Matrix<Symmetric,Ref,Ref,AT>::init(Eye, const AT &val) {
-
-      for(int i=0; i<size(); i++) {
-        ej(i,i) = val;
-        for(int j=i+1; j<size(); j++) {
-          ej(i,j) = 0; 
-        }
-      }
-      return *this;
-    }
+    return *this;
+  }
 
   template <class AT>
-    inline Matrix<Symmetric,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::copy() const {
+  inline Matrix<Symmetric, Ref, Ref, AT>& Matrix<Symmetric, Ref, Ref, AT>::init(Eye, const AT &val) {
 
-      Matrix<Symmetric,Ref,Ref,AT> A(n,NONINIT);
-      A.deepCopy(*this);
-
-      return A;
-    }
-
-
-  template <class AT> 
-    inline const Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(int i1, int j1, int i2, int j2) const {
-      return operator()(Index(i1,i2),Index(j1,j2));
-    }
-
-  template <class AT> 
-    inline Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(int i1, int j1, int i2, int j2) {
-      return operator()(Index(i1,i2),Index(j1,j2));
-    }
-
-  template <class AT> 
-    inline const Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Index &I, const Index &J) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
-      assert(I.end()<n);
-      assert(J.end()<n);
-#endif
-
-      if(I.start() >= J.start()) {
-        assert(J.end() <= I.start());
-        return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,false,memory,elePtr(I.start(),J.start()));
-      } else {
-        assert(I.end() <= J.start());
-        return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,true,memory,elePtr(J.start(),I.start()));
+    for (int i = 0; i < size(); i++) {
+      ej(i, i) = val;
+      for (int j = i + 1; j < size(); j++) {
+        ej(i, j) = 0;
       }
     }
-
-  template <class AT> 
-    inline Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Index &I, const Index &J) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
-      assert(I.end()<n);
-      assert(J.end()<n);
-#endif
-
-      if(I.start() >= J.start()) {
-        assert(J.end() <= I.start());
-        return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,false,memory,elePtr(I.start(),J.start()));
-      } else {
-        assert(I.end() <= J.start());
-        return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,true,memory,elePtr(J.start(),I.start()));
-      }
-    }
-
-  template <class AT> 
-    inline Matrix<Symmetric,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Index &I) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
-      assert(I.end()<n);
-#endif
-
-      return Matrix<Symmetric,Ref,Ref,AT>(I.end()-I.start()+1,lda,memory,elePtr(I.start(),I.start()));
-    }
-
-  template <class AT> 
-    inline const Matrix<Symmetric,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Index &I) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
-      assert(I.end()<n);
-#endif
-
-      return Matrix<Symmetric,Ref,Ref,AT>(I.end()-I.start()+1,lda,memory,elePtr(I.start(),I.start()));
-    }
+    return *this;
+  }
 
   template <class AT>
-    inline Matrix<Symmetric,Ref,Ref,AT>::operator std::vector<std::vector<AT> >() {
-      std::vector<std::vector<AT> > ret(rows());
-      for(int r=0; r<rows(); r++) {
-        ret[r].resize(cols());
-        for(int c=0; c<cols(); c++)
-          ret[r][c]=operator()(r,c);
-      }
-      return ret;
+  inline Matrix<Symmetric, Ref, Ref, AT> Matrix<Symmetric, Ref, Ref, AT>::copy() const {
+
+    Matrix<Symmetric, Ref, Ref, AT> A(n, NONINIT);
+    A.deepCopy(*this);
+
+    return A;
+  }
+
+  template <class AT>
+  inline const Matrix<General, Ref, Ref, AT> Matrix<Symmetric, Ref, Ref, AT>::operator()(int i1, int j1, int i2, int j2) const {
+    return operator()(Index(i1, i2), Index(j1, j2));
+  }
+
+  template <class AT>
+  inline Matrix<General, Ref, Ref, AT> Matrix<Symmetric, Ref, Ref, AT>::operator()(int i1, int j1, int i2, int j2) {
+    return operator()(Index(i1, i2), Index(j1, j2));
+  }
+
+  template <class AT>
+  inline const Matrix<General, Ref, Ref, AT> Matrix<Symmetric, Ref, Ref, AT>::operator()(const Index &I, const Index &J) const {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+    assert(I.end()<n);
+    assert(J.end()<n);
+#endif
+
+    if (I.start() >= J.start()) {
+      assert(J.end() <= I.start());
+      return Matrix<General, Ref, Ref, AT>(I.end() - I.start() + 1, J.end() - J.start() + 1, lda, false, memory, elePtr(I.start(), J.start()));
     }
+    else {
+      assert(I.end() <= J.start());
+      return Matrix<General, Ref, Ref, AT>(I.end() - I.start() + 1, J.end() - J.start() + 1, lda, true, memory, elePtr(J.start(), I.start()));
+    }
+  }
+
+  template <class AT>
+  inline Matrix<General, Ref, Ref, AT> Matrix<Symmetric, Ref, Ref, AT>::operator()(const Index &I, const Index &J) {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+    assert(I.end()<n);
+    assert(J.end()<n);
+#endif
+
+    if (I.start() >= J.start()) {
+      assert(J.end() <= I.start());
+      return Matrix<General, Ref, Ref, AT>(I.end() - I.start() + 1, J.end() - J.start() + 1, lda, false, memory, elePtr(I.start(), J.start()));
+    }
+    else {
+      assert(I.end() <= J.start());
+      return Matrix<General, Ref, Ref, AT>(I.end() - I.start() + 1, J.end() - J.start() + 1, lda, true, memory, elePtr(J.start(), I.start()));
+    }
+  }
+
+  template <class AT>
+  inline Matrix<Symmetric, Ref, Ref, AT> Matrix<Symmetric, Ref, Ref, AT>::operator()(const Index &I) {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+    assert(I.end()<n);
+#endif
+
+    return Matrix<Symmetric, Ref, Ref, AT>(I.end() - I.start() + 1, lda, memory, elePtr(I.start(), I.start()));
+  }
+
+  template <class AT>
+  inline const Matrix<Symmetric, Ref, Ref, AT> Matrix<Symmetric, Ref, Ref, AT>::operator()(const Index &I) const {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+    assert(I.end()<n);
+#endif
+
+    return Matrix<Symmetric, Ref, Ref, AT>(I.end() - I.start() + 1, lda, memory, elePtr(I.start(), I.start()));
+  }
+
+  template <class AT>
+  inline Matrix<Symmetric, Ref, Ref, AT>::operator std::vector<std::vector<AT> >() {
+    std::vector<std::vector<AT> > ret(rows());
+    for (int r = 0; r < rows(); r++) {
+      ret[r].resize(cols());
+      for (int c = 0; c < cols(); c++)
+        ret[r][c] = operator()(r, c);
+    }
+    return ret;
+  }
 
   /// @cond NO_SHOW
 
   template <class AT>
-    inline void Matrix<Symmetric,Ref,Ref,AT>::deepCopy(const Matrix<Symmetric,Ref,Ref,AT> &A) { 
-      for(int i=0; i<n; i++) 
-        for(int j=i; j<n; j++) 
-          ej(i,j) = A.ej(i,j);
-    }
+  inline void Matrix<Symmetric, Ref, Ref, AT>::deepCopy(const Matrix<Symmetric, Ref, Ref, AT> &A) {
+    for (int i = 0; i < n; i++)
+      for (int j = i; j < n; j++)
+        ej(i, j) = A.ej(i, j);
+  }
 
   template <class AT> template <class Type, class Row, class Col>
-    inline void Matrix<Symmetric,Ref,Ref,AT>::deepCopy(const Matrix<Type,Row,Col,AT> &A) { 
-      for(int i=0; i<n; i++) 
-        for(int j=i; j<n; j++) 
-          ej(i,j) = A.e(i,j);
-    }
+  inline void Matrix<Symmetric, Ref, Ref, AT>::deepCopy(const Matrix<Type, Row, Col, AT> &A) {
+    for (int i = 0; i < n; i++)
+      for (int j = i; j < n; j++)
+        ej(i, j) = A.e(i, j);
+  }
 
-  /// @endcond
+/// @endcond
 
 }
 

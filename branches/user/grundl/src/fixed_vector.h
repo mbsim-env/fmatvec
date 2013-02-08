@@ -204,6 +204,8 @@ namespace fmatvec {
       template <int M1, int M2>
       inline const Vector<Fixed<M2 - M1 + 1>, AT> operator()(const Range<Fixed<M1>, Fixed<M2> > &I) const;
 
+      inline const Vector<Var, AT> operator()(const Index &I) const;
+
       using Matrix<General, Fixed<M>, Fixed<1>, AT>::operator();
 
       /*! \brief Cast to std::vector<AT>.
@@ -254,6 +256,19 @@ namespace fmatvec {
 
     for (int i = 0; i < x.size(); i++)
       x.e(i) = e(M1 + i);
+
+    return x;
+  }
+
+  template <int M, class AT>
+  inline const Vector<Var, AT> Vector<Fixed<M>, AT>::operator()(const Index &I) const {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+    assert(I.end() < M);
+#endif
+    Vector<Var, AT> x(I.end() - I.start() +1, NONINIT);
+
+    for (int i = 0; i < x.size(); i++)
+      x.e(i) = e(I.start() + i);
 
     return x;
   }
@@ -314,7 +329,7 @@ namespace fmatvec {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(M2-M1+1 == x.size());
 #endif
-      for(int i = M1; i < M2; i++)
+      for(int i = M1; i < M2 + 1; i++)
         e(i) = x.e(i-M1);
 
   }

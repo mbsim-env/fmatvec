@@ -326,7 +326,20 @@ namespace fmatvec {
        */
       template<class Col> inline void add(int i, const RowVector<Col,AT> &x);
 
+      /*!
+       * \brief add the given matrix A to the submatrix specidifed by the ranges I (rows) and J(cols)
+       */
       template<class Type, class Row, class Col> inline void add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+
+      /*!
+       * \brief multiply given submatrix with given value atomic-value
+       */
+      inline void mult(const Range<Var,Var> &I, const Range<Var,Var> &J, const AT & val);
+
+      /*!
+       * \brief divide given submatrix with given value atomic-value
+       */
+      inline void div(const Range<Var,Var> &I, const Range<Var,Var> &J, const AT & val);
 
   };
 
@@ -578,6 +591,32 @@ namespace fmatvec {
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
           e(i,j) += A.e(ii,jj);
+    }
+
+  template <int M, int N, class AT>
+    inline void Matrix<General,Fixed<M>,Fixed<N>,AT>::mult(const Range<Var,Var> &I, const Range<Var,Var> &J, const AT & val) {
+
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(I.end()<rows());
+      assert(J.end()<cols());
+#endif
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
+          e(i,j) *= val;
+    }
+
+  template <int M, int N, class AT>
+    inline void Matrix<General,Fixed<M>,Fixed<N>,AT>::div(const Range<Var,Var> &I, const Range<Var,Var> &J, const AT & val) {
+
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(I.end()<rows());
+      assert(J.end()<cols());
+#endif
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
+          e(i,j) /= val;
     }
 
   template <int M, int N, class AT>

@@ -372,58 +372,57 @@ namespace fmatvec {
   }
 
   int facLU(double *A, int pivot[], int n) {
-      int i, j, k;
-      double *p_k, *p_row, *p_col = NULL;
-      double max;
+    int i, j, k;
+    double *p_k, *p_row, *p_col = NULL;
+    double max;
 
-      //         For each row and column, k = 0, ..., n-1,
+    //         For each row and column, k = 0, ..., n-1,
 
-      for (k = 0, p_k = A; k < n; p_k += n, k++) {
+    for (k = 0, p_k = A; k < n; p_k += n, k++) {
 
-        //            find the pivot row
+      //            find the pivot row
 
-        pivot[k] = k;
-        max = fabs(*(p_k + k));
-        for (j = k + 1, p_row = p_k + n; j < n; j++, p_row += n) {
-          if (max < fabs(*(p_row + k))) {
-            max = fabs(*(p_row + k));
-            pivot[k] = j;
-            p_col = p_row;
-          }
+      pivot[k] = k;
+      max = fabs(*(p_k + k));
+      for (j = k + 1, p_row = p_k + n; j < n; j++, p_row += n) {
+        if (max < fabs(*(p_row + k))) {
+          max = fabs(*(p_row + k));
+          pivot[k] = j;
+          p_col = p_row;
         }
-
-        //     and if the pivot row differs from the current row, then
-        //     interchange the two rows.
-
-        if (pivot[k] != k)
-          for (j = 0; j < n; j++) {
-            max = *(p_k + j);
-            *(p_k + j) = *(p_col + j);
-            *(p_col + j) = max;
-          }
-
-        //                and if the matrix is singular, return error
-
-        if (fabs(*(p_k + k)) < 1.e-10) //TODO: use eps
-          return -1;
-
-        //      otherwise find the lower triangular matrix elements for column k.
-
-        for (i = k + 1, p_row = p_k + n; i < n; p_row += n, i++) {
-          *(p_row + k) /= *(p_k + k);
-        }
-
-        //            update remaining matrix
-
-        for (i = k + 1, p_row = p_k + n; i < n; p_row += n, i++)
-          for (j = k + 1; j < n; j++)
-            *(p_row + j) -= *(p_row + k) * *(p_k + j);
-
       }
 
-      return 0;
+      //     and if the pivot row differs from the current row, then
+      //     interchange the two rows.
+
+      if (pivot[k] != k)
+        for (j = 0; j < n; j++) {
+          max = *(p_k + j);
+          *(p_k + j) = *(p_col + j);
+          *(p_col + j) = max;
+        }
+
+      //                and if the matrix is singular, return error
+
+      if (fabs(*(p_k + k)) < 1.e-10) //TODO: use eps
+        return -1;
+
+      //      otherwise find the lower triangular matrix elements for column k.
+
+      for (i = k + 1, p_row = p_k + n; i < n; p_row += n, i++) {
+        *(p_row + k) /= *(p_k + k);
+      }
+
+      //            update remaining matrix
+
+      for (i = k + 1, p_row = p_k + n; i < n; p_row += n, i++)
+        for (j = k + 1; j < n; j++)
+          *(p_row + j) -= *(p_row + k) * *(p_k + j);
+
     }
 
+    return 0;
+  }
 
   Matrix<Symmetric, Ref, Ref, double> facLL(const Matrix<Symmetric, Ref, Ref, double> &A) {
 

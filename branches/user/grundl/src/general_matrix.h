@@ -449,6 +449,17 @@ namespace fmatvec {
       const Matrix<General,Ref,Ref,AT> T() const {
 	return Matrix<General,Ref,Ref,AT>(n,m,lda,tp?false:true,memory,ele);
       }
+
+      /*!
+       * \brief set Column j of matrix to given Vector
+       */
+      template<class Row> inline void set(int j, const Vector<Row,AT> &x);
+
+      /*!
+       * \brief set Row i of matrix to given RowVector
+       */
+      template<class Col> inline void set(int i, const RowVector<Col,AT> &x);
+
   };
 
   template <class AT> 
@@ -792,6 +803,26 @@ namespace fmatvec {
     }
 
   /// @endcond
+
+  template <class AT> template <class Row>
+    inline void Matrix<General,Ref,Ref,AT>::set(int j, const Vector<Row,AT> &x) {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(j<cols());
+      assert(rows()==x.size());
+#endif
+      for(int i=0; i<rows(); i++)
+        e(i,j) = x.e(i);
+    }
+
+  template <class AT> template <class Col>
+    inline void Matrix<General,Ref,Ref,AT>::set(int i, const RowVector<Col,AT> &x) {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(i<rows());
+      assert(cols()==x.size());
+#endif
+      for(int j=0; j<cols(); j++)
+        e(i,j) = x.e(j);
+    }
 
 }
 

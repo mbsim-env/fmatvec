@@ -1559,8 +1559,8 @@ namespace fmatvec {
     return c;
   }
 
-  template <class Row, class AT>
-  inline AT nrmInf(const RowVector<Row, AT> &x) {
+  template <class Col, class AT>
+  inline AT nrmInf(const RowVector<Col, AT> &x) {
     AT c = 0;
     for (int i = 0; i < x.size(); i++)
       if (c < fabs(x.e(i)))
