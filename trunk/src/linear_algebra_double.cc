@@ -629,6 +629,36 @@ namespace fmatvec {
     return info;
   }
 
+  int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, double> &S,  SquareMatrix<Ref, double> &U, SquareMatrix<Ref, double> &VT, int Rueckgabe) {
+	  const int dim_m = A.rows();
+	  const int dim_n = A.cols();
+
+	  U.resize(dim_m);
+	  S.resize(dim_m,dim_n);
+	  VT.resize(dim_n);
+
+	  const int lda = A.ldim();
+	  const int ldu = U.ldim();
+	  const int ldvt = VT.ldim();
+
+	  int info = dgesvd('A','A',dim_m, dim_n, A(), lda, S(), U(), ldu, VT(), ldvt);
+
+	  if(Rueckgabe==1) {
+		  int i=0;
+		  int minimum;
+
+		  if(dim_m < dim_n) minimum = dim_m;
+		  else minimum = dim_n;
+
+		  for (i=1; i<minimum; i++) {
+			  S(i,i)=S(i,0);
+			  S(i,0) = 0.;
+		  }
+	  }
+
+	  return info;
+  }
+
   Vector<Ref, double> eigval(const Matrix<Symmetric, Ref, Ref, double> &A) {
 
     Vector<Ref, double> w(A.size(), NONINIT);

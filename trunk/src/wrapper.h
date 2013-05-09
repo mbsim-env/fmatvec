@@ -188,6 +188,8 @@ namespace fmatvec {
 
   int dsygv(const int itype, const char jobz, const char uplo, const int n, double *a, const int lda, double *b, const int ldb, double *w);
   
+  int dgesvd(const char jobu, const char jobvt, const int m, const int n, double *a, const int lda, double *s, double *u, const int ldu, double *vt, const int ldvt);
+
   int dsyev(const char jobz, const char ul, const int n, double *a, const int lda, double *w);
 
   double dlange(const char norm , const int m, const int n, const double* a, const int lda);

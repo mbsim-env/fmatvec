@@ -98,6 +98,9 @@ extern "C" {
 extern "C" {
   void dgeev_(const char* jobvl, const char* jobvr, const int *n, double *a, const int *lda, double *wr, double *wi, double *vl, const int *ldvl, double* vr, const int *ldvr, double* work, const int *lwork, int *info);
   void dsygv_( const int* itype, const char* jobz, const char* uplo, const int *n, double *a, const int *lda, double *b, const int *ldb, double *w, double *work, const int *lwork, int *info);
+
+  void dgesvd_(const char* jobu, const char* jobvt, const int *m, const int *n, double *a, const int *lda, double *s, double *u, const int *ldu, double* vt, const int *ldvt, double* work, const int* lwork, int *info );
+
   void dsyev_( const char* jobz, const char*, const int *n, double *a, const int *lda, double *w, double *work, const int *lwork, int *info);
   void dgels_( const char*, const int*, const int*, const int*, double* a, const int*, double* b, const int*, double*, const int*, int*);
   double dlange_(const char *norm , const int *m, const int *n, const double* A, const int* lda , double* work);
@@ -317,6 +320,23 @@ namespace fmatvec {
     delete [] work;
 
     return info;
+  }
+
+  int dgesvd(const char jobu, const char jobvt, const int m, const int n, double *a, const int lda, double *s, double *u, const int ldu, double *vt, const int ldvt) {
+
+	  int info=1;
+	  double workopt;
+	  int lwork = -1;
+
+	  dgesvd_(&jobu, &jobvt, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, &workopt, &lwork, &info);
+	  lwork = (int)workopt;
+
+	  info = 1;
+	  double *work = new double[lwork];
+	  dgesvd_(&jobu, &jobvt, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, work, &lwork, &info);
+
+	  delete [] work;
+	  return info;
   }
 
   int dsyev(const char jobz, const char ul, const int n, double *a, const int lda, double *w) {

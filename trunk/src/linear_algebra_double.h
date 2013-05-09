@@ -35,6 +35,10 @@
 //-------------------------------------
 
 namespace fmatvec {
+/*!
+ * This funtion computes the SVD
+ * */
+int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, double> &S,  SquareMatrix<Ref, double> &U, SquareMatrix<Ref, double> &VT, int Rueckgabe);
 
   /*! \brief Eigenvalues
    *
