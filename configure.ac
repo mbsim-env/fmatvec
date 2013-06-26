@@ -243,7 +243,7 @@ LDFLAGS="$LDFLAGS -no-undefined"
 AC_SUBST(LIBS)
 AC_SUBST([INCDIRS])
 AC_SUBST([LIBDIRS])
-AC_CONFIG_FILES([Makefile src/Makefile doc/doxyfile doc/Makefile fmatvec.pc])
+AC_CONFIG_FILES([Makefile src/Makefile src/check/Makefile doc/doxyfile doc/Makefile fmatvec.pc])
 AC_OUTPUT
 
 echo "
