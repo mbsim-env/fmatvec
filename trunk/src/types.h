@@ -117,6 +117,14 @@ namespace fmatvec {
   };
 
   /*! 
+   *  \brief Shape class for rotation matrices.
+   *
+   * Class Rotation is a shape class for rotation matrices.
+   * */
+  class Rotation {
+  };
+
+  /*! 
    *  \brief Shape class for diagonal matrices.
    *
    * Class Diagonal is a shape class for diagonal matrices.

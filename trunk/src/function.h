@@ -26,18 +26,18 @@ struct Size {
   typedef ErrorType type;
 };
 // specialization for vector: return one int
-template<typename Storage>
-struct Size<Vector<Storage, double> > {
+template<typename Shape>
+struct Size<Vector<Shape, double> > {
   typedef int type;
 };
 // specialization for row vector: return one int
-template<typename Storage>
-struct Size<RowVector<Storage, double> > {
+template<typename Shape>
+struct Size<RowVector<Shape, double> > {
   typedef int type;
 };
 // specialization for matrix: return two int (fmatvec int vector)
-template<typename Type, typename RowStorage, typename ColStorage>
-struct Size<Matrix<Type, RowStorage, ColStorage, double> > {
+template<typename Type, typename RowShape, typename ColShape>
+struct Size<Matrix<Type, RowShape, ColShape, double> > {
   typedef Vector<Fixed<2>, int> type;
 };
 
@@ -61,14 +61,24 @@ struct Der<Dep, double> {
   typedef Dep type;
 };
 // specialization, if the depdentent type is a scalar and the independent type is a vector: derivative type = RowVector
-template<typename IndepVecStorage>
-struct Der<double, Vector<IndepVecStorage, double> > {
-  typedef RowVector<IndepVecStorage, double> type;
+template<typename IndepVecShape>
+struct Der<double, Vector<IndepVecShape, double> > {
+  typedef RowVector<IndepVecShape, double> type;
 };
 // specialization, if the dependent and independent type is a vector: derivative type = Matrix
-template<typename DepVecStorage, typename IndepVecStorage>
-struct Der<Vector<DepVecStorage, double>, Vector<IndepVecStorage, double> > {
-  typedef Matrix<General, DepVecStorage, IndepVecStorage, double> type;
+template<typename DepVecShape, typename IndepVecShape>
+struct Der<Vector<DepVecShape, double>, Vector<IndepVecShape, double> > {
+  typedef Matrix<General, DepVecShape, IndepVecShape, double> type;
+};
+// specialization, if the dependent type is a rotation matrix and the independent type is a vector
+template<typename DepMatShape, typename IndepVecShape>
+struct Der<Matrix<Rotation, DepMatShape, DepMatShape, double>, Vector<IndepVecShape, double> > {
+  typedef Matrix<General, DepMatShape, IndepVecShape, double> type;
+};
+// specialization, if the dependent type is a rotation matrix and the independent type is a double
+template<typename DepMatShape>
+struct Der<Matrix<Rotation, DepMatShape, DepMatShape, double>, double> {
+  typedef Vector<DepMatShape, double> type;
 };
 
 

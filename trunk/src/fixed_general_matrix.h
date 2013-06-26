@@ -624,6 +624,44 @@ namespace fmatvec {
 
   /// @endcond
 
+  //! A matrix representing a rotation matrix.
+  //! This class is simply derived from a symmetric matrix from which all member are inherited.
+  //! But we must use this to distinguish it from a symmetric matrix at compile time.
+  template<int M>
+  class Matrix<Rotation,Fixed<M>,Fixed<M>,double> : public Matrix<General,Fixed<M>,Fixed<M>,double> {
+    public:
+      // Constructors are not inherited. Hence we must redefine all ctors here.
+
+      Matrix(Noinit ini) { }
+      Matrix(Init ini=INIT, const double &a=0) { this->init(a); }
+      Matrix(Eye ini, const double &a=1) { this->init(ini,a); }
+      Matrix(int m, int n, Noinit ini) { }
+      Matrix(int m, int n, Init ini, const double &a=0) { this->init(a); }
+      Matrix(int m, int n, Eye ini, const double &a=1) { this->init(ini,a); }
+      explicit Matrix(const Matrix<General,Fixed<M>,Fixed<M>,double>&  A) { this->deepCopy(A); }
+
+      template<class Row>
+      Matrix(const Matrix<Symmetric,Row,Row,double> &A) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+	assert(A.size() == M); 
+#endif
+	this->deepCopy(A);
+      }
+
+      template<class Type, class Row, class Col>
+      explicit Matrix(const Matrix<Type,Row,Col,double> &A) {
+#ifndef FMATVEC_NO_SIZE_CHECK
+	assert(A.rows() == M); 
+	assert(A.cols() == M);
+#endif
+	this->deepCopy(A);
+      }
+
+      // TODO: we should add some overloaded member functions here which capitalize the special
+      // properties of rotation matrices, link "RotMat inv() { return trans(*this); }"
+  };
+
+
 }
 
 #endif
