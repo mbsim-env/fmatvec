@@ -84,6 +84,56 @@ class KinematicSpiral : public Function<Vec3(VecV, double)> {
 
 
 
+// Just a example
+// The transformation matrix A rotates about axis a with with angle alpha=2*q(0)+3*q(1)+3*t
+class KinematicRotAboutAxis : public Function<RotMat3(VecV, double)> {
+  public:
+    KinematicRotAboutAxis(Vec3 a_) : a(a_) {
+    }
+    int getArg1Size() {
+      return 2;
+    }
+    RotMat3 operator()(VecV q, double t) {
+      RotMat3 A;
+      // MISSING
+      return A;
+    }
+    Mat3xV parDer1(VecV q, double t) {
+      Mat3xV J(2);
+      // MISSING
+      return J;
+    }
+    Vec3 parDer2(VecV q, double t) {
+      Vec3 j;
+      // MISSING
+      return j;
+    }
+    Mat3xV parDer1DirDer1(VecV qd, VecV q, double t) {
+      Mat3xV Jq(2);
+      // MISSING
+      return Jq;
+    }
+    Mat3xV parDer1ParDer2(VecV q, double t) {
+      Mat3xV Jt(2);
+      // MISSING
+      return Jt;
+    }
+    Vec3 parDer2ParDer2(VecV q, double t) {
+      Vec3 jt;
+      // MISSING
+      return jt;
+    }
+    Mat3xV parDer2ParDer1(VecV q, double t) {
+      Mat3xV jq(2);
+      // MISSING
+      return jq;
+    }
+  private:
+    Vec3 a;
+};
+
+
+
 int main() {
   // define some arbitary argument for the following function calles
   VecV q(2);
@@ -94,23 +144,45 @@ int main() {
   qd(1)=1.7;
   double t=2.2;
 
-  // create the example function object
-  Function<Vec3(VecV, double)> *f=new KinematicSpiral(0.2, 5.3);
+
+
+  // create the example function object (translation)
+  Function<Vec3(VecV, double)> *T=new KinematicSpiral(0.2, 5.3);
 
   // return some values (required for MBSim)
 
-  cout<<"arg1Size = "<<f->getArg1Size()<<endl;
-//cout<<"arg2Size = "<<f->getArg2Size()<<endl; // will give a compile error, since ErrorType is not defined by "cout<<" (Nice)
+  cout<<"arg1Size = "<<T->getArg1Size()<<endl;
+//cout<<"arg2Size = "<<T->getArg2Size()<<endl; // will give a compile error, since ErrorType is not defined by "cout<<" (Nice)
 
-  cout<<"fPrPK    = "<<(*f)(q, t)<<endl;
+  cout<<"fPrPK    = "<<(*T)(q, t)<<endl;
 
-  cout<<"fPJT     = "<<f->parDer1(q, t)<<endl;
-  cout<<"fPjT     = "<<f->parDer2(q, t)<<endl;
+  cout<<"fPJT     = "<<T->parDer1(q, t)<<endl;
+  cout<<"fPjT     = "<<T->parDer2(q, t)<<endl;
 
-  cout<<"fPdJT    = "<<f->parDer1DirDer1(qd, q, t)+f->parDer1ParDer2(q, t)<<endl;
+  cout<<"fPdJT    = "<<T->parDer1DirDer1(qd, q, t)+T->parDer1ParDer2(q, t)<<endl;
   // fPdjT can be calculate using parDer2DirDer1 OR parDer2ParDer1 in this special case (see KinematicSpiral above)
-  cout<<"fPdjT    = "<<f->parDer2DirDer1(qd, q, t)+f->parDer2ParDer2(q, t)<<endl;
-  cout<<"fPdjT    = "<<f->parDer2ParDer1(q, t)*qd+f->parDer2ParDer2(q, t)<<endl;
+  cout<<"fPdjT    = "<<T->parDer2DirDer1(qd, q, t)+T->parDer2ParDer2(q, t)<<endl;
+  cout<<"fPdjT    = "<<T->parDer2ParDer1(q, t)*qd+T->parDer2ParDer2(q, t)<<endl;
+
+
+
+  // create the example function object (rotation)
+  Function<RotMat3(VecV, double)> *R=new KinematicRotAboutAxis(Vec3("[1;0;0]"));
+
+  // return some values (required for MBSim)
+
+  cout<<"arg1Size = "<<R->getArg1Size()<<endl;
+//cout<<"arg2Size = "<<R->getArg2Size()<<endl; // will give a compile error, since ErrorType is not defined by "cout<<" (Nice)
+
+  cout<<"fAPK     = "<<(*R)(q, t)<<endl;
+
+  cout<<"fPJR     = "<<R->parDer1(q, t)<<endl;
+  cout<<"fPjR     = "<<R->parDer2(q, t)<<endl;
+
+  cout<<"fPdJT    = "<<R->parDer1DirDer1(qd, q, t)+R->parDer1ParDer2(q, t)<<endl;
+  cout<<"fPdjR    = "<<R->parDer2ParDer1(q, t)*qd+R->parDer2ParDer2(q, t)<<endl;
+
+
 
   return 0;
 }

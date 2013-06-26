@@ -132,6 +132,9 @@ namespace fmatvec {
 
   typedef RowVector<Var, double> RowVecV;
 
+  //Rotation Matrices
+  typedef Matrix<Rotation, Fixed<3>, Fixed<3>, double> RotMat3;
+
   /*Typedefs for mixed size */
 
   typedef Matrix<General, Fixed<3>, Var, double> Mat3xV;
