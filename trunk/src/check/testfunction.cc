@@ -18,7 +18,7 @@ class KinematicSpiral : public Function<Vec3(VecV, double)> {
     int getArg1Size() {
       return 2;
     }
-    Vec3 operator()(VecV q, double t) {
+    Vec3 operator()(const VecV &q, const double &t) {
       // we can also use the user data here (a, b); but not required here
       Vec3 r;
       r(0)=+cos(q(0))*(r0-v0*t);
@@ -26,28 +26,28 @@ class KinematicSpiral : public Function<Vec3(VecV, double)> {
       r(2)=0;
       return r;
     }
-    Mat3xV parDer1(VecV q, double t) {
+    Mat3xV parDer1(const VecV &q, const double &t) {
       Mat3xV J(2);
       J(0,0)=-sin(q(0))*(r0-v0*t);  J(0,1)=0;
       J(1,0)=0;                     J(1,1)=+cos(q(1))*(r0-v0*t);
       J(2,0)=0;                     J(2,1)=0;
       return J;
     }
-    Vec3 parDer2(VecV q, double t) {
+    Vec3 parDer2(const VecV &q, const double &t) {
       Vec3 j;
       j(0)=+cos(q(0))*v0;
       j(1)=+sin(q(1))*v0;
       j(2)=0;
       return j;
     }
-    Mat3xV parDer1DirDer1(VecV qd, VecV q, double t) {
+    Mat3xV parDer1DirDer1(const VecV &qd, const VecV &q, const double &t) {
       Mat3xV Jq(2);
       Jq(0,0)=-cos(q(0))*(r0-v0*t)*qd(0) + 0;  Jq(0,1)=0 + 0                   *qd(1);
       Jq(1,0)=0                   *qd(0) + 0;  Jq(1,1)=0 + -sin(q(1))*(r0-v0*t)*qd(1);
       Jq(2,0)=0                   *qd(0) + 0;  Jq(2,1)=0 + 0                   *qd(1);
       return Jq;
     }
-    Mat3xV parDer1ParDer2(VecV q, double t) {
+    Mat3xV parDer1ParDer2(const VecV &q, const double &t) {
       Mat3xV Jt(2);
       Jt(0,0)=-sin(q(0))*v0;  Jt(0,1)=0;
       Jt(1,0)=0;              Jt(1,1)=+cos(q(1))*v0;
@@ -55,7 +55,7 @@ class KinematicSpiral : public Function<Vec3(VecV, double)> {
       return Jt;
     }
     // only this function OR the next is required (see fPdjT later)
-    Mat3xV parDer2ParDer1(VecV q, double t) {
+    Mat3xV parDer2ParDer1(const VecV &q, const double &t) {
       Mat3xV jq(2);
       jq(0,0)=-sin(q(0))*v0; jq(0,1)=0            ;
       jq(1,0)=0;             jq(1,1)=+cos(q(1))*v0;
@@ -63,7 +63,7 @@ class KinematicSpiral : public Function<Vec3(VecV, double)> {
       return jq;
     }
     // only this function OR the previous is required (see fPdjT later)
-    Vec3 parDer2DirDer1(VecV qd, VecV q, double t) {
+    Vec3 parDer2DirDer1(const VecV &qd, const VecV &q, const double &t) {
       // this code equals "return parDer2ParDer1(q, t)*qd;"
       Vec3 jq;
       jq(0)=-sin(q(0))*v0*qd(0) + 0            *qd(1);
@@ -71,7 +71,7 @@ class KinematicSpiral : public Function<Vec3(VecV, double)> {
       jq(2)=0            *qd(0) + 0            *qd(1);
       return jq;
     }
-    Vec3 parDer2ParDer2(VecV q, double t) {
+    Vec3 parDer2ParDer2(const VecV &q, const double &t) {
       Vec3 jt;
       jt(0)=0;
       jt(1)=0;
@@ -88,42 +88,42 @@ class KinematicSpiral : public Function<Vec3(VecV, double)> {
 // The transformation matrix A rotates about axis a with with angle alpha=2*q(0)+3*q(1)+3*t
 class KinematicRotAboutAxis : public Function<RotMat3(VecV, double)> {
   public:
-    KinematicRotAboutAxis(Vec3 a_) : a(a_) {
+    KinematicRotAboutAxis(const Vec3 &a_) : a(a_) {
     }
     int getArg1Size() {
       return 2;
     }
-    RotMat3 operator()(VecV q, double t) {
+    RotMat3 operator()(const VecV &q, const double &t) {
       RotMat3 A;
       // MISSING
       return A;
     }
-    Mat3xV parDer1(VecV q, double t) {
+    Mat3xV parDer1(const VecV &q, const double &t) {
       Mat3xV J(2);
       // MISSING
       return J;
     }
-    Vec3 parDer2(VecV q, double t) {
+    Vec3 parDer2(const VecV &q, const double &t) {
       Vec3 j;
       // MISSING
       return j;
     }
-    Mat3xV parDer1DirDer1(VecV qd, VecV q, double t) {
+    Mat3xV parDer1DirDer1(const VecV &qd, const VecV &q, const double &t) {
       Mat3xV Jq(2);
       // MISSING
       return Jq;
     }
-    Mat3xV parDer1ParDer2(VecV q, double t) {
+    Mat3xV parDer1ParDer2(const VecV &q, const double &t) {
       Mat3xV Jt(2);
       // MISSING
       return Jt;
     }
-    Vec3 parDer2ParDer2(VecV q, double t) {
+    Vec3 parDer2ParDer2(const VecV &q, const double &t) {
       Vec3 jt;
       // MISSING
       return jt;
     }
-    Mat3xV parDer2ParDer1(VecV q, double t) {
+    Mat3xV parDer2ParDer1(const VecV &q, const double &t) {
       Mat3xV jq(2);
       // MISSING
       return jq;
