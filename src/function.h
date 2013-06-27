@@ -8,34 +8,32 @@ namespace fmatvec {
 
 
 
-// Just a dummy class representing a compile error if used e.g. by
-// a assign operator (=) with a double or Vec.
+/*! Just a dummy class representing a compile error if used e.g. by
+ * a assign operator (=) with a double or Vec.
+ */
 class ErrorType {};
 
 
 
-/** Defines the size type (dimension) of a argument.
- * Scalar does not define this.
- * Vector has one int.
- * Matrix has two int (fmatvec int vector)
- * This general template defines a ErrorType (not defined size type, uses for all other than Vec and Mat).
+/*! Defines the size type (dimension) of a argument of a Function object.
+ * This general template defines this type to ErrorType (not defined size type).
  * See the specializations for working types.
  */
 template<typename T>
 struct Size {
   typedef ErrorType type;
 };
-// specialization for vector: return one int
+//! Defines the size type of a (column) vector as int.
 template<typename Shape>
 struct Size<Vector<Shape, double> > {
   typedef int type;
 };
-// specialization for row vector: return one int
+//! Defines the size type of a row vector as int.
 template<typename Shape>
 struct Size<RowVector<Shape, double> > {
   typedef int type;
 };
-// specialization for matrix: return two int (fmatvec int vector)
+//! Defines the size type of a matrix as a fixed size vector of type int (two integers).
 template<typename Type, typename RowShape, typename ColShape>
 struct Size<Matrix<Type, RowShape, ColShape, double> > {
   typedef Vector<Fixed<2>, int> type;
@@ -43,49 +41,78 @@ struct Size<Matrix<Type, RowShape, ColShape, double> > {
 
 
 
-/** Create a type, equal the type of the derivative of a type "Dep" with respect to type "Indep".
- * e.g.: Der<Vec, double>::type expands to Vec
- * e.g.: Der<Mat, double>::type expands to Mat
- * e.g.: Der<Vec3, Vec>::type expands to Mat3xV
- * e.g.: Der<VecV, VecV>::type expands to MatVxV
- * This general template defines a ErrorType (not working derivative).
+/*! Defines the resulting type of the derivative of a value of type Dep with respect to a value of type Indep.
+ * This general template defines this type to ErrorType (not defined derivative).
  * See the specializations for working types.
  */
 template<typename Dep, typename Indep>
 struct Der {
   typedef ErrorType type;
 };
-// specialization, if the independent type is a scalar: derivative type = Dep
+/*! Defines the type of the derivative of a value of type Dep with respect to a scalar as type Dep.
+ * The partial derivative operator with respect to a scalar is define like in common mathematics.
+ */
 template<typename Dep>
 struct Der<Dep, double> {
   typedef Dep type;
 };
-// specialization, if the depdentent type is a scalar and the independent type is a vector: derivative type = RowVector
+/*! Defines the type of the derivative of a scalar with respect to a vector as row vector.
+ * The partial derivative operator with respect to a vector is define like in common mathematics:
+ * a column vector where each entry corresponds to the partial derivative with respect the
+ * corresponding entry of the independent vector.
+ */
 template<typename IndepVecShape>
 struct Der<double, Vector<IndepVecShape, double> > {
   typedef RowVector<IndepVecShape, double> type;
 };
-// specialization, if the dependent and independent type is a vector: derivative type = Matrix
+/*! Defines the type of the derivative of a vector with respect to a vector as matrix.
+ * The partial derivative operator with respect to a vector is define like in common mathematics:
+ * a column vector where each entry corresponds to the partial derivative with respect the
+ * corresponding entry of the independent vector.
+ */
 template<typename DepVecShape, typename IndepVecShape>
 struct Der<Vector<DepVecShape, double>, Vector<IndepVecShape, double> > {
   typedef Matrix<General, DepVecShape, IndepVecShape, double> type;
 };
-// specialization, if the dependent type is a rotation matrix and the independent type is a vector
-template<typename DepMatShape, typename IndepVecShape>
-struct Der<Matrix<Rotation, DepMatShape, DepMatShape, double>, Vector<IndepVecShape, double> > {
-  typedef Matrix<General, DepMatShape, IndepVecShape, double> type;
-};
-// specialization, if the dependent type is a rotation matrix and the independent type is a double
+/*! Defines the type of the derivative of a rotation matrix with respect to a scalar as vector.
+ * The partial derivative operator \f$ \texttt{parDer}_x(\boldsymbol{R}) \f$ of a
+ * rotation matrix \f$ \boldsymbol{R} \f$ with respect to a scalar \f$ x \f$ in defined
+ * by the Function class (member functions parDerX) as follows:
+ * \f[
+ *   \texttt{parDer}_x(\boldsymbol{R}) = \widetilde{\boldsymbol{R}^T \frac{\partial\boldsymbol{R}}{\partial x}}
+ * \f]
+ * where the "inverse tilde" operator (\f$ \widetilde{o} \f$) transform a skew symmetric matrix to a vector.
+ * This class spezialization define the type of \f$ \texttt{parDer}_x \f$.
+ */
 template<typename DepMatShape>
 struct Der<Matrix<Rotation, DepMatShape, DepMatShape, double>, double> {
   typedef Vector<DepMatShape, double> type;
 };
+/*! Defines the type of the derivative of a rotation matrix with respect to a vector as matrix.
+ * The partial derivative operator \f$ \texttt{parDer}_{\boldsymbol{x}}(\boldsymbol{R}) \f$ of a
+ * rotation matrix \f$ \boldsymbol{R} \f$ with respect to a vector \f$ \boldsymbol{x} \f$ in defined
+ * by the Function class (member functions parDerX) as follows:
+ * \f[
+ *   \texttt{parDer}_{\boldsymbol{x}}(\boldsymbol{R}) = \left[
+ *     \widetilde{\boldsymbol{R}^T \frac{\partial\boldsymbol{R}}{\partial x_1}},
+ *     \widetilde{\boldsymbol{R}^T \frac{\partial\boldsymbol{R}}{\partial x_1}},
+ *     \dots
+ *   \right]
+ * \f]
+ * where the "inverse tilde" operator (\f$ \widetilde{o} \f$) transform a skew symmetric matrix to a vector.
+ * This class spezialization define the type of \f$ \texttt{parDer}_{\boldsymbol{x}} \f$.
+ */
+template<typename DepMatShape, typename IndepVecShape>
+struct Der<Matrix<Rotation, DepMatShape, DepMatShape, double>, Vector<IndepVecShape, double> > {
+  typedef Matrix<General, DepMatShape, IndepVecShape, double> type;
+};
 
 
 
 
-// Just a base class for all template based Function classes
-// (required to have a common base class e.g. for object factories)
+/*! Just a base class for all template based Function classes.
+ * (required to have a common base class e.g. for object factories)
+ */
 class FunctionBase {};
 
 
@@ -93,6 +120,12 @@ class FunctionBase {};
 /*! A function object of arbitary type (defined like in boost::function).
  * The number of arguments is variable and always one value is returned.
  * The type of the arguments and the return value is also variable using templates.
+ * The function value is always provided and the partial and directional derivatives with
+ * respect to the arguments can be proveided if implemented by a derived class. This
+ * is normally done up to derivative order 2. The exact defintion of the partial
+ * derivatives depend on the type of the function value and the type of the parameters
+ * used for the derivative. See the Der class template specializations for a detailed
+ * description of the defintion of the partial derivative dependent on the types.
  */
 template<typename Sig>
 class Function;

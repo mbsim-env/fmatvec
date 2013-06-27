@@ -624,9 +624,13 @@ namespace fmatvec {
 
   /// @endcond
 
-  //! A matrix representing a rotation matrix.
-  //! This class is simply derived from a symmetric matrix from which all member are inherited.
-  //! But we must use this to distinguish it from a symmetric matrix at compile time.
+  /*! A matrix representing a rotation matrix.
+   * This class is simply derived from general square matrix from which all member are inherited.
+   * We must use this to be able to distinguish it from a general square matrix at compile time.
+   * The constructors of general matrix are redefined here since these are not inherited.
+   * Moreover we can overload some member functions here which capitalize the special
+   * properties of rotation matrices, link "RotMat inv() { return trans(*this); }."
+   */
   template<int M>
   class Matrix<Rotation,Fixed<M>,Fixed<M>,double> : public Matrix<General,Fixed<M>,Fixed<M>,double> {
     public:
