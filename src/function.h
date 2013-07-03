@@ -139,7 +139,7 @@ class Function<Ret(Arg1)> : public FunctionBase {
   public:
 
     //! Return the size of first argument
-    virtual typename Size<Arg1>::type getArg1Size() {
+    virtual typename Size<Arg1>::type getArg1Size() const {
       throw std::runtime_error("Must be overloaded by derived class.");
     }
 
@@ -175,11 +175,11 @@ class Function<Ret(Arg1, Arg2)> : public FunctionBase {
   public:
 
     //! Return the size of first argument
-    virtual typename Size<Arg1>::type getArg1Size() {
+    virtual typename Size<Arg1>::type getArg1Size() const {
       throw std::runtime_error("Must be overloaded by derived class.");
     }
     //! Return the size of first argument
-    virtual typename Size<Arg2>::type getArg2Size() {
+    virtual typename Size<Arg2>::type getArg2Size() const {
       throw std::runtime_error("Must be overloaded by derived class.");
     }
 
