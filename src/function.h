@@ -23,6 +23,11 @@ template<typename T>
 struct Size {
   typedef ErrorType type;
 };
+//! Defines the size type of a double as int.
+template<>
+struct Size<double> {
+  typedef int type;
+};
 //! Defines the size type of a (column) vector as int.
 template<typename Shape>
 struct Size<Vector<Shape, double> > {
@@ -133,34 +138,34 @@ class Function;
 
 
 //! A function object with 1 argument
-template<typename Ret, typename Arg1>
-class Function<Ret(Arg1)> : public FunctionBase {
+template<typename Ret, typename Arg>
+class Function<Ret(Arg)> : public FunctionBase {
 
   public:
 
     //! Return the size of first argument
-    virtual typename Size<Arg1>::type getArg1Size() const {
+    virtual typename Size<Arg>::type getArgSize() const {
       throw std::runtime_error("Must be overloaded by derived class.");
     }
 
     //! Function value: pure virtual (MUST be implemented by derived class)
-    virtual Ret operator()(const Arg1 &arg1)=0;
+    virtual Ret operator()(const Arg &arg)=0;
 
     //! First derivative: partial derivative of the function value with respect to the first argument.
-    virtual typename Der<Ret, Arg1>::type parDer1(const Arg1 &arg1) {
+    virtual typename Der<Ret, Arg>::type parDer(const Arg &arg) {
       throw std::runtime_error("Must be overloaded by derived class.");
     }
     //! First derivative: directional derivative of the function value with respect to the first argument.
-    virtual Ret dirDer1(const Arg1 &arg1Dir, const Arg1 &arg1) {
+    virtual Ret dirDer(const Arg &argDir, const Arg &arg) {
       throw std::runtime_error("Must be overloaded by derived class.");
     }
 
-    //! Second derivative: partial derivative of parDer1 with respect to the first argument.
-    virtual typename Der<typename Der<Ret, Arg1>::type, Arg1>::type parDer1ParDer1(const Arg1 &arg1) {
+    //! Second derivative: partial derivative of parDer with respect to the first argument.
+    virtual typename Der<typename Der<Ret, Arg>::type, Arg>::type parDerParDer(const Arg &arg) {
       throw std::runtime_error("Must be overloaded by derived class.");
     }
-    //! Second derivative: directional derivative of parDer1 with respect to the first argument.
-    virtual typename Der<Ret, Arg1>::type parDer1DirDer1(const Arg1 &arg1Dir, const Arg1 &arg1) {
+    //! Second derivative: directional derivative of parDer with respect to the first argument.
+    virtual typename Der<Ret, Arg>::type parDerDirDer(const Arg &argDir, const Arg &arg) {
       throw std::runtime_error("Must be overloaded by derived class.");
     }
 
