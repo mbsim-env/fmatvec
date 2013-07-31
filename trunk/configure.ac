@@ -239,6 +239,7 @@ fi
 
 # from now on only libtool is used for linking
 LDFLAGS="$LDFLAGS -no-undefined"
+CPPFLAGS="$CPPFLAGS -I\$(top_srcdir)"
 
 AC_SUBST(LIBS)
 AC_SUBST([INCDIRS])
