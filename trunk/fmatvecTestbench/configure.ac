@@ -16,8 +16,6 @@ AC_C_CONST
 AC_CHECK_FUNCS([sqrt])
 AC_HEADER_STDBOOL
 
-LDFLAGS="$LDFLAGS -Wl,--no-undefined"
-
 PKG_CHECK_MODULES(DEPS, fmatvec >= 1.0.1)
 
 dnl versioning (see http://www.gnu.org/software/libtool/manual.html)
@@ -36,6 +34,7 @@ LIBFMATVECTESTBENCH_VERSION_INFO=$LIBFMATVECTESTBENCH_CURRENT:$LIBFMATVECTESTBEN
 AC_SUBST([LIBFMATVECTESTBENCH_VERSION_INFO])
 
 CPPFLAGS="$CPPFLAGS"
+LDFLAGS="$LDFLAGS -no-undefined -Wl,--no-undefined"
 
 AC_ARG_WITH([doxygenpath],[  --with-doxygenpath=PATH  The path to the 'doxygen' program.],[doxygenpath="$withval"],[doxygenpath=""])
 AC_PATH_PROG([doxygen],[doxygen],[no],[$doxygenpath:$PATH])

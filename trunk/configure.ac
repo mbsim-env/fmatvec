@@ -26,8 +26,6 @@ AC_SUBST([LIBFMATVEC_AGE])
 LIBFMATVEC_VERSION_INFO=$LIBFMATVEC_CURRENT:$LIBFMATVEC_REVISION:$LIBFMATVEC_AGE
 AC_SUBST([LIBFMATVEC_VERSION_INFO])
 
-LDFLAGS="$LDFLAGS -Wl,--no-undefined"
-
 dnl By autoscan
 AC_CHECK_FUNCS([sqrt])
 AC_C_CONST
@@ -238,7 +236,7 @@ else
 fi
 
 # from now on only libtool is used for linking
-LDFLAGS="$LDFLAGS -no-undefined"
+LDFLAGS="$LDFLAGS -no-undefined -Wl,--no-undefined"
 CPPFLAGS="$CPPFLAGS -I\$(top_srcdir)"
 
 AC_SUBST(LIBS)
