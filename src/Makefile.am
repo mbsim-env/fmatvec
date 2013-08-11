@@ -6,6 +6,7 @@ libfmatvec_la_SOURCES = linear_algebra_double.cc \
 			_memory.cc \
 			wrapper.cc
 
+libfmatvec_la_CPPFLAGS = -I$(top_srcdir)
 fmatvecincludedir=$(includedir)/fmatvec
 fmatvecinclude_HEADERS = diagonal_matrix.h \
 			 fmatvec.h \
