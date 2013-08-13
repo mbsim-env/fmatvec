@@ -8,6 +8,6 @@ Description: fmatvec is a library for fast matrix-vector computations.
 Requires: 
 Version: @VERSION@
 Libs: -L${libdir} @LIBDIRS@ -lfmatvec @LIBS@
-Cflags: @INCDIRS@ -I${includedir}/fmatvec @DEFINES@
+Cflags: @INCDIRS@ -I${includedir} @DEFINES@
 
 
