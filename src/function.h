@@ -125,6 +125,7 @@ struct Der<Matrix<Rotation, DepMatShape, DepMatShape, double>, Vector<IndepVecSh
  */
 class FunctionBase {
   public:
+    virtual ~FunctionBase() {}
     virtual void initializeUsingXML(MBXMLUtils::TiXmlElement *element) { }
     virtual MBXMLUtils::TiXmlElement *writeXMLFile(MBXMLUtils::TiXmlNode *parent) { return NULL; }
 };
