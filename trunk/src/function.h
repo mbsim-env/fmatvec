@@ -16,7 +16,7 @@ namespace fmatvec {
  */
 class ErrorType {};
 
-/*! Defines the size type (dimension) of a argument of a Function object.
+/*! Defines the size type (dimension) of the template argument T.
  * This general template defines this type to ErrorType (not defined size type).
  * See the specializations for working types.
  */
@@ -47,6 +47,64 @@ struct Size<RowVector<Shape, double> > {
 template<typename Type, typename RowShape, typename ColShape>
 struct Size<Matrix<Type, RowShape, ColShape, double> > {
   typedef Vector<Fixed<2>, int> type;
+};
+
+/*! Defines the static size (dimension) of the template argument T.
+ * This general template defines this size to 0 (=the size is not statically defined -> dynamic size).
+ * Maximal two dimensions are supported.
+ * See the specializations for types which have a static size.
+ */
+template<typename T>
+struct StaticSize {
+  enum { size1=0, size2=0 };
+};
+
+//! Defines the static size (dimension) of a double.
+template<>
+struct StaticSize<double> {
+  enum { size1=1, size2=1 };
+};
+
+//! Defines the static size (dimension) of a vector.
+template<typename Shape, typename AT>
+struct StaticSize<Vector<Shape, AT> > {
+  enum { size1=0, size2=1 };
+};
+
+//! Defines the static size (dimension) of a row vector.
+template<typename Shape, typename AT>
+struct StaticSize<RowVector<Shape, AT> > {
+  enum { size1=1, size2=0 };
+};
+
+//! Defines the static size (dimension) of a fixed vector.
+template<int N, typename AT>
+struct StaticSize<Vector<Fixed<N>, AT> > {
+  enum { size1=N, size2=1 };
+};
+
+//! Defines the static size (dimension) of a fixed rowvector.
+template<int N, typename AT>
+struct StaticSize<RowVector<Fixed<N>, AT> > {
+  enum { size1=1, size2=N };
+};
+
+//! Defines the static size (dimension) of a fixed matrix.
+template<typename Storage, int N, int M, typename AT>
+struct StaticSize<Matrix<Storage, Fixed<N>, Fixed<M>, AT> > {
+  enum { size1=N, size2=M };
+};
+
+//! Defines the static size (dimension) of a partial fixed matrix.
+template<typename Storage, int N, typename ColShape, typename AT>
+struct StaticSize<Matrix<Storage, Fixed<N>, ColShape, AT> > {
+  enum { size1=N, size2=0 };
+};
+
+//! Defines the static size (dimension) of a partial fixed matrix.
+template<typename Storage, typename RowShape, int M, typename AT>
+struct StaticSize<Matrix<Storage, RowShape, Fixed<M>, AT> > {
+  enum { size1=0, size2=M };
 };
 
 /*! Defines the resulting type of the derivative of a value of type Dep with respect to a value of type Indep.
@@ -87,11 +145,11 @@ struct Der<Vector<DepVecShape, double>, Vector<IndepVecShape, double> > {
 };
 
 /*! Defines the type of the derivative of a rotation matrix with respect to a scalar as vector.
- * The partial derivative operator \f$ \texttt{parDer}_x(\boldsymbol{R}) \f$ of a
- * rotation matrix \f$ \boldsymbol{R} \f$ with respect to a scalar \f$ x \f$ in defined
+ * The partial derivative operator \f$ \texttt{parDer}_x(\boldsymbol{R}_{12}) \f$ of a
+ * rotation matrix \f$ \boldsymbol{R}_{12} \f$ with respect to a scalar \f$ x \f$ in defined
  * by the Function class (member functions parDerX) as follows:
  * \f[
- *   \texttt{parDer}_x(\boldsymbol{R}) = \widetilde{\boldsymbol{R}^T \frac{\partial\boldsymbol{R}}{\partial x}}
+ *   \texttt{parDer}_x(\boldsymbol{R}_{12}) = \widetilde{\left(\frac{\partial\boldsymbol{R}_{12}}{\partial x}\boldsymbol{R}^T_{12}\right)} = _1\boldsymbol{r}_{12}
  * \f]
  * where the "inverse tilde" operator (\f$ \widetilde{o} \f$) transform a skew symmetric matrix to a vector.
  * This class spezialization define the type of \f$ \texttt{parDer}_x \f$.
@@ -102,15 +160,15 @@ struct Der<Matrix<Rotation, DepMatShape, DepMatShape, double>, double> {
 };
 
 /*! Defines the type of the derivative of a rotation matrix with respect to a vector as matrix.
- * The partial derivative operator \f$ \texttt{parDer}_{\boldsymbol{x}}(\boldsymbol{R}) \f$ of a
- * rotation matrix \f$ \boldsymbol{R} \f$ with respect to a vector \f$ \boldsymbol{x} \f$ in defined
+ * The partial derivative operator \f$ \texttt{parDer}_{\boldsymbol{x}}(\boldsymbol{R}_{12}) \f$ of a
+ * rotation matrix \f$ \boldsymbol{R}_{12} \f$ with respect to a vector \f$ \boldsymbol{x} \f$ in defined
  * by the Function class (member functions parDerX) as follows:
  * \f[
- *   \texttt{parDer}_{\boldsymbol{x}}(\boldsymbol{R}) = \left[
- *     \widetilde{\boldsymbol{R}^T \frac{\partial\boldsymbol{R}}{\partial x_1}},
- *     \widetilde{\boldsymbol{R}^T \frac{\partial\boldsymbol{R}}{\partial x_1}},
+ *   \texttt{parDer}_{\boldsymbol{x}}(\boldsymbol{R}_{12}) = \left[
+ *     \widetilde{\left(\frac{\partial\boldsymbol{R}_{12}}{\partial x_1}\boldsymbol{R}^T_{12}\right)},
+ *     \widetilde{\left(\frac{\partial\boldsymbol{R}_{12}}{\partial x_1}\boldsymbol{R}^T_{12}\right)},
  *     \dots
- *   \right]
+ *   \right] = _1\boldsymbol{r}_{12}
  * \f]
  * where the "inverse tilde" operator (\f$ \widetilde{o} \f$) transform a skew symmetric matrix to a vector.
  * This class spezialization define the type of \f$ \texttt{parDer}_{\boldsymbol{x}} \f$.
