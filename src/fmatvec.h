@@ -126,6 +126,8 @@ namespace fmatvec {
 
   typedef Matrix<General, Var, Var, double> MatV;
 
+  typedef Matrix<General, Var, Var, int> MatVI;
+
   typedef SquareMatrix<Var, double> SqrMatV;
 
   typedef Vector<Var, double> VecV;
