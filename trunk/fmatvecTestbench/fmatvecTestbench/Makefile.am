@@ -7,7 +7,7 @@ libfmatvecTestbench_la_SOURCES = testbench.cc\
                                  matgenerator.cc
 
 libfmatvecTestbench_la_LIBADD = $(DEPS_LIBS)
-INCLUDES = $(DEPS_CFLAGS)
+libfmatvecTestbench_la_CPPFLAGS = $(DEPS_CFLAGS)
 
 fmatvecTestbenchincludedir = $(includedir)/fmatvecTestbench
 fmatvecTestbenchinclude_HEADERS = testbench.h\
