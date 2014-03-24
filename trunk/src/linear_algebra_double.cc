@@ -598,7 +598,27 @@ namespace fmatvec {
     delete[] wi;
 
     return w;
+  }
 
+  int eigvec(const SquareMatrix<Ref, double> &A, SquareMatrix<Ref, double> &V, Vector<Ref, std::complex<double> > &w) {
+
+    double *vl = 0;
+    double *wr = new double[A.size()];
+    double *wi = new double[A.size()];
+
+    SquareMatrix<Ref, double> B = A.copy();
+
+    V.resize(A.size());
+    int info = dgeev('N', 'V', A.size(), B(), B.ldim(), wr, wi, vl, B.size(), V(), B.size());
+
+    w.resize(A.size());
+    for (int i = 0; i < A.size(); i++)
+      w(i) = std::complex<double>(wr[i], wi[i]);
+
+    delete[] wr;
+    delete[] wi;
+
+    return info;
   }
   
   int eigvec(const Matrix<Symmetric, Ref, Ref, double> &A, const Matrix<Symmetric, Ref, Ref, double> &B, SquareMatrix<Ref, double> &eigenvectors, Vector<Ref, double> &eigenvalues) {
