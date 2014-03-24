@@ -50,6 +50,16 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
 
   /*! \brief Eigenvectors and Eigenvalues
    *
+   * This function computes the complex eigenvalues and eigenvectors of a square matrix.
+   * \param A A square matrix. 
+   * \param eigenvector A square matrix in the dimension of A, containing the normalized eigenvectors. 
+   * \param eigenvalues A vector in the size of A, containing the eigenvalues.
+   * \return If 0, successful exit. If -i, the i-th argument had an illegal value. If i, the QR algorithm failed to compute all the eigenvalues, and no eigenvectors have been computed.
+   * */
+  int eigvec(const SquareMatrix<Ref, double> &A, SquareMatrix<Ref, double> &eigenvectors, Vector<Ref, std::complex<double> > &eigenvalues);
+
+  /*! \brief Eigenvectors and Eigenvalues
+   *
    * This function computes all the eigenvectors and the eigenvalues of a real generalized symmetric-definite eigenproblem, of the form A*x=(lambda)*B*x.
    * Here A and B are assumed to be symmetric and B is also positive definite.
    * \param A A symmetric matrix. 
