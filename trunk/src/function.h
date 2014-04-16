@@ -3,10 +3,11 @@
 
 #include <fmatvec/fmatvec.h>
 #include <stdexcept>
+#include <xercesc/util/XercesDefs.hpp>
 
-namespace MBXMLUtils {
-  class TiXmlElement;
-  class TiXmlNode;
+namespace XERCES_CPP_NAMESPACE {
+  class DOMNode;
+  class DOMElement;
 }
 
 namespace fmatvec {
@@ -184,8 +185,8 @@ struct Der<Matrix<Rotation, DepMatShape, DepMatShape, double>, Vector<IndepVecSh
 class FunctionBase {
   public:
     virtual ~FunctionBase() {}
-    virtual void initializeUsingXML(MBXMLUtils::TiXmlElement *element) { }
-    virtual MBXMLUtils::TiXmlElement *writeXMLFile(MBXMLUtils::TiXmlNode *parent) { return NULL; }
+    virtual void initializeUsingXML(xercesc::DOMElement *element) { }
+    virtual xercesc::DOMElement *writeXMLFile(xercesc::DOMNode *parent) { return NULL; }
 };
 
 /*! A function object of arbitary type (defined like in boost::function).
