@@ -298,7 +298,7 @@ namespace fmatvec {
         FMATVEC_SYNCINIT(fmatvec_refLock);
       };
 
-      Memory(size_t n) : ref(reinterpret_cast<size_t*>(new AT[ele0Start+n])), ele0(reinterpret_cast<AT*>(ref)+1) {
+      Memory(size_t n) : ref(reinterpret_cast<size_t*>(new AT[ele0Start+n])), ele0(reinterpret_cast<AT*>(ref)+ele0Start) {
         *ref=1; // initialize the reference count to 1
         FMATVEC_SYNCINIT(fmatvec_refLock);
       };
