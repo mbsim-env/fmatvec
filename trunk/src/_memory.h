@@ -322,7 +322,7 @@ namespace fmatvec {
       void resize(size_t n) {
         unlock();
         ref=reinterpret_cast<size_t*>(new AT[ele0Start+n]);
-        ele0=reinterpret_cast<AT*>(ref)+1;
+        ele0=reinterpret_cast<AT*>(ref)+ele0Start;
         *ref=1; // initialize the reference count to 1
 	};
 
