@@ -27,6 +27,8 @@
 #include "linear_algebra_var_fixed.h"
 #include "linear_algebra_double.h"
 #include "wrapper.h"
+#include <stdexcept>
+#include <sstream>
 
 #define FMATVEC_NO_INITIALIZATION
 #define FMATVEC_NO_BOUNDS_CHECK
@@ -46,6 +48,13 @@
    (((c) == CblasLeft) ? 'L' : \
     ((c) == CblasRight) ? 'R' : \
     -1)
+
+template <class T>
+std::string toStr(const T& val) {
+  std::ostringstream oss;
+  oss << val;
+  return oss.str();
+}
 
 //-------------------------------------
 // Matrix operations
@@ -77,7 +86,8 @@ namespace fmatvec {
 
     delete[] ipiv;
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in slvLU: dgesv exited with info="+toStr(info));
 
     return Y;
   }
@@ -103,7 +113,8 @@ namespace fmatvec {
     int info = dgetrs(B.blasOrder(), CVT_TRANSPOSE(B.blasTrans()), B.size(), Y.cols(), B(), B.ldim(), ipiv(), Y(), Y.ldim());
 #endif
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in slvLUFac: dgetrs exited with info="+toStr(info));
 
     return Y;
   }
@@ -125,7 +136,8 @@ namespace fmatvec {
 
     int info = dgels(B.blasTrans(), B.rows(), B.cols(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in slvQR: dgels exited with info="+toStr(info));
 
     return Y;
   }
@@ -189,7 +201,8 @@ namespace fmatvec {
 
     delete[] ipiv;
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in slvLU: dgesv exited with info="+toStr(info));
 
     return y;
   }
@@ -239,7 +252,8 @@ namespace fmatvec {
     int info = dgetrs(B.blasOrder(), CVT_TRANSPOSE(B.blasTrans()), B.size(), 1, B(), B.ldim(), ipiv(), y(), y.size());
 #endif
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in slvLUFac: dgetrs exited with info="+toStr(info));
 
     return y;
   }
@@ -261,7 +275,8 @@ namespace fmatvec {
 
     int info = dgels(B.blasTrans(), B.rows(), B.cols(), y.cols(), B(), B.ldim(), y(), y.size());
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in slvQR: dgels exited with info="+toStr(info));
 
     return y;
   }
@@ -279,7 +294,8 @@ namespace fmatvec {
 
     int info = dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv);
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in inv: dgetrf exited with info="+toStr(info));
 
     dgetri(B.blasOrder(), B.size(), B(), B.ldim(), ipiv);
 
@@ -303,7 +319,8 @@ namespace fmatvec {
     int info = dpotrf(B.blasOrder(),CVT_UPLO(B.blasUplo()) , B.size(), B(), B.ldim());
 #endif
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in inv: dpotrf exited with info="+toStr(info));
 
 #ifndef HAVE_LIBMKL_INTEL_LP64
     dpotri(B.blasOrder(), B.blasUplo(), B.rows(), B(), B.ldim());
@@ -345,7 +362,8 @@ namespace fmatvec {
 
     int info = dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv());
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in facLU: dgetrf exited with info="+toStr(info));
 
     return B;
   }
@@ -366,7 +384,8 @@ namespace fmatvec {
 
     int info = dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv());
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in facLU: dgetrf exited with info="+toStr(info));
 
     return B;
   }
@@ -440,7 +459,8 @@ namespace fmatvec {
     int info = dpotrf(B.blasOrder(), CVT_UPLO(B.blasUplo()), B.size(), B(), B.ldim());
 #endif
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in facLL: dpotrf exited with info="+toStr(info));
 
     return B;
   }
@@ -497,7 +517,8 @@ namespace fmatvec {
     int info = dposv(B.blasOrder(), CVT_UPLO(B.blasUplo()), B.size(), 1, B(), B.ldim(), y(), y.size());
 #endif
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in slvLL: dposv exited with info="+toStr(info));
 
     return y;
   }
@@ -523,7 +544,8 @@ namespace fmatvec {
     int info = dposv(B.blasOrder(), CVT_UPLO(B.blasUplo()), B.size(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
 #endif
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in slvLL: dposv exited with info="+toStr(info));
 
     return Y;
   }
@@ -549,7 +571,8 @@ namespace fmatvec {
     int info = dpotrs(B.blasOrder(),CVT_UPLO(B.blasUplo()) , B.size(), 1, B(), B.ldim(), y(), y.size());
 #endif
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in slvLLFac: dpotrs exited with info="+toStr(info));
 
     return y;
   }
@@ -575,7 +598,8 @@ namespace fmatvec {
     int info = dpotrs(B.blasOrder(),CVT_UPLO(B.blasUplo()) , B.size(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
 #endif
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in slvLLFac: dpotrs exited with info="+toStr(info));
 
     return Y;
   }
@@ -800,7 +824,8 @@ namespace fmatvec {
 
     int info = dgelss(A.rows(), A.cols(), B_.cols(), A_(), A_.ldim(), B_(), B_.ldim(), rcond);
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in slvLS: dgelss exited with info="+toStr(info));
 
     return B_(Index(0, A.cols() - 1), Index(0, B.cols() - 1));
   }
@@ -823,7 +848,8 @@ namespace fmatvec {
 
     int info = dgelss(A.rows(), A.cols(), 1, A_(), A_.ldim(), b_(), b_.size(), rcond);
 
-    assert(info == 0);
+    if(info != 0)
+      throw std::runtime_error("Exception in slvLS: dgelss exited with info="+toStr(info));
 
     return b_(0, A.cols() - 1);
   }
