@@ -2,6 +2,7 @@
 #define _FMATVEC_FUNCTION_H_
 
 #include <fmatvec/fmatvec.h>
+#include <fmatvec/atom.h>
 #include <stdexcept>
 #include <xercesc/util/XercesDefs.hpp>
 
@@ -182,7 +183,7 @@ struct Der<Matrix<Rotation, DepMatShape, DepMatShape, double>, Vector<IndepVecSh
 /*! Just a base class for all template based Function classes.
  * (required to have a common base class e.g. for object factories)
  */
-class FunctionBase {
+class FunctionBase : public Atom {
   public:
     virtual ~FunctionBase() {}
     virtual void initializeUsingXML(xercesc::DOMElement *element) { }

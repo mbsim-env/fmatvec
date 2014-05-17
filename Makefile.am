@@ -1,6 +1,6 @@
-SUBDIRS = src
+SUBDIRS = fmatvec
 
-DIST_SUBDIRS = src doc
+DIST_SUBDIRS = fmatvec doc
 
 #bin_SCRIPTS = fmatvec-config
 

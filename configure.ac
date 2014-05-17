@@ -5,7 +5,7 @@ AC_PREREQ(2.57)
 AC_INIT(fmatvec, 2.0.0, martin.o.foerg@googlemail.com)
 AC_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE
-AC_CONFIG_SRCDIR([src/fmatvec.h])
+AC_CONFIG_SRCDIR([fmatvec/fmatvec.h])
 LT_INIT([win32-dll])
 AC_PROG_CXX
 AC_PROG_CXXCPP
@@ -241,7 +241,7 @@ LDFLAGS="$LDFLAGS -no-undefined -Wl,--no-undefined"
 AC_SUBST(LIBS)
 AC_SUBST([INCDIRS])
 AC_SUBST([LIBDIRS])
-AC_CONFIG_FILES([Makefile src/Makefile src/check/Makefile doc/doxyfile doc/Makefile fmatvec.pc])
+AC_CONFIG_FILES([Makefile fmatvec/Makefile fmatvec/check/Makefile doc/doxyfile doc/Makefile fmatvec.pc])
 AC_OUTPUT
 
 echo "
