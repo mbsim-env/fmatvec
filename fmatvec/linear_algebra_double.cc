@@ -624,20 +624,35 @@ namespace fmatvec {
     return w;
   }
 
-  int eigvec(const SquareMatrix<Ref, double> &A, SquareMatrix<Ref, double> &V, Vector<Ref, std::complex<double> > &w) {
+  int eigvec(const SquareMatrix<Ref, double> &A, SquareMatrix<Ref, std::complex<double> > &V, Vector<Ref, std::complex<double> > &w) {
+
+    SquareMatrix<Ref, double> B = A.copy();
+    w.resize(A.size(),NONINIT);
+    V.resize(A.size(),NONINIT);
+    SquareMatrix<Ref, double> Vreal(A.size(),NONINIT);
 
     double *vl = 0;
     double *wr = new double[A.size()];
     double *wi = new double[A.size()];
 
-    SquareMatrix<Ref, double> B = A.copy();
+    int info = dgeev('N', 'V', A.size(), B(), B.ldim(), wr, wi, vl, B.size(), Vreal(), B.size());
 
-    V.resize(A.size());
-    int info = dgeev('N', 'V', A.size(), B(), B.ldim(), wr, wi, vl, B.size(), V(), B.size());
-
-    w.resize(A.size());
-    for (int i = 0; i < A.size(); i++)
-      w(i) = std::complex<double>(wr[i], wi[i]);
+    for (int i = 0; i < A.size(); i++) 
+      w.e(i) = std::complex<double>(wr[i], wi[i]);
+    for (int i = 0; i < A.size(); i++) {
+      if((i < A.size()-1) and (w.e(i+1)==conj(w.e(i)))) {
+        for(int j = 0; j < A.size(); j++) {
+          V.e(j,i) = std::complex<double>(Vreal.e(j,i), Vreal.e(j,i+1));
+          V.e(j,i+1) = std::complex<double>(Vreal.e(j,i), -Vreal.e(j,i+1));
+        }
+        i++;
+      }
+      else {
+        for(int j = 0; j < A.size(); j++) {
+          V.e(j,i) = std::complex<double>(Vreal.e(j,i), 0);
+        }
+      }
+    }
 
     delete[] wr;
     delete[] wi;
