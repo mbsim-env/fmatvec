@@ -638,18 +638,18 @@ namespace fmatvec {
     int info = dgeev('N', 'V', A.size(), B(), B.ldim(), wr, wi, vl, B.size(), Vreal(), B.size());
 
     for (int i = 0; i < A.size(); i++) 
-      w.e(i) = std::complex<double>(wr[i], wi[i]);
+      w(i) = std::complex<double>(wr[i], wi[i]);
     for (int i = 0; i < A.size(); i++) {
-      if((i < A.size()-1) and (w.e(i+1)==conj(w.e(i)))) {
+      if((i < A.size()-1) and (w(i+1)==conj(w(i)))) {
         for(int j = 0; j < A.size(); j++) {
-          V.e(j,i) = std::complex<double>(Vreal.e(j,i), Vreal.e(j,i+1));
-          V.e(j,i+1) = std::complex<double>(Vreal.e(j,i), -Vreal.e(j,i+1));
+          V(j,i) = std::complex<double>(Vreal(j,i), Vreal(j,i+1));
+          V(j,i+1) = std::complex<double>(Vreal(j,i), -Vreal(j,i+1));
         }
         i++;
       }
       else {
         for(int j = 0; j < A.size(); j++) {
-          V.e(j,i) = std::complex<double>(Vreal.e(j,i), 0);
+          V(j,i) = std::complex<double>(Vreal(j,i), 0);
         }
       }
     }
