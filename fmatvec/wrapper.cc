@@ -72,6 +72,9 @@ extern "C" {
   void dgesv_(const int *N, const int *NRHS,
                   double *A, const int *lda, int *ipiv,
                   double *B, const int *ldb, int *info);
+  void zgesv_(const int *N, const int *NRHS,
+                  doublecomplex *A, const int *lda, int *ipiv,
+                  doublecomplex *B, const int *ldb, int *info);
 
   void dgetrs_(const char *Trans, const int *N, const int *NRHS, const double
       *A, const int *lda, const int *ipiv, double *B, const int *ldb, int *info);
@@ -198,6 +201,16 @@ namespace fmatvec {
 
     int info;
     dgesv_(&N, &NRHS, A, &lda, ipiv, B, &ldb, &info);
+
+    return info;
+  }
+
+  int zgesv(const CBLAS_ORDER Order, const int N, const int NRHS,
+                  doublecomplex *A, const int lda, int *ipiv,
+                  doublecomplex *B, const int ldb) {
+
+    int info;
+    zgesv_(&N, &NRHS, A, &lda, ipiv, B, &ldb, &info);
 
     return info;
   }

@@ -57,6 +57,10 @@
 #include "mkl_cblas.h"
 #endif
 
+#include <complex>
+
+typedef std::complex<double> doublecomplex;
+
 #if defined(HAVE_LIBBLAS)
 namespace fmatvec {
   void dscal(const int N, const double alpha, double *X, const int incX) ;
@@ -91,6 +95,9 @@ namespace fmatvec {
   int dgesv(const CBLAS_ORDER Order, const int N, const int NRHS,
                   double *A, const int lda, int *ipiv,
                   double *B, const int ldb);
+  int zgesv(const CBLAS_ORDER Order, const int N, const int NRHS,
+                  doublecomplex *A, const int lda, int *ipiv,
+                  doublecomplex *B, const int ldb);
   int dgetrs(const CBLAS_ORDER Order, const CBLAS_TRANSPOSE Trans,
     const int N, const int NRHS, const double *A, const int lda,
     const int *ipiv, double *B, const int ldb);
@@ -131,6 +138,7 @@ extern "C" {
 #define dsymm  cblas_dsymm
 
 #define dgesv  clapack_dgesv
+#define zgesv  clapack_zgesv
 #define dgetrs clapack_dgetrs
 #define dgetrf clapack_dgetrf
 #define dgetri clapack_dgetri
@@ -162,6 +170,7 @@ extern "C" {
 #define dsymm  cblas_dsymm
 
 #define dgesv  LAPACKE_dgesv
+#define zgesv  LAPACKE_zgesv
 #define dgetrs LAPACKE_dgetrs
 #define dgetrf LAPACKE_dgetrf
 #define dgetri LAPACKE_dgetri
