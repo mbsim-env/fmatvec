@@ -64,4 +64,17 @@ void Atom::setMessageStreamActive(MsgType type, bool activeFlag) {
   _msg[type] = *_msgAct[type] ? _msgSaved[type] : _nullStream;
 }
 
+void Atom::adoptMessageStreams(const Atom *src) {
+  if(src) {
+    _msgAct  =src->_msgAct;
+    _msgSaved=src->_msgSaved;
+    _msg     =src->_msg;
+  }
+  else {
+    _msgAct  =_msgActStatic;
+    _msgSaved=_msgSavedStatic;
+    _msg     =_msgStatic;
+  }
+}
+
 }

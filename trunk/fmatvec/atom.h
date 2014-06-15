@@ -53,6 +53,24 @@ class Atom {
     //! Set the active flag of this object and all objects which were created using the same message stream as this object.
     void setMessageStreamActive(MsgType type, bool active);
 
+    //! Adopt the message streams from src to this object.
+    //! If src is NULL adopt the current (static) message streams.
+    //! Normally always the streams at ctor time are used. But in some special cassed this function is usefull.
+    void adoptMessageStreams(const Atom *src=NULL);
+
+    //! Return the message stream of type type.
+    //! Node: If the code is performance critical you should check first whether this stream is really
+    //! printed using msgAct(type). If this return false just skip the complete message.
+    std::ostream &msg(MsgType type) {
+      return *_msg[type];
+    }
+    //! Return true if the the message of type type is currently active.
+    //! Note: If the code is not performance critical their is no need to check this flag. You can
+    //! just print using msg(type)<<"Hello world"<<endl; and it is not really printed.
+    bool msgAct(MsgType type) {
+      return *_msgAct[type];
+    }
+
     //! Same as msg(type).
     //! Use this function only if not object is available. This should normally not be the case.
     static std::ostream &msgStatic(MsgType type) {
@@ -80,21 +98,6 @@ class Atom {
     boost::array<boost::shared_ptr<bool        >, SIZE> _msgAct;
     boost::array<boost::shared_ptr<std::ostream>, SIZE> _msgSaved;
     boost::array<boost::shared_ptr<std::ostream>, SIZE> _msg;
-
-  protected:
-
-    //! Return the message stream of type type.
-    //! Node: If the code is performance critical you should check first whether this stream is really
-    //! printed using msgAct(type). If this return false just skip the complete message.
-    std::ostream &msg(MsgType type) {
-      return *_msg[type];
-    }
-    //! Return true if the the message of type type is currently active.
-    //! Note: If the code is not performance critical their is no need to check this flag. You can
-    //! just print using msg(type)<<"Hello world"<<endl; and it is not really printed.
-    bool msgAct(MsgType type) {
-      return *_msgAct[type];
-    }
 };
 
 }
