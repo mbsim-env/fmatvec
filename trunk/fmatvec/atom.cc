@@ -12,14 +12,16 @@ shared_ptr<ostream> Atom::_nullStream = make_shared<ostream>(static_cast<streamb
 // initialize the static streams with cout/cerr and corresponding active flags
 array<shared_ptr<bool>   , Atom::SIZE> Atom::_msgActStatic = {{
   // initial active flag of the message stream
-  make_shared<bool>(true), // Info
-  make_shared<bool>(true)  // Warn
+  make_shared<bool>(true),  // Info
+  make_shared<bool>(true),  // Warn
+  make_shared<bool>(false)  // Debug
   // NEW TYPES HERE: initial active flag
 }};
 array<shared_ptr<ostream>, Atom::SIZE> Atom::_msgSavedStatic = {{
   // stream to use for the message stream
   make_shared<ostream>(cout.rdbuf()), // Info
-  make_shared<ostream>(cerr.rdbuf())  // Warn
+  make_shared<ostream>(cerr.rdbuf()), // Warn
+  make_shared<ostream>(cout.rdbuf())  // Debug
   // NEW TYPES HERE: stream
 }};
 

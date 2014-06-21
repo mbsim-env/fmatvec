@@ -23,12 +23,15 @@ class Atom {
     //! Messages can be printed to different message types named here.
     // When adding new message type a stream and a initial active flag must be provided in atom.cc (see NEW TYPES HERE)
     enum MsgType {
-      Info, // Informational messages
-      Warn, // Warning messages
-      SIZE  // Must be the last enum in this list
+      Info,  // Informational messages
+      Warn,  // Warning messages
+      Debug, // Debugging messages
+      SIZE   // Must be the last enum in this list
     };
-    #define FMATVEC_ATOM_MSGTYPE_SIZE 2
+    #define FMATVEC_ATOM_MSGTYPE_SIZE 3
+#ifndef SWIG // swig can not parse this however it is not needed for swig
     BOOST_STATIC_ASSERT_MSG(SIZE==FMATVEC_ATOM_MSGTYPE_SIZE, "The proprocessor define FMATVEC_ATOM_MSGTYPE_SIZE must be equal Atom::SIZE.");
+#endif
 
     //! When a Atom is default constructed use the current statically set message streams.
     Atom();
@@ -36,8 +39,10 @@ class Atom {
     Atom(const Atom &src);
     //! dtor.
     virtual ~Atom();
+#ifndef SWIG // no assignment operator for swig
     //! When a Atom is assinged do not change the messsage streams since we always use the message streams being active at ctor time.
     Atom& operator=(const Atom &);
+#endif
 
     //! Set the current message stream used by all subsequent created objects.
     //! type defines the message type which should be set using this call.
