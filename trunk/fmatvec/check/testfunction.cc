@@ -15,7 +15,7 @@ using namespace fmatvec;
 class KinematicSpiral : public Function<Vec3(VecV, double)> {
   public:
     KinematicSpiral(double r0_, double v0_) : r0(r0_), v0(v0_) {}
-    int getArg1Size() {
+    int getArg1Size() const {
       return 2;
     }
     Vec3 operator()(const VecV &q, const double &t) {
@@ -90,7 +90,7 @@ class KinematicRotAboutAxis : public Function<RotMat3(VecV, double)> {
   public:
     KinematicRotAboutAxis(const Vec3 &a_) : a(a_) {
     }
-    int getArg1Size() {
+    int getArg1Size() const {
       return 2;
     }
     RotMat3 operator()(const VecV &q, const double &t) {
