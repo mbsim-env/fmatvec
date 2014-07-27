@@ -4,6 +4,17 @@
 using namespace std;
 using namespace boost;
 
+namespace {
+  bool msgTypeActive(bool defaultValue, const string &envVarPostfix) {
+    char *env=getenv((string("FMATVEC_MSG_")+envVarPostfix).c_str());
+    if(env) {
+      if(string(env)=="0") return false;
+      if(string(env)=="1") return true;
+    }
+    return defaultValue;
+  }
+}
+
 namespace fmatvec {
 
 // a shared null stream object
@@ -11,10 +22,10 @@ shared_ptr<ostream> Atom::_nullStream = make_shared<ostream>(static_cast<streamb
 
 // initialize the static streams with cout/cerr and corresponding active flags
 array<shared_ptr<bool>   , Atom::SIZE> Atom::_msgActStatic = {{
-  // initial active flag of the message stream
-  make_shared<bool>(true),  // Info
-  make_shared<bool>(true),  // Warn
-  make_shared<bool>(false)  // Debug
+  // initial active flag of the message stream and/or envvar postfix being used as initial value
+  make_shared<bool>(msgTypeActive(true , "Info" )), // Info
+  make_shared<bool>(msgTypeActive(true , "Warn" )), // Warn
+  make_shared<bool>(msgTypeActive(false, "Debug"))  // Debug
   // NEW TYPES HERE: initial active flag
 }};
 array<shared_ptr<ostream>, Atom::SIZE> Atom::_msgSavedStatic = {{
