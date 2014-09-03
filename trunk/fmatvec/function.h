@@ -4,12 +4,6 @@
 #include <fmatvec/fmatvec.h>
 #include <fmatvec/atom.h>
 #include <stdexcept>
-#include <xercesc/util/XercesDefs.hpp>
-
-namespace XERCES_CPP_NAMESPACE {
-  class DOMNode;
-  class DOMElement;
-}
 
 namespace fmatvec {
 
@@ -180,16 +174,6 @@ struct Der<Matrix<Rotation, DepMatShape, DepMatShape, double>, Vector<IndepVecSh
   typedef Matrix<General, DepMatShape, IndepVecShape, double> type;
 };
 
-/*! Just a base class for all template based Function classes.
- * (required to have a common base class e.g. for object factories)
- */
-class FunctionBase : public Atom {
-  public:
-    virtual ~FunctionBase() {}
-    virtual void initializeUsingXML(xercesc::DOMElement *element) { }
-    virtual xercesc::DOMElement *writeXMLFile(xercesc::DOMNode *parent) { return NULL; }
-};
-
 /*! A function object of arbitary type (defined like in boost::function).
  * The number of arguments is variable and always one value is returned.
  * The type of the arguments and the return value is also variable using templates.
@@ -205,7 +189,7 @@ class Function;
 
 //! A function object with 1 argument
 template<typename Ret, typename Arg>
-class Function<Ret(Arg)> : public FunctionBase {
+class Function<Ret(Arg)> : public Atom {
 
   public:
 
@@ -244,7 +228,7 @@ class Function<Ret(Arg)> : public FunctionBase {
 
 //! A function object with 2 arguments
 template<typename Ret, typename Arg1, typename Arg2>
-class Function<Ret(Arg1, Arg2)> : public FunctionBase {
+class Function<Ret(Arg1, Arg2)> : public Atom {
 
   public:
 
