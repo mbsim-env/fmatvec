@@ -1,3 +1,4 @@
+#include <config.h>
 #include "fmatvec/atom.h"
 #include <boost/preprocessor/iteration/local.hpp>
 

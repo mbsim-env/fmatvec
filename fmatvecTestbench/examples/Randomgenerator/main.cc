@@ -1,3 +1,4 @@
+#include <config.h>
 #include "fmatvec.h"
 #include "fmatvecTestbench/randomgenerator.h"
 #include <iostream>
