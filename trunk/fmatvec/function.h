@@ -189,7 +189,7 @@ class Function;
 
 //! A function object with 1 argument
 template<typename Ret, typename Arg>
-class Function<Ret(Arg)> : public Atom {
+class Function<Ret(Arg)> : virtual public Atom {
 
   public:
 
@@ -228,7 +228,7 @@ class Function<Ret(Arg)> : public Atom {
 
 //! A function object with 2 arguments
 template<typename Ret, typename Arg1, typename Arg2>
-class Function<Ret(Arg1, Arg2)> : public Atom {
+class Function<Ret(Arg1, Arg2)> : virtual public Atom {
 
   public:
 

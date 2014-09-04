@@ -1,3 +1,4 @@
+#include <config.h>
 #include <iostream>
 #include <fmatvec.h>
 #include <function.h>
