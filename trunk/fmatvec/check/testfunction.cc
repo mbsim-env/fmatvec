@@ -1,7 +1,7 @@
 #include <config.h>
 #include <iostream>
-#include <fmatvec.h>
-#include <function.h>
+#include <fmatvec/fmatvec.h>
+#include <fmatvec/function.h>
 #include <stdexcept>
 
 
