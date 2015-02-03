@@ -120,7 +120,7 @@ namespace fmatvec {
 
   template <class AT>
     inline const SquareMatrix<Var,AT> SquareMatrix<Var,AT>::T() const {
-      SquareMatrix<Var,AT> A(NONINIT);
+      SquareMatrix<Var,AT> A(size(),NONINIT);
       for(int i=0; i<M; i++)
         for(int j=0; j<M; j++)
           A.e(i,j) = e(j,i);
