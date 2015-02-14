@@ -145,7 +145,7 @@ struct Der<Vector<DepVecShape, double>, Vector<IndepVecShape, double> > {
  * rotation matrix \f$ \boldsymbol{R}_{12} \f$ with respect to a scalar \f$ x \f$ in defined
  * by the Function class (member functions parDerX) as follows:
  * \f[
- *   \texttt{parDer}_x(\boldsymbol{R}_{12}) = \widetilde{\left(\frac{\partial\boldsymbol{R}_{12}}{\partial x}\boldsymbol{R}^T_{12}\right)} = _1\boldsymbol{r}_{12}
+ *   \texttt{parDer}_x(\boldsymbol{R}_{12}) = \widetilde{\left(\frac{\partial\boldsymbol{R}_{12}}{\partial x}\boldsymbol{R}^T_{12}\right)} \in \mathbb{R}^{3\times 1}
  * \f]
  * where the "inverse tilde" operator (\f$ \widetilde{o} \f$) transform a skew symmetric matrix to a vector.
  * This class spezialization define the type of \f$ \texttt{parDer}_x \f$.
@@ -164,7 +164,7 @@ struct Der<Matrix<Rotation, DepMatShape, DepMatShape, double>, double> {
  *     \widetilde{\left(\frac{\partial\boldsymbol{R}_{12}}{\partial x_1}\boldsymbol{R}^T_{12}\right)},
  *     \widetilde{\left(\frac{\partial\boldsymbol{R}_{12}}{\partial x_1}\boldsymbol{R}^T_{12}\right)},
  *     \dots
- *   \right] = _1\boldsymbol{r}_{12}
+ *   \right] \in \mathbb{R}^{3\times N} \quad \text{when}\quad \boldsymbol{x} \in \mathbb{R}^{N\times 1}
  * \f]
  * where the "inverse tilde" operator (\f$ \widetilde{o} \f$) transform a skew symmetric matrix to a vector.
  * This class spezialization define the type of \f$ \texttt{parDer}_{\boldsymbol{x}} \f$.
