@@ -1866,6 +1866,24 @@ namespace fmatvec {
     return k;
   }
 
+  /*! \brief Count nonzero elements of the low triangular part of a symmetric matrix.
+   *
+   * This function counts the nonzero elements of the low triangular part of a symmetric matrix. ALL diagonal
+   * elements are treated as NONZERO!!! (See the storage format for sparse matrix)
+   * \return The number of nonzero or diagonal elemets.
+   * */
+  template <class AT> int countElementsLT(const Matrix<Symmetric,Var,Var,AT> &A) {
+    int k = 0;
+    for (int j = 0; j < A.cols(); j++) {
+      for (int i = j; i < A.rows(); i++) {
+          if (fabs(A(i, j)) > 1e-17 || i == j) {
+          k++;
+        }
+      }
+    }
+    return k;
+  }
+
   template <class Row, class Col, class AT>
   inline Matrix<Symmetric, Col, Col, AT> JTJ(const Matrix<General, Row, Col, AT> &A) {
     Matrix<Symmetric, Col, Col, AT> S(A.cols(), A.cols(), NONINIT);
