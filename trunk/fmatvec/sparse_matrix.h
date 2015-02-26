@@ -56,6 +56,7 @@ namespace fmatvec {
 	void deepCopy(const Matrix<Sparse,Ref,Ref,AT> &x);
 
 	void deepCopy(const SquareMatrix<Ref,AT> &A);
+	void deepCopy(const Matrix<Symmetric, Var, Var,AT> &A);
 
     /// @endcond
 
@@ -146,6 +147,12 @@ namespace fmatvec {
 	 * See operator<<(const Matrix<Sparse,Ref,Ref,T>&) 
 	 * */
 	inline Matrix<Sparse,Ref,Ref,AT>& operator<<(const SquareMatrix<Ref,AT> &A);
+
+  /*! \brief Element operator
+   *
+   * See operator<<(const Matrix<Sparse,Ref,Ref,T>&)
+   * */
+  inline Matrix<Sparse,Ref,Ref,AT>& operator<<(const Matrix<Symmetric, Var, Var ,AT> &A);
 
 	/*! \brief Assignment operator
 	 *
@@ -334,6 +341,36 @@ namespace fmatvec {
     }
 
   template <class AT>
+  inline Matrix<Sparse, Ref, Ref, AT>& Matrix<Sparse, Ref, Ref, AT>::operator<<(const Matrix<Symmetric, Var, Var, AT> &A) {
+
+      if (m != A.rows() || n != A.cols()) {
+        m = A.rows();
+        n = A.cols();
+        k = countElementsLT(A) * 2 - A.rows();
+        memEle.resize(k);
+        memI.resize(m + 1);
+        memJ.resize(k);
+        ele = (AT*) memEle.get();
+        I = (int*) memI.get();
+        J = (int*) memJ.get();
+      }
+      else {
+        int k_ = countElementsLT(A) * 2 - A.rows();
+        if (k != k_) {
+          k = k_;
+          memEle.resize(k);
+          memJ.resize(k);
+          ele = (AT*) memEle.get();
+          J = (int*) memJ.get();
+        }
+      }
+
+      deepCopy(A);
+
+      return *this;
+  }
+
+  template <class AT>
     Matrix<Sparse,Ref,Ref,AT> Matrix<Sparse,Ref,Ref,AT>::copy() const {
 
       Matrix<Sparse,Ref,Ref,AT> A(m,NONINIT);
@@ -378,6 +415,31 @@ namespace fmatvec {
       }
       if(n) I[i]=k;
     }
+
+  template <class AT> void Matrix<Sparse,Ref,Ref,AT>::deepCopy(const Matrix<Symmetric, Var, Var,AT> &A) {
+      int k=0;
+      int i;
+      for(i=0; i<A.size(); i++) {
+        ele[k]=A(i,i);
+        J[k]=i;
+        I[i]=k++;
+        for(int j=0; j<i; j++) {
+          // TODO eps
+          if(fabs(A(i,j))>1e-16) {
+            ele[k]=A(i,j);
+            J[k++]=j;
+          }
+        }
+        for(int j=i+1; j<A.size(); j++) {
+          // TODO eps
+          if(fabs(A(i,j))>1e-16) {
+            ele[k]=A(i,j);
+            J[k++]=j;
+          }
+        }
+      }
+      if(n) I[i]=k;
+  }
 
   template <class AT>
     Matrix<Sparse,Ref,Ref,AT>&  Matrix<Sparse,Ref,Ref,AT>::init(const AT& val) {

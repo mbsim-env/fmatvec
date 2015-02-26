@@ -139,9 +139,13 @@ namespace fmatvec {
 
   /*Typedefs for mixed size */
 
+  typedef Matrix<General, Fixed<2>, Var, double> Mat2xV;
   typedef Matrix<General, Fixed<3>, Var, double> Mat3xV;
 
+  typedef Matrix<General, Var, Fixed<2>, double> MatVx2;
   typedef Matrix<General, Var, Fixed<3>, double> MatVx3;
+
+
 }
 
 #endif
