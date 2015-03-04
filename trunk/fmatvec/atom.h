@@ -33,10 +33,12 @@ class Atom {
     BOOST_STATIC_ASSERT_MSG(SIZE==FMATVEC_ATOM_MSGTYPE_SIZE, "The proprocessor define FMATVEC_ATOM_MSGTYPE_SIZE must be equal Atom::SIZE.");
 #endif
 
+  protected:
     //! When a Atom is default constructed use the current statically set message streams.
     Atom();
     //! When a Atom is copy constructed use the current statically set message streams, not the message streams from src.
     Atom(const Atom &src);
+  public:
     //! dtor.
     virtual ~Atom();
 #ifndef SWIG // no assignment operator for swig
