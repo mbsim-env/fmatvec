@@ -1,7 +1,7 @@
 SUBDIRS =  .
   
 lib_LTLIBRARIES = libfmatvecTestbench.la
-libfmatvecTestbench_la_LDFLAGS = -version-info @LIBFMATVECTESTBENCH_VERSION_INFO@ -Wl,--disable-new-dtags,-rpath,\$$ORIGIN/../lib
+libfmatvecTestbench_la_LDFLAGS = -version-info @LIBFMATVECTESTBENCH_VERSION_INFO@
 libfmatvecTestbench_la_SOURCES = testbench.cc\
                                  randomgenerator.cc\
                                  matgenerator.cc
