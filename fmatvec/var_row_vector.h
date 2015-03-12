@@ -283,7 +283,7 @@ namespace fmatvec {
 
   template <class AT>
     inline const Vector<Var,AT> RowVector<Var,AT>::T() const {
-      Vector<Var,AT> x(NONINIT);
+      Vector<Var,AT> x(N,NONINIT);
       for(int i=0; i<N; i++)
         x.e(i) = e(i);
       return x;
