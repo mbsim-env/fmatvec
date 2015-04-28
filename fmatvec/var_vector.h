@@ -219,6 +219,8 @@ namespace fmatvec {
 
       inline const RowVector<Var,AT> T() const;
 
+      inline const Vector<Var,AT> operator()(const Range<Var,Var> &I) const;
+
       template <class Row>
       inline void set(const Range<Var,Var> &I, const Vector<Row,AT> &x);
   };
@@ -298,6 +300,19 @@ namespace fmatvec {
   template <class AT>
     inline Vector<Var,AT>::Vector(std::vector<AT> v) : Matrix<General,Var,Fixed<1>,AT>(v.size(),1) {
       if(size()>0) memcpy(&operator()(0), &v[0], sizeof(AT)*size());
+    }
+
+  template <class AT>
+    inline const Vector<Var,AT> Vector<Var,AT>::operator()(const Range<Var,Var> &I) const {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(I.end()<M);
+#endif
+      Vector<Var,AT> x(I.end()-I.start()+1,NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+        x.e(i) = e(I.start()+i);
+
+      return x;
     }
 
   template <class AT> template <class Row>
