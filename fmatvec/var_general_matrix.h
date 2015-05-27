@@ -189,7 +189,8 @@ namespace fmatvec {
       };
 
       AT& e(int i, int j) {
-	return ele[i*N+j];
+//	return ele[i*N+j];
+        return ele[j*M+i];  // as the leading dimension is M, the matrix is default stored in columnwise.
       };
 
       /*! \brief Element operator
@@ -197,7 +198,8 @@ namespace fmatvec {
        * See e(int,int) 
        * */
       const AT& e(int i, int j) const {
-	return ele[i*N+j];
+//	return ele[i*N+j];
+        return ele[j*M+i];  // as the leading dimension is M, the matrix is default stored in columnwise.
       };
 
       AT& e(int i) {
