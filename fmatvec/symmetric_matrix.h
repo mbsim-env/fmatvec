@@ -304,6 +304,11 @@ namespace fmatvec {
        * */
       inline Matrix<Symmetric,Ref,Ref,AT> copy() const;
 
+      /*! \brief copy Matrix::ele value to array pointer ptr.
+       *
+       * The memory of the array where ptr points to is allocated outside.
+       * */
+      inline void copy(AT* ptr) const;
       /*! \brief Initialization.
        *
        * Initializes all elements of the calling matrix with 
@@ -481,6 +486,14 @@ namespace fmatvec {
       return A;
     }
 
+  template <class AT>
+  inline void Matrix<Symmetric, Ref, Ref, AT>::copy(AT* ptr) const {
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < n; j++) {
+        ptr[j * n + i] = e(i, j);
+      }
+    }
+  }
 
   template <class AT> 
     inline const Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(int i1, int j1, int i2, int j2) const {

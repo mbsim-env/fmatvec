@@ -791,6 +791,25 @@ namespace fmatvec {
     return dlange('I', A.rows(), A.cols(), A(), A.ldim());
   }
 
+  double nrmInf(const Matrix<Symmetric, Ref, Ref, double> &A) {
+
+  #ifndef FMATVEC_NO_VOID_CHECK
+      if (A.rows() == 0 || A.cols() == 0)
+        return 0.0;
+  #endif
+
+      double c = 0;
+      // for symmetric matrix norm_1 (maximum absolute column summation)  = norm_infinity (maximum absolute row summation)
+      for (int i = 0; i < A.rows(); i++){
+        double rowSum = 0;
+        for (int j = 0; j < A.cols(); j++){
+          rowSum += fabs(A(i, j));
+        }
+        if (c < rowSum)
+          c = rowSum;
+      }
+      return c;
+    }
   double nrm1(const Matrix<General, Ref, Ref, double> &A) {
 
 #ifndef FMATVEC_NO_VOID_CHECK
