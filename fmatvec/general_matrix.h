@@ -227,16 +227,18 @@ namespace fmatvec {
       };
 
       AT& er(int i, int j) {
-	return ele[i+j*lda];
-      };
+        return ele[i+j*lda];  // columnwise (default)
+      }
+      ;
 
       const AT& er(int i, int j) const {
 	return ele[i+j*lda];
       };
 
       AT& et(int i, int j) {
-	return ele[i*lda+j];
-      };
+        return ele[i*lda+j];  // rowwise
+      }
+      ;
 
       const AT& et(int i, int j) const {
 	return ele[i*lda+j];
@@ -415,6 +417,11 @@ namespace fmatvec {
        * */
       inline Matrix<General,Ref,Ref,AT> copy() const;
 
+      /*! \brief copy Matrix::ele value to array pointer ptr.
+       *
+       * The memory of the array where ptr points to is allocated outside.
+       * */
+      inline void copy(AT* ptr) const;
       /*! \brief Initialization.
        *
        * Initializes all elements of the calling matrix with 
@@ -706,6 +713,23 @@ namespace fmatvec {
 
       return A;
     }
+
+  template <class AT>
+  inline void Matrix<General, Ref, Ref, AT>::copy(AT* ptr) const {
+    double size = m * n ;
+    if (tp) {
+      for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+          ptr[j * m + i] = et(i, j);
+        }
+      }
+    }
+    else {
+      for (int i = 0; i < size; i++)
+        ptr[i] = ele[i];
+    }
+
+  }
 
   template <class AT>
     inline Matrix<General,Ref,Ref,AT>::operator std::vector<std::vector<AT> >() {
