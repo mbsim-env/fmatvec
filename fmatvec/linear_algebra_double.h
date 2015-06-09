@@ -331,7 +331,7 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * This function computes the largest row sum of the absolute 
    * values of a general matrix.
    * \param A A general matrix.
-   * \return A scalar containig the result.
+   * \return A scalar containing the result.
    * */
   double nrmInf(const Matrix<General, Ref, Ref, double> &A);
 
@@ -340,9 +340,10 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * This function computes the largest row sum of the absolute
    * values of a symmetric matrix.
    * \param A A general matrix.
-   * \return A scalar containig the result.
+   * \return A scalar containing the result.
    * */
   double nrmInf(const Matrix<Symmetric, Ref, Ref, double> &A);
+
   /*! \brief Frobenius-norm
    *
    * This function computes the Frobenius norm of a general matrix.

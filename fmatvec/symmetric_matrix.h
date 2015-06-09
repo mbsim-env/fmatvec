@@ -309,6 +309,7 @@ namespace fmatvec {
        * The memory of the array where ptr points to is allocated outside.
        * */
       inline void copy(AT* ptr) const;
+
       /*! \brief Initialization.
        *
        * Initializes all elements of the calling matrix with 

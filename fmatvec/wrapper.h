@@ -201,6 +201,8 @@ namespace fmatvec {
 
   int dsyev(const char jobz, const char ul, const int n, double *a, const int lda, double *w);
 
-  double dlange(const char norm , const int m, const int n, const double* a, const int lda);
+  double dlange(const char norm, const int m, const int n, const double* a, const int lda);
+  
+  double dlansy(const char norm, const char uplo, const int n, const double* a, const int lda);
 }
 #endif

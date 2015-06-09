@@ -98,7 +98,7 @@ namespace fmatvec {
        * notation. The rows are seperated by semicolons, the columns by commas.
        * For example
        * \code 
-       * Matrix<General,Var,Var,ouble> A("[3,2;1,2]");
+       * Matrix<General,Var,Var,double> A("[3,2;1,2]");
        * \endcode 
        * constructs the matrix
        * \f[ A=\begin{pmatrix}3 & 2\\ 1 & 2\end{pmatrix}  \f]
@@ -189,8 +189,7 @@ namespace fmatvec {
       };
 
       AT& e(int i, int j) {
-//	return ele[i*N+j];
-        return ele[j*M+i];  // as the leading dimension is M, the matrix is default stored in columnwise.
+  return ele[j*M+i];
       };
 
       /*! \brief Element operator
@@ -198,8 +197,7 @@ namespace fmatvec {
        * See e(int,int) 
        * */
       const AT& e(int i, int j) const {
-//	return ele[i*N+j];
-        return ele[j*M+i];  // as the leading dimension is M, the matrix is default stored in columnwise.
+  return ele[j*M+i];
       };
 
       AT& e(int i) {

@@ -227,18 +227,16 @@ namespace fmatvec {
       };
 
       AT& er(int i, int j) {
-        return ele[i+j*lda];  // columnwise (default)
-      }
-      ;
+  return ele[i+j*lda];
+      };
 
       const AT& er(int i, int j) const {
 	return ele[i+j*lda];
       };
 
       AT& et(int i, int j) {
-        return ele[i*lda+j];  // rowwise
-      }
-      ;
+  return ele[i*lda+j];
+      };
 
       const AT& et(int i, int j) const {
 	return ele[i*lda+j];
@@ -422,6 +420,7 @@ namespace fmatvec {
        * The memory of the array where ptr points to is allocated outside.
        * */
       inline void copy(AT* ptr) const;
+
       /*! \brief Initialization.
        *
        * Initializes all elements of the calling matrix with 
