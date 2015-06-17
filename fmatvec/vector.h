@@ -274,12 +274,6 @@ namespace fmatvec {
        * */
       inline Vector<Ref,AT> copy() const;
 
-      /*! \brief copy Vector ele value to array pointer ptr.
-       *
-       * The memory of the array where ptr points to is allocated outside.
-       * */
-      inline void copy(AT* ptr) const;
-
       /*! \brief Subvector operator.
        *
        * Returns a subvector of the calling vector. 
@@ -444,18 +438,6 @@ namespace fmatvec {
 
       return x;
     }
-
-  template <class AT> 
-  inline void Vector<Ref, AT>::copy(AT* ptr) const {
-    if (tp) {
-      for (int i = 0; i < size(); i++)
-        ptr[i] = et(i);
-    }
-    else {
-      for (int i = 0; i < size(); i++)
-        ptr[i] = er(i);
-    }
-  }
 
   template <class AT>
     inline Vector<Ref,AT> Vector<Ref,AT>::operator()(int i1, int i2) {
