@@ -227,7 +227,7 @@ namespace fmatvec {
       };
 
       AT& er(int i, int j) {
-	return ele[i+j*lda];
+        return ele[i+j*lda];
       };
 
       const AT& er(int i, int j) const {
@@ -235,7 +235,7 @@ namespace fmatvec {
       };
 
       AT& et(int i, int j) {
-	return ele[i*lda+j];
+        return ele[i*lda+j];
       };
 
       const AT& et(int i, int j) const {

@@ -481,7 +481,6 @@ namespace fmatvec {
       return A;
     }
 
-
   template <class AT> 
     inline const Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(int i1, int j1, int i2, int j2) const {
       return operator()(Index(i1,i2),Index(j1,j2));

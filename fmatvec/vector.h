@@ -439,7 +439,7 @@ namespace fmatvec {
       return x;
     }
 
-  template <class AT> 
+  template <class AT>
     inline Vector<Ref,AT> Vector<Ref,AT>::operator()(int i1, int i2) {
     return operator()(Index(i1,i2));
   }

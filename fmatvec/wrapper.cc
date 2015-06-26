@@ -106,7 +106,8 @@ extern "C" {
 
   void dsyev_( const char* jobz, const char*, const int *n, double *a, const int *lda, double *w, double *work, const int *lwork, int *info);
   void dgels_( const char*, const int*, const int*, const int*, double* a, const int*, double* b, const int*, double*, const int*, int*);
-  double dlange_(const char *norm , const int *m, const int *n, const double* A, const int* lda , double* work);
+  double dlange_(const char *norm, const int *m, const int *n, const double* A, const int* lda, double* work);
+  double dlansy_(const char *norm, const char *uplo, const int *n, const double* A, const int* lda, double* work);
   void dsyevx_(const char *jobz, const char *range, const char *uplo, const int *n, double *a, const int *lda, const double *vl, const double *vu, const int *il, const int *iu, const double *abstol, const int* m, double *w, double *z, const int *ldz, double *work, const int *lwork, int *iwork, int *ifail, int *info);
   void dgelss_(const int *m, const int *n, const int *nrhs, double *A, const int *lda, double *b, const int *ldb, const double *s, const double *rcond, int *rank, double *work, const int *lwork, int *info);
 }
@@ -389,10 +390,19 @@ namespace fmatvec {
 
   }
   
-  double dlange(const char norm , const int m, const int n, const double* a, const int lda) {
+  double dlange(const char norm, const int m, const int n, const double* a, const int lda) {
 
     double *work = new double[2*m];
-    double res = dlange_(&norm , &m, &n, a, &lda , work );
+    double res = dlange_(&norm, &m, &n, a, &lda, work);
+    delete [] work;
+    return res;
+
+  }
+  
+  double dlansy(const char norm, const char uplo, const int n, const double* a, const int lda) {
+
+    double *work = new double[n];
+    double res = dlansy_(&norm, &uplo, &n, a, &lda, work);
     delete [] work;
     return res;
 
