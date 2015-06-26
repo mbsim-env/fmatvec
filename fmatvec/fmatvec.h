@@ -79,6 +79,7 @@ namespace fmatvec {
   typedef Matrix<Sparse, Ref, Ref, double> SparseMat;
 
   typedef Vector<Ref, int> VecInt;
+  typedef Vector<Var, int> VecVI;
 
   /* Typedefs for Fixed types */
 
@@ -140,10 +141,15 @@ namespace fmatvec {
   /*Typedefs for mixed size */
 
   typedef Matrix<General, Fixed<2>, Var, double> Mat2xV;
+  typedef Matrix<General, Var, Fixed<2>, int> MatVx2I;
   typedef Matrix<General, Fixed<3>, Var, double> Mat3xV;
+  typedef Matrix<General, Fixed<3>, Var, int> Mat3xVI;
 
   typedef Matrix<General, Var, Fixed<2>, double> MatVx2;
+  typedef Matrix<General, Var, Fixed<2>, int> MatVx2I;
   typedef Matrix<General, Var, Fixed<3>, double> MatVx3;
+  typedef Matrix<General, Var, Fixed<3>, int> MatVx3I;
+
 
 
 }

@@ -159,6 +159,7 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \return A general matrix containig the solution.
    * */
   Matrix<General, Ref, Ref, double> slvLUFac(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &B, const Vector<Ref, int> &ipiv);
+  Matrix<General, Var, Var, double> slvLUFac(const SquareMatrix<Var, double> &ALU, const Matrix<General, Var, Var, double> &B, const Vector<Var, int> &ipiv);
 
   /*! \brief System of linear equations
    *
@@ -171,6 +172,7 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \return A vector containig the solution.
    * */
   Vector<Ref, double> slvLUFac(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &b, const Vector<Ref, int> &ipiv);
+  Vector<Var, double> slvLUFac(const SquareMatrix<Var, double> &ALU, const Vector<Var, double> &b, const Vector<Var, int> &ipiv);
 
   /*! \brief Systems of linear equations
    *
@@ -262,6 +264,8 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \return A square matrix containig the result.
    * */
   SquareMatrix<Ref, double> facLU(const SquareMatrix<Ref, double> &A, Vector<Ref, int> &ipiv);
+
+  SquareMatrix<Var, double> facLU(const SquareMatrix<Var, double> &A, Vector<Var, int> &ipiv);
 
   /*! \brief LU decomposition
    *

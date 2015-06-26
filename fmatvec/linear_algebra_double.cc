@@ -119,6 +119,33 @@ namespace fmatvec {
     return Y;
   }
 
+  Matrix<General, Var, Var, double> slvLUFac(const SquareMatrix<Var, double> &A, const Matrix<General, Var, Var, double> &X, const Vector<Var, int> &ipiv) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+    assert(A.size() == X.rows());
+#endif
+
+    Matrix<General, Var, Var, double> Y = X;
+
+#ifndef FMATVEC_NO_VOID_CHECK
+    if (X.rows() == 0 || X.cols() == 0)
+      return Y;
+#endif
+
+    SquareMatrix<Var, double> B = A;
+
+#ifndef HAVE_LIBMKL_INTEL_LP64
+    int info = dgetrs(B.blasOrder(), B.blasTrans(), B.size(), Y.cols(), B(), B.ldim(), ipiv(), Y(), Y.ldim());
+#else
+    int info = dgetrs(B.blasOrder(), CVT_TRANSPOSE(B.blasTrans()), B.size(), Y.cols(), B(), B.ldim(), ipiv(), Y(), Y.ldim());
+#endif
+
+    if(info != 0)
+      throw std::runtime_error("Exception in slvLUFac: dgetrs exited with info="+toStr(info));
+
+    return Y;
+  }
+
   Matrix<General, Ref, Ref, double> slvQR(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &X) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
@@ -258,6 +285,33 @@ namespace fmatvec {
     return y;
   }
 
+  Vector<Var, double> slvLUFac(const SquareMatrix<Var, double> &A, const Vector<Var, double> &x, const Vector<Var, int> &ipiv) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+    assert(A.size() == x.size());
+#endif
+
+    Vector<Var, double> y = x;
+
+#ifndef FMATVEC_NO_VOID_CHECK
+    if (x.size() == 0)
+      return y;
+#endif
+
+    SquareMatrix<Var, double> B = A;
+
+#ifndef HAVE_LIBMKL_INTEL_LP64
+    int info = dgetrs(B.blasOrder(), B.blasTrans(), B.size(), 1, B(), B.ldim(), ipiv(), y(), y.size());
+#else
+    int info = dgetrs(B.blasOrder(), CVT_TRANSPOSE(B.blasTrans()), B.size(), 1, B(), B.ldim(), ipiv(), y(), y.size());
+#endif
+
+    if(info != 0)
+      throw std::runtime_error("Exception in slvLUFac: dgetrs exited with info="+toStr(info));
+
+    return y;
+  }
+
   Vector<Ref, double> slvQR(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &x) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
@@ -371,6 +425,28 @@ namespace fmatvec {
   SquareMatrix<Ref, double> facLU(const SquareMatrix<Ref, double> &A, Vector<Ref, int> &ipiv) {
 
     SquareMatrix<Ref, double> B = A.copy();
+
+#ifndef FMATVEC_NO_VOID_CHECK
+    if (A.size() == 0)
+      return B;
+#endif
+
+    int is = A.size();
+    if (ipiv.size() != is) {
+      ipiv.resize(is);
+    }
+
+    int info = dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv());
+
+    if(info != 0)
+      throw std::runtime_error("Exception in facLU: dgetrf exited with info="+toStr(info));
+
+    return B;
+  }
+
+  SquareMatrix<Var, double> facLU(const SquareMatrix<Var, double> &A, Vector<Var, int> &ipiv) {
+
+    SquareMatrix<Var, double> B = A;
 
 #ifndef FMATVEC_NO_VOID_CHECK
     if (A.size() == 0)
