@@ -86,6 +86,7 @@ namespace fmatvec {
   //Column Vectors
   typedef Vector<Fixed<1>, double> Vec1;
   typedef Vector<Fixed<2>, double> Vec2;
+  typedef Vector<Fixed<2>, int> Vec2I;
   typedef Vector<Fixed<3>, double> Vec3;
   typedef Vector<Fixed<4>, double> Vec4;
 
@@ -134,6 +135,7 @@ namespace fmatvec {
   typedef Vector<Var, double> VecV;
 
   typedef RowVector<Var, double> RowVecV;
+  typedef RowVector<Var, int> RowVecVI;
 
   //Rotation Matrices
   typedef Matrix<Rotation, Fixed<3>, Fixed<3>, double> RotMat3;
