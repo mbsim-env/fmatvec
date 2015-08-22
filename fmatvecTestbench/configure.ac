@@ -18,21 +18,6 @@ AC_HEADER_STDBOOL
 
 PKG_CHECK_MODULES(DEPS, fmatvec >= 1.0.1)
 
-dnl versioning (see http://www.gnu.org/software/libtool/manual.html)
-dnl current: 	The most recent interface number that this library implements. 
-dnl revision: 	The implementation number of the current interface. 
-dnl age: 	The difference between the newest and oldest interfaces that
-dnl		this library implements. In other words, the library implements all the
-dnl 		interface numbers in the range from number current (age<=current).
-LIBFMATVECTESTBENCH_CURRENT=0
-LIBFMATVECTESTBENCH_REVISION=0
-LIBFMATVECTESTBENCH_AGE=0
-AC_SUBST([LIBFMATVECTESTBENCH_CURRENT])
-AC_SUBST([LIBFMATVECTESTBENCH_REVISION])
-AC_SUBST([LIBFMATVECTESTBENCH_AGE])
-LIBFMATVECTESTBENCH_VERSION_INFO=$LIBFMATVECTESTBENCH_CURRENT:$LIBFMATVECTESTBENCH_REVISION:$LIBFMATVECTESTBENCH_AGE
-AC_SUBST([LIBFMATVECTESTBENCH_VERSION_INFO])
-
 CPPFLAGS="$CPPFLAGS"
 LDFLAGS="$LDFLAGS -no-undefined -Wl,--no-undefined"
 test "_$host_os" != "_mingw32" && LDFLAGS="$LDFLAGS -Wl,--disable-new-dtags,-rpath,\\\$\$ORIGIN/../lib"

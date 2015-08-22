@@ -1,7 +1,6 @@
 SUBDIRS = . check
 
 lib_LTLIBRARIES = libfmatvec.la
-libfmatvec_la_LDFLAGS = -version-info @LIBFMATVEC_VERSION_INFO@
 libfmatvec_la_SOURCES = linear_algebra_double.cc \
 			linear_algebra_complex.cc \
 			atom.cc \

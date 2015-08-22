@@ -11,21 +11,6 @@ AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_LANG([C++])
 
-dnl versioning (see http://www.gnu.org/software/libtool/manual.html)
-dnl current: 	The most recent interface number that this library implements. 
-dnl revision: 	The implementation number of the current interface. 
-dnl age: 	The difference between the newest and oldest interfaces that
-dnl		this library implements. In other words, the library implements all the
-dnl 		interface numbers in the range from number current (age<=current).
-LIBFMATVEC_CURRENT=1
-LIBFMATVEC_REVISION=0
-LIBFMATVEC_AGE=0
-AC_SUBST([LIBFMATVEC_CURRENT])
-AC_SUBST([LIBFMATVEC_REVISION])
-AC_SUBST([LIBFMATVEC_AGE])
-LIBFMATVEC_VERSION_INFO=$LIBFMATVEC_CURRENT:$LIBFMATVEC_REVISION:$LIBFMATVEC_AGE
-AC_SUBST([LIBFMATVEC_VERSION_INFO])
-
 dnl By autoscan
 AC_CHECK_FUNCS([sqrt])
 AC_C_CONST
