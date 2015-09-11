@@ -92,6 +92,30 @@ namespace fmatvec {
     return Y;
   }
 
+  Matrix<General, Var, Var, double> slvLU(const SquareMatrix<Var, double> &A, const Matrix<General, Var, Var, double> &X, int info) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+    assert(A.size() == X.rows());
+#endif
+
+    Matrix<General, Var, Var, double> Y = X;
+
+#ifndef FMATVEC_NO_VOID_CHECK
+    if (X.rows() == 0 || X.cols() == 0)
+      return Y;
+#endif
+
+    SquareMatrix<Var, double> B = A;
+
+    int *ipiv = new int[A.size()];
+
+    info = dgesv(B.blasOrder(), B.size(), Y.cols(), B(), B.ldim(), ipiv, Y(), Y.ldim());
+
+    delete[] ipiv;
+
+    return Y;
+  }
+
   Matrix<General, Ref, Ref, double> slvLUFac(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &X, const Vector<Ref, int> &ipiv) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
@@ -248,6 +272,30 @@ namespace fmatvec {
 #endif
 
     SquareMatrix<Ref, double> B = A.copy();
+
+    int *ipiv = new int[A.size()];
+
+    info = dgesv(B.blasOrder(), B.size(), 1, B(), B.ldim(), ipiv, y(), y.size());
+
+    delete[] ipiv;
+
+    return y;
+  }
+
+  Vector<Var, double> slvLU(const SquareMatrix<Var, double> &A, const Vector<Var, double> &x, int & info) {
+
+#ifndef FMATVEC_NO_SIZE_CHECK
+    assert(A.size() == x.size());
+#endif
+
+    Vector<Var, double> y = x;
+
+#ifndef FMATVEC_NO_VOID_CHECK
+    if (x.size() == 0)
+      return y;
+#endif
+
+    SquareMatrix<Var, double> B = A;
 
     int *ipiv = new int[A.size()];
 

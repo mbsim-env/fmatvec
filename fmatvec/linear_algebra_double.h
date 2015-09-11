@@ -124,6 +124,7 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \return A general matrix containig the solution.
    * */
   Matrix<General, Ref, Ref, double> slvLU(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &B);
+  Matrix<General, Var, Var, double> slvLU(const SquareMatrix<Var, double> &A, const Matrix<General, Var, Var, double> &B, int & info);
 
   /*! \brief System of linear equations
    *
@@ -147,6 +148,7 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \return A vector containig the solution.
    * */
   Vector<Ref, double> slvLU(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &x, int & info);
+  Vector<Var, double> slvLU(const SquareMatrix<Var, double> &A, const Vector<Var, double> &b, int & info);
 
   /*! \brief Systems of linear equations
    *
