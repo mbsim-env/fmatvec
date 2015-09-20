@@ -1,14 +1,6 @@
 #############################################
 ### Include the subdirectories
 #############################################
-
-# Checking for the blas dependency
-FIND_PACKAGE(BLAS REQUIRED)
-SET(HAVE_LIBBLAS 1)
-
-# Check for the boost dependency
-find_package(Boost REQUIRED) 
-
 # add the project library with the sources
 add_library(fmatvec SHARED 
 atom.cc

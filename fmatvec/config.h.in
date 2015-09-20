@@ -6,10 +6,10 @@
 #ifndef _CONFIGURATION_HEADER_GUARD_H_
 #define _CONFIGURATION_HEADER_GUARD_H_
 
-/* Define to 1 if you have the <stdint.h> header file. */
-//#cmakedefine HAVE_STDINT_H @HAVE_STDINT_H@
+/* Define to 1 if you have the `blas' library (-lblas). */
+#define HAVE_LIBBLAS @BLAS_FOUND@
 
-/* Is Blas available */
-#define HAVE_LIBBLAS @HAVE_LIBBLAS@
+/* Define to 1 if you have the `lapack' library (-llapack). */
+#define HAVE_LIBLAPACK @LAPACK_FOUND@
 
 #endif
