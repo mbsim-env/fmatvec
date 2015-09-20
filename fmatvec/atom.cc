@@ -1,5 +1,5 @@
 #include <config.h>
-#include "fmatvec/atom.h"
+#include "atom.h"
 #include <boost/preprocessor/iteration/local.hpp>
 
 using namespace std;
