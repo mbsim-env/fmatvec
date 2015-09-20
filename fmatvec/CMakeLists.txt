@@ -4,7 +4,6 @@
 # add the project library with the sources
 add_library(fmatvec SHARED 
 atom.cc
-CMakeLists.txt
 linear_algebra_complex.cc
 linear_algebra_double.cc
 _memory.cc
