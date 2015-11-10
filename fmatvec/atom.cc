@@ -62,20 +62,22 @@ Atom& Atom::operator=(const Atom &) {
   return *this;
 }
 
-void Atom::setCurrentMessageStream(MsgType type, const boost::shared_ptr<std::ostream> &s) {
-  _msgActStatic[type]=boost::make_shared<bool>(true);
+void Atom::setCurrentMessageStream(MsgType type, const boost::shared_ptr<bool> &a, const boost::shared_ptr<std::ostream> &s) {
+  _msgActStatic[type]=a;
   _msgSavedStatic[type]=s;
-  _msgStatic[type] = _msgSavedStatic[type];
-}
-
-void Atom::setCurrentMessageStreamActive(MsgType type, bool activeFlag) {
-  *_msgActStatic[type] = activeFlag;
   _msgStatic[type] = *_msgActStatic[type] ? _msgSavedStatic[type] : _nullStream;
 }
 
 void Atom::setMessageStreamActive(MsgType type, bool activeFlag) {
   *_msgAct[type] = activeFlag;
   _msg[type] = *_msgAct[type] ? _msgSaved[type] : _nullStream;
+}
+
+void Atom::getMessageStream(MsgType type,
+       boost::shared_ptr<bool> &a,
+       boost::shared_ptr<std::ostream> &s) {
+  a=_msgAct[type];
+  s=_msgSaved[type];
 }
 
 void Atom::adoptMessageStreams(const Atom *src) {

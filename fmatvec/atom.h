@@ -49,16 +49,19 @@ class Atom {
     //! Set the current message stream used by all subsequent created objects.
     //! type defines the message type which should be set using this call.
     //! If s is not defined, the message of type type prints to cout.
-    //! The default active flag is true this can be changed by a call to setCurrentMessageStreamActive(type, false)
+    //! If a is not defined, a new shared bool flag set to true is used.
     //! Be aware of data races in streams if objects of type Atom print messages in threads.
     static void setCurrentMessageStream(MsgType type,
+                  const boost::shared_ptr<bool> &a=boost::make_shared<bool>(true),
                   const boost::shared_ptr<std::ostream> &s=boost::make_shared<std::ostream>(std::cout.rdbuf()));
-
-    //! Set the active flag used by all objects which were or will be created using the current message stream.
-    static void setCurrentMessageStreamActive(MsgType type, bool active);
 
     //! Set the active flag of this object and all objects which were created using the same message stream as this object.
     void setMessageStreamActive(MsgType type, bool active);
+
+    //! Get the shared message stream active flag and the shared message stream of this object
+    void getMessageStream(MsgType type,
+           boost::shared_ptr<bool> &a,
+           boost::shared_ptr<std::ostream> &s);
 
     //! Adopt the message streams from src to this object.
     //! If src is NULL adopt the current (static) message streams.
