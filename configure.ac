@@ -224,10 +224,15 @@ fi
 LDFLAGS="$LDFLAGS -no-undefined -Wl,--no-undefined"
 test "_$host_os" != "_mingw32" && LDFLAGS="$LDFLAGS -Wl,--disable-new-dtags,-rpath,\\\$\$ORIGIN/../lib"
 
+if test "$cross_compiling" == "yes"; then
+  AC_SUBST([XC_EXEC_PREFIX],[wine])
+fi
+
 AC_SUBST(LIBS)
 AC_SUBST([INCDIRS])
 AC_SUBST([LIBDIRS])
 AC_CONFIG_FILES([Makefile fmatvec/Makefile fmatvec/check/Makefile doc/doxyfile doc/Makefile fmatvec.pc])
+AC_CONFIG_FILES([fmatvec/check/testfunction.sh], [chmod +x fmatvec/check/testfunction.sh])
 AC_OUTPUT
 
 echo "
