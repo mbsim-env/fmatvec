@@ -1533,7 +1533,7 @@ namespace fmatvec {
 
   template <class Row, class AT>
   inline RowVector<Row, AT> trans(const Vector<Row, AT> &x) {
-    RowVector<Row, AT> y(x.cols(), NONINIT);
+    RowVector<Row, AT> y(x.size(), NONINIT);
     for (int i = 0; i < y.size(); i++)
       y.e(i) = x.e(i);
     return y;
@@ -1541,7 +1541,7 @@ namespace fmatvec {
 
   template <class Row, class AT>
   inline Vector<Row, AT> trans(const RowVector<Row, AT> &x) {
-    Vector<Row, AT> y(x.cols(), NONINIT);
+    Vector<Row, AT> y(x.size(), NONINIT);
     for (int i = 0; i < y.size(); i++)
       y.e(i) = x.e(i);
     return y;
