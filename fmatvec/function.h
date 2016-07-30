@@ -174,7 +174,7 @@ struct Der<Matrix<Rotation, DepMatShape, DepMatShape, double>, Vector<IndepVecSh
   typedef Matrix<General, DepMatShape, IndepVecShape, double> type;
 };
 
-/*! A function object of arbitary type (defined like in boost::function).
+/*! A function object of arbitary type (defined like in std::function).
  * The number of arguments is variable and always one value is returned.
  * The type of the arguments and the return value is also variable using templates.
  * The function value is always provided and the partial and directional derivatives with

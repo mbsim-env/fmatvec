@@ -5,7 +5,6 @@
 #include <iostream>
 #include <memory>
 #include <array>
-#include <boost/static_assert.hpp>
 
 namespace fmatvec {
 
@@ -29,7 +28,7 @@ class Atom {
     };
     #define FMATVEC_ATOM_MSGTYPE_SIZE 3
 #ifndef SWIG // swig can not parse this however it is not needed for swig
-    BOOST_STATIC_ASSERT_MSG(SIZE==FMATVEC_ATOM_MSGTYPE_SIZE, "The proprocessor define FMATVEC_ATOM_MSGTYPE_SIZE must be equal Atom::SIZE.");
+    static_assert(SIZE==FMATVEC_ATOM_MSGTYPE_SIZE, "The proprocessor define FMATVEC_ATOM_MSGTYPE_SIZE must be equal Atom::SIZE.");
 #endif
 
   protected:
