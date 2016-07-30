@@ -3,7 +3,6 @@
 #include <boost/preprocessor/iteration/local.hpp>
 
 using namespace std;
-using namespace boost;
 
 namespace {
   bool msgTypeActive(bool defaultValue, const string &envVarPostfix) {
@@ -62,7 +61,7 @@ Atom& Atom::operator=(const Atom &) {
   return *this;
 }
 
-void Atom::setCurrentMessageStream(MsgType type, const boost::shared_ptr<bool> &a, const boost::shared_ptr<std::ostream> &s) {
+void Atom::setCurrentMessageStream(MsgType type, const std::shared_ptr<bool> &a, const std::shared_ptr<std::ostream> &s) {
   _msgActStatic[type]=a;
   _msgSavedStatic[type]=s;
   _msgStatic[type] = *_msgActStatic[type] ? _msgSavedStatic[type] : _nullStream;
@@ -74,8 +73,8 @@ void Atom::setMessageStreamActive(MsgType type, bool activeFlag) {
 }
 
 void Atom::getMessageStream(MsgType type,
-       boost::shared_ptr<bool> &a,
-       boost::shared_ptr<std::ostream> &s) {
+       std::shared_ptr<bool> &a,
+       std::shared_ptr<std::ostream> &s) {
   a=_msgAct[type];
   s=_msgSaved[type];
 }

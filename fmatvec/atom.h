@@ -3,9 +3,8 @@
 
 #include <ostream>
 #include <iostream>
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/array.hpp>
+#include <memory>
+#include <array>
 #include <boost/static_assert.hpp>
 
 namespace fmatvec {
@@ -52,16 +51,16 @@ class Atom {
     //! If a is not defined, a new shared bool flag set to true is used.
     //! Be aware of data races in streams if objects of type Atom print messages in threads.
     static void setCurrentMessageStream(MsgType type,
-                  const boost::shared_ptr<bool> &a=boost::make_shared<bool>(true),
-                  const boost::shared_ptr<std::ostream> &s=boost::make_shared<std::ostream>(std::cout.rdbuf()));
+                  const std::shared_ptr<bool> &a=std::make_shared<bool>(true),
+                  const std::shared_ptr<std::ostream> &s=std::make_shared<std::ostream>(std::cout.rdbuf()));
 
     //! Set the active flag of this object and all objects which were created using the same message stream as this object.
     void setMessageStreamActive(MsgType type, bool active);
 
     //! Get the shared message stream active flag and the shared message stream of this object
     void getMessageStream(MsgType type,
-           boost::shared_ptr<bool> &a,
-           boost::shared_ptr<std::ostream> &s);
+           std::shared_ptr<bool> &a,
+           std::shared_ptr<std::ostream> &s);
 
     //! Adopt the message streams from src to this object.
     //! If src is NULL adopt the current (static) message streams.
@@ -95,19 +94,19 @@ class Atom {
   private:
 
     // A stream which prints to null.
-    static boost::shared_ptr<std::ostream> _nullStream;
+    static std::shared_ptr<std::ostream> _nullStream;
 
     // Static pointer arrays of streams and active flags which were used for newly created objects.
     // These can be changed using setCurrentMessageStream(...)
-    static boost::array<boost::shared_ptr<bool        >, SIZE> _msgActStatic;
-    static boost::array<boost::shared_ptr<std::ostream>, SIZE> _msgSavedStatic;
-    static boost::array<boost::shared_ptr<std::ostream>, SIZE> _msgStatic;
+    static std::array<std::shared_ptr<bool        >, SIZE> _msgActStatic;
+    static std::array<std::shared_ptr<std::ostream>, SIZE> _msgSavedStatic;
+    static std::array<std::shared_ptr<std::ostream>, SIZE> _msgStatic;
 
     // Pointer arrays to streams and active flags this object uses.
     // (these have a life-time at least as long as the object itself, ensured by reference counting)
-    boost::array<boost::shared_ptr<bool        >, SIZE> _msgAct;
-    boost::array<boost::shared_ptr<std::ostream>, SIZE> _msgSaved;
-    boost::array<boost::shared_ptr<std::ostream>, SIZE> _msg;
+    std::array<std::shared_ptr<bool        >, SIZE> _msgAct;
+    std::array<std::shared_ptr<std::ostream>, SIZE> _msgSaved;
+    std::array<std::shared_ptr<std::ostream>, SIZE> _msg;
 };
 
 }

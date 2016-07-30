@@ -11,6 +11,9 @@ AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_LANG([C++])
 
+# enable C++11
+CXXFLAGS="$CXXFLAGS -std=c++11"
+
 dnl By autoscan
 AC_CHECK_FUNCS([sqrt])
 AC_C_CONST
