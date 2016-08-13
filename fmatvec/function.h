@@ -10,49 +10,21 @@ namespace fmatvec {
 /*! Just a dummy class representing a compile error if used e.g. by
  * a assign operator (=) with a double or Vec.
  */
-class ErrorType {};
-
-/*! Defines the size type (dimension) of the template argument T.
- * This general template defines this type to ErrorType (not defined size type).
- * See the specializations for working types.
- */
-template<typename T>
-struct Size {
-  typedef ErrorType type;
-};
-
-//! Defines the size type of a double as int.
-template<>
-struct Size<double> {
-  typedef int type;
-};
-
-//! Defines the size type of a (column) vector as int.
-template<typename Shape>
-struct Size<Vector<Shape, double> > {
-  typedef int type;
-};
-
-//! Defines the size type of a row vector as int.
-template<typename Shape>
-struct Size<RowVector<Shape, double> > {
-  typedef int type;
-};
-
-//! Defines the size type of a matrix as a fixed size vector of type int (two integers).
-template<typename Type, typename RowShape, typename ColShape>
-struct Size<Matrix<Type, RowShape, ColShape, double> > {
-  typedef Vector<Fixed<2>, int> type;
+class ErrorType {
+  ErrorType() = delete;
 };
 
 /*! Defines the static size (dimension) of the template argument T.
- * This general template defines this size to 0 (=the size is not statically defined -> dynamic size).
  * Maximal two dimensions are supported.
  * See the specializations for types which have a static size.
  */
 template<typename T>
-struct StaticSize {
-  enum { size1=0, size2=0 };
+struct StaticSize;
+
+//! Defines the static size (dimension) of a double.
+template<>
+struct StaticSize<int> {
+  enum { size1=1, size2=1 };
 };
 
 //! Defines the static size (dimension) of a double.
@@ -85,6 +57,12 @@ struct StaticSize<RowVector<Fixed<N>, AT> > {
   enum { size1=1, size2=N };
 };
 
+//! Defines the static size (dimension) of a variable matrix.
+template<typename Storage, typename RowShape, typename ColShape, typename AT>
+struct StaticSize<Matrix<Storage, RowShape, ColShape, AT> > {
+  enum { size1=0, size2=0 };
+};
+
 //! Defines the static size (dimension) of a fixed matrix.
 template<typename Storage, int N, int M, typename AT>
 struct StaticSize<Matrix<Storage, Fixed<N>, Fixed<M>, AT> > {
@@ -103,9 +81,20 @@ struct StaticSize<Matrix<Storage, RowShape, Fixed<M>, AT> > {
   enum { size1=0, size2=M };
 };
 
+//! Defines the static size (dimension) of a fixed square matrix.
+template<int N, typename AT>
+struct StaticSize<SquareMatrix<Fixed<N>, AT> > {
+  enum { size1=N, size2=N };
+};
+
+//! Defines the static size (dimension) of a variable square matrix.
+template<typename Shape, typename AT>
+struct StaticSize<SquareMatrix<Shape, AT> > {
+  enum { size1=0, size2=0 };
+};
+
 /*! Defines the resulting type of the derivative of a value of type Dep with respect to a value of type Indep.
- * This general template defines this type to ErrorType (not defined derivative).
- * See the specializations for working types.
+ * See the specializations.
  */
 template<typename Dep, typename Indep>
 struct Der {
@@ -150,9 +139,9 @@ struct Der<Vector<DepVecShape, double>, Vector<IndepVecShape, double> > {
  * where the "inverse tilde" operator (\f$ \widetilde{o} \f$) transform a skew symmetric matrix to a vector.
  * This class spezialization define the type of \f$ \texttt{parDer}_x \f$.
  */
-template<typename DepMatShape>
-struct Der<Matrix<Rotation, DepMatShape, DepMatShape, double>, double> {
-  typedef Vector<DepMatShape, double> type;
+template<>
+struct Der<Matrix<Rotation, Fixed<3>, Fixed<3>, double>, double> {
+  typedef Vector<Fixed<3>, double> type;
 };
 
 /*! Defines the type of the derivative of a rotation matrix with respect to a vector as matrix.
@@ -169,9 +158,9 @@ struct Der<Matrix<Rotation, DepMatShape, DepMatShape, double>, double> {
  * where the "inverse tilde" operator (\f$ \widetilde{o} \f$) transform a skew symmetric matrix to a vector.
  * This class spezialization define the type of \f$ \texttt{parDer}_{\boldsymbol{x}} \f$.
  */
-template<typename DepMatShape, typename IndepVecShape>
-struct Der<Matrix<Rotation, DepMatShape, DepMatShape, double>, Vector<IndepVecShape, double> > {
-  typedef Matrix<General, DepMatShape, IndepVecShape, double> type;
+template<typename IndepVecShape>
+struct Der<Matrix<Rotation, Fixed<3>, Fixed<3>, double>, Vector<IndepVecShape, double> > {
+  typedef Matrix<General, Fixed<3>, IndepVecShape, double> type;
 };
 
 /*! A function object of arbitary type (defined like in std::function).
@@ -193,8 +182,17 @@ class Function<Ret(Arg)> : virtual public Atom {
 
   public:
 
-    //! Return the size of first argument
-    virtual typename Size<Arg>::type getArgSize() const {
+    using DRetDArg = typename Der<Ret, Arg>::type;
+    using DDRetDDArg = typename Der<DRetDArg, Arg>::type;
+
+    //! Compile time size of the return value: =1 == scalar; >1 == vector; =0 == unknown compile time vector size
+    enum { retSize1 = StaticSize<Ret>::size1, retSize2 = StaticSize<Ret>::size2 };
+
+    //! Compile time size of the argument: =1 == scalar; >1 == vector; =0 == unknown compile time vector size
+    static constexpr int argSize = StaticSize<Arg>::size1;
+
+    //! Return the size of the argument: =1 == scalar; >1 == vector; =0 == unknown vector size
+    virtual int getArgSize() const {
       throw std::runtime_error("getArgSize must be overloaded by derived class.");
     }
 
@@ -202,7 +200,7 @@ class Function<Ret(Arg)> : virtual public Atom {
     virtual Ret operator()(const Arg &arg)=0;
 
     //! First derivative: partial derivative of the function value with respect to the argument.
-    virtual typename Der<Ret, Arg>::type parDer(const Arg &arg) {
+    virtual DRetDArg parDer(const Arg &arg) {
       throw std::runtime_error("parDer must be overloaded by derived class.");
     }
 
@@ -212,13 +210,18 @@ class Function<Ret(Arg)> : virtual public Atom {
     }
 
     //! Second derivative: partial derivative of parDer with respect to the argument.
-    virtual typename Der<typename Der<Ret, Arg>::type, Arg>::type parDerParDer(const Arg &arg) {
+    virtual DDRetDDArg parDerParDer(const Arg &arg) {
       throw std::runtime_error("parDerParDer must be overloaded by derived class.");
     }
 
     //! Second derivative: directional derivative of parDer with respect to the argument.
-    virtual typename Der<Ret, Arg>::type parDerDirDer(const Arg &argDir, const Arg &arg) {
+    virtual DRetDArg parDerDirDer(const Arg &argDir, const Arg &arg) {
       throw std::runtime_error("parDerDirDer must be overloaded by derived class.");
+    }
+
+    //! Second derivative: directional derivative of dirDer with respect to the argument.
+    virtual Ret dirDerDirDer(const Arg &argDir_1, const Arg &argDir_2, const Arg &arg) {
+      throw std::runtime_error("dirDerDirDer must be overloaded by derived class.");
     }
 
     //! Returns true, if the partial derivative of the function value with respect to the argument 
@@ -232,12 +235,27 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
 
   public:
 
-    //! Return the size of first argument
-    virtual typename Size<Arg1>::type getArg1Size() const {
+    using DRetDArg1 = typename Der<Ret, Arg1>::type;
+    using DRetDArg2 = typename Der<Ret, Arg2>::type;
+    using DDRetDDArg1 = typename Der<DRetDArg1, Arg1>::type;
+    using DDRetDDArg2 = typename Der<DRetDArg2, Arg2>::type;
+    using DDRetDArg1DArg2 = typename Der<DRetDArg1, Arg2>::type;
+
+    //! Compile time size of the return value: =1 == scalar; >1 == vector; =0 == unknown compile time vector size
+    enum { retSize1 = StaticSize<Ret>::size1, retSize2 = StaticSize<Ret>::size2 };
+
+    //! Compile time size of the first argument: =1 == scalar; >1 == vector; =0 == unknown compile time vector size
+    static constexpr int arg1Size = StaticSize<Arg1>::size1;
+
+    //! Compile time size of the second argument: =1 == scalar; >1 == vector; =0 == unknown compile time vector size
+    static constexpr int arg2Size = StaticSize<Arg2>::size1;
+
+    //! Return the size of the first argument: =1 == scalar; >1 == vector; =0 == unknown vector size
+    virtual int getArg1Size() const {
       throw std::runtime_error("getArg1Size must be overloaded by derived class.");
     }
-    //! Return the size of first argument
-    virtual typename Size<Arg2>::type getArg2Size() const {
+    //! Return the size of the second argument: =1 == scalar; >1 == vector; =0 == unknown vector size
+    virtual int getArg2Size() const {
       throw std::runtime_error("getArg2Size must be overloaded by derived class.");
     }
 
@@ -245,7 +263,7 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
     virtual Ret operator()(const Arg1 &arg1, const Arg2 &arg2)=0;
 
     //! First derivative: partial derivative of the function value with respect to the first argument.
-    virtual typename Der<Ret, Arg1>::type parDer1(const Arg1 &arg1, const Arg2 &arg2) {
+    virtual DRetDArg1 parDer1(const Arg1 &arg1, const Arg2 &arg2) {
       throw std::runtime_error("parDer1 must be overloaded by derived class.");
     }
 
@@ -255,7 +273,7 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
     }
 
     //! First derivative: partial derivative of the function value with respect to the second argument.
-    virtual typename Der<Ret, Arg2>::type parDer2(const Arg1 &arg1, const Arg2 &arg2) {
+    virtual DRetDArg2 parDer2(const Arg1 &arg1, const Arg2 &arg2) {
       throw std::runtime_error("parDer2 must be overloaded by derived class.");
     }
 
@@ -265,42 +283,52 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
     }
 
     //! Second derivative: partial derivative of parDer1 with respect to the first argument.
-    virtual typename Der<typename Der<Ret, Arg1>::type, Arg1>::type parDer1ParDer1(const Arg1 &arg1, const Arg2 &arg2) {
+    virtual DDRetDDArg1 parDer1ParDer1(const Arg1 &arg1, const Arg2 &arg2) {
       throw std::runtime_error("parDer1ParDer1 must be overloaded by derived class.");
     }
 
     //! Second derivative: directional derivative of parDer1 with respect to the first argument.
-    virtual typename Der<Ret, Arg1>::type parDer1DirDer1(const Arg1 &arg1Dir, const Arg1 &arg1, const Arg2 &arg2) {
+    virtual DRetDArg1 parDer1DirDer1(const Arg1 &arg1Dir, const Arg1 &arg1, const Arg2 &arg2) {
       throw std::runtime_error("parDer1DirDer1 must be overloaded by derived class.");
     }
 
+    //! Second derivative: directional derivative of dirDer1 with respect to the first argument.
+    virtual Ret dirDer1DirDer1(const Arg1 &arg1Dir_1, const Arg1 &arg1Dir_2, const Arg1 &arg1, const Arg2 &arg2) {
+      throw std::runtime_error("dirDer1DirDer1 must be overloaded by derived class.");
+    }
+
     //! Second derivative: partial derivative of parDer2 with respect to the first argument.
-    virtual typename Der<typename Der<Ret, Arg2>::type, Arg2>::type parDer2ParDer2(const Arg1 &arg1, const Arg2 &arg2) {
+    virtual DDRetDDArg2 parDer2ParDer2(const Arg1 &arg1, const Arg2 &arg2) {
       throw std::runtime_error("parDer2ParDer2 must be overloaded by derived class.");
     }
 
     //! Second derivative: directional derivative of parDer2 with respect to the first argument.
-    virtual typename Der<Ret, Arg2>::type parDer2DirDer2(const Arg2 &arg2Dir, const Arg1 &arg1, const Arg2 &arg2) {
+    virtual DRetDArg2 parDer2DirDer2(const Arg2 &arg2Dir, const Arg1 &arg1, const Arg2 &arg2) {
       throw std::runtime_error("parDer2DirDer2 must be overloaded by derived class.");
     }
 
+    //! Second derivative: directional derivative of dirDer2 with respect to the first argument.
+    virtual Ret dirDer2DirDer2(const Arg2 &arg2Dir_1, const Arg2 &arg2Dir_2, const Arg1 &arg1, const Arg2 &arg2) {
+      throw std::runtime_error("dirDer2DirDer2 must be overloaded by derived class.");
+    }
+
     //! Second mixed derivative: partial derivative of parDer1 with respect to the second argument.
-    virtual typename Der<typename Der<Ret, Arg1>::type, Arg2>::type parDer1ParDer2(const Arg1 &arg1, const Arg2 &arg2) {
+    virtual DDRetDArg1DArg2 parDer1ParDer2(const Arg1 &arg1, const Arg2 &arg2) {
       throw std::runtime_error("parDer1ParDer2 must be overloaded by derived class.");
     }
 
     //! Second mixed derivative: directional derivative of parDer1 with respect to the second argument.
-    virtual typename Der<Ret, Arg1>::type parDer1DirDer2(const Arg2 &arg2Dir, const Arg1 &arg1, const Arg2 &arg2) {
+    virtual DRetDArg1 parDer1DirDer2(const Arg2 &arg2Dir, const Arg1 &arg1, const Arg2 &arg2) {
       throw std::runtime_error("parDer1DirDer2 must be overloaded by derived class.");
     }
 
-    //! Second mixed derivative: partial derivative of parDer2 with respect to the first argument.
-    virtual typename Der<typename Der<Ret, Arg2>::type, Arg1>::type parDer2ParDer1(const Arg1 &arg1, const Arg2 &arg2) {
-      throw std::runtime_error("parDer2ParDer1 must be overloaded by derived class.");
+    //! Second mixed derivative: directional derivative of dirDer2 with respect to the first argument.
+    virtual Ret dirDer2DirDer1(const Arg2 &arg1Dir, const Arg1 &arg1, const Arg2 &arg2) {
+      throw std::runtime_error("dirDer2DirDer1 must be overloaded by derived class.");
     }
 
-    //! Second mixed derivative: directional derivative of parDer2 with respect to the first argument.
-    virtual typename Der<Ret, Arg2>::type parDer2DirDer1(const Arg1 &arg1Dir, const Arg1 &arg1, const Arg2 &arg2) {
+    //! Second mixed derivative: partial derivative of dirDer1 with respect to the second argument.
+    virtual DRetDArg2 parDer2DirDer1(const Arg1 &arg1Dir, const Arg1 &arg1, const Arg2 &arg2) {
       throw std::runtime_error("parDer2DirDer1 must be overloaded by derived class.");
     }
 
