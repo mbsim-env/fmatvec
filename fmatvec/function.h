@@ -185,16 +185,17 @@ class Function<Ret(Arg)> : virtual public Atom {
     using DRetDArg = typename Der<Ret, Arg>::type;
     using DDRetDDArg = typename Der<DRetDArg, Arg>::type;
 
-    //! Compile time size of the return value: =1 == scalar; >1 == vector; =0 == unknown compile time vector size
+    //! Compile time size of the return value: =0 == unknown compile time size
     enum { retSize1 = StaticSize<Ret>::size1, retSize2 = StaticSize<Ret>::size2 };
 
     //! Compile time size of the argument: =1 == scalar; >1 == vector; =0 == unknown compile time vector size
     static constexpr int argSize = StaticSize<Arg>::size1;
 
+    //! Return the size of the return value: =0 == unknown size
+    virtual std::pair<int, int> getRetSize() const { return std::make_pair(retSize1, retSize2); }
+
     //! Return the size of the argument: =1 == scalar; >1 == vector; =0 == unknown vector size
-    virtual int getArgSize() const {
-      throw std::runtime_error("getArgSize must be overloaded by derived class.");
-    }
+    virtual int getArgSize() const { return argSize; }
 
     //! Function value: pure virtual (MUST be implemented by derived class)
     virtual Ret operator()(const Arg &arg)=0;
@@ -241,7 +242,7 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
     using DDRetDDArg2 = typename Der<DRetDArg2, Arg2>::type;
     using DDRetDArg1DArg2 = typename Der<DRetDArg1, Arg2>::type;
 
-    //! Compile time size of the return value: =1 == scalar; >1 == vector; =0 == unknown compile time vector size
+    //! Compile time size of the return value: =0 == unknown compile time size
     enum { retSize1 = StaticSize<Ret>::size1, retSize2 = StaticSize<Ret>::size2 };
 
     //! Compile time size of the first argument: =1 == scalar; >1 == vector; =0 == unknown compile time vector size
@@ -250,14 +251,13 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
     //! Compile time size of the second argument: =1 == scalar; >1 == vector; =0 == unknown compile time vector size
     static constexpr int arg2Size = StaticSize<Arg2>::size1;
 
+    //! Return the size of the return value: =0 == unknown size
+    virtual std::pair<int, int> getRetSize() const { return std::make_pair(retSize1, retSize2); }
+
     //! Return the size of the first argument: =1 == scalar; >1 == vector; =0 == unknown vector size
-    virtual int getArg1Size() const {
-      throw std::runtime_error("getArg1Size must be overloaded by derived class.");
-    }
+    virtual int getArg1Size() const { return arg1Size; }
     //! Return the size of the second argument: =1 == scalar; >1 == vector; =0 == unknown vector size
-    virtual int getArg2Size() const {
-      throw std::runtime_error("getArg2Size must be overloaded by derived class.");
-    }
+    virtual int getArg2Size() const { return arg2Size; }
 
     //! Function value: pure virtual (MUST be implemented by derived class)
     virtual Ret operator()(const Arg1 &arg1, const Arg2 &arg2)=0;
