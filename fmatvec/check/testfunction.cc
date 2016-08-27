@@ -55,17 +55,9 @@ class KinematicSpiral : public Function<Vec3(VecV, double)> {
       Jt(2,0)=0;              Jt(2,1)=0;
       return Jt;
     }
-    // only this function OR the next is required (see fPdjT later)
-    Mat3xV parDer2ParDer1(const VecV &q, const double &t) {
-      Mat3xV jq(2);
-      jq(0,0)=-sin(q(0))*v0; jq(0,1)=0            ;
-      jq(1,0)=0;             jq(1,1)=+cos(q(1))*v0;
-      jq(2,0)=0;             jq(2,1)=0            ;
-      return jq;
-    }
     // only this function OR the previous is required (see fPdjT later)
     Vec3 parDer2DirDer1(const VecV &qd, const VecV &q, const double &t) {
-      // this code equals "return parDer2ParDer1(q, t)*qd;"
+      // this code equals "return parDer1ParDer2(q, t)*qd;"
       Vec3 jq;
       jq(0)=-sin(q(0))*v0*qd(0) + 0            *qd(1);
       jq(1)=0            *qd(0) + +cos(q(1))*v0*qd(1);
@@ -124,11 +116,6 @@ class KinematicRotAboutAxis : public Function<RotMat3(VecV, double)> {
       // MISSING
       return jt;
     }
-    Mat3xV parDer2ParDer1(const VecV &q, const double &t) {
-      Mat3xV jq(2);
-      // MISSING
-      return jq;
-    }
   private:
     Vec3 a;
 };
@@ -161,9 +148,9 @@ int main() {
   cout<<"fPjT     = "<<T->parDer2(q, t)<<endl;
 
   cout<<"fPdJT    = "<<T->parDer1DirDer1(qd, q, t)+T->parDer1ParDer2(q, t)<<endl;
-  // fPdjT can be calculate using parDer2DirDer1 OR parDer2ParDer1 in this special case (see KinematicSpiral above)
+  // fPdjT can be calculate using parDer2DirDer1 OR parDer1ParDer2 in this special case (see KinematicSpiral above)
   cout<<"fPdjT    = "<<T->parDer2DirDer1(qd, q, t)+T->parDer2ParDer2(q, t)<<endl;
-  cout<<"fPdjT    = "<<T->parDer2ParDer1(q, t)*qd+T->parDer2ParDer2(q, t)<<endl;
+  cout<<"fPdjT    = "<<T->parDer1ParDer2(q, t)*qd+T->parDer2ParDer2(q, t)<<endl;
 
 
 
@@ -181,7 +168,7 @@ int main() {
   cout<<"fPjR     = "<<R->parDer2(q, t)<<endl;
 
   cout<<"fPdJT    = "<<R->parDer1DirDer1(qd, q, t)+R->parDer1ParDer2(q, t)<<endl;
-  cout<<"fPdjR    = "<<R->parDer2ParDer1(q, t)*qd+R->parDer2ParDer2(q, t)<<endl;
+  cout<<"fPdjR    = "<<R->parDer1ParDer2(q, t)*qd+R->parDer2ParDer2(q, t)<<endl;
 
 
 
