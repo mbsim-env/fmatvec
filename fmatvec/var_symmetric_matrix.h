@@ -50,6 +50,7 @@ namespace fmatvec {
     /// @endcond
 
     public:
+      typedef AT AtomicType;
 
       /*! \brief Standard constructor
        *
@@ -143,6 +144,19 @@ namespace fmatvec {
 
       template<class Type, class Row, class Col>
         inline Matrix<Symmetric,Var,Var,AT>& operator<<(const Matrix<Type,Row,Col,AT> &A);
+
+      //! Resize a var symmetric matrix.
+      //! Throw if the dimension does not match or resize to this dimension
+      void resize(int n, int m) {
+        if(n!=m)
+          throw std::runtime_error("A symmetric matrix cannot have different dimensions for rows and columns.");
+        resize(n);
+      }
+
+      //! The storage format of a var symmetric matrix is fortran-storge order -> return always false
+      bool transposed() {
+        return false;
+      }
 
       /*! \brief Element operator
        *

@@ -63,6 +63,8 @@ namespace fmatvec {
 
       public:
 
+        typedef AT AtomicType;
+
 	/*! \brief Standard constructor
 	 *
 	 * Constructs a matrix with no size. 

@@ -24,6 +24,7 @@
 
 #include "types.h"
 #include <stdlib.h>
+#include <stdexcept>
 
 namespace fmatvec {
 
@@ -38,6 +39,8 @@ namespace fmatvec {
   template <int M, int N, class AT> class Matrix<General,Fixed<M>,Fixed<N>,AT> {
 
     public:
+
+      typedef AT AtomicType;
 
  /// @cond NO_SHOW
 
@@ -184,7 +187,19 @@ namespace fmatvec {
        *
        * \return The leading dimension of the matrix
        * */
-      int ldim() const {return M;};
+      int ldim() const {return N;};
+
+      //! A fixed matrix is stored in c-storage order -> transposed is always true
+      bool transposed() const {
+	return true;
+      };
+
+      //! Resize a fixed matrix.
+      //! Do nothing for the fixed dimension and throw on any other dimension.
+      void resize(int m, int n) {
+        if(m!=M || n!=N)
+          throw std::runtime_error("A fixed matrix cannot be resized.");
+      }
 
       /*! \brief Transposed status.
        *
@@ -634,6 +649,7 @@ namespace fmatvec {
   template<int M>
   class Matrix<Rotation,Fixed<M>,Fixed<M>,double> : public Matrix<General,Fixed<M>,Fixed<M>,double> {
     public:
+      typedef double AtomicType;
       // Constructors are not inherited. Hence we must redefine all ctors here.
 
       Matrix(Noinit ini) { }

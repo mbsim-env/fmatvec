@@ -48,6 +48,7 @@ namespace fmatvec {
     /// @endcond
 
     public:
+      typedef AT AtomicType;
 
 //      template<class Ini=All<AT> >
 //      Matrix(Ini ini=All<AT>()) {
@@ -88,6 +89,18 @@ namespace fmatvec {
 #endif
 
 	deepCopy(A);
+      }
+
+      //! Resize a fixed matrix
+      //! Do nothing for the fixed dimension and throw for any other dimension.
+      void resize(int n, int m) {
+        if(n!=M || m!=M)
+          throw std::runtime_error("A fixed symmetric matrix cannot be resized.");
+      }
+
+      // A fixed matrix is stored in c-storage order -> transposed is always true
+      bool transposed() {
+        return true;
       }
 
       /*! \brief Element operator

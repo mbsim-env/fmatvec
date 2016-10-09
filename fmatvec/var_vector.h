@@ -42,6 +42,8 @@ namespace fmatvec {
 
     public:
 
+    typedef AT AtomicType;
+
     /// @cond NO_SHOW
 
     protected:

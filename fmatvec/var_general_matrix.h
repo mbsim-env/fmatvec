@@ -38,6 +38,7 @@ namespace fmatvec {
   template <class AT> class Matrix<General,Var,Var,AT> {
 
     public:
+      typedef AT AtomicType;
 
  /// @cond NO_SHOW
 
@@ -242,6 +243,11 @@ namespace fmatvec {
        * \return The leading dimension of the matrix
        * */
       int ldim() const {return M;};
+
+      //! The storage format of a var matrix is fortran-storage order -> return always false
+      bool transposed() const {
+	return false;
+      };
 
       /*! \brief Transposed status.
        *
