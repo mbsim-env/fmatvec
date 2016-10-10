@@ -41,6 +41,8 @@ namespace fmatvec {
 
     public:
 
+      typedef AT AtomicType;
+
  /// @cond NO_SHOW
 
       friend class Vector<Ref,AT>;

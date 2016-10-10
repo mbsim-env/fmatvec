@@ -65,6 +65,8 @@ namespace fmatvec {
 
     public:
 
+      typedef AT AtomicType;
+
       /*! \brief Standard constructor
        *
        * Constructs a matrix with no size. 
@@ -147,6 +149,19 @@ namespace fmatvec {
       Matrix<Symmetric,Ref,Ref,AT>& resize(int n, Init ini=INIT, const AT &a=0) { return resize(n,Noinit()).init(a); }
 
       Matrix<Symmetric,Ref,Ref,AT>& resize(int n, Eye ini, const AT &a=1) { return resize(n,Noinit()).init(ini,a); }
+
+      //! Resize a symmetric matrix
+      //! Throw if the row and col dimension does not match or resize to this dimension.
+      void resize(int n, int m) {
+        if(n!=m)
+          throw std::runtime_error("A symmetric matrix cannot have different dimensions for rows and columns.");
+        resize(n);
+      }
+
+      //! The storage format of a symmetric matrix is fortran-storage order -> return always false
+      bool transposed() {
+        return false;
+      }
 
       /*! \brief Assignment operator
        *

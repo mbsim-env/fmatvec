@@ -25,6 +25,7 @@
 #include "fixed_general_matrix.h"
 #include <vector>
 #include <cstring>
+#include <stdexcept>
 
 namespace fmatvec {
 
@@ -41,6 +42,8 @@ namespace fmatvec {
     using Matrix<General,Fixed<M>,Fixed<1>,AT>::ele;
 
     public:
+
+    typedef AT AtomicType;
 
     /// @cond NO_SHOW
 
@@ -161,6 +164,13 @@ namespace fmatvec {
        * \return The size of the vector.
        * */
       int size() const {return M;};
+
+      //! Resize a fixed vector
+      //! Do nothing for the fixed dimension and throw for any other dimension.
+      void resize(int m) {
+        if(m!=M)
+          throw std::runtime_error("A fixed vector cannot be resized.");
+      }
 
       /*! \brief Increment.
        *

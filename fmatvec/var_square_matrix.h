@@ -41,6 +41,8 @@ namespace fmatvec {
 
     public:
 
+      typedef AT AtomicType;
+
       /*! \brief Standard constructor
        *
        * Constructs a squarematrix with no size. 
@@ -86,6 +88,19 @@ namespace fmatvec {
       SquareMatrix<Var,AT>& resize(int m, Eye ini, const AT &a=1) {
         Matrix<General,Var,Var,AT>::resize(m,m,ini,a);
         return *this;
+      }
+
+      //! The storage format of a var square matrix is c-storage order -> return always true
+      bool transposed() {
+        return true;
+      }
+
+      //! Resize a var square matrix.
+      //! Throw if the dimensions does not match or resize to this dimension.
+      void resize(int m, int n) {
+        if(n!=m)
+          throw std::runtime_error("Cannot resize a square matrix with different dimensions for rows and columns.");
+        resize(m);
       }
 
       /*! \brief Copy operator

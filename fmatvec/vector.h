@@ -47,6 +47,8 @@ namespace fmatvec {
 
     public:
 
+    typedef AT AtomicType;
+
     /// @cond NO_SHOW
 
     template <class T> friend RowVector<Ref,T> trans(const Vector<Ref,T> &x); 

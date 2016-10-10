@@ -23,6 +23,7 @@
 #define fixed_row_vector_h
 
 #include "fixed_general_matrix.h"
+#include <stdexcept>
 
 namespace fmatvec {
 
@@ -39,6 +40,8 @@ namespace fmatvec {
     using Matrix<General,Fixed<1>,Fixed<N>,AT>::ele;
 
     public:
+
+      typedef AT AtomicType;
 
     /// @cond NO_SHOW
     
@@ -149,6 +152,13 @@ namespace fmatvec {
        * \return The size of the rowvector.
        * */
       int size() const {return N;};
+
+      //! Resize a fixed vector
+      //! Do nothing for the fixed dimension and throw on any other dimension.
+      void resize(int n) {
+        if(n!=N)
+          throw std::runtime_error("A fixed row vector cannot be resized.");
+      }
 
       /*! \brief Increment.
        *

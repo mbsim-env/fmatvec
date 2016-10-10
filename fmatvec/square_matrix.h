@@ -23,6 +23,7 @@
 #define square_matrix_h
 
 #include "general_matrix.h"
+#include <stdexcept>
 
 namespace fmatvec {
 
@@ -46,6 +47,8 @@ namespace fmatvec {
     using Matrix<General,Ref,Ref,AT>::elePtr;
 
     public:
+
+    typedef AT AtomicType;
 
     /// @cond NO_SHOW
 
@@ -128,6 +131,14 @@ namespace fmatvec {
       SquareMatrix<Ref,AT>& resize(int m, Eye ini, const AT &a=1) {
         Matrix<General,Ref,Ref,AT>::resize(m,m,ini,a);
         return *this;
+      }
+
+      //! Resize a square matrix.
+      //! Throw if the row and col dimension does not match or resize to this dimension.
+      void resize(int m, int n) {
+        if(n!=m)
+          throw std::runtime_error("Cannot resize a square matrix with different dimensions for rows and columns.");
+        resize(m);
       }
 
       /*! \brief Assignment operator

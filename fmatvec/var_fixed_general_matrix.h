@@ -38,6 +38,7 @@ namespace fmatvec {
   template <int N, class AT> class Matrix<General,Var,Fixed<N>,AT> {
 
     public:
+      typedef AT AtomicType;
 
  /// @cond NO_SHOW
 
@@ -136,6 +137,14 @@ namespace fmatvec {
       Matrix<General,Var,Fixed<N>,AT>& resize(int m, Init ini=INIT, const AT &a=0) { return resize(m,Noinit()).init(a); }
 
       Matrix<General,Var,Fixed<N>,AT>& resize(int m, Eye ini, const AT &a=1) { return resize(m,Noinit()).init(ini,a); }
+
+      //! Resize a var-fixed matrix.
+      //! Throw if the fixed dimension is different and resize the var dimension
+      void resize(int m, int n) {
+        if(n!=N)
+          throw std::runtime_error("A var-fixed matrix can only be resized in the first dimension.");
+        resize(m);
+      }
 
       /*! \brief Assignment operator
        *
@@ -242,6 +251,11 @@ namespace fmatvec {
        * \return The leading dimension of the matrix
        * */
       int ldim() const {return M;};
+
+      //! A var-fixed matrix is stored in fortran-storage order -> return always false
+      bool transposed() const {
+	return false;
+      };
 
       /*! \brief Transposed status.
        *

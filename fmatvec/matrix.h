@@ -66,6 +66,7 @@ namespace fmatvec {
       /// @endcond
 
     public:
+      typedef AT AtomicType;
 //      /*! \brief Standard constructor
 //       * 
 //       * The standard constructor.

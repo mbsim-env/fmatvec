@@ -58,6 +58,8 @@ namespace fmatvec {
 
     public:
 
+      typedef AT AtomicType;
+
       /*! \brief Standard constructor
        *
        * Constructs a band matrix with no size. 
