@@ -224,6 +224,9 @@ namespace fmatvec {
 
       template <class Row>
       inline void set(const Range<Var,Var> &I, const RowVector<Row,AT> &x);
+
+      template <class Row>
+      inline void add(const Range<Var,Var> &I, const RowVector<Row,AT> &x);
   };
 
   template <class AT>
@@ -325,6 +328,17 @@ namespace fmatvec {
 
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         e(i) = x.e(ii);
+    }
+
+  template <class AT> template <class Row>
+    inline void RowVector<Var,AT>::add(const Range<Var,Var> &I, const RowVector<Row,AT> &x) {
+#ifndef FMATVEC_NO_BOUNDS_CHECK
+      assert(I.end()<size());
+      assert(I.size()==x.size());
+#endif
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        e(i) += x.e(ii);
     }
 
   /// @cond NO_SHOW
