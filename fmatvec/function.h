@@ -11,7 +11,15 @@ namespace fmatvec {
  * a assign operator (=) with a double or Vec.
  */
 class ErrorType {
+#if !defined(SWIG) && !defined(MBSIM_COMPILE_SWIG)
   ErrorType() = delete;
+#else
+  // SWIG instantiats everything. Hence, we allow this for SWIG but throw a runtime error
+  public:
+    ErrorType() {
+      throw std::runtime_error("Impossible type.");
+    }
+#endif
 };
 
 /*! Defines the static size (dimension) of the template argument T.
