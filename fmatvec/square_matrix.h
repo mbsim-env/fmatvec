@@ -54,8 +54,8 @@ namespace fmatvec {
 
     template <class T> friend SquareMatrix<Ref,T> trans(const SquareMatrix<Ref,T> &A);
 
-    friend const SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Index &I) const;
-    friend SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Index &I);
+    friend const SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) const;
+    friend SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I);
 
     protected:
 

@@ -969,14 +969,14 @@ namespace fmatvec {
     Matrix<General, Ref, Ref, double> A_ = A.copy();
 
     Matrix<General, Ref, Ref, double> B_(A.rows() > A.cols() ? A.rows() : A.cols(), B.cols(), NONINIT);
-    B_(Index(0, B.rows() - 1), Index(0, B.cols() - 1)) = B;
+    B_(Range<Var,Var>(0, B.rows() - 1), Range<Var,Var>(0, B.cols() - 1)) = B;
 
     int info = dgelss(A.rows(), A.cols(), B_.cols(), A_(), A_.ldim(), B_(), B_.ldim(), rcond);
 
     if(info != 0)
       throw std::runtime_error("Exception in slvLS: dgelss exited with info="+toStr(info));
 
-    return B_(Index(0, A.cols() - 1), Index(0, B.cols() - 1));
+    return B_(Range<Var,Var>(0, A.cols() - 1), Range<Var,Var>(0, B.cols() - 1));
   }
 
   Vector<Ref, double> slvLS(const Matrix<General, Ref, Ref, double> &A, const Vector<Ref, double> &b, double rcond) {

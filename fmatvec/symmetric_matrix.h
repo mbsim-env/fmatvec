@@ -338,17 +338,17 @@ namespace fmatvec {
        * lower and the upper triangular part of the matrix.
        * \attention The submatrix and the
        * calling matrix will share the same physical memory.
-       * \param I Index containing the starting and the ending row. 
-       * \param J Index containing the starting and the ending column. 
+       * \param I Range containing the starting and the ending row.
+       * \param J Range containing the starting and the ending column.
        * \return A submatrix of the calling matrix.
        * */
-      inline Matrix<General,Ref,Ref,AT> operator()(const Index &I, const Index &J);
+      inline Matrix<General,Ref,Ref,AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J);
 
       /*! \brief Submatrix operator.
        *
-       * See operator()(const Index&, const Index&)
+       * See operator()(const Range<Var,Var>&, const Range<Var,Var>&)
        * */
-      inline const Matrix<General,Ref,Ref,AT> operator()(const Index &I, const Index &J) const;
+      inline const Matrix<General,Ref,Ref,AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const;
 
       /*! \brief Submatrix operator.
        *
@@ -357,17 +357,17 @@ namespace fmatvec {
        * lower and the upper triangular part of the matrix.
        * \attention The submatrix and the
        * calling matrix will share the same physical memory.
-       * \param I Index containing the starting and the 
+       * \param I Range containing the starting and the
        * ending row and column. 
        * \return A submatrix of the calling matrix.
        * */
-      inline Matrix<Symmetric,Ref,Ref,AT> operator()(const Index &I);
+      inline Matrix<Symmetric,Ref,Ref,AT> operator()(const Range<Var,Var> &I);
 
       /*! \brief Submatrix operator.
        *
-       * See operator()(const Index&)
+       * See operator()(const Range<Var,Var>&)
        * */
-      inline const Matrix<Symmetric,Ref,Ref,AT> operator()(const Index &I) const;
+      inline const Matrix<Symmetric,Ref,Ref,AT> operator()(const Range<Var,Var> &I) const;
 
       /*! \brief Submatrix operator.
        *
@@ -498,16 +498,16 @@ namespace fmatvec {
 
   template <class AT> 
     inline const Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(int i1, int j1, int i2, int j2) const {
-      return operator()(Index(i1,i2),Index(j1,j2));
+      return operator()(Range<Var,Var>(i1,i2),Range<Var,Var>(j1,j2));
     }
 
   template <class AT> 
     inline Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(int i1, int j1, int i2, int j2) {
-      return operator()(Index(i1,i2),Index(j1,j2));
+      return operator()(Range<Var,Var>(i1,i2),Range<Var,Var>(j1,j2));
     }
 
   template <class AT> 
-    inline const Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Index &I, const Index &J) const {
+    inline const Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<n);
       assert(J.end()<n);
@@ -523,7 +523,7 @@ namespace fmatvec {
     }
 
   template <class AT> 
-    inline Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Index &I, const Index &J) {
+    inline Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<n);
       assert(J.end()<n);
@@ -539,7 +539,7 @@ namespace fmatvec {
     }
 
   template <class AT> 
-    inline Matrix<Symmetric,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Index &I) {
+    inline Matrix<Symmetric,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<n);
 #endif
@@ -548,7 +548,7 @@ namespace fmatvec {
     }
 
   template <class AT> 
-    inline const Matrix<Symmetric,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Index &I) const {
+    inline const Matrix<Symmetric,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<n);
 #endif

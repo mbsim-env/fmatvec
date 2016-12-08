@@ -274,7 +274,7 @@ namespace fmatvec {
 
   template<int M, class AT> template<class Type, class Row, class Col>
   inline void Vector<Fixed<M>,AT>::set(const Range<Var,Var> &I, const Matrix<Type,Row,Col,AT> &A) {
-      Matrix<General,Fixed<M>,Fixed<1>,AT>::set(I, Index(0,0), A);
+      Matrix<General,Fixed<M>,Fixed<1>,AT>::set(I, Range<Var,Var>(0,0), A);
   }
 
 }

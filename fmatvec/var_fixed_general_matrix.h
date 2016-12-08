@@ -522,7 +522,7 @@ namespace fmatvec {
     }
 
   template <int N, class AT> template<class Type, class Row, class Col>
-    inline void Matrix<General,Var,Fixed<N>,AT>::set(const Index &I, const Index &J, const Matrix<Type,Row,Col,AT> &A) {
+    inline void Matrix<General,Var,Fixed<N>,AT>::set(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<rows());
@@ -557,7 +557,7 @@ namespace fmatvec {
     }
 
   template <int N, class AT> template<class Type, class Row, class Col>
-    inline void Matrix<General,Var,Fixed<N>,AT>::add(const Index &I, const Index &J, const Matrix<Type,Row,Col,AT> &A) {
+    inline void Matrix<General,Var,Fixed<N>,AT>::add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<rows());

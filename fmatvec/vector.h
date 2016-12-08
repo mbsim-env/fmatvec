@@ -298,16 +298,16 @@ namespace fmatvec {
        * Returns a subvector of the calling vector. 
        * \attention The subvector and the
        * calling vector will share the same physical memory.
-       * \param I Index containing the starting and the ending element. 
+       * \param I Range containing the starting and the ending element.
        * \return A subvector of the calling vector.
        * */
-      inline Vector<Ref,AT> operator()(const Index &I);
+      inline Vector<Ref,AT> operator()(const Range<Var,Var> &I);
 
       /*! \brief Subvector operator.
        *
-       * See operator()(const Index&)
+       * See operator()(const Range<Var,Var>&)
        * */
-      inline const Vector<Ref,AT> operator()(const Index &I) const;
+      inline const Vector<Ref,AT> operator()(const Range<Var,Var> &I) const;
 
       using Matrix<General,Ref,Ref,AT>::operator();
 
@@ -443,16 +443,16 @@ namespace fmatvec {
 
   template <class AT>
     inline Vector<Ref,AT> Vector<Ref,AT>::operator()(int i1, int i2) {
-    return operator()(Index(i1,i2));
+    return operator()(Range<Var,Var>(i1,i2));
   }
 
   template <class AT> 
     inline const Vector<Ref,AT> Vector<Ref,AT>::operator()(int i1, int i2) const {
-    return operator()(Index(i1,i2));
+    return operator()(Range<Var,Var>(i1,i2));
   }
 
   template <class AT>
-    inline const Vector<Ref,AT> Vector<Ref,AT>::operator()(const Index &I) const {
+    inline const Vector<Ref,AT> Vector<Ref,AT>::operator()(const Range<Var,Var> &I) const {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<m);
@@ -462,7 +462,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Vector<Ref,AT> Vector<Ref,AT>::operator()(const Index &I) {
+    inline Vector<Ref,AT> Vector<Ref,AT>::operator()(const Range<Var,Var> &I) {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<m);

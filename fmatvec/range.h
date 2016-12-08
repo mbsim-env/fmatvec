@@ -137,8 +137,6 @@ namespace fmatvec {
       return false;
   }
 
-  typedef Range<Var,Var> Index;
-
 }
 
 #endif

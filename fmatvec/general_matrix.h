@@ -335,7 +335,7 @@ namespace fmatvec {
        * Returns a submatrix of the calling matrix. 
        * For example
        * \code 
-       * B = A(Index(1,2),Index(2,4));
+       * B = A(Range<Var,Var>(1,2),Range<Var,Var>(2,4));
        * \endcode
        * yields
        * \f[ 
@@ -352,33 +352,33 @@ namespace fmatvec {
        * \f]
        * \attention The submatrix and the
        * calling matrix will share the same physical memory.
-       * \param I Index containing the starting and the ending row. 
-       * \param J Index containing the starting and the ending column. 
+       * \param I Range containing the starting and the ending row.
+       * \param J Range containing the starting and the ending column.
        * \return A submatrix of the calling matrix.
        * */
-      inline Matrix<General,Ref,Ref,AT> operator()(const Index &I, const Index &J);
+      inline Matrix<General,Ref,Ref,AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J);
 
       /*! \brief Submatrix operator.
        *
-       * See operator()(const Index&, const Index&)
+       * See operator()(const Range<Var,Var>&, const Range<Var,Var>&)
        * */
-      inline const Matrix<General,Ref,Ref,AT> operator()(const Index &I, const Index &J) const;
+      inline const Matrix<General,Ref,Ref,AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const;
 
       /*! \brief Submatrix operator.
        *
        * Returns a square submatrix of the calling matrix. 
        * \attention The submatrix and the
        * calling matrix will share the same physical memory.
-       * \param I Index containing the starting and the ending row. 
+       * \param I Range containing the starting and the ending row.
        * \return A submatrix of the calling matrix.
        * */
-      inline SquareMatrix<Ref,AT> operator() (const Index &I);
+      inline SquareMatrix<Ref,AT> operator() (const Range<Var,Var> &I);
 
       /*! \brief Submatrix operator.
        *
-       * See operator()(const Index&)
+       * See operator()(const Range<Var,Var>&)
        * */
-      inline const SquareMatrix<Ref,AT> operator()(const Index &I) const;
+      inline const SquareMatrix<Ref,AT> operator()(const Range<Var,Var> &I) const;
 
       /*! \brief Column operator.
        *
@@ -614,16 +614,16 @@ namespace fmatvec {
 
   template <class AT>
     inline Matrix<General,Ref,Ref,AT>  Matrix<General,Ref,Ref,AT>::operator()(int i1, int j1, int i2, int j2) {
-      return operator()(Index(i1,i2),Index(j1,j2));
+      return operator()(Range<Var,Var>(i1,i2),Range<Var,Var>(j1,j2));
     }
 
   template <class AT>
     inline const Matrix<General,Ref,Ref,AT>  Matrix<General,Ref,Ref,AT>::operator()(int i1, int j1, int i2, int j2) const {
-      return operator()(Index(i1,i2),Index(j1,j2));
+      return operator()(Range<Var,Var>(i1,i2),Range<Var,Var>(j1,j2));
     }
 
   template <class AT> 
-    inline Matrix<General,Ref,Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Index &I, const Index &J) {
+    inline Matrix<General,Ref,Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<m);
       assert(J.end()<n);
@@ -632,7 +632,7 @@ namespace fmatvec {
     }
 
   template <class AT> 
-    inline const Matrix<General,Ref,Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Index &I, const Index &J) const {
+    inline const Matrix<General,Ref,Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<m);
       assert(J.end()<n);
@@ -641,7 +641,7 @@ namespace fmatvec {
     }
 
   template <class AT> 
-    inline const SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Index &I) const {
+    inline const SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<m);
 #endif
@@ -649,7 +649,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Index &I) {
+    inline SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<m);
 #endif

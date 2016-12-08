@@ -173,9 +173,8 @@ namespace fmatvec {
   typedef Matrix<General, Var, Fixed<3>, double> MatVx3;
   typedef Matrix<General, Var, Fixed<3>, int> MatVx3I;
 
-
+  typedef Range<Var,Var> RangeV;
 
 }
 
 #endif
-
