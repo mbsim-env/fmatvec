@@ -159,7 +159,7 @@ struct Der<Matrix<Rotation, Fixed<3>, Fixed<3>, double>, double> {
  * \f[
  *   \texttt{parDer}_{\boldsymbol{x}}(\boldsymbol{R}_{12}) = \left[
  *     \widetilde{\left(\frac{\partial\boldsymbol{R}_{12}}{\partial x_1}\boldsymbol{R}^T_{12}\right)},
- *     \widetilde{\left(\frac{\partial\boldsymbol{R}_{12}}{\partial x_1}\boldsymbol{R}^T_{12}\right)},
+ *     \widetilde{\left(\frac{\partial\boldsymbol{R}_{12}}{\partial x_2}\boldsymbol{R}^T_{12}\right)},
  *     \dots
  *   \right] \in \mathbb{R}^{3\times N} \quad \text{when}\quad \boldsymbol{x} \in \mathbb{R}^{N\times 1}
  * \f]
