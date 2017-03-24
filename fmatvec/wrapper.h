@@ -184,7 +184,7 @@ extern "C" {
 namespace fmatvec {
 
 #ifndef HAVE_LIBMKL_INTEL_LP64
-  int dsyevx(const char jobz, const char range, const CBLAS_UPLO cuplo, const int n, double *a, const int lda, const double vl, const double vu, const int il, const int iu, const double abstol, const int *m, double *w, double *z, const int ldz);
+  int dsyevx(const char jobz, const char range, const CBLAS_UPLO cuplo, const int n, double *a, const int lda, const double vl, const double vu, const int il, const int iu, const double abstol, int *m, double *w, double *z, const int ldz);
 #else
    int dsyevx(const char jobz, const char range, const CBLAS_UPLO cuplo, const int n, double *a, const int lda, const double vl, const double vu, const int il, const int iu, const double abstol, int *m, double *w, double *z, const int ldz); 
 #endif

@@ -92,7 +92,7 @@ namespace fmatvec {
     return Y;
   }
 
-  Matrix<General, Var, Var, double> slvLU(const SquareMatrix<Var, double> &A, const Matrix<General, Var, Var, double> &X, int info) {
+  Matrix<General, Var, Var, double> slvLU(const SquareMatrix<Var, double> &A, const Matrix<General, Var, Var, double> &X, int &info) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == X.rows());
