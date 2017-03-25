@@ -22,7 +22,7 @@ AC_HEADER_STDBOOL
 PKG_CHECK_MODULES(DEPS, fmatvec >= 1.0.1)
 
 CPPFLAGS="$CPPFLAGS"
-LDFLAGS="$LDFLAGS -no-undefined -Wl,--no-undefined"
+LDFLAGS="$LDFLAGS $LDFLAGS_LIBTOOL -no-undefined -Wl,--no-undefined"
 test "_$host_os" != "_mingw32" && LDFLAGS="$LDFLAGS -Wl,--disable-new-dtags,-rpath,\\\$\$ORIGIN/../lib"
 
 AC_ARG_WITH([doxygenpath],[  --with-doxygenpath=PATH  The path to the 'doxygen' program.],[doxygenpath="$withval"],[doxygenpath=""])
