@@ -5,5 +5,4 @@ doxy_template_DATA = \
   $(srcdir)/doxy.mk \
   $(srcdir)/footer.html \
   $(srcdir)/header.html \
-  $(srcdir)/macros.sty \
   doxyfile_common

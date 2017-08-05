@@ -1,7 +1,6 @@
-EXTRA_PACKAGES         = amsmath amssymb macros
 HTML_HEADER            = @prefix@/share/fmatvec/doxy_template/header.html
 HTML_FOOTER            = @prefix@/share/fmatvec/doxy_template/footer.html
 HTML_EXTRA_STYLESHEET  = @prefix@/share/fmatvec/doxy_template/customdoxygen.css
 GENERATE_LATEX         = NO
 EXTRACT_PRIVATE        = YES
-#USE_MATHJAX            = YES
+USE_MATHJAX            = YES

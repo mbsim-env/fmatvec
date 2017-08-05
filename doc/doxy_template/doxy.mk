@@ -3,7 +3,8 @@
 doxy_template_dir ?= $(prefix)/share/fmatvec/doxy_template
 
 doxytempl.all: doxyfile
-	TEXINPUTS=$(doxy_template_dir):: $(doxygen) doxyfile
+	rm -rf html
+	$(doxygen) doxyfile
 	cp $(doxy_template_dir)/doxy-boot.js html/.
 doxytempl.clean:
 	rm -rf html
