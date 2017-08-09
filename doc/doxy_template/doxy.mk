@@ -1,11 +1,12 @@
 # this is the default doxy_template dir. We only used another dir for fmatvec
 # since for fmatvec it may not installed yet
-doxy_template_dir ?= $(prefix)/share/fmatvec/doxy_template
+fmatvec_share_dir ?= $(prefix)/share/fmatvec
 
 doxytempl.all: doxyfile
 	rm -rf html
 	$(doxygen) doxyfile
-	cp $(doxy_template_dir)/doxy-boot.js html/.
+	cp $(fmatvec_share_dir)/doxy_template/doxy-boot.js html/.
+	$(fmatvec_share_dir)/checkHtml/checkMathJax.sh html
 doxytempl.clean:
 	rm -rf html
 doxytempl.install:

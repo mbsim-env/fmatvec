@@ -234,7 +234,7 @@ fi
 AC_SUBST(LIBS)
 AC_SUBST([INCDIRS])
 AC_SUBST([LIBDIRS])
-AC_CONFIG_FILES([Makefile fmatvec/Makefile fmatvec/check/Makefile doc/doxy_template/Makefile doc/doxy_template/doxyfile_common doc/doxyfile doc/Makefile fmatvec.pc])
+AC_CONFIG_FILES([Makefile fmatvec/Makefile fmatvec/check/Makefile doc/checkHtml/Makefile doc/doxy_template/Makefile doc/doxy_template/doxyfile_common doc/doxyfile doc/Makefile fmatvec.pc])
 AC_CONFIG_COMMANDS([doc/doxy_template/doxyfile_common_fmatvec],
   [sed -re "s|$prefix/share/fmatvec/doxy_template/|$abs_srcdir/doc/doxy_template/|g" doc/doxy_template/doxyfile_common > doc/doxy_template/doxyfile_common_fmatvec],
   [prefix=$prefix; abs_srcdir=$(realpath $srcdir)]

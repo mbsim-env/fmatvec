@@ -1,5 +1,5 @@
 # for fmatvec we need to use the source and not the installed file
-doxy_template_dir = $(abs_srcdir)/doxy_template
+fmatvec_share_dir = $(abs_srcdir)
 
 include $(srcdir)/doxy_template/doxy.mk
 all-local: doxytempl.all
