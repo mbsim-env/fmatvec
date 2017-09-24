@@ -59,6 +59,8 @@ AC_ARG_WITH([boost-inc],
   [  --with-boost-inc=PATH  The path Boost include directory.],
   [CPPFLAGS="$CPPFLAGS -I$withval"; DEFINES="$DEFINES -I$withval"])
 
+AC_CHECK_HEADERS([boost/preprocessor/iteration/local.hpp],[],[AC_MSG_ERROR([Can not find boost headers (boost/preprocessor/iteration/local.hpp)])])
+
 dnl Define the Memory class
 AC_ARG_WITH([memory-class],[  --with-memory-class=<class>  Use the defined memory management: (INTRUSIVECOUNT (default); BOOST; FMATVEC); BOOST uses boost::shared_array using new operator; INTRUSIVECOUNT uses a fmatvec builtin intrusive reference counting using new operator],[memory_class="$withval"],[memory_class="INTRUSIVECOUNT"])
 if test "_$memory_class" == "_BOOST"; then
