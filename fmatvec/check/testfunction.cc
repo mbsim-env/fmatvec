@@ -1,4 +1,6 @@
 #include <config.h>
+#include <cassert>
+#include <cfenv>
 #include <iostream>
 #include <fmatvec/fmatvec.h>
 #include <fmatvec/function.h>
@@ -123,6 +125,10 @@ class KinematicRotAboutAxis : public Function<RotMat3(VecV, double)> {
 
 
 int main() {
+#ifndef _WIN32
+  assert(feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)!=-1);
+#endif
+
   // define some arbitary argument for the following function calles
   VecV q(2);
   q(0)=3.5;

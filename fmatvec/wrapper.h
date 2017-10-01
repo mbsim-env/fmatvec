@@ -154,7 +154,7 @@ extern "C" {
 extern "C" {
 #include "mkl_cblas.h"
 #include "mkl_lapacke.h"
-#include "mkl_lapack.h"  
+#include "mkl_lapack.h"
 }
 
 #define dscal  cblas_dscal
