@@ -105,6 +105,7 @@ namespace fmatvec {
        * \f[ A=\begin{pmatrix}3 & 2\\ 1 & 2\end{pmatrix}  \f]
        * \param str The string the matrix will be initialized with. 
        * */
+      Matrix(const std::string &str);
       Matrix(const char *str);
 
       template <class Type, class Row, class Col>
@@ -346,11 +347,12 @@ namespace fmatvec {
   };
 
   template <int M, int N, class AT> 
-    Matrix<General,Fixed<M>,Fixed<N>,AT>::Matrix(const char *strs) {
+    Matrix<General,Fixed<M>,Fixed<N>,AT>::Matrix(const std::string &strs) {
       // if 'strs' is a single scalar, surround it first with '[' and ']'.
       // This is more Matlab-like, because e.g. '5' and '[5]' is just the same.
       // (This functionallitiy is needed e.g. by MBXMLUtils (OpenMBV,MBSim))
       std::istringstream iss(strs);
+      iss.exceptions(std::ios::failbit | std::ios::badbit);
       char c;
       iss>>c;
       if(c=='[') iss.str(strs);
@@ -391,7 +393,14 @@ namespace fmatvec {
       }
       assert(m==M);
       assert(n==N);
+
+      // check end of stream
+      iss>>std::ws;
+      if(!iss.eof())
+        throw std::runtime_error("Input not fully read.");
     }
+  template <int M, int N, class AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::Matrix(const char *strs) :
+    Matrix<General,Fixed<M>,Fixed<N>,AT>::Matrix(std::string(strs)) {}
 
   template <int M, int N, class AT> template<class Type, class Row, class Col>
     inline Matrix<General,Fixed<M>,Fixed<N>,AT>& Matrix<General,Fixed<M>,Fixed<N>,AT>::operator=(const Matrix<Type,Row,Col,AT> &A) { 
