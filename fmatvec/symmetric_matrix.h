@@ -128,6 +128,8 @@ namespace fmatvec {
        * */
       Matrix(int n_, AT* ele_) : memory(), ele(ele_), n(n_), lda(n_) { }
 
+      Matrix(const std::vector<std::vector<AT>> &A);
+
       /*! \brief Destructor. 
        * */
       ~Matrix() { }
@@ -394,6 +396,19 @@ namespace fmatvec {
        * */
       inline operator std::vector<std::vector<AT> >();
   };
+
+  template <class AT>
+    Matrix<Symmetric,Ref,Ref,AT>::Matrix(const std::vector<std::vector<AT>> &A) : Matrix<Symmetric,Ref,Ref,AT>(A.size()) {
+      for(int r=0; r<rows(); r++) {
+        if(static_cast<int>(A[r].size())!=cols())
+          throw std::runtime_error("The rows of the input have different length.");
+        for(int c=0; c<cols(); c++) {
+          e(r,c)=A[r][c];
+          if(r>c && fabs(A[r][c]-A[c][r])>fabs(A[r][c])*1e-13+1e-13)
+            throw std::runtime_error("The input is not symmetric.");
+        }
+      }
+    }
 
   template <class AT>
     inline Matrix<Symmetric,Ref,Ref,AT>& Matrix<Symmetric,Ref,Ref,AT>::operator>>(const Matrix<Symmetric,Ref,Ref,AT> &A) { 

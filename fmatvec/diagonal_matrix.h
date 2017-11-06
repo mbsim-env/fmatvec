@@ -139,6 +139,8 @@ namespace fmatvec {
 	 * */
 	inline Matrix<Diagonal,Ref,Ref,AT>& operator=(const Matrix<Diagonal,Ref,Ref,AT> &A);
 
+	Matrix<Diagonal,Ref,Ref,AT>(const std::vector<std::vector<AT>> &A);
+
 	/*! \brief Element operator
 	 *
 	 * Returns a reference to the element in the i-th row and the j-th column. 
@@ -306,6 +308,20 @@ namespace fmatvec {
       deepCopy(A);
 
       return *this;
+    }
+
+  template <class AT>
+    Matrix<Diagonal,Ref,Ref,AT>::Matrix(const std::vector<std::vector<AT>> &A) : Matrix<Diagonal,Ref,Ref,AT>(A.size()) { 
+      for(size_t r=0; r<A.size(); ++r) {
+        if(n!=static_cast<int>(A[r].size()))
+          throw std::runtime_error("The rows of the input have different lenght.");
+        for(size_t c=0; c<A[r].size(); ++c) {
+          if(r==c)
+            e(r)=A[r][r];
+          if(r!=c && (fabs(A[r][c])>1e-13 || fabs(A[r][c])>1e-13))
+            throw std::runtime_error("The input is not diagonal.");
+        }
+      }
     }
 
 

@@ -26,7 +26,10 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <stdexcept>
+#include <limits>
 #include <vector>
+#include <boost/scope_exit.hpp>
 #include "range.h"
 
 /*! 
@@ -148,16 +151,20 @@ namespace fmatvec {
    * \return A reference to the output stream.
    * */
   template <class Type, class Row, class Col, class AT> std::ostream& operator<<(std::ostream &os, const Matrix<Type,Row,Col,AT> &A) {
-    os << A.rows() << " x " << A.cols() << std::endl;
+    std::streamsize oldPrec=os.precision();
+    BOOST_SCOPE_EXIT_TPL(&os, oldPrec) {
+      os.precision(oldPrec);
+    } BOOST_SCOPE_EXIT_END
+    os.precision(std::numeric_limits<AT>::digits10+1);
     os << "[ ";
     for (int i=0; i < A.rows(); ++i) {
       for (int j=0; j < A.cols(); ++j) 
-	os << std::setw(14) << A.e(i,j);
+	os << A.e(i,j) << " ";
 
       if (i != A.rows() - 1)
-	os << std::endl  << "  ";
+	os << std::endl;
     }
-    os << " ]";
+    os << "]";
     return os;
   }
 
@@ -169,15 +176,36 @@ namespace fmatvec {
    * \return A reference to the input stream.
    * */
   template <class Type, class Row, class Col, class AT> std::istream& operator>>(std::istream &is, Matrix<Type,Row,Col,AT> &A) {
-    int m, n;
+    std::ios_base::iostate oldEx=is.exceptions();
+    std::ios_base::fmtflags oldFlags=is.flags();
+    BOOST_SCOPE_EXIT_TPL(&is, oldEx, oldFlags) {
+      is.exceptions(oldEx);
+      is.flags(oldFlags);
+    } BOOST_SCOPE_EXIT_END
+    is.exceptions(std::ios::failbit | std::ios::badbit);
+    is.flags(std::ios_base::skipws);
     char c;
-    is >> m >> c >> n >> c;
-    Matrix<General,Var,Var,AT> B(m,n,NONINIT);
-    for (int i=0; i < B.rows(); ++i) 
-      for (int j=0; j < B.cols(); ++j) 
-	is >> B.e(i,j);
-    is >> c;
-    A = B;
+    AT e;
+    while((c=is.peek())==' ' || c=='\n') is.get();
+    if(c!='[') {
+      // its a scalar (written without the [ ] )
+      is>>e;
+      A = Matrix<Type,Row,Col,AT>(std::vector<std::vector<AT>>(1, std::vector<AT>(1, e)));
+      return is;
+    }
+    // its vector or matrix
+    is.get();
+    std::vector<std::vector<AT>> m(1);
+    int r=0;
+    while(true) {
+      is>>e;
+      m[r].push_back(e);
+      while((c=is.peek())==' ') is.get();
+      if     (c==','           ) { is.get(); }
+      else if(c==';' || c=='\n') { is.get(); m.resize(++r + 1); }
+      else if(c==']'           ) { is.get(); break; }
+    }
+    A = m;
     return is;
   }
 

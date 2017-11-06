@@ -177,6 +177,18 @@ namespace fmatvec {
        * */
       const AT* operator()() const {return ele;};
 
+      Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>(const std::vector<std::vector<AT>> &A) {
+        for(int r=0; r<rows(); r++) {
+          if(static_cast<int>(A[r].size())!=cols())
+            throw std::runtime_error("The rows of the input have different length.");
+          for(int c=0; c<cols(); c++) {
+            e(r,c)=A[r][c];
+            if(r>c && fabs(A[r][c]-A[c][r])>fabs(A[r][c])*1e-13+1e-13)
+              throw std::runtime_error("The input is not symmetric.");
+          }
+        }
+      }
+
       /*! \brief Size.
        *
        * \return The number of rows and columns of the matrix

@@ -593,13 +593,14 @@ namespace fmatvec {
     }
 
   template <int N, class AT>
-    inline Matrix<General,Var,Fixed<N>,AT>::Matrix(std::vector<std::vector<AT> > m) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(m.size() == M);
-      assert(m[0].size() == N);
-#endif
+    inline Matrix<General,Var,Fixed<N>,AT>::Matrix(std::vector<std::vector<AT> > m) : M(m.size()), ele(new AT[M*N]) {
+      if(m.size()<1)
+        throw std::runtime_error("The input must have at least 1 row.");
+      if(m[0].size() != N)
+        throw std::runtime_error("The input has "+std::to_string(m[0].size())+" columns but "+std::to_string(N)+" columns are required.");
       for(int r=0; r<rows(); r++) {
-        assert(m[r].size()==cols());
+        if(static_cast<int>(m[r].size())!=cols())
+          throw std::runtime_error("The rows of the input have different length.");
         for(int c=0; c<cols(); c++)
           e(r,c)=m[r][c];
       }

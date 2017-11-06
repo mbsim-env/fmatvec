@@ -178,5 +178,30 @@ int main() {
 
 
 
-  return 0;
+  string inputv("[1; 2\n 3 ]");
+  { istringstream str(inputv); Vec     v; str>>v; cout<<v<<endl; }
+  { istringstream str(inputv); RowVec  v; str>>v; cout<<v<<endl; }
+  { istringstream str(inputv); Vec3    v; str>>v; cout<<v<<endl; }
+  { istringstream str(inputv); VecV    v; str>>v; cout<<v<<endl; }
+
+  string inputm("[1 2 3; 4, 5 6\n7 8,  9 ]");
+  string inputs("[1 2 3; 2, 5 6\n3 6,  9 ]");
+  string inputd("[1 0 0; 0, 5 0\n0 0,  9 ]");
+  { istringstream str(inputm); Mat       m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputm); SqrMat    m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputd); DiagMat   m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputs); SymMat    m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputm); Mat3x3    m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputm); SqrMat3   m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputs); SymMat3   m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputm); MatV      m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputm); SqrMatV   m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputm); Mat3xV    m; str>>m; cout<<m<<endl; }
+
+  { istringstream str("[3]"); Mat m; str>>m; cout<<m<<endl; }
+  { istringstream str("3"  ); Mat m; str>>m; cout<<m<<endl; }
+  { istringstream str("[3]"); VecV v; str>>v; cout<<v<<endl; }
+  { istringstream str("3"  ); VecV v; str>>v; cout<<v<<endl; }
+
+  return 0;  
 }
