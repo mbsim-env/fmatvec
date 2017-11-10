@@ -328,51 +328,8 @@ namespace fmatvec {
 
   template <int N, class AT> 
     Matrix<General,Var,Fixed<N>,AT>::Matrix(const std::string &strs) : M(0), ele(0) {
-      // if 'strs' is a single scalar, surround it first with '[' and ']'.
-      // This is more Matlab-like, because e.g. '5' and '[5]' is just the same.
-      // (This functionallitiy is needed e.g. by MBXMLUtils (OpenMBV,MBSim))
       std::istringstream iss(strs);
-      iss.exceptions(std::ios::failbit | std::ios::badbit);
-      char c;
-      iss>>c;
-      if(c=='[') iss.str(strs);
-      else iss.str(std::string("[")+strs+"]");
-
-      int n=0;
-      int buf=0;
-      iss >> c;
-      iss >> c;
-      if(c!=']') {
-        iss.putback(c);
-        AT x;
-        do {
-          iss >> x;
-          iss >> c;
-          if(c==';') {
-            if(buf)
-              assert(buf == n);
-
-            buf=n;
-            n=0;
-            M++;
-          }
-          else if(c==',')
-            n++;
-          c='0';
-        } while(iss);
-
-        n++; M++;
-        ele = new AT[M*N];
-        iss.clear();
-        iss.seekg(0);
-        iss >> c;
-        for(int i=0; i<M; i++)
-          for(int j=0; j<N; j++) {
-            iss >> e(i,j);
-            iss >> c;
-          }
-      }
-      assert(n==N);
+      iss>>*this;
 
       // check end of stream
       iss>>std::ws;
