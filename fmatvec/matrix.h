@@ -31,6 +31,7 @@
 #include <vector>
 #include <boost/scope_exit.hpp>
 #include "range.h"
+#include "toString.h"
 
 /*! 
  * \brief Namespace fmatvec.
@@ -132,7 +133,7 @@ namespace fmatvec {
        *
        * \return The std::vector<std::vector<AT> > representation of the matrix
        * */
-      operator std::vector<std::vector<AT> >();
+      operator std::vector<std::vector<AT> >() const;
   };
 
 
@@ -151,20 +152,7 @@ namespace fmatvec {
    * \return A reference to the output stream.
    * */
   template <class Type, class Row, class Col, class AT> std::ostream& operator<<(std::ostream &os, const Matrix<Type,Row,Col,AT> &A) {
-    std::streamsize oldPrec=os.precision();
-    BOOST_SCOPE_EXIT_TPL(&os, oldPrec) {
-      os.precision(oldPrec);
-    } BOOST_SCOPE_EXIT_END
-    os.precision(std::numeric_limits<AT>::digits10+1);
-    os << "[ ";
-    for (int i=0; i < A.rows(); ++i) {
-      for (int j=0; j < A.cols(); ++j) 
-	os << A.e(i,j) << " ";
-
-      if (i != A.rows() - 1)
-	os << std::endl;
-    }
-    os << "]";
+    os << toString(static_cast<std::vector<std::vector<AT>>>(A));
     return os;
   }
 
@@ -228,7 +216,7 @@ namespace fmatvec {
   }
 
   template <class Type, class Row, class Col, class AT>
-    Matrix<Type,Row,Col,AT>::operator std::vector<std::vector<AT> >() {
+    Matrix<Type,Row,Col,AT>::operator std::vector<std::vector<AT> >() const {
       std::vector<std::vector<AT> > ret(rows());
       for(int r=0; r<rows(); r++) {
 	ret[r].resize(cols());

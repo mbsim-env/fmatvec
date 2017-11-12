@@ -11,6 +11,7 @@ libfmatvec_la_CPPFLAGS = -I$(top_srcdir)
 fmatvecincludedir=$(includedir)/fmatvec
 fmatvecinclude_HEADERS = diagonal_matrix.h \
 			 atom.h \
+			 toString.h \
 			 fmatvec.h \
 			 general_matrix.h \
 			 linear_algebra_double.h \

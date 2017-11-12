@@ -294,7 +294,7 @@ namespace fmatvec {
        *
        * \return The std::vector<std::vector<AT> > representation of the matrix
        * */
-      inline operator std::vector<std::vector<AT> >();
+      inline operator std::vector<std::vector<AT> >() const;
   };
 
   template <class AT>
@@ -375,7 +375,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<Symmetric,Var,Var,AT>::operator std::vector<std::vector<AT> >() {
+    inline Matrix<Symmetric,Var,Var,AT>::operator std::vector<std::vector<AT> >() const {
       std::vector<std::vector<AT> > ret(rows());
       for(int r=0; r<rows(); r++) {
         ret[r].resize(cols());

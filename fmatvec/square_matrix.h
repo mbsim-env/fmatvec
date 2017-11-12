@@ -206,7 +206,7 @@ namespace fmatvec {
        *
        * \return The std::vector<std::vector<AT> > representation of the matrix
        * */
-      inline operator std::vector<std::vector<AT> >();
+      inline operator std::vector<std::vector<AT> >() const;
 
       SquareMatrix<Ref,AT> T() {
 	return SquareMatrix<Ref,AT>(n, lda, tp?false:true, memory, ele);
@@ -227,7 +227,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline SquareMatrix<Ref,AT>::operator std::vector<std::vector<AT> >() {
+    inline SquareMatrix<Ref,AT>::operator std::vector<std::vector<AT> >() const {
       std::vector<std::vector<AT> > ret(size());
       if(tp) {
 	for(int r=0; r<size(); r++) {

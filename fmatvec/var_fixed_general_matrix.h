@@ -301,7 +301,7 @@ namespace fmatvec {
        *
        * \return The std::vector<std::vector<AT> > representation of the matrix
        * */
-      inline operator std::vector<std::vector<AT> >();
+      inline operator std::vector<std::vector<AT> >() const;
 
       /*! \brief std::vector<std::vector<AT> > Constructor.
        * Constructs and initializes a matrix with a std::vector<std::vector<AT> > object.
@@ -539,7 +539,7 @@ namespace fmatvec {
     }
 
   template <int N, class AT>
-    inline Matrix<General,Var,Fixed<N>,AT>::operator std::vector<std::vector<AT> >() {
+    inline Matrix<General,Var,Fixed<N>,AT>::operator std::vector<std::vector<AT> >() const {
       std::vector<std::vector<AT> > ret(rows());
       for(int r=0; r<rows(); r++) {
         ret[r].resize(cols());

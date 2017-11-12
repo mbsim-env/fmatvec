@@ -211,7 +211,7 @@ namespace fmatvec {
        *
        * \return The std::vector<AT> representation of the vector
        * */
-      inline operator std::vector<AT>();
+      inline operator std::vector<AT>() const;
 
       /*! \brief std::vector<AT> Constructor.
        * Constructs and initializes a vector with a std::vector<AT> object.
@@ -296,7 +296,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Vector<Var,AT>::operator std::vector<AT>() {
+    inline Vector<Var,AT>::operator std::vector<AT>() const {
       std::vector<AT> ret(size());
       if(size()>0) memcpy(&ret[0], &operator()(0), sizeof(AT)*size());
       return ret;
