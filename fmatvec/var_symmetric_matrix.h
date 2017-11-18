@@ -40,7 +40,7 @@ namespace fmatvec {
 
     /// @cond NO_SHOW
 
-      int M;
+      int M{0};
 
       AT *ele;
 
@@ -56,7 +56,7 @@ namespace fmatvec {
        *
        * Constructs a matrix with no size. 
        * */
-      Matrix() : M(0), ele(0) {
+      Matrix() :  ele(nullptr) {
       }
 
 //      template<class Ini=All<AT> >

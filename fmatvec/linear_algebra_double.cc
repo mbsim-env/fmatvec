@@ -80,7 +80,7 @@ namespace fmatvec {
 
     SquareMatrix<Ref, double> B = A.copy();
 
-    int *ipiv = new int[A.size()];
+    auto *ipiv = new int[A.size()];
 
     int info = dgesv(B.blasOrder(), B.size(), Y.cols(), B(), B.ldim(), ipiv, Y(), Y.ldim());
 
@@ -107,7 +107,7 @@ namespace fmatvec {
 
     SquareMatrix<Var, double> B = A;
 
-    int *ipiv = new int[A.size()];
+    auto *ipiv = new int[A.size()];
 
     info = dgesv(B.blasOrder(), B.size(), Y.cols(), B(), B.ldim(), ipiv, Y(), Y.ldim());
 
@@ -246,7 +246,7 @@ namespace fmatvec {
 
     SquareMatrix<Ref, double> B = A.copy();
 
-    int *ipiv = new int[A.size()];
+    auto *ipiv = new int[A.size()];
 
     int info = dgesv(B.blasOrder(), B.size(), 1, B(), B.ldim(), ipiv, y(), y.size());
 
@@ -273,7 +273,7 @@ namespace fmatvec {
 
     SquareMatrix<Ref, double> B = A.copy();
 
-    int *ipiv = new int[A.size()];
+    auto *ipiv = new int[A.size()];
 
     info = dgesv(B.blasOrder(), B.size(), 1, B(), B.ldim(), ipiv, y(), y.size());
 
@@ -297,7 +297,7 @@ namespace fmatvec {
 
     SquareMatrix<Var, double> B = A;
 
-    int *ipiv = new int[A.size()];
+    auto *ipiv = new int[A.size()];
 
     info = dgesv(B.blasOrder(), B.size(), 1, B(), B.ldim(), ipiv, y(), y.size());
 
@@ -392,7 +392,7 @@ namespace fmatvec {
       return B;
 #endif
 
-    int *ipiv = new int[A.size()];
+    auto *ipiv = new int[A.size()];
 
     int info = dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv);
 
@@ -516,7 +516,7 @@ namespace fmatvec {
 
   int facLU(double *A, int pivot[], int n) {
       int i, j, k;
-      double *p_k, *p_row, *p_col = NULL;
+      double *p_k, *p_row, *p_col = nullptr;
       double max;
 
       //         For each row and column, k = 0, ..., n-1,
@@ -730,9 +730,9 @@ namespace fmatvec {
 
   Vector<Ref, std::complex<double> > eigval(const SquareMatrix<Ref, double> &A) {
 
-    double *vl = 0, *vr = 0;
-    double *wr = new double[A.size()];
-    double *wi = new double[A.size()];
+    double *vl = nullptr, *vr = nullptr;
+    auto *wr = new double[A.size()];
+    auto *wi = new double[A.size()];
 
     SquareMatrix<Ref, double> B = A.copy();
 
@@ -755,9 +755,9 @@ namespace fmatvec {
     V.resize(A.size(),NONINIT);
     SquareMatrix<Ref, double> Vreal(A.size(),NONINIT);
 
-    double *vl = 0;
-    double *wr = new double[A.size()];
-    double *wi = new double[A.size()];
+    double *vl = nullptr;
+    auto *wr = new double[A.size()];
+    auto *wi = new double[A.size()];
 
     int info = dgeev('N', 'V', A.size(), B(), B.ldim(), wr, wi, vl, B.size(), Vreal(), B.size());
 
@@ -786,7 +786,7 @@ namespace fmatvec {
   
   int eigvec(const Matrix<Symmetric, Ref, Ref, double> &A, const Matrix<Symmetric, Ref, Ref, double> &B, SquareMatrix<Ref, double> &eigenvectors, Vector<Ref, double> &eigenvalues) {
     const int dim = A.size();
-    double *w = new double[dim];
+    auto *w = new double[dim];
     SquareMatrix<Ref, double> B_(dim);
     eigenvectors.resize(dim);
     eigenvalues.resize(dim);
@@ -864,7 +864,7 @@ namespace fmatvec {
     double vl = 0, vu = 0;
     int m;
     Vector<Ref, double> w(A.size());
-    double* z = 0;
+    double* z = nullptr;
     int ldz = 1;
 
     dsyevx('N', 'I', B.blasUplo(), B.size(), B(), B.ldim(), vl, vu, il, iu, abstol, &m, w(), z, ldz);

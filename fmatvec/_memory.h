@@ -23,7 +23,7 @@
 #define _memory_h
 
 // includes
-#include <stdlib.h>
+#include <cstdlib>
 #include <vector>
 
 // include header given by ALLOCATORHEADER
@@ -293,7 +293,7 @@ namespace fmatvec {
       };
 
     public:
-      Memory() : ref(reinterpret_cast<size_t*>(new AT[ele0Start])), ele0(NULL) {
+      Memory() : ref(reinterpret_cast<size_t*>(new AT[ele0Start])), ele0(nullptr) {
         *ref=1; // initialize the reference count to 1
         FMATVEC_SYNCINIT(fmatvec_refLock);
       };

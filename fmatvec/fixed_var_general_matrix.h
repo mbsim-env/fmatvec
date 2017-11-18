@@ -24,7 +24,7 @@
 
 #include "types.h"
 #include "range.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include <stdexcept>
 
 namespace fmatvec {
@@ -47,7 +47,7 @@ namespace fmatvec {
 
     protected:
 
-      int N;
+      int N{0};
 
       AT *ele;
 
@@ -61,7 +61,7 @@ namespace fmatvec {
        *
        * Constructs a matrix with no size. 
        * */
-      Matrix() : N(0), ele(0) { }
+      Matrix() :  ele(nullptr) { }
 
 //      template<class Ini=All<AT> >
 //      Matrix(int n, Ini ini=All<AT>()) :  N(n), ele(new AT[M*N]) {
@@ -130,7 +130,7 @@ namespace fmatvec {
       Matrix<General,Fixed<M>,Var,AT>& resize() { 
 	delete[] ele;
 	N = 0;
-	ele = 0;
+	ele = nullptr;
         return *this;
       }
 
@@ -367,7 +367,7 @@ namespace fmatvec {
   };
 
   template <int M, class AT> 
-    Matrix<General,Fixed<M>,Var,AT>::Matrix(const std::string &strs) : N(0), ele(0) {
+    Matrix<General,Fixed<M>,Var,AT>::Matrix(const std::string &strs) :  ele(nullptr) {
       std::istringstream iss(strs);
       iss>>*this;
 

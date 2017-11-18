@@ -64,7 +64,7 @@ class Atom {
     //! Adopt the message streams from src to this object.
     //! If src is NULL adopt the current (static) message streams.
     //! Normally always the streams at ctor time are used. But in some special cassed this function is usefull.
-    void adoptMessageStreams(const Atom *src=NULL);
+    void adoptMessageStreams(const Atom *src=nullptr);
 
     //! Return the message stream of type type.
     //! Node: If the code is performance critical you should check first whether this stream is really

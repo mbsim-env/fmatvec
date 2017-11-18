@@ -73,7 +73,7 @@ namespace fmatvec {
 
     SquareMatrix<Ref, std::complex<double> > B = A.copy();
 
-    int *ipiv = new int[A.size()];
+    auto *ipiv = new int[A.size()];
 
     int info = zgesv(B.blasOrder(), B.size(), 1, B(), B.ldim(), ipiv, y(), y.size());
 

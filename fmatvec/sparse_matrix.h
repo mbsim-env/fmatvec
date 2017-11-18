@@ -50,8 +50,8 @@ namespace fmatvec {
 	Memory<AT> memEle;
 	Memory<int> memI, memJ;
 	AT *ele;
-	int *I, *J;
-	int m, n, k;
+	int *I{nullptr}, *J{nullptr};
+	int m{0}, n{0}, k{0};
 
 	void deepCopy(const Matrix<Sparse,Ref,Ref,AT> &x);
 
@@ -69,7 +69,7 @@ namespace fmatvec {
 	 *
 	 * Constructs a matrix with no size. 
 	 * */
-	Matrix() : memEle(), memI(), memJ(), ele(0), I(0), J(0), m(0), n(0), k(0) { }
+	Matrix() : memEle(), memI(), memJ(), ele(0) { }
 
 //        template<class Ini=All<AT> >
 //          Matrix(int n_, Ini ini=All<AT>()) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) {
@@ -102,8 +102,7 @@ namespace fmatvec {
 
 	/*! \brief Destructor. 
 	 * */
-	~Matrix() {
-	}
+	~Matrix() = default;
 
         Matrix<Sparse,Ref,Ref,AT>& resize() {
             m = n = k = 0;

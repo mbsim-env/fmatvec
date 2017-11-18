@@ -18,7 +18,7 @@ namespace {
 namespace fmatvec {
 
 // a shared null stream object
-shared_ptr<ostream> Atom::_nullStream = make_shared<ostream>(static_cast<streambuf*>(NULL));
+shared_ptr<ostream> Atom::_nullStream = make_shared<ostream>(static_cast<streambuf*>(nullptr));
 
 // initialize the static streams with cout/cerr and corresponding active flags
 array<shared_ptr<bool>   , Atom::SIZE> Atom::_msgActStatic = {{
@@ -54,8 +54,7 @@ Atom::Atom(const Atom &) :
   _msg(_msgStatic) {
 }
 
-Atom::~Atom() {
-}
+Atom::~Atom() = default;
 
 Atom& Atom::operator=(const Atom &) {
   return *this;

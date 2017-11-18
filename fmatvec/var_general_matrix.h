@@ -23,7 +23,7 @@
 #define var_general_matrix_h
 
 #include "types.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include <stdexcept>
 
 namespace fmatvec {
@@ -45,7 +45,7 @@ namespace fmatvec {
 
     protected:
 
-      int M, N;
+      int M{0}, N{0};
 
       AT *ele;
 
@@ -59,7 +59,7 @@ namespace fmatvec {
        *
        * Constructs a matrix with no size. 
        * */
-      Matrix() : M(0), N(0), ele(0) { }
+      Matrix() :  ele(nullptr) { }
 
 // Works with -std=gnu++0x only
 //      template<class Ini=All<AT> >
@@ -118,7 +118,7 @@ namespace fmatvec {
        Matrix<General,Var,Var,AT>& resize() {
 	delete[] ele;
 	M = N = 0;
-	ele = 0;
+	ele = nullptr;
         return *this;
       }
 
@@ -360,7 +360,7 @@ namespace fmatvec {
   };
 
   template <class AT> 
-    Matrix<General,Var,Var,AT>::Matrix(const std::string &strs) : M(0), N(0), ele(0) {
+    Matrix<General,Var,Var,AT>::Matrix(const std::string &strs) :  ele(nullptr) {
       std::istringstream iss(strs);
       iss>>*this;
 

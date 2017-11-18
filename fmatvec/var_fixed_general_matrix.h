@@ -23,7 +23,7 @@
 #define var_fixed_general_matrix_h
 
 #include "types.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include <stdexcept>
 
 namespace fmatvec {
@@ -45,7 +45,7 @@ namespace fmatvec {
 
     protected:
 
-      int M;
+      int M{0};
 
       AT *ele;
 
@@ -56,7 +56,7 @@ namespace fmatvec {
  
     public:
 
-      Matrix() : M(0), ele(0) { }
+      Matrix() :  ele(nullptr) { }
 
 //      template<class Ini=All<AT> >
 //      Matrix(int m, Ini ini=All<AT>()) :  M(m), ele(new AT[M*N]) {
@@ -327,7 +327,7 @@ namespace fmatvec {
   };
 
   template <int N, class AT> 
-    Matrix<General,Var,Fixed<N>,AT>::Matrix(const std::string &strs) : M(0), ele(0) {
+    Matrix<General,Var,Fixed<N>,AT>::Matrix(const std::string &strs) :  ele(0) {
       std::istringstream iss(strs);
       iss>>*this;
 

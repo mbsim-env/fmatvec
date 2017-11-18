@@ -45,9 +45,9 @@ namespace fmatvec {
 
       Memory<AT> memory;
       AT *ele;
-      int n;
-      int kl;
-      int ku;
+      int n{0};
+      int kl{0};
+      int ku{0};
 
       inline void deepCopy(const Matrix<GeneralBand,Ref,Ref,AT> &A); 
 
@@ -64,7 +64,7 @@ namespace fmatvec {
        *
        * Constructs a band matrix with no size. 
        * */
-      Matrix() : memory(), ele(0), n(0), kl(0), ku(0) {
+      Matrix() : memory(), ele(0) {
       }
 
 //      template<class Ini=All<AT> >
@@ -107,8 +107,7 @@ namespace fmatvec {
 
       /*! \brief Destructor. 
        * */
-      ~Matrix() {
-      }
+      ~Matrix() = default;
 
       Matrix<GeneralBand,Ref,Ref,AT>& resize() { 
           n = kl = ku = 0;

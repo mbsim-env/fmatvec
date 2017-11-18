@@ -25,7 +25,7 @@
 #include "_memory.h"
 #include "types.h"
 #include "matrix.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include <stdexcept>
 
 namespace fmatvec {
@@ -57,10 +57,10 @@ namespace fmatvec {
 
       Memory<AT> memory;
       AT *ele;
-      int m;
-      int n;
-      int lda;
-      bool tp;
+      int m{0};
+      int n{0};
+      int lda{0};
+      bool tp{false};
 
       template <class Type, class Row, class Col> inline void deepCopy(const Matrix<Type,Row,Col,AT> &A); 
       inline void deepCopy(const Matrix<General,Ref,Ref,AT> &A); 
@@ -85,7 +85,7 @@ namespace fmatvec {
        *
        * Constructs a matrix with no size. 
        * */
-      Matrix() : memory(), ele(0), m(0), n(0), lda(0), tp(false) { }
+      Matrix() : memory(), ele(nullptr) { }
 
 // Works with -std=gnu++0x only
 //      template<class Ini=All<AT> >
@@ -93,9 +93,9 @@ namespace fmatvec {
 //        init(ini);
 //      }
 
-      Matrix(int m_, int n_, Noinit) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) { }
-      Matrix(int m_, int n_, Init ini=INIT, const AT &a=0) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) { init0(a); }
-      Matrix(int m_, int n_, Eye ini, const AT &a=1) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) { init(ini,a); }
+      Matrix(int m_, int n_, Noinit) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { }
+      Matrix(int m_, int n_, Init ini=INIT, const AT &a=0) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { init0(a); }
+      Matrix(int m_, int n_, Eye ini, const AT &a=1) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { init(ini,a); }
 
       /*! \brief Copy Constructor
        *
@@ -114,7 +114,7 @@ namespace fmatvec {
        * \param n_ The number of columns.
        * \param ele_ The physical memory the matrix will point to.
        * */
-      Matrix(int m_, int n_, AT* ele_) : memory(), ele(ele_), m(m_), n(n_), lda(m_), tp(false) { 
+      Matrix(int m_, int n_, AT* ele_) : memory(), ele(ele_), m(m_), n(n_), lda(m_) { 
       }
 
       /*! \brief String Constructor. 
@@ -134,11 +134,10 @@ namespace fmatvec {
 
       /*! \brief Destructor. 
        * */
-      ~Matrix() {
-      }
+      ~Matrix() = default;
 
       template<class Type, class Row, class Col>
-      explicit Matrix(const Matrix<Type,Row,Col,AT> &A) : memory(A.rows()*A.cols()), ele((AT*)memory.get()), m(A.rows()), n(A.cols()), lda(m), tp(false) {
+      explicit Matrix(const Matrix<Type,Row,Col,AT> &A) : memory(A.rows()*A.cols()), ele((AT*)memory.get()), m(A.rows()), n(A.cols()), lda(m) {
 
 	deepCopy(A);
       }
@@ -147,7 +146,7 @@ namespace fmatvec {
 	m = n = lda = 0;
 	tp = false;
 	memory.resize(0);
-	ele = 0;
+	ele = nullptr;
         return *this;
       }
        
@@ -456,7 +455,7 @@ namespace fmatvec {
   };
 
   template <class AT> 
-    Matrix<General,Ref,Ref,AT>::Matrix(const std::string &strs) : memory(), ele(0), m(0), n(0), lda(0) {
+    Matrix<General,Ref,Ref,AT>::Matrix(const std::string &strs) : memory(), ele(nullptr) {
       std::istringstream iss(strs);
       iss>>*this;
 
@@ -695,7 +694,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<General,Ref,Ref,AT>::Matrix(std::vector<std::vector<AT> > m) : memory(m.size()*m[0].size()), ele((AT*)memory.get()), m(m.size()), n(m[0].size()), lda(m.size()), tp(false) {
+    inline Matrix<General,Ref,Ref,AT>::Matrix(std::vector<std::vector<AT> > m) : memory(m.size()*m[0].size()), ele((AT*)memory.get()), m(m.size()), n(m[0].size()), lda(m.size()) {
 #ifndef FMATVEC_NO_INITIALIZATION 
       init(0);
 #endif

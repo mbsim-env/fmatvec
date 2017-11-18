@@ -44,8 +44,8 @@ namespace fmatvec {
 
       Memory<AT> memory;
       AT *ele;
-      int n;
-      int lda;
+      int n{0};
+      int lda{0};
 
       template <class Type, class Row, class Col> inline void deepCopy(const Matrix<Type,Row,Col,AT> &A); 
       inline void deepCopy(const Matrix<Symmetric,Ref,Ref,AT> &A); 
@@ -71,7 +71,7 @@ namespace fmatvec {
        *
        * Constructs a matrix with no size. 
        * */
-      Matrix() : memory(), ele(0), n(0), lda(0) {
+      Matrix() : memory(), ele(nullptr) {
       }
 
 //      template<class Ini=All<AT> >
@@ -132,7 +132,7 @@ namespace fmatvec {
 
       /*! \brief Destructor. 
        * */
-      ~Matrix() { }
+      ~Matrix() = default;
 
       Matrix<Symmetric,Ref,Ref,AT>& resize() { 
 	n = lda = 0;

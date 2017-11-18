@@ -23,7 +23,7 @@
 #define fixed_general_matrix_h
 
 #include "types.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include <stdexcept>
 
 namespace fmatvec {

@@ -22,7 +22,7 @@
 #ifndef linear_algebra_h
 #define linear_algebra_h
 
-#include <math.h>
+#include <cmath>
 
 #include "square_matrix.h"
 #include "vector.h"
@@ -141,7 +141,7 @@ namespace fmatvec {
   }
   template <class AT, class Row1, class Row2>
   inline Vector<Row1, AT> operator+=(const Vector<Row1, AT> &a_, const Vector<Row2, AT> &b) {
-    Vector<Row1, AT> &a = const_cast<Vector<Row1, AT> &>(a_);
+    auto &a = const_cast<Vector<Row1, AT> &>(a_);
     add(a, b);
     return a;
   }
@@ -173,7 +173,7 @@ namespace fmatvec {
   }
   template <class AT, class Row1, class Row2>
   inline Vector<Row1, AT> operator-=(const Vector<Row1, AT> &a_, const Vector<Row2, AT> &b) {
-    Vector<Row1, AT> &a = const_cast<Vector<Row1, AT> &>(a_);
+    auto &a = const_cast<Vector<Row1, AT> &>(a_);
     sub(a, b);
     return a;
   }
@@ -242,7 +242,7 @@ namespace fmatvec {
   }
   template <class AT, class Col1, class Col2>
   inline RowVector<Col1, AT> operator+=(const RowVector<Col1, AT> &a_, const RowVector<Col2, AT> &b) {
-    RowVector<Col1, AT> &a = const_cast<RowVector<Col1, AT> &>(a_);
+    auto &a = const_cast<RowVector<Col1, AT> &>(a_);
     add(a, b);
     return a;
   }
@@ -274,7 +274,7 @@ namespace fmatvec {
   }
   template <class AT, class Col1, class Col2>
   inline RowVector<Col1, AT> operator-=(const RowVector<Col1, AT> &a_, const RowVector<Col2, AT> &b) {
-    RowVector<Col1, AT> &a = const_cast<RowVector<Col1, AT> &>(a_);
+    auto &a = const_cast<RowVector<Col1, AT> &>(a_);
     sub(a, b);
     return a;
   }
@@ -543,7 +543,7 @@ namespace fmatvec {
   }
   template <class AT, class Type1, class Row1, class Col1, class Type2, class Row2, class Col2>
   inline Matrix<Type1, Row1, Col1, AT>& operator+=(const Matrix<Type1, Row1, Col1, AT> &A_, const Matrix<Type2, Row2, Col2, AT> &B) {
-    Matrix<Type1, Row1, Col1, AT> &A = const_cast<Matrix<Type1, Row1, Col1, AT> &>(A_);
+    auto &A = const_cast<Matrix<Type1, Row1, Col1, AT> &>(A_);
     add(A, B);
     return A;
   }
@@ -709,7 +709,7 @@ namespace fmatvec {
   }
   template <class AT, class Type1, class Row1, class Col1, class Type2, class Row2, class Col2>
   inline Matrix<Type1, Row1, Col1, AT>& operator-=(const Matrix<Type1, Row1, Col1, AT> &A_, const Matrix<Type2, Row2, Col2, AT> &B) {
-    Matrix<Type1, Row1, Col1, AT> &A = const_cast<Matrix<Type1, Row1, Col1, AT> &>(A_);
+    auto &A = const_cast<Matrix<Type1, Row1, Col1, AT> &>(A_);
     sub(A, B);
     return A;
   }
@@ -1038,7 +1038,7 @@ namespace fmatvec {
 
   template <class Row, class AT>
   inline Vector<Row, AT> operator*=(const Vector<Row, AT> &x_, const AT &alpha) {
-    Vector<Row, AT> &x = const_cast<Vector<Row, AT> &>(x_);
+    auto &x = const_cast<Vector<Row, AT> &>(x_);
     for (int i = 0; i < x.size(); i++)
       x.e(i) *= alpha;
     return x;
@@ -1054,7 +1054,7 @@ namespace fmatvec {
 
   template <class Row, class AT>
   inline Vector<Row, AT> operator/=(const Vector<Row, AT> &x_, const AT &alpha) {
-    Vector<Row, AT> &x = const_cast<Vector<Row, AT> &>(x_);
+    auto &x = const_cast<Vector<Row, AT> &>(x_);
     for (int i = 0; i < x.size(); i++)
       x.e(i) /= alpha;
     return x;
@@ -1093,7 +1093,7 @@ namespace fmatvec {
 
   template <class Col, class AT>
   inline RowVector<Col, AT> operator*=(const RowVector<Col, AT> &x_, const AT &alpha) {
-    RowVector<Col, AT> &x = const_cast<RowVector<Col, AT> &>(x_);
+    auto &x = const_cast<RowVector<Col, AT> &>(x_);
     for (int i = 0; i < x.size(); i++)
       x.e(i) *= alpha;
     return x;
@@ -1109,7 +1109,7 @@ namespace fmatvec {
 
   template <class Col, class AT>
   inline RowVector<Col, AT> operator/=(const RowVector<Col, AT> &x_, const AT &a) {
-    RowVector<Col, AT> &x = const_cast<RowVector<Col, AT> &>(x_);
+    auto &x = const_cast<RowVector<Col, AT> &>(x_);
     for (int i = 0; i < x.size(); i++)
       x.e(i) /= a;
     return x;
@@ -1336,7 +1336,7 @@ namespace fmatvec {
 
   template <class Type, class Row, class Col, class AT>
   Matrix<Type, Row, Col, AT> operator*=(const Matrix<Type, Row, Col, AT> &A_, const AT &alpha) {
-    Matrix<Type, Row, Col, AT> &A = const_cast<Matrix<Type, Row, Col, AT> &>(A_);
+    auto &A = const_cast<Matrix<Type, Row, Col, AT> &>(A_);
     for (int i = 0; i < A.rows(); i++)
       for (int j = 0; j < A.cols(); j++)
         A.e(i, j) *= alpha;
@@ -1346,7 +1346,7 @@ namespace fmatvec {
 
   template <class Row, class AT>
   inline Matrix<Symmetric, Row, Row, AT> operator*=(const Matrix<Symmetric, Row, Row, AT> &A_, const AT &alpha) {
-    Matrix<Symmetric, Row, Row, AT> &A = const_cast<Matrix<Symmetric, Row, Row, AT> &>(A_);
+    auto &A = const_cast<Matrix<Symmetric, Row, Row, AT> &>(A_);
     for (int i = 0; i < A.size(); i++)
       for (int j = i; j < A.size(); j++)
         A.ej(i, j) *= alpha;
@@ -1355,7 +1355,7 @@ namespace fmatvec {
 
   template <class Row, class AT>
   inline Matrix<Diagonal, Row, Row, AT> operator*=(const Matrix<Diagonal, Row, Row, AT> &A_, const AT &alpha) {
-    Matrix<Diagonal, Row, Row, AT> &A = const_cast<Matrix<Diagonal, Row, Row, AT> &>(A_);
+    auto &A = const_cast<Matrix<Diagonal, Row, Row, AT> &>(A_);
     for (int i = 0; i < A.size(); i++)
       A.e(i) *= alpha;
     return A;
