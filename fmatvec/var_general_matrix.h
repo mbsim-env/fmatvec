@@ -106,8 +106,8 @@ namespace fmatvec {
        * \f[ A=\begin{pmatrix}3 & 2\\ 1 & 2\end{pmatrix}  \f]
        * \param str The string the matrix will be initialized with. 
        * */
-      Matrix(const std::string &str);
-      Matrix(const char *str);
+      Matrix(const std::string &strs);
+      Matrix(const char *strs);
 
       /*! \brief Destructor. 
        * */
@@ -325,9 +325,9 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<General,Var,Var,AT>& init(const AT &a=0);
+      inline Matrix<General,Var,Var,AT>& init(const AT &val=0);
       inline Matrix<General,Var,Var,AT>& init(Init all, const AT &a=0) { return init(a); }
-      inline Matrix<General,Var,Var,AT>& init(Eye eye, const AT &a=1);
+      inline Matrix<General,Var,Var,AT>& init(Eye eye, const AT &val=1);
       inline Matrix<General,Var,Var,AT>& init(Noinit, const AT &a=0) { return *this; }
 
       /*! \brief Cast to std::vector<std::vector<AT> >.

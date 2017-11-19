@@ -53,7 +53,7 @@ namespace fmatvec {
 	int *I{nullptr}, *J{nullptr};
 	int m{0}, n{0}, k{0};
 
-	void deepCopy(const Matrix<Sparse,Ref,Ref,AT> &x);
+	void deepCopy(const Matrix<Sparse,Ref,Ref,AT> &A);
 
 	void deepCopy(const SquareMatrix<Ref,AT> &A);
 	void deepCopy(const Matrix<Symmetric, Var, Var,AT> &A);
@@ -69,7 +69,7 @@ namespace fmatvec {
 	 *
 	 * Constructs a matrix with no size. 
 	 * */
-	Matrix() : memEle(), memI(), memJ(), ele(0) { }
+	Matrix() : memEle(),  ele(0) { }
 
 //        template<class Ini=All<AT> >
 //          Matrix(int n_, Ini ini=All<AT>()) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) {
@@ -252,7 +252,7 @@ namespace fmatvec {
 	 * \param a Value all elements will be initialized with.
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Sparse,Ref,Ref,AT>& init(const AT &a);
+	Matrix<Sparse,Ref,Ref,AT>& init(const AT &val);
         inline Matrix<Sparse,Ref,Ref,AT>& init(Init, const AT &a=0) { return init(a); }
         inline Matrix<Sparse,Ref,Ref,AT>& init(Noinit, const AT &a=0) { return *this; }
 

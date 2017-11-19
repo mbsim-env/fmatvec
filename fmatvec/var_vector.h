@@ -187,7 +187,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling vector.
        * */
-      inline Vector<Var,AT>& init(const AT& a=0);
+      inline Vector<Var,AT>& init(const AT& val=0);
       inline Vector<Var,AT>& init(Init, const AT& a=0) { return init(a); }
       inline Vector<Var,AT>& init(Noinit, const AT& a=0) { return *this; }
 

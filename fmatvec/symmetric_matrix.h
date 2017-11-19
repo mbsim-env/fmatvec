@@ -328,9 +328,9 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<Symmetric,Ref,Ref,AT>& init(const AT &a); 
+      inline Matrix<Symmetric,Ref,Ref,AT>& init(const AT &val); 
       inline Matrix<Symmetric,Ref,Ref,AT>& init(Init, const AT &a=0) { return init(a); };
-      inline Matrix<Symmetric,Ref,Ref,AT>& init(Eye, const AT &a=1);
+      inline Matrix<Symmetric,Ref,Ref,AT>& init(Eye, const AT &val=1);
       inline Matrix<Symmetric,Ref,Ref,AT>& init(Noinit, const AT &a=0) { return *this; }
 
       /*! \brief Submatrix operator.

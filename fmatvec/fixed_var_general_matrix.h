@@ -118,8 +118,8 @@ namespace fmatvec {
        * \f[ A=\begin{pmatrix}3 & 2\\ 1 & 2\end{pmatrix}  \f]
        * \param str The string the matrix will be initialized with. 
        * */
-      Matrix(const std::string &str);
-      Matrix(const char *str);
+      Matrix(const std::string &strs);
+      Matrix(const char *strs);
 
       /*! \brief Destructor. 
        * */
@@ -322,7 +322,7 @@ namespace fmatvec {
       template <int M1, int M2>
       inline const Matrix<General,Fixed<M2-M1+1>,Var,AT> operator()(const Range<Fixed<M1>,Fixed<M2> > &I, const Range<Var,Var> &J) const;
 
-      inline const RowVector<Var,AT> row(int j) const;
+      inline const RowVector<Var,AT> row(int i) const;
       inline const Vector<Fixed<M>,AT> col(int j) const;
 
       /*! \brief Initialization.
@@ -332,9 +332,9 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<General,Fixed<M>,Var,AT>& init(const AT &a=0); 
+      inline Matrix<General,Fixed<M>,Var,AT>& init(const AT &val=0); 
       inline Matrix<General,Fixed<M>,Var,AT>& init(Init, const AT &a=0) { return init(a); }
-      inline Matrix<General,Fixed<M>,Var,AT>& init(Eye, const AT &a=1);
+      inline Matrix<General,Fixed<M>,Var,AT>& init(Eye, const AT &val=1);
       inline Matrix<General,Fixed<M>,Var,AT>& init(Noinit, const AT &a=0) { return *this; }
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
@@ -606,7 +606,7 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline Matrix<General,Fixed<M>,Var,AT>::Matrix(std::vector<std::vector<AT> > m) :
-      Matrix<General,Fixed<M>,Var,AT>(m.size()>0 ? m[0].size() : 0) {
+      Matrix<General,Fixed<M>,Var,AT>(!m.empty() ? m[0].size() : 0) {
       if(m.size() != M)
         throw std::runtime_error("The input has "+std::to_string(m.size())+" rows but "+std::to_string(M)+" rows are required.");
       if(static_cast<int>(m[0].size()) != N)

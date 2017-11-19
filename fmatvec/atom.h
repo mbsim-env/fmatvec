@@ -54,7 +54,7 @@ class Atom {
                   const std::shared_ptr<std::ostream> &s=std::make_shared<std::ostream>(std::cout.rdbuf()));
 
     //! Set the active flag of this object and all objects which were created using the same message stream as this object.
-    void setMessageStreamActive(MsgType type, bool active);
+    void setMessageStreamActive(MsgType type, bool activeFlag);
 
     //! Get the shared message stream active flag and the shared message stream of this object
     void getMessageStream(MsgType type,

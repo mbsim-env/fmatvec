@@ -56,7 +56,7 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \param eigenvalues A vector in the size of A, containing the eigenvalues.
    * \return If 0, successful exit. If -i, the i-th argument had an illegal value. If i, the QR algorithm failed to compute all the eigenvalues, and no eigenvectors have been computed.
    * */
-  int eigvec(const SquareMatrix<Ref, double> &A, SquareMatrix<Ref, std::complex<double> > &eigenvectors, Vector<Ref, std::complex<double> > &eigenvalues);
+  int eigvec(const SquareMatrix<Ref, double> &A, SquareMatrix<Ref, std::complex<double> > &V, Vector<Ref, std::complex<double> > &w);
 
   /*! \brief Eigenvectors and Eigenvalues
    *
@@ -123,8 +123,8 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \param B A general matrix containing the right hand sides.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General, Ref, Ref, double> slvLU(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &B);
-  Matrix<General, Var, Var, double> slvLU(const SquareMatrix<Var, double> &A, const Matrix<General, Var, Var, double> &B, int & info);
+  Matrix<General, Ref, Ref, double> slvLU(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &X);
+  Matrix<General, Var, Var, double> slvLU(const SquareMatrix<Var, double> &A, const Matrix<General, Var, Var, double> &X, int & info);
 
   /*! \brief System of linear equations
    *
@@ -135,7 +135,7 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \param b A vector containing the right hand side.
    * \return A vector containig the solution.
    * */
-  Vector<Ref, double> slvLU(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &b);
+  Vector<Ref, double> slvLU(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &x);
 
   /*! \brief System of linear equations
    *
@@ -148,7 +148,7 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \return A vector containig the solution.
    * */
   Vector<Ref, double> slvLU(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &x, int & info);
-  Vector<Var, double> slvLU(const SquareMatrix<Var, double> &A, const Vector<Var, double> &b, int & info);
+  Vector<Var, double> slvLU(const SquareMatrix<Var, double> &A, const Vector<Var, double> &x, int & info);
 
   /*! \brief Systems of linear equations
    *
@@ -160,8 +160,8 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General, Ref, Ref, double> slvLUFac(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &B, const Vector<Ref, int> &ipiv);
-  Matrix<General, Var, Var, double> slvLUFac(const SquareMatrix<Var, double> &ALU, const Matrix<General, Var, Var, double> &B, const Vector<Var, int> &ipiv);
+  Matrix<General, Ref, Ref, double> slvLUFac(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &X, const Vector<Ref, int> &ipiv);
+  Matrix<General, Var, Var, double> slvLUFac(const SquareMatrix<Var, double> &A, const Matrix<General, Var, Var, double> &X, const Vector<Var, int> &ipiv);
 
   /*! \brief System of linear equations
    *
@@ -173,8 +173,8 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A vector containig the solution.
    * */
-  Vector<Ref, double> slvLUFac(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &b, const Vector<Ref, int> &ipiv);
-  Vector<Var, double> slvLUFac(const SquareMatrix<Var, double> &ALU, const Vector<Var, double> &b, const Vector<Var, int> &ipiv);
+  Vector<Ref, double> slvLUFac(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &x, const Vector<Ref, int> &ipiv);
+  Vector<Var, double> slvLUFac(const SquareMatrix<Var, double> &A, const Vector<Var, double> &x, const Vector<Var, int> &ipiv);
 
   /*! \brief Systems of linear equations
    *
@@ -185,7 +185,7 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \param B A general matrix containing the right hand sides.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General, Ref, Ref, double> slvLL(const Matrix<Symmetric, Ref, Ref, double> &A, const Matrix<General, Ref, Ref, double> &B);
+  Matrix<General, Ref, Ref, double> slvLL(const Matrix<Symmetric, Ref, Ref, double> &A, const Matrix<General, Ref, Ref, double> &X);
 
   /*! \brief System of linear equations
    *
@@ -196,7 +196,7 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \param b A vector containing the right hand side.
    * \return A vector containig the solution.
    * */
-  Vector<Ref, double> slvLL(const Matrix<Symmetric, Ref, Ref, double> &A, const Vector<Ref, double> &b);
+  Vector<Ref, double> slvLL(const Matrix<Symmetric, Ref, Ref, double> &A, const Vector<Ref, double> &x);
 
   /*! \brief Systems of linear equations
    *
@@ -207,7 +207,7 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \param B A general matrix containing the right hand sides.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General, Ref, Ref, double> slvQR(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &B);
+  Matrix<General, Ref, Ref, double> slvQR(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &X);
 
   /*! \brief System of linear equations
    *
@@ -218,7 +218,7 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \param b A vector containing the right hand side.
    * \return A vector containig the solution.
    * */
-  Vector<Ref, double> slvQR(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &b);
+  Vector<Ref, double> slvQR(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &x);
 
   /*! \brief Inverse
    *

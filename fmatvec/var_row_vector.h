@@ -188,7 +188,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling vector.
        * */
-      inline RowVector<Var,AT>& init(const AT& a=0);
+      inline RowVector<Var,AT>& init(const AT& val=0);
       inline RowVector<Var,AT>& init(Init, const AT &a=0) { return init(a); }
       inline RowVector<Var,AT>& init(Noinit, const AT &a=0) { return *this; }
 

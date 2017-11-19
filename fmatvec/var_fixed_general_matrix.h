@@ -113,8 +113,8 @@ namespace fmatvec {
        * \f[ A=\begin{pmatrix}3 & 2\\ 1 & 2\end{pmatrix}  \f]
        * \param str The string the matrix will be initialized with. 
        * */
-      Matrix(const std::string &str);
-      Matrix(const char *str);
+      Matrix(const std::string &strs);
+      Matrix(const char *strs);
 
       /*! \brief Destructor. 
        * */
@@ -282,7 +282,7 @@ namespace fmatvec {
 
       inline const Matrix<General,Var,Var,AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const;
 
-      inline const RowVector<Fixed<N>,AT> row(int j) const;
+      inline const RowVector<Fixed<N>,AT> row(int i) const;
       inline const Vector<Var,AT> col(int j) const;
 
       /*! \brief Initialization.
@@ -292,9 +292,9 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<General,Var,Fixed<N>,AT>& init(const AT &a=0); 
+      inline Matrix<General,Var,Fixed<N>,AT>& init(const AT &val=0); 
       inline Matrix<General,Var,Fixed<N>,AT>& init(Init, const AT &a=0) { return init(a); }
-      inline Matrix<General,Var,Fixed<N>,AT>& init(Eye, const AT &a=1);
+      inline Matrix<General,Var,Fixed<N>,AT>& init(Eye, const AT &val=1);
       inline Matrix<General,Var,Fixed<N>,AT>& init(Noinit, const AT &a=0) { return *this; }
 
       /*! \brief Cast to std::vector<std::vector<AT> >.

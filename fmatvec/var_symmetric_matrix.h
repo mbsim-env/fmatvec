@@ -285,9 +285,9 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<Symmetric,Var,Var,AT>& init(const AT &a=0); 
+      inline Matrix<Symmetric,Var,Var,AT>& init(const AT &val=0); 
       inline Matrix<Symmetric,Var,Var,AT>& init(Init, const AT &a=0) { return init(a); }
-      inline Matrix<Symmetric,Var,Var,AT>& init(Eye eye, const AT &a=1);
+      inline Matrix<Symmetric,Var,Var,AT>& init(Eye eye, const AT &val=1);
       inline Matrix<Symmetric,Var,Var,AT>& init(Noinit, const AT &a=0) { return *this; }
 
       /*! \brief Cast to std::vector<std::vector<AT> >.

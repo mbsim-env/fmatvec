@@ -143,7 +143,7 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling rowvector.
        * */
-      inline RowVector<Fixed<N>,AT>& init(const AT &a=0); 
+      inline RowVector<Fixed<N>,AT>& init(const AT &val=0); 
       inline RowVector<Fixed<N>,AT>& init(Init, const AT &a=0) { return init(a); }
       inline RowVector<Fixed<N>,AT>& init(Noinit, const AT &a=0) { return *this; }
 

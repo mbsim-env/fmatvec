@@ -46,7 +46,7 @@ namespace fmatvec {
 	AT *ele;
 	int n{0};
 
-	void deepCopy(const Matrix<Diagonal,Ref,Ref,AT> &x);
+	void deepCopy(const Matrix<Diagonal,Ref,Ref,AT> &A);
 
 	Matrix(int n_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_) {
 	}
@@ -270,7 +270,7 @@ namespace fmatvec {
 	 * \param a Value all elements will be initialized with.
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Diagonal,Ref,Ref,AT>& init(const AT &a=0);
+	Matrix<Diagonal,Ref,Ref,AT>& init(const AT &val=0);
         inline Matrix<Diagonal,Ref,Ref,AT>& init(Init, const AT &a=0) { return init(a); }
         inline Matrix<Diagonal,Ref,Ref,AT>& init(Eye, const AT &a=1) { return init(a); }
         inline Matrix<Diagonal,Ref,Ref,AT>& init(Noinit, const AT &a=0) { return *this; }
