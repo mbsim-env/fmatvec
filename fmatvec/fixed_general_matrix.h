@@ -40,7 +40,7 @@ namespace fmatvec {
 
     public:
 
-      typedef AT AtomicType;
+      typedef AT value_type;
 
  /// @cond NO_SHOW
 
@@ -616,7 +616,7 @@ namespace fmatvec {
   template<int M>
   class Matrix<Rotation,Fixed<M>,Fixed<M>,double> : public Matrix<General,Fixed<M>,Fixed<M>,double> {
     public:
-      typedef double AtomicType;
+      typedef double value_type;
       // Constructors are not inherited. Hence we must redefine all ctors here.
 
       Matrix(Noinit ini) { }

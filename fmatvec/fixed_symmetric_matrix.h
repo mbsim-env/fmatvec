@@ -48,7 +48,7 @@ namespace fmatvec {
     /// @endcond
 
     public:
-      typedef AT AtomicType;
+      typedef AT value_type;
 
 //      template<class Ini=All<AT> >
 //      Matrix(Ini ini=All<AT>()) {

@@ -39,7 +39,7 @@ namespace fmatvec {
   template <int N, class AT> class Matrix<General,Var,Fixed<N>,AT> {
 
     public:
-      typedef AT AtomicType;
+      typedef AT value_type;
 
  /// @cond NO_SHOW
 

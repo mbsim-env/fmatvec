@@ -42,7 +42,10 @@ namespace fmatvec {
 
     public:
 
-    typedef AT AtomicType;
+    typedef AT* iterator;
+    typedef const AT* const_iterator;
+
+    typedef AT value_type;
 
     /// @cond NO_SHOW
 
@@ -167,6 +170,13 @@ namespace fmatvec {
 
 	return e(i);
       };
+
+      iterator begin() { return &ele[0]; }
+      iterator end() { return &ele[M]; }
+      const_iterator begin() const { return &ele[0]; }
+      const_iterator end() const { return &ele[M]; }
+      const_iterator cbegin() const noexcept { return &ele[0]; }
+      const_iterator cend() const noexcept { return &ele[M]; }
 
       AT& e(int i) {
 	return ele[i];
