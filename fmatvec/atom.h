@@ -21,12 +21,15 @@ class Atom {
     //! Messages can be printed to different message types named here.
     // When adding new message type a stream and a initial active flag must be provided in atom.cc (see NEW TYPES HERE)
     enum MsgType {
-      Info,  // Informational messages
-      Warn,  // Warning messages
-      Debug, // Debugging messages
-      SIZE   // Must be the last enum in this list
+      Info,       // Informational messages
+      Warn,       // Warning messages
+      Debug,      // Debugging messages
+      Error,      // Error messages
+      Deprecated, // Error messages
+      Status,     // Status messages (only the last message is relevant)
+      SIZE        // Must be the last enum in this list
     };
-    #define FMATVEC_ATOM_MSGTYPE_SIZE 3
+    #define FMATVEC_ATOM_MSGTYPE_SIZE 6
 #ifndef SWIG // swig can not parse this however it is not needed for swig
     static_assert(SIZE==FMATVEC_ATOM_MSGTYPE_SIZE, "The proprocessor define FMATVEC_ATOM_MSGTYPE_SIZE must be equal Atom::SIZE.");
 #endif
