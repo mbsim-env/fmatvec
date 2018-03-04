@@ -79,7 +79,7 @@ void Atom::setMessageStreamActive(MsgType type, bool activeFlag) {
 
 void Atom::getMessageStream(MsgType type,
        std::shared_ptr<bool> &a,
-       std::shared_ptr<std::ostream> &s) {
+       std::shared_ptr<std::ostream> &s) const {
   a=_msgAct[type];
   s=_msgSaved[type];
 }

@@ -62,7 +62,7 @@ class Atom {
     //! Get the shared message stream active flag and the shared message stream of this object
     void getMessageStream(MsgType type,
            std::shared_ptr<bool> &a,
-           std::shared_ptr<std::ostream> &s);
+           std::shared_ptr<std::ostream> &s) const;
 
     //! Adopt the message streams from src to this object.
     //! If src is NULL adopt the current (static) message streams.
@@ -72,13 +72,13 @@ class Atom {
     //! Return the message stream of type type.
     //! Node: If the code is performance critical you should check first whether this stream is really
     //! printed using msgAct(type). If this return false just skip the complete message.
-    std::ostream &msg(MsgType type) {
+    std::ostream &msg(MsgType type) const {
       return *_msg[type];
     }
     //! Return true if the the message of type type is currently active.
     //! Note: If the code is not performance critical their is no need to check this flag. You can
     //! just print using msg(type)<<"Hello world"<<endl; and it is not really printed.
-    bool msgAct(MsgType type) {
+    bool msgAct(MsgType type) const {
       return *_msgAct[type];
     }
 
