@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <array>
+#include <sstream>
 
 namespace fmatvec {
 
@@ -109,6 +110,26 @@ class Atom {
     std::array<std::shared_ptr<bool        >, SIZE> _msgAct;
     std::array<std::shared_ptr<std::ostream>, SIZE> _msgSaved;
     std::array<std::shared_ptr<std::ostream>, SIZE> _msg;
+};
+
+//! A ostream object which prefix/postfix every meassage and calls the given function.
+class PrePostfixedStream : public std::ostream {
+  public:
+    //! Call f with every message of the stream, prefixed/postfixed.
+    PrePostfixedStream(const std::string &prefix_, const std::string &postfix_, const std::function<void(const std::string &)> &f);
+    //! Convinence function to print to outstr_.
+    PrePostfixedStream(const std::string &prefix_, const std::string &postfix_, std::ostream &outstr_);
+  private:
+    class StringBuf : public std::stringbuf {
+      public:
+        StringBuf(const std::string &prefix_, const std::string &postfix_, const std::function<void(const std::string &)> &f_);
+      protected:
+        int sync() override;
+        std::string prefix;
+        std::string postfix;
+        const std::function<void(const std::string &)> f;
+    };
+    StringBuf buffer;
 };
 
 }
