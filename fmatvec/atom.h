@@ -112,6 +112,7 @@ class Atom {
     std::array<std::shared_ptr<std::ostream>, SIZE> _msg;
 };
 
+#ifndef SWIG
 //! A ostream object which prefix/postfix every meassage and calls the given function.
 class PrePostfixedStream : public std::ostream {
   public:
@@ -131,6 +132,7 @@ class PrePostfixedStream : public std::ostream {
     };
     StringBuf buffer;
 };
+#endif
 
 }
 
