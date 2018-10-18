@@ -7,6 +7,14 @@ catch(ex) {
   process.exitCode=0;
   return;
 }
+
+console.log("MathJax checking using nodejs module mathjax-node of files:");
+for(var i in process.argv) {
+  if(i==0 || i==1)
+    continue;
+  console.log(process.argv[i]);
+}
+
 // load standard modules
 var fs=require('fs');
 

@@ -12,4 +12,9 @@ if ! java nu.validator.client.SimpleCommandLineValidator --version &> /dev/null;
   exit 0
 fi
 
+echo "HTML validation using nu-html validator of files:"
+for F in "$@"; do
+  echo $F
+done
+
 java nu.validator.client.SimpleCommandLineValidator --no-langdetect --skip-non-html "$@"
