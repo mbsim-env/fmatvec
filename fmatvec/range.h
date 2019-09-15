@@ -78,8 +78,7 @@ namespace fmatvec {
       inline Range(int i1_, int i2_) : i1(i1_), i2(i2_) {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i1>=0);
-	assert(i2>=0);
-	assert(i2>=i1);
+	//assert(i2>=i1-1);
 #endif
       }
 
