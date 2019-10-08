@@ -1021,6 +1021,11 @@ namespace fmatvec {
     return y;
   }
 
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  Vector<Row, AT> operator*(const Vector<Row, AT> &x, double alpha) {
+    return x*AT(alpha);
+  }
+
   /*! \brief Scalar-vector multiplication.
    *
    * \see operator*(const Vector<Ref,AT>&x,const AT&).
@@ -1036,12 +1041,22 @@ namespace fmatvec {
     return y;
   }
 
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  Vector<Row, AT> operator*(double alpha, const Vector<Row, AT> &x) {
+    return AT(alpha)*x;
+  }
+
   template <class Row, class AT>
   inline Vector<Row, AT> operator*=(const Vector<Row, AT> &x_, const AT &alpha) {
     auto &x = const_cast<Vector<Row, AT> &>(x_);
     for (int i = 0; i < x.size(); i++)
       x.e(i) *= alpha;
     return x;
+  }
+
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  inline Vector<Row, AT>& operator*=(Vector<Row, AT> &x_, double alpha) {
+    return x_*=AT(alpha);
   }
 
   template <class Row, class AT>
@@ -1052,6 +1067,11 @@ namespace fmatvec {
     return y;
   }
 
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  inline Vector<Row, AT> operator/(const Vector<Row, AT> &x, double alpha) {
+    return x/AT(alpha);
+  }
+
   template <class Row, class AT>
   inline Vector<Row, AT> operator/=(const Vector<Row, AT> &x_, const AT &alpha) {
     auto &x = const_cast<Vector<Row, AT> &>(x_);
@@ -1059,6 +1079,12 @@ namespace fmatvec {
       x.e(i) /= alpha;
     return x;
   }
+
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  inline Vector<Row, AT>& operator/=(Vector<Row, AT> &x_, double alpha) {
+    return x_/=AT(alpha);
+  }
+
   /*! \brief Rowvector-scalar multiplication.
    *
    * This function computes the product of a rowvector 
@@ -1076,6 +1102,11 @@ namespace fmatvec {
     return y;
   }
 
+  template <class Col, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  RowVector<Col, AT> operator*(const RowVector<Col, AT> &x, double alpha) {
+    return x*AT(alpha);
+  }
+
   /*! \brief Scalar-rowvector multiplication.
    *
    * \see operator*(const RowVector<Col>, AT>&, const AT&).
@@ -1091,12 +1122,22 @@ namespace fmatvec {
     return y;
   }
 
+  template <class Col, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  RowVector<Col, AT> operator*(double alpha, const RowVector<Col, AT> &x) {
+    return AT(alpha)*x;
+  }
+
   template <class Col, class AT>
   inline RowVector<Col, AT> operator*=(const RowVector<Col, AT> &x_, const AT &alpha) {
     auto &x = const_cast<RowVector<Col, AT> &>(x_);
     for (int i = 0; i < x.size(); i++)
       x.e(i) *= alpha;
     return x;
+  }
+
+  template <class Col, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  inline RowVector<Col, AT>& operator*=(RowVector<Col, AT> &x_, double alpha) {
+    return x_*=AT(alpha);
   }
 
   template <class Col, class AT>
@@ -1107,12 +1148,22 @@ namespace fmatvec {
     return y;
   }
 
+  template <class Col, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  inline RowVector<Col, AT> operator/(const RowVector<Col, AT> &x, double a) {
+    return x/AT(a);
+  }
+
   template <class Col, class AT>
   inline RowVector<Col, AT> operator/=(const RowVector<Col, AT> &x_, const AT &a) {
     auto &x = const_cast<RowVector<Col, AT> &>(x_);
     for (int i = 0; i < x.size(); i++)
       x.e(i) /= a;
     return x;
+  }
+
+  template <class Col, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  inline RowVector<Col, AT>& operator/=(RowVector<Col, AT> &x_, double a) {
+    return x_/=AT(a);
   }
 
   /////////////////////////////////// end vecscalmult //////////////////////////////
@@ -1223,6 +1274,11 @@ namespace fmatvec {
     return B;
   }
 
+  template <class Type, class Row, class Col, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  Matrix<Type, Row, Col, AT> operator*(const Matrix<Type, Row, Col, AT> &A, double alpha) {
+    return A*AT(alpha);
+  }
+
   template <class Type, class Row, class Col, class AT>
   Matrix<Type, Row, Col, AT> operator*(const AT &alpha, const Matrix<Type, Row, Col, AT> &A) {
 
@@ -1235,6 +1291,11 @@ namespace fmatvec {
     return B;
   }
 
+  template <class Type, class Row, class Col, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  Matrix<Type, Row, Col, AT> operator*(double alpha, const Matrix<Type, Row, Col, AT> &A) {
+    return AT(alpha)*A;
+  }
+
   template <class Row, class AT>
   inline Matrix<Symmetric, Row, Row, AT> operator*(const AT &alpha, const Matrix<Symmetric, Row, Row, AT> &A) {
     Matrix<Symmetric, Row, Row, AT> B(A.size(), A.size(), NONINIT);
@@ -1242,6 +1303,11 @@ namespace fmatvec {
       for (int j = i; j < A.size(); j++)
         B.ej(i, j) = A.ej(i, j) * alpha;
     return B;
+  }
+
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  inline Matrix<Symmetric, Row, Row, AT> operator*(double alpha, const Matrix<Symmetric, Row, Row, AT> &A) {
+    return AT(alpha)*A;
   }
 
   template <class Row, class AT>
@@ -1253,6 +1319,11 @@ namespace fmatvec {
     return B;
   }
 
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  inline Matrix<Symmetric, Row, Row, AT> operator*(const Matrix<Symmetric, Row, Row, AT> &A, double alpha) {
+    return A*AT(alpha);
+  }
+
   template <class Row, class AT>
   inline Matrix<Diagonal, Row, Row, AT> operator*(const AT &alpha, const Matrix<Diagonal, Row, Row, AT> &A) {
     Matrix<Diagonal, Row, Row, AT> B(A.size(), A.size(), NONINIT);
@@ -1261,12 +1332,22 @@ namespace fmatvec {
     return B;
   }
 
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  inline Matrix<Diagonal, Row, Row, AT> operator*(double alpha, const Matrix<Diagonal, Row, Row, AT> &A) {
+    return AT(alpha)*A;
+  }
+
   template <class Row, class AT>
   inline Matrix<Diagonal, Row, Row, AT> operator*(const Matrix<Diagonal, Row, Row, AT> &A, const AT &alpha) {
     Matrix<Diagonal, Row, Row, AT> B(A.size(), A.size(), NONINIT);
     for (int i = 0; i < A.size(); i++)
       B.e(i) = A.e(i) * alpha;
     return B;
+  }
+
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  inline Matrix<Diagonal, Row, Row, AT> operator*(const Matrix<Diagonal, Row, Row, AT> &A, double alpha) {
+    return A*AT(alpha);
   }
 
   template <class Type, class Row, class Col, class AT>
@@ -1281,6 +1362,11 @@ namespace fmatvec {
     return B;
   }
 
+  template <class Type, class Row, class Col, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  Matrix<Type, Row, Col, AT> operator/(const Matrix<Type, Row, Col, AT> &A, double alpha) {
+    return A/AT(alpha);
+  }
+
   template <class Row, class AT>
   inline Matrix<Symmetric, Row, Row, AT> operator/(const Matrix<Symmetric, Row, Row, AT> &A, const AT &alpha) {
     Matrix<Symmetric, Row, Row, AT> B(A.size(), A.size(), NONINIT);
@@ -1289,6 +1375,11 @@ namespace fmatvec {
         B.ej(i, j) = A.ej(i, j) / alpha;
     return B;
   }
+
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  inline Matrix<Symmetric, Row, Row, AT> operator/(const Matrix<Symmetric, Row, Row, AT> &A, double alpha) {
+    return A/AT(alpha);
+  }
   
   template <class Row, class AT>
   inline Matrix<Diagonal, Row, Row, AT> operator/(const Matrix<Diagonal, Row, Row, AT> &A, const AT &alpha) {
@@ -1296,6 +1387,11 @@ namespace fmatvec {
     for (int i = 0; i < A.size(); i++)
       B.e(i) = A.e(i) / alpha;
     return B;
+  }
+
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  inline Matrix<Diagonal, Row, Row, AT> operator/(const Matrix<Diagonal, Row, Row, AT> &A, double &alpha) {
+    return A/AT(alpha);
   }
 
   template <class Row, class AT>
@@ -1310,6 +1406,11 @@ namespace fmatvec {
     return B;
   }
 
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  SquareMatrix<Row, AT> operator*(const SquareMatrix<Row, AT> &A, double alpha) {
+    return A*AT(alpha);
+  }
+
   template <class Row, class AT>
   SquareMatrix<Row, AT> operator*(const AT &alpha, const SquareMatrix<Row, AT> &A) {
 
@@ -1320,6 +1421,11 @@ namespace fmatvec {
         B.e(i, j) = A.e(i, j) * alpha;
 
     return B;
+  }
+
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  SquareMatrix<Row, AT> operator*(double alpha, const SquareMatrix<Row, AT> &A) {
+    return AT(alpha)*A;
   }
 
   template <class Row, class AT>
@@ -1334,6 +1440,11 @@ namespace fmatvec {
     return B;
   }
 
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  SquareMatrix<Row, AT> operator/(const SquareMatrix<Row, AT> &A, double alpha) {
+    return A/AT(alpha);
+  }
+
   template <class Type, class Row, class Col, class AT>
   Matrix<Type, Row, Col, AT> operator*=(const Matrix<Type, Row, Col, AT> &A_, const AT &alpha) {
     auto &A = const_cast<Matrix<Type, Row, Col, AT> &>(A_);
@@ -1342,6 +1453,11 @@ namespace fmatvec {
         A.e(i, j) *= alpha;
 
     return A;
+  }
+
+  template <class Type, class Row, class Col, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  Matrix<Type, Row, Col, AT>& operator*=(Matrix<Type, Row, Col, AT> &A_, double alpha) {
+    return A_*=AT(alpha);
   }
 
   template <class Row, class AT>
@@ -1353,12 +1469,22 @@ namespace fmatvec {
     return A;
   }
 
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  inline Matrix<Symmetric, Row, Row, AT>& operator*=(Matrix<Symmetric, Row, Row, AT> &A_, double alpha) {
+    return A_*=AT(alpha);
+  }
+
   template <class Row, class AT>
   inline Matrix<Diagonal, Row, Row, AT> operator*=(const Matrix<Diagonal, Row, Row, AT> &A_, const AT &alpha) {
     auto &A = const_cast<Matrix<Diagonal, Row, Row, AT> &>(A_);
     for (int i = 0; i < A.size(); i++)
       A.e(i) *= alpha;
     return A;
+  }
+
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  inline Matrix<Diagonal, Row, Row, AT>& operator*=(Matrix<Diagonal, Row, Row, AT> &A_, double alpha) {
+    return A_*=AT(alpha);
   }
 
   template <class Type, class Row, class Col, class AT>
@@ -1371,6 +1497,11 @@ namespace fmatvec {
     return A;
   }
 
+  template <class Type, class Row, class Col, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  Matrix<Type, Row, Col, AT>& operator/=(Matrix<Type, Row, Col, AT> &A_, double alpha) {
+    return A_/=AT(alpha);
+  }
+
   template <class Row, class AT>
   inline Matrix<Symmetric, Row, Row, AT> operator/=(const Matrix<Symmetric, Row, Row, AT> &A_, const AT &alpha) {
     Matrix<Symmetric, Row, Row, AT> A = const_cast<Matrix<Symmetric, Row, Row, AT> &>(A_);
@@ -1380,12 +1511,22 @@ namespace fmatvec {
     return A;
   }
 
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  inline Matrix<Symmetric, Row, Row, AT>& operator/=(Matrix<Symmetric, Row, Row, AT> &A_, double alpha) {
+    return A_/=AT(alpha);
+  }
+
   template <class Row, class AT>
   inline Matrix<Diagonal, Row, Row, AT> operator/=(const Matrix<Diagonal, Row, Row, AT> &A_, const AT &alpha) {
     Matrix<Diagonal, Row, Row, AT> A = const_cast<Matrix<Diagonal, Row, Row, AT> &>(A_);
     for (int i = 0; i < A.size(); i++)
       A.e(i) /= alpha;
     return A;
+  }
+
+  template <class Row, class AT, typename std::enable_if<!std::is_same<AT, double>::value>::type* =nullptr>
+  inline Matrix<Diagonal, Row, Row, AT>& operator/=(Matrix<Diagonal, Row, Row, AT> &A_, double alpha) {
+    return A_/=AT(alpha);
   }
 
   /////////////////////////////////// end matscalmult //////////////////////////////
