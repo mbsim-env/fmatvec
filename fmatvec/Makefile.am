@@ -5,7 +5,8 @@ libfmatvec_la_SOURCES = linear_algebra_double.cc \
 			linear_algebra_complex.cc \
 			atom.cc \
 			_memory.cc \
-			wrapper.cc
+			wrapper.cc \
+			ast.cc
 
 libfmatvec_la_CPPFLAGS = -I$(top_srcdir)
 fmatvecincludedir=$(includedir)/fmatvec
@@ -40,4 +41,5 @@ fmatvecinclude_HEADERS = diagonal_matrix.h \
 			 fixed_var_general_matrix.h\
 			 var_fixed_general_matrix.h\
 			 wrapper.h\
+			 ast.h\
 			 function.h

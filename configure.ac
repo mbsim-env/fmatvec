@@ -243,6 +243,7 @@ AC_CONFIG_COMMANDS([doc/doxy_template/doxyfile_common_fmatvec],
   [prefix=$prefix; abs_srcdir=$(realpath $srcdir)]
   )
 AC_CONFIG_FILES([fmatvec/check/testfunction.sh], [chmod +x fmatvec/check/testfunction.sh])
+AC_CONFIG_FILES([fmatvec/check/testast.sh], [chmod +x fmatvec/check/testast.sh])
 AC_OUTPUT
 
 echo "
