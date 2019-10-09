@@ -13,12 +13,13 @@ namespace AST {
   class Vertex;
 }
 
-class Expr : private std::shared_ptr<const AST::Vertex> {
+class Expr : public std::shared_ptr<const AST::Vertex> {//MFMF use private or ever try to remove this class completely
   public:
     Expr();
+    Expr(int x);
     Expr(double x);
     Expr(const std::shared_ptr<const AST::Vertex> &x);
-    const AST::Vertex* operator->();
+    const AST::Vertex* operator->() const;
     Expr operator+(const Expr &b) const;
     Expr operator-(const Expr &b) const;
     Expr operator*(const Expr &b) const;
@@ -48,7 +49,7 @@ class Vertex {
     //! Generate a new AST being the partial derivate of this AST with respect to the variable x.
     virtual std::shared_ptr<const Vertex> parDer(const std::shared_ptr<const Var> &x) const=0;
     //! Write a AST to a XML representation (serialization).
-    virtual void writeXMLFile(void *parent) const=0;
+    virtual void writeXMLFile(std::ostream &parent) const=0;
     //! Rreturn true if this Vertex is a constant integer.
     inline virtual bool isConstInt() const;
     //! Returns true if this Vertex is a constant with value 0.
@@ -81,7 +82,7 @@ class Const : public Vertex {
     static std::shared_ptr<const Const> createUsingXML(const void *element);
     inline double eval() const override;
     std::shared_ptr<const Vertex> parDer(const std::shared_ptr<const Var> &x) const override;
-    void writeXMLFile(void *parent) const override;
+    void writeXMLFile(std::ostream &parent) const override;
     inline bool isConstInt() const override;
     //! Get the constant value of the vertex.
     inline const T& getValue() const;
@@ -124,7 +125,7 @@ class Var : public Vertex {
     static std::shared_ptr<Var> createUsingXML(const void *element);
     inline double eval() const override;
     std::shared_ptr<const Vertex> parDer(const std::shared_ptr<const Var> &x) const override;
-    void writeXMLFile(void *parent) const override;
+    void writeXMLFile(std::ostream &parent) const override;
     //! Set the value of this independent variable.
     //! This has an influence on the evaluation of all ASTs which depend on this independent variable.
     void set(double x_);
@@ -162,7 +163,7 @@ class Op : public Vertex, public std::enable_shared_from_this<Op> {
     static std::shared_ptr<const Vertex> createUsingXML(const void *element);
     inline double eval() const override;
     std::shared_ptr<const Vertex> parDer(const std::shared_ptr<const Var> &x) const override;
-    void writeXMLFile(void *parent) const override;
+    void writeXMLFile(std::ostream &parent) const override;
 
   private:
 

@@ -4,6 +4,8 @@
 #include "fmatvec/ast.h"
 #include "fmatvec/fmatvec.h"
 
+//mfmf remove everything with AST
+
 using namespace std;
 using namespace fmatvec;
 
@@ -21,26 +23,52 @@ Expr create<Expr>() {
 }
 
 template<class AT>
-int dump(const Vector<Var, AT>& v);
+int dump(const Vector<Var, AT>& depVar, const Vector<Var, AT>& indepVar);
 
 template<>
-int dump<complex<double>>(const Vector<Var, complex<double>>& v) {
-  cout<<"complex 0 = "<<v(0)<<endl;
-  cout<<"complex 1 = "<<v(1)<<endl;
-  cout<<"complex 2 = "<<v(2)<<endl;
-
-  complex<double> v0ref(10.60,  9.90);
+int dump<complex<double>>(const Vector<Var, complex<double>>& depVar, const Vector<Var, complex<double>>& indepVar) {
+  cout<<"complex 0 = "<<depVar(0)<<endl;
+  cout<<"complex 1 = "<<depVar(1)<<endl;
+  cout<<"complex 2 = "<<depVar(2)<<endl;
+  complex<double> v0ref( 6.60,  9.90);
   complex<double> v1ref(23.20, 19.80);
   complex<double> v2ref( 9.95, 14.52);
-  if(abs(v0ref-v(0))>1e-12) return 10;
-  if(abs(v1ref-v(1))>1e-12) return 20;
-  if(abs(v2ref-v(2))>1e-12) return 30;
+  if(abs(v0ref-depVar(0))>1e-12) return 10;
+  if(abs(v1ref-depVar(1))>1e-12) return 11;
+  if(abs(v2ref-depVar(2))>1e-12) return 12;
   return 0;
 }
 
 template<>
-int dump<Expr>(const Vector<Var, Expr>& v) {
-  cout<<"expr mfmf"<<endl;
+int dump<Expr>(const Vector<Var, Expr>& depVar, const Vector<Var, Expr>& indepVar) {
+  auto parDer0=depVar(0)->parDer(dynamic_pointer_cast<const AST::Var>(indepVar(0)));
+
+  string indepVar0; { stringstream str; indepVar(0)->writeXMLFile(str); indepVar0=str.str(); }
+  string indepVar1; { stringstream str; indepVar(1)->writeXMLFile(str); indepVar1=str.str(); }
+  string indepVar2; { stringstream str; indepVar(2)->writeXMLFile(str); indepVar2=str.str(); }
+  string depVar0; { stringstream str; depVar(0)->writeXMLFile(str); depVar0=str.str(); }
+  string depVar1; { stringstream str; depVar(1)->writeXMLFile(str); depVar1=str.str(); }
+  string depVar2; { stringstream str; depVar(2)->writeXMLFile(str); depVar2=str.str(); }
+  string depVar_indepVar0; { stringstream str; parDer0->writeXMLFile(str); depVar_indepVar0=str.str(); }
+
+  stringstream str;
+  str<<"indepVar 0 = "<<indepVar0<<endl;
+  str<<"indepVar 1 = "<<indepVar1<<endl;
+  str<<"indepVar 2 = "<<indepVar2<<endl;
+  str<<"depVar 0 = "<<depVar0<<endl;
+  str<<"depVar 1 = "<<depVar1<<endl;
+  str<<"depVar 2 = "<<depVar2<<endl;
+  str<<"depVar_indepVar 0 = "<<depVar_indepVar0<<endl;
+  cout<<str.str();
+
+  if(indepVar0!="a1") return 100;
+  if(indepVar1!="2") return 101;
+  if(indepVar2!="(0 a2 a3)") return 102;
+  if(depVar0!="(0 (0 (2 2 a1) (2 a4 2)) (2 3 (0 a2 a3)))") return 103;
+  if(depVar1!="(0 (0 (2 4 a1) 10) (2 6 (0 a2 a3)))") return 104;
+  if(depVar2!="(0 (0 (2 7 a1) 16) (2 (0 a5 a6) (0 a2 a3)))") return 105;
+  if(depVar_indepVar0!="2") return 106;
+
   return 0;
 }
 
@@ -68,7 +96,7 @@ int check() {
   auto r22=v-v;
   MatAT m2;
   MatAT m(3,3);
-  m(0,1)=2.0;
+  m(0,0)=2.0;
   m(0,2)=3.0;
   m(1,0)=4.0;
   m(1,1)=5.0;
@@ -91,7 +119,7 @@ int check() {
   auto _rmm=m*m;
   auto _rmv=m*v;
 
-  return dump(_rmv);
+  return dump(_rmv, v);
 }
 
 int main() {

@@ -1,15 +1,15 @@
 #include "ast.h"
 #include <boost/uuid/uuid_io.hpp>
-#include <boost/lexical_cast.hpp>
 
 using namespace std;
 
 namespace fmatvec {
 
-Expr::Expr() : std::shared_ptr<const AST::Vertex>(AST::Var::create()) {}
-Expr::Expr(double x) : std::shared_ptr<const AST::Vertex>(AST::Const<double>::create(x)) {}
-Expr::Expr(const std::shared_ptr<const AST::Vertex> &x) : std::shared_ptr<const AST::Vertex>(x) {}
-const AST::Vertex* Expr::operator->() { return get(); }
+Expr::Expr() : shared_ptr<const AST::Vertex>(AST::Var::create()) {}
+Expr::Expr(int x) : shared_ptr<const AST::Vertex>(AST::Const<int>::create(x)) {}
+Expr::Expr(double x) : shared_ptr<const AST::Vertex>(AST::Const<double>::create(x)) {}
+Expr::Expr(const shared_ptr<const AST::Vertex> &x) : shared_ptr<const AST::Vertex>(x) {}
+const AST::Vertex* Expr::operator->() const { return get(); }
 Expr Expr::operator+(const Expr &b) const { return AST::Op::create(AST::Op::Plus, {*this, b});}
 Expr Expr::operator-(const Expr &b) const { return AST::Op::create(AST::Op::Minus, {*this, b}); }
 Expr Expr::operator*(const Expr &b) const { return AST::Op::create(AST::Op::Mult, {*this, b}); }
@@ -75,11 +75,12 @@ shared_ptr<const Const<T>> Const<T>::createUsingXML(const void *element) {
 
 template<class T>
 shared_ptr<const Vertex> Const<T>::parDer(const shared_ptr<const Var> &x) const {
-  return Const<T>::create(0);
+  return Const<int>::create(0);
 }
 
 template<class T>
-void Const<T>::writeXMLFile(void *parent) const {
+void Const<T>::writeXMLFile(ostream &parent) const {
+  parent<<c;
 //mfmf  E(parent)->addElementText(AST%"Const", boost::lexical_cast<double>(c));
 }
 
@@ -92,8 +93,8 @@ template shared_ptr<const Const<int   >> Const<int   >::createUsingXML(const voi
 template shared_ptr<const Const<double>> Const<double>::createUsingXML(const void *element);
 template shared_ptr<const Vertex> Const<int   >::parDer(const shared_ptr<const Var> &x) const;
 template shared_ptr<const Vertex> Const<double>::parDer(const shared_ptr<const Var> &x) const;
-template void Const<int   >::writeXMLFile(void *parent) const;
-template void Const<double>::writeXMLFile(void *parent) const;
+template void Const<int   >::writeXMLFile(ostream &parent) const;
+template void Const<double>::writeXMLFile(ostream &parent) const;
 
 // ***** Var *****
 
@@ -121,7 +122,10 @@ shared_ptr<const Vertex> Var::parDer(const shared_ptr<const Var> &x) const {
   return this == x.get() ? Const<int>::create(1) : Const<int>::create(0);
 }
 
-void Var::writeXMLFile(void *parent) const {
+void Var::writeXMLFile(ostream &parent) const {
+  static map<boost::uuids::uuid, int> varName;
+  auto it=varName.insert(make_pair(uuid, varName.size()+1)).first;
+  parent<<"a"<<it->second;
 //mfmf  DOMDocument *doc=parent->getOwnerDocument();
 //mfmf  DOMElement *var=D(doc)->createElement(AST%"Var");
 //mfmf  parent->insertBefore(var, nullptr);
@@ -226,7 +230,13 @@ shared_ptr<const Vertex> Op::parDer(const shared_ptr<const Var> &x) const {
   throw runtime_error("Unknown operation.");
 }
 
-void Op::writeXMLFile(void *parent) const {
+void Op::writeXMLFile(ostream &parent) const {
+  parent<<"("<<op;
+  for(auto &c : child) {
+    parent<<" ";
+    c->writeXMLFile(parent);
+  }
+  parent<<")";
 //mfmf  DOMDocument *doc=parent->getOwnerDocument();
 //mfmf  DOMElement *opEle=D(doc)->createElement(AST%"Op");
 //mfmf  parent->insertBefore(opEle, nullptr);
