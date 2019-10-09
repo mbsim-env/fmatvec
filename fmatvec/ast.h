@@ -49,6 +49,8 @@ class Vertex {
     virtual std::shared_ptr<const Vertex> parDer(const std::shared_ptr<const Var> &x) const=0;
     //! Write a AST to a XML representation (serialization).
     virtual void writeXMLFile(void *parent) const=0;
+    //! Rreturn true if this Vertex is a constant integer.
+    inline virtual bool isConstInt() const;
     //! Returns true if this Vertex is a constant with value 0.
     //! Note that only integer constants can be 0. Double constants are never treated as 0 by this function.
     bool isZero() const;
@@ -64,6 +66,10 @@ class Vertex {
     mutable std::map<std::weak_ptr<const Var>, unsigned long, std::owner_less<std::weak_ptr<const Var>>> dependsOn;
 };
 
+bool Vertex::isConstInt() const {
+  return false;
+}
+
 // ***** Const *****
 
 //! A vertex of the AST representing a constant (int or double)
@@ -76,6 +82,7 @@ class Const : public Vertex {
     inline double eval() const override;
     std::shared_ptr<const Vertex> parDer(const std::shared_ptr<const Var> &x) const override;
     void writeXMLFile(void *parent) const override;
+    inline bool isConstInt() const override;
     //! Get the constant value of the vertex.
     inline const T& getValue() const;
 
@@ -86,6 +93,16 @@ class Const : public Vertex {
     typedef T CacheKey;
     static std::map<CacheKey, std::weak_ptr<const Const>> cache;
 };
+
+template<>
+bool Const<double>::isConstInt() const {
+  return false;
+}
+
+template<>
+bool Const<int>::isConstInt() const {
+  return true;
+}
 
 template<class T>
 double Const<T>::eval() const {
@@ -182,8 +199,8 @@ double Op::eval() const {
     case Mult: cacheValue = child[0]->eval() * child[1]->eval(); return cacheValue;
     case Div: cacheValue = child[0]->eval() / child[1]->eval(); return cacheValue;
     case Pow:
-      if(auto cci=std::dynamic_pointer_cast<const Const<int>>(child[1]))
-        cacheValue = std::pow(child[0]->eval(), cci->getValue());
+      if(child[1]->isConstInt())
+        cacheValue = std::pow(child[0]->eval(), static_cast<const Const<int>*>(child[1].get())->getValue());
       else
         cacheValue = std::pow(child[0]->eval(), child[1]->eval());
       return cacheValue;

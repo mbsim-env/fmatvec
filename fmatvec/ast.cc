@@ -35,18 +35,14 @@ shared_ptr<const Vertex> Vertex::createUsingXML(const void *element) {
 }
 
 bool Vertex::isZero() const {
-  if(auto cci=dynamic_cast<const Const<int>*>(this)) {
-    if(cci->getValue()==0)
-      return true;
-  }
+  if(isConstInt() && static_cast<const Const<int>*>(this)->getValue()==0)
+    return true;
   return false;
 }
 
 bool Vertex::isOne() const {
-  if(auto cci=dynamic_cast<const Const<int>*>(this)) {
-    if(cci->getValue()==1)
-      return true;
-  }
+  if(isConstInt() && static_cast<const Const<int>*>(this)->getValue()==1)
+    return true;
   return false;
 }
 
@@ -169,13 +165,13 @@ shared_ptr<const Vertex> Op::create(Operator op_, const vector<shared_ptr<const 
     return child_[0];
   // optimize Const arguments (if ALL are Const)
   bool allConst=all_of(child_.begin(), child_.end(), [](const shared_ptr<const Vertex>& c) {
-    return dynamic_pointer_cast<const Const<int>>(c)!=nullptr || dynamic_pointer_cast<const Const<double>>(c)!=nullptr;
+    return c->isConstInt() || dynamic_pointer_cast<const Const<double>>(c)!=nullptr;
   });
   if(allConst) {
     Op op(op_, child_);
     double doubleValue=op.eval();
-    int intValue;
-    if(boost::conversion::try_lexical_convert(doubleValue, intValue))
+    int intValue=lround(doubleValue);
+    if(abs(intValue-doubleValue)<2*numeric_limits<double>::epsilon())
       return Const<int>::create(intValue);
     return Const<double>::create(doubleValue);
   }
