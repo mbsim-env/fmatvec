@@ -107,7 +107,7 @@ shared_ptr<Var> Var::create(const boost::uuids::uuid& uuid_) {
       return oldPtr;
   }
   auto newPtr=shared_ptr<Var>(new Var(uuid_));
-  newPtr->dependsOn.insert(make_pair(newPtr, 0)); // we cannot call this in Var::Var (it may be possible with weak_from_this() for C++17)
+  newPtr->dependsOn.insert(make_pair(weak_ptr<Var>(newPtr), 0)); // we cannot call this in Var::Var (it may be possible with weak_from_this() for C++17)
   r.first->second=newPtr;
   return newPtr;
 }
