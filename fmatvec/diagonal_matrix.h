@@ -77,7 +77,7 @@ namespace fmatvec {
 //          Matrix(int m_, int n_, Ini ini=All<AT>()) : memory(n_), ele((AT*)memory.get()), n(n_) { init(ini); }
 
         Matrix(int n_, Noinit) : memory(n_), ele((AT*)memory.get()), n(n_) { }
-        Matrix(int n_, Init ini=INIT, const AT &a=0) : memory(n_), ele((AT*)memory.get()), n(n_) { init(a); }
+        Matrix(int n_, Init ini=INIT, const AT &a=AT()) : memory(n_), ele((AT*)memory.get()), n(n_) { init(a); }
         Matrix(int n_, Eye ini, const AT &a=1) : memory(n_), ele((AT*)memory.get()), n(n_) { init(ini,a); }
         Matrix(int m_, int n_, Noinit) : memory(n_), ele((AT*)memory.get()), n(n_) { }
 
@@ -109,7 +109,7 @@ namespace fmatvec {
           return *this;
         }
  
-        Matrix<Diagonal,Ref,Ref,AT>& resize(int n, Init ini=INIT, const AT &a=0) { resize(n,Noinit()).init(a); }
+        Matrix<Diagonal,Ref,Ref,AT>& resize(int n, Init ini=INIT, const AT &a=AT()) { resize(n,Noinit()).init(a); }
         Matrix<Diagonal,Ref,Ref,AT>& resize(int n, Eye ini, const AT &a=1) { resize(n,Noinit()).init(ini,a); }
  
 	/*! \brief Copy operator
@@ -270,10 +270,10 @@ namespace fmatvec {
 	 * \param a Value all elements will be initialized with.
 	 * \return A reference to the calling matrix.
 	 * */
-	Matrix<Diagonal,Ref,Ref,AT>& init(const AT &val=0);
-        inline Matrix<Diagonal,Ref,Ref,AT>& init(Init, const AT &a=0) { return init(a); }
+	Matrix<Diagonal,Ref,Ref,AT>& init(const AT &val=AT());
+        inline Matrix<Diagonal,Ref,Ref,AT>& init(Init, const AT &a=AT()) { return init(a); }
         inline Matrix<Diagonal,Ref,Ref,AT>& init(Eye, const AT &a=1) { return init(a); }
-        inline Matrix<Diagonal,Ref,Ref,AT>& init(Noinit, const AT &a=0) { return *this; }
+        inline Matrix<Diagonal,Ref,Ref,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
         /*! \brief Cast to std::vector<std::vector<AT> >.
          *

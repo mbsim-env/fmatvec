@@ -53,7 +53,7 @@ namespace fmatvec {
 //      SquareMatrix(int m, Ini ini=All<AT>()) : Matrix<General,Var,Var,AT>(m,m,ini) { } 
 
       SquareMatrix(int m, Noinit ini) : Matrix<General,Var,Var,AT>(m,m,ini) { } 
-      SquareMatrix(int m, Init ini=INIT, const AT &a=0) : Matrix<General,Var,Var,AT>(m,m,ini,a) { } 
+      SquareMatrix(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Var,Var,AT>(m,m,ini,a) { } 
       SquareMatrix(int m, Eye ini, const AT &a=1) : Matrix<General,Var,Var,AT>(m,m,ini,a) { } 
 
       SquareMatrix(const char *str) : Matrix<General,Var,Var,AT>(str) { }
@@ -80,7 +80,7 @@ namespace fmatvec {
         return *this;
       }
 
-      SquareMatrix<Var,AT>& resize(int m, Init ini=INIT, const AT &a=0) {
+      SquareMatrix<Var,AT>& resize(int m, Init ini=INIT, const AT &a=AT()) {
         Matrix<General,Var,Var,AT>::resize(m,m,ini,a);
         return *this;
       }

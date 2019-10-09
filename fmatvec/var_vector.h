@@ -67,7 +67,7 @@ namespace fmatvec {
 //        Vector(int m, Ini ini=All<AT>()) : Matrix<General,Var,Fixed<1>,AT>(m,ini) { } 
 
       Vector(int m, Noinit ini) : Matrix<General,Var,Fixed<1>,AT>(m,ini) { } 
-      Vector(int m, Init ini=INIT, const AT &a=0) : Matrix<General,Var,Fixed<1>,AT>(m,ini,a) { } 
+      Vector(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Var,Fixed<1>,AT>(m,ini,a) { } 
 
       /*! \brief String Constructor. 
        *
@@ -112,7 +112,7 @@ namespace fmatvec {
         return *this;
       }
 
-      Vector<Var,AT>& resize(int m, Init ini=INIT, const AT &a=0) {
+      Vector<Var,AT>& resize(int m, Init ini=INIT, const AT &a=AT()) {
         Matrix<General,Var,Fixed<1>,AT>::resize(m,ini,a);
         return *this;
       }
@@ -197,9 +197,9 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling vector.
        * */
-      inline Vector<Var,AT>& init(const AT& val=0);
-      inline Vector<Var,AT>& init(Init, const AT& a=0) { return init(a); }
-      inline Vector<Var,AT>& init(Noinit, const AT& a=0) { return *this; }
+      inline Vector<Var,AT>& init(const AT& val=AT());
+      inline Vector<Var,AT>& init(Init, const AT& a=AT()) { return init(a); }
+      inline Vector<Var,AT>& init(Noinit, const AT& a=AT()) { return *this; }
 
       /*! \brief Size.
        *

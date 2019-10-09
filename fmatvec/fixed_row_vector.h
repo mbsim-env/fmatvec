@@ -62,9 +62,9 @@ namespace fmatvec {
 //        RowVector(int n, Ini ini=All<AT>()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
 
       RowVector(Noinit ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
-      RowVector(Init ini=INIT, const AT &a=0) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini,a) { }
+      RowVector(Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini,a) { }
       RowVector(int n, Noinit ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
-      RowVector(int n, Init ini=INIT, const AT &a=0) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini,a) { }
+      RowVector(int n, Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini,a) { }
 
       /*! \brief String Constructor. 
        *
@@ -153,9 +153,9 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling rowvector.
        * */
-      inline RowVector<Fixed<N>,AT>& init(const AT &val=0); 
-      inline RowVector<Fixed<N>,AT>& init(Init, const AT &a=0) { return init(a); }
-      inline RowVector<Fixed<N>,AT>& init(Noinit, const AT &a=0) { return *this; }
+      inline RowVector<Fixed<N>,AT>& init(const AT &val=AT()); 
+      inline RowVector<Fixed<N>,AT>& init(Init, const AT &a=AT()) { return init(a); }
+      inline RowVector<Fixed<N>,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
       /*! \brief Size.
        *

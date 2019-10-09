@@ -94,7 +94,7 @@ namespace fmatvec {
 //      }
 
       Matrix(int m_, int n_, Noinit) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { }
-      Matrix(int m_, int n_, Init ini=INIT, const AT &a=0) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { init0(a); }
+      Matrix(int m_, int n_, Init ini=INIT, const AT &a=AT()) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { init0(a); }
       Matrix(int m_, int n_, Eye ini, const AT &a=1) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { init(ini,a); }
 
       /*! \brief Copy Constructor
@@ -158,7 +158,7 @@ namespace fmatvec {
         return *this;
       }
 
-      Matrix<General,Ref,Ref,AT>& resize(int m, int n, Init ini=INIT, const AT &a=0) { return resize(m,n,Noinit()).init0(a); }
+      Matrix<General,Ref,Ref,AT>& resize(int m, int n, Init ini=INIT, const AT &a=AT()) { return resize(m,n,Noinit()).init0(a); }
 
       Matrix<General,Ref,Ref,AT>& resize(int m, int n, Eye ini, const AT &a=1) { return resize(m,n,Noinit()).init(ini,a); } 
 
@@ -425,12 +425,12 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<General,Ref,Ref,AT>& init(const AT &val=0);
-      inline Matrix<General,Ref,Ref,AT>& init(Init, const AT &a=0) { return init(a); }
+      inline Matrix<General,Ref,Ref,AT>& init(const AT &val=AT());
+      inline Matrix<General,Ref,Ref,AT>& init(Init, const AT &a=AT()) { return init(a); }
       inline Matrix<General,Ref,Ref,AT>& init(Eye, const AT &val=1);
-      inline Matrix<General,Ref,Ref,AT>& init(Noinit, const AT &a=0) { return *this; }
-      inline Matrix<General,Ref,Ref,AT>& init0(const AT &val=0);
-      inline Matrix<General,Ref,Ref,AT>& init0(Init, const AT &a=0) { return init0(a); }
+      inline Matrix<General,Ref,Ref,AT>& init(Noinit, const AT &a=AT()) { return *this; }
+      inline Matrix<General,Ref,Ref,AT>& init0(const AT &val=AT());
+      inline Matrix<General,Ref,Ref,AT>& init0(Init, const AT &a=AT()) { return init0(a); }
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *

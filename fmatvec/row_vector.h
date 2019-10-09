@@ -90,7 +90,7 @@ namespace fmatvec {
 //        RowVector(int n, Ini ini=All<AT>()) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
 
       RowVector(int n, Noinit ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
-      RowVector(int n, Init ini=INIT, const AT &a=0) : Matrix<General,Ref,Ref,AT>(1,n,ini,a) { } 
+      RowVector(int n, Init ini=INIT, const AT &a=AT()) : Matrix<General,Ref,Ref,AT>(1,n,ini,a) { } 
 
       /*! \brief Regular Constructor
        *
@@ -137,7 +137,7 @@ namespace fmatvec {
         return *this;
       }
 
-      RowVector<Ref,AT>& resize(int n, Init ini=INIT, const AT &a=0) {
+      RowVector<Ref,AT>& resize(int n, Init ini=INIT, const AT &a=AT()) {
         Matrix<General,Ref,Ref,AT>::resize(1,n,ini,a);
         return *this;
       }
@@ -250,8 +250,8 @@ namespace fmatvec {
        * \return A reference to the calling rowvector.
        * */
       inline RowVector<Ref,AT>& init(const AT& val); 
-      inline RowVector<Ref,AT>& init(Init, const AT &a=0) { return init(a); }
-      inline RowVector<Ref,AT>& init(Noinit, const AT &a=0) { return *this; }
+      inline RowVector<Ref,AT>& init(Init, const AT &a=AT()) { return init(a); }
+      inline RowVector<Ref,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
       /*! \brief Size.
        *

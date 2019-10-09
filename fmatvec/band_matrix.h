@@ -77,10 +77,10 @@ namespace fmatvec {
 //        }
 
       Matrix(int n_, int kl_, int ku_, Noinit) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { }
-      Matrix(int n_, int kl_, int ku_, Init ini=INIT, const AT &a=0) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(a); }
+      Matrix(int n_, int kl_, int ku_, Init ini=INIT, const AT &a=AT()) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(a); }
       Matrix(int n_, int kl_, int ku_, Eye ini, const AT &a=1) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(ini,a); }
       Matrix(int m_, int n_, int kl_, int ku_, Noinit) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { }
-      Matrix(int m_, int n_, int kl_, int ku_, Init ini=INIT, const AT &a=0) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(a); }
+      Matrix(int m_, int n_, int kl_, int ku_, Init ini=INIT, const AT &a=AT()) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(a); }
       Matrix(int m_, int n_, int kl_, int ku_, Eye ini, const AT &a=1) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(ini,a); }
 
       /*! \brief Copy Constructor
@@ -123,7 +123,7 @@ namespace fmatvec {
           return *this;
       }
 
-      Matrix<GeneralBand,Ref,Ref,AT>& resize(int n, int kl, int ku=0, Init ini=INIT, const AT &a=0) { return resize(n,kl,ku,Noinit()).init(a); }
+      Matrix<GeneralBand,Ref,Ref,AT>& resize(int n, int kl, int ku=0, Init ini=INIT, const AT &a=AT()) { return resize(n,kl,ku,Noinit()).init(a); }
 
       Matrix<GeneralBand,Ref,Ref,AT>& resize(int n, int kl, int ku, Eye ini, const AT &a=1) { return resize(n,kl,ku,Noinit()).init(a); }
 
@@ -249,10 +249,10 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<GeneralBand,Ref,Ref,AT>& init(const AT &val=0);
-      inline Matrix<GeneralBand,Ref,Ref,AT>& init(Init, const AT &a=0) { return init(a); }
+      inline Matrix<GeneralBand,Ref,Ref,AT>& init(const AT &val=AT());
+      inline Matrix<GeneralBand,Ref,Ref,AT>& init(Init, const AT &a=AT()) { return init(a); }
       inline Matrix<GeneralBand,Ref,Ref,AT>& init(Eye, const AT &val=1);
-      inline Matrix<GeneralBand,Ref,Ref,AT>& init(Noinit, const AT &a=0) { return *this; }
+      inline Matrix<GeneralBand,Ref,Ref,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
        *

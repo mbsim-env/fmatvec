@@ -84,10 +84,10 @@ namespace fmatvec {
 //        }
 
       Matrix(int n_, Noinit) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { }
-      Matrix(int n_, Init ini=INIT, const AT &a=0) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(a); }
+      Matrix(int n_, Init ini=INIT, const AT &a=AT()) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(a); }
       Matrix(int n_, Eye ini, const AT &a=1) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(ini,a); }
       Matrix(int m_, int n_, Noinit) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { }
-      Matrix(int m_, int n_, Init ini=INIT, const AT &a=0) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(a); }
+      Matrix(int m_, int n_, Init ini=INIT, const AT &a=AT()) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(a); }
       Matrix(int m_, int n_, Eye ini, const AT &a=1) : memory(n_*n_), ele((AT*)memory.get()), n(n_), lda(n_) { init(ini,a); }
 
       /*! \brief Copy Constructor
@@ -148,7 +148,7 @@ namespace fmatvec {
         return *this;
       }
 
-      Matrix<Symmetric,Ref,Ref,AT>& resize(int n, Init ini=INIT, const AT &a=0) { return resize(n,Noinit()).init(a); }
+      Matrix<Symmetric,Ref,Ref,AT>& resize(int n, Init ini=INIT, const AT &a=AT()) { return resize(n,Noinit()).init(a); }
 
       Matrix<Symmetric,Ref,Ref,AT>& resize(int n, Eye ini, const AT &a=1) { return resize(n,Noinit()).init(ini,a); }
 
@@ -329,9 +329,9 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       inline Matrix<Symmetric,Ref,Ref,AT>& init(const AT &val); 
-      inline Matrix<Symmetric,Ref,Ref,AT>& init(Init, const AT &a=0) { return init(a); };
+      inline Matrix<Symmetric,Ref,Ref,AT>& init(Init, const AT &a=AT()) { return init(a); };
       inline Matrix<Symmetric,Ref,Ref,AT>& init(Eye, const AT &val=1);
-      inline Matrix<Symmetric,Ref,Ref,AT>& init(Noinit, const AT &a=0) { return *this; }
+      inline Matrix<Symmetric,Ref,Ref,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
       /*! \brief Submatrix operator.
        *

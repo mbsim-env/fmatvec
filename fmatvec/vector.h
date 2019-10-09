@@ -91,7 +91,7 @@ namespace fmatvec {
 //        Vector(int m, Ini ini=All<AT>()) : Matrix<General,Ref,Ref,AT>(m,1,ini) { } 
 
       Vector(int m, Noinit ini) : Matrix<General,Ref,Ref,AT>(m,1,ini) { } 
-      Vector(int m, Init ini=INIT, const AT &a=0) : Matrix<General,Ref,Ref,AT>(m,1,ini,a) { } 
+      Vector(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Ref,Ref,AT>(m,1,ini,a) { } 
 
       /*! \brief Regular Constructor
        *
@@ -152,7 +152,7 @@ namespace fmatvec {
         return *this;
       }
 
-      Vector<Ref,AT>& resize(int m, Init ini=INIT, const AT &a=0) {
+      Vector<Ref,AT>& resize(int m, Init ini=INIT, const AT &a=AT()) {
         Matrix<General,Ref,Ref,AT>::resize(m,1,ini,a);
         return *this;
       }
@@ -261,9 +261,9 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling vector.
        * */
-      inline Vector<Ref,AT>& init(const AT& val=0); 
-      inline Vector<Ref,AT>& init(Init, const AT& a=0) { return init(a); }
-      inline Vector<Ref,AT>& init(Noinit, const AT& a=0) { return *this; }
+      inline Vector<Ref,AT>& init(const AT& val=AT()); 
+      inline Vector<Ref,AT>& init(Init, const AT& a=AT()) { return init(a); }
+      inline Vector<Ref,AT>& init(Noinit, const AT& a=AT()) { return *this; }
 
       /*! \brief Size.
        *

@@ -81,13 +81,13 @@ namespace fmatvec {
 //          }
 
         Matrix(int m_, int n_, int k_, Noinit) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) { }
-        Matrix(int m_, int n_, int k_, Init ini=INIT, const AT &a=0) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) {  init(a); }
+        Matrix(int m_, int n_, int k_, Init ini=INIT, const AT &a=AT()) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) {  init(a); }
 
         Matrix(int n_, Noinit) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { }
-        Matrix(int n_, Init ini=INIT, const AT &a=0) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { init(a); }
+        Matrix(int n_, Init ini=INIT, const AT &a=AT()) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { init(a); }
 
         Matrix(int m_, int n_, Noinit) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { }
-        Matrix(int m_, int n_, Init ini=INIT, const AT &a=0) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { init(a); }
+        Matrix(int m_, int n_, Init ini=INIT, const AT &a=AT()) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { init(a); }
 
 
 	/*! \brief Copy Constructor
@@ -125,7 +125,7 @@ namespace fmatvec {
             return *this;
         }
 
-        Matrix<Sparse,Ref,Ref,AT>& resize(int n, int k, Init ini=INIT, const AT &a=0) { return resize(m,k,Noinit()).init(a); }
+        Matrix<Sparse,Ref,Ref,AT>& resize(int n, int k, Init ini=INIT, const AT &a=AT()) { return resize(m,k,Noinit()).init(a); }
 
 	/*! \brief Copy operator
 	 *
@@ -253,8 +253,8 @@ namespace fmatvec {
 	 * \return A reference to the calling matrix.
 	 * */
 	Matrix<Sparse,Ref,Ref,AT>& init(const AT &val);
-        inline Matrix<Sparse,Ref,Ref,AT>& init(Init, const AT &a=0) { return init(a); }
-        inline Matrix<Sparse,Ref,Ref,AT>& init(Noinit, const AT &a=0) { return *this; }
+        inline Matrix<Sparse,Ref,Ref,AT>& init(Init, const AT &a=AT()) { return init(a); }
+        inline Matrix<Sparse,Ref,Ref,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
     };
   // ------------------------- Constructors -------------------------------------

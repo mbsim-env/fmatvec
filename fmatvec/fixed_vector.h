@@ -64,9 +64,9 @@ namespace fmatvec {
 //        Vector(int m, Ini ini=All<AT>()) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini) { }
 
       Vector(Noinit ini) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini) { }
-      Vector(Init ini=INIT, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini,a) { }
+      Vector(Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini,a) { }
       Vector(int m, Noinit ini) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini) { }
-      Vector(int m, Init ini=INIT, const AT &a=0) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini,a) { }
+      Vector(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini,a) { }
 
       /*! \brief String Constructor. 
        *
@@ -165,9 +165,9 @@ namespace fmatvec {
        * \param a Value all elements will be initialized with.
        * \return A reference to the calling vector.
        * */
-      inline Vector<Fixed<M>,AT>& init(const AT& val=0);
-      inline Vector<Fixed<M>,AT>& init(Init, const AT& a=0) { return init(a); }
-      inline Vector<Fixed<M>,AT>& init(Noinit, const AT& a=0) { return *this; }
+      inline Vector<Fixed<M>,AT>& init(const AT& val=AT());
+      inline Vector<Fixed<M>,AT>& init(Init, const AT& a=AT()) { return init(a); }
+      inline Vector<Fixed<M>,AT>& init(Noinit, const AT& a=AT()) { return *this; }
 
       /*! \brief Size.
        *
