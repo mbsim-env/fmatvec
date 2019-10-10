@@ -9,30 +9,54 @@
 
 namespace fmatvec {
 
+// forward declarations
 namespace AST {
   class Vertex;
+  class Symbol;
+  class Operation;
+  template<class T> class Constant;
 }
 
-class Expr : public std::shared_ptr<const AST::Vertex> {//MFMF use private or ever try to remove this class completely
+//! A symbolic expression.
+//! This class represent an arbitary symbolic expression.
+//! This can either be the special case of just a symbol
+//! or an arbitary expression consisting of a hierarchiy
+//! of operations consisting itself of expressions, symbols or constants.
+//! If it represents a symbol, which can be checked by calling this->isSymbol(),
+//! than any other expression can be differentiated with respect to this symbol.
+//! See the public member function of fmatvec::AST::Vertex for all function being
+//! callable as this->memberFunc(...).
+class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
+  friend class AST::Symbol;
+  friend class AST::Operation;
+  friend class AST::Constant<int>;
+  friend class AST::Constant<double>;
+  private:
+    template<class T> SymbolicExpression(const shared_ptr<T> &x);
   public:
-    Expr();
-    Expr(int x);
-    Expr(double x);
-    Expr(const std::shared_ptr<const AST::Vertex> &x);
-    const AST::Vertex* operator->() const;
-    Expr operator+(const Expr &b) const;
-    Expr operator-(const Expr &b) const;
-    Expr operator*(const Expr &b) const;
-    Expr operator/(const Expr &b) const;
-    Expr& operator+=(const Expr &b);
-    Expr& operator-=(const Expr &b);
-    Expr& operator*=(const Expr &b);
-    Expr& operator/=(const Expr &b);
+    //! Creates a symbol (each call to this ctor creates a new symbol).
+    SymbolicExpression();
+    //! Creates a integer constant.
+    SymbolicExpression(int x);
+    //! Creates a double constant.
+    SymbolicExpression(double x);
+
+    // operators
+    SymbolicExpression operator+(const SymbolicExpression &b) const;
+    SymbolicExpression operator-(const SymbolicExpression &b) const;
+    SymbolicExpression operator*(const SymbolicExpression &b) const;
+    SymbolicExpression operator/(const SymbolicExpression &b) const;
+    SymbolicExpression& operator+=(const SymbolicExpression &b);
+    SymbolicExpression& operator-=(const SymbolicExpression &b);
+    SymbolicExpression& operator*=(const SymbolicExpression &b);
+    SymbolicExpression& operator/=(const SymbolicExpression &b);
 };
 
-namespace AST { // internal namespace
+SymbolicExpression pow(const SymbolicExpression &a, const SymbolicExpression &b);
+SymbolicExpression log(const SymbolicExpression &a);
+SymbolicExpression sqrt(const SymbolicExpression &a);
 
-class Var;
+namespace AST { // internal namespace
 
 // ***** Vertex *****
 
@@ -41,17 +65,19 @@ class Vertex {
   public:
 
     //! Create a AST from a XML representation (deserialization).
-    static std::shared_ptr<const Vertex> createUsingXML(const void *element);
+    static SymbolicExpression createUsingXML(const void *element);
     //! Evaluate the AST.
     //! The returned value depends on the AST and on the current values of all independent variables this AST depends on.
-    //! Also see Var ant Vertex::getDependsOn().
+    //! Also see Symbol ant Vertex::getDependsOn().
     virtual double eval() const=0;
     //! Generate a new AST being the partial derivate of this AST with respect to the variable x.
-    virtual std::shared_ptr<const Vertex> parDer(const std::shared_ptr<const Var> &x) const=0;
+    virtual SymbolicExpression parDer(const SymbolicExpression &x) const=0;
     //! Write a AST to a XML representation (serialization).
     virtual void writeXMLFile(std::ostream &parent) const=0;
     //! Rreturn true if this Vertex is a constant integer.
     inline virtual bool isConstInt() const;
+    //! Rreturn true if this Vertex is a symbol.
+    bool isSymbol() const;
     //! Returns true if this Vertex is a constant with value 0.
     //! Note that only integer constants can be 0. Double constants are never treated as 0 by this function.
     bool isZero() const;
@@ -59,29 +85,29 @@ class Vertex {
     //! Note that only integer constants can be 1. Double constants are never treated as 1 by this function.
     bool isOne() const;
     //! Return a list of all variables this AST depends on.
-    const std::map<std::weak_ptr<const Var>, unsigned long, std::owner_less<std::weak_ptr<const Var>>>& getDependsOn() const;
+    const std::map<std::weak_ptr<const Symbol>, unsigned long, std::owner_less<std::weak_ptr<const Symbol>>>& getDependsOn() const;
 
   protected:
 
     // the value of this map (the unsigned long = version) must be mutable
-    mutable std::map<std::weak_ptr<const Var>, unsigned long, std::owner_less<std::weak_ptr<const Var>>> dependsOn;
+    mutable std::map<std::weak_ptr<const Symbol>, unsigned long, std::owner_less<std::weak_ptr<const Symbol>>> dependsOn;
 };
 
 bool Vertex::isConstInt() const {
   return false;
 }
 
-// ***** Const *****
+// ***** Constant *****
 
 //! A vertex of the AST representing a constant (int or double)
 template<class T>
-class Const : public Vertex {
+class Constant : public Vertex {
   public:
 
-    static std::shared_ptr<const Const> create(const T& c_);
-    static std::shared_ptr<const Const> createUsingXML(const void *element);
+    static SymbolicExpression create(const T& c_);
+    static SymbolicExpression createUsingXML(const void *element);
     inline double eval() const override;
-    std::shared_ptr<const Vertex> parDer(const std::shared_ptr<const Var> &x) const override;
+    SymbolicExpression parDer(const SymbolicExpression &x) const override;
     void writeXMLFile(std::ostream &parent) const override;
     inline bool isConstInt() const override;
     //! Get the constant value of the vertex.
@@ -89,100 +115,100 @@ class Const : public Vertex {
 
   private:
 
-    Const(const T& c_);
+    Constant(const T& c_);
     T c;
     typedef T CacheKey;
-    static std::map<CacheKey, std::weak_ptr<const Const>> cache;
+    static std::map<CacheKey, std::weak_ptr<const Constant>> cache;
 };
 
 template<>
-bool Const<double>::isConstInt() const {
+bool Constant<double>::isConstInt() const {
   return false;
 }
 
 template<>
-bool Const<int>::isConstInt() const {
+bool Constant<int>::isConstInt() const {
   return true;
 }
 
 template<class T>
-double Const<T>::eval() const {
+double Constant<T>::eval() const {
   return c;
 }
 
 template<class T>
-const T& Const<T>::getValue() const {
+const T& Constant<T>::getValue() const {
   return c;
 }
 
-// ***** Var *****
+// ***** Symbol *****
 
 //! A vertex of the AST representing a independent variable.
-class Var : public Vertex {
+class Symbol : public Vertex {
   public:
 
-    static std::shared_ptr<Var> create(const boost::uuids::uuid& uuid_=boost::uuids::random_generator()());
-    static std::shared_ptr<Var> createUsingXML(const void *element);
+    static SymbolicExpression create(const boost::uuids::uuid& uuid_=boost::uuids::random_generator()());
+    static SymbolicExpression createUsingXML(const void *element);
     inline double eval() const override;
-    std::shared_ptr<const Vertex> parDer(const std::shared_ptr<const Var> &x) const override;
+    SymbolicExpression parDer(const SymbolicExpression &x) const override;
     void writeXMLFile(std::ostream &parent) const override;
     //! Set the value of this independent variable.
     //! This has an influence on the evaluation of all ASTs which depend on this independent variable.
     void set(double x_);
     //! Eeturn the "version" of this variable.
-    //! Each call to Var::set increased this "version count". This is used for caching evaluations.
+    //! Each call to Symbol::set increased this "version count". This is used for caching evaluations.
     inline unsigned long getVersion() const;
 
   private:
 
-    Var(const boost::uuids::uuid& uuid_);
+    Symbol(const boost::uuids::uuid& uuid_);
     double x;
     unsigned long version;
     boost::uuids::uuid uuid; // each variable has a uuid (this is only used when the AST is serialized to XML)
     typedef boost::uuids::uuid CacheKey;
-    static std::map<CacheKey, std::weak_ptr<Var>> cache;
+    static std::map<CacheKey, std::weak_ptr<const Symbol>> cache;
 };
 
-double Var::eval() const {
+double Symbol::eval() const {
   return x;
 }
 
-unsigned long Var::getVersion() const {
+unsigned long Symbol::getVersion() const {
   return version;
 }
 
-// ***** Op *****
+// ***** Operation *****
 
 //! A vertex of the AST representing an operation.
-class Op : public Vertex, public std::enable_shared_from_this<Op> {
+class Operation : public Vertex, public std::enable_shared_from_this<Operation> {
   public:
 
     //! Defined operations.
-    enum Operator { Plus, Minus, Mult, Div, Pow, Log };
-    static std::shared_ptr<const Vertex> create(Operator op_, const std::vector<std::shared_ptr<const Vertex>> &child_);
-    static std::shared_ptr<const Vertex> createUsingXML(const void *element);
+    enum Operator { Plus, Minus, Mult, Div, Pow, Log, Sqrt };
+    static SymbolicExpression create(Operator op_, const std::vector<SymbolicExpression> &child_);
+    static SymbolicExpression createUsingXML(const void *element);
     inline double eval() const override;
-    std::shared_ptr<const Vertex> parDer(const std::shared_ptr<const Var> &x) const override;
+    SymbolicExpression parDer(const SymbolicExpression &x) const override;
     void writeXMLFile(std::ostream &parent) const override;
 
   private:
 
-    Op(Operator op_, const std::vector<std::shared_ptr<const Vertex>> &child_);
+    Operation(Operator op_, const std::vector<SymbolicExpression> &child_);
     Operator op;
-    std::vector<std::shared_ptr<const Vertex>> child;
+    std::vector<SymbolicExpression> child;
     typedef std::pair<Operator, std::vector<std::weak_ptr<const Vertex>>> CacheKey;
     struct CacheKeyComp {
       bool operator()(const CacheKey& l, const CacheKey& r);
       private:
         std::owner_less<std::weak_ptr<const Vertex>> ol;
     };
-    static std::map<CacheKey, std::weak_ptr<const Op>, CacheKeyComp> cache;
+    static std::map<CacheKey, std::weak_ptr<const Operation>, CacheKeyComp> cache;
     mutable double cacheValue;
 };
 
-double Op::eval() const {
+double Operation::eval() const {
   if(!dependsOn.empty()) {
-    // we eval expressions having no dependency always (such expressions are optimized out during Op creation)
+    // we eval expressions having no dependency always (such expressions are optimized out during Operation creation)
     bool useCacheValue=true;
     for(auto &d : dependsOn) {
       auto dFirst=d.first.lock();
@@ -201,11 +227,12 @@ double Op::eval() const {
     case Div: cacheValue = child[0]->eval() / child[1]->eval(); return cacheValue;
     case Pow:
       if(child[1]->isConstInt())
-        cacheValue = std::pow(child[0]->eval(), static_cast<const Const<int>*>(child[1].get())->getValue());
+        cacheValue = std::pow(child[0]->eval(), static_cast<const Constant<int>*>(child[1].get())->getValue());
       else
         cacheValue = std::pow(child[0]->eval(), child[1]->eval());
       return cacheValue;
     case Log: cacheValue = std::log(child[0]->eval()); return cacheValue;
+    case Sqrt: cacheValue = std::sqrt(child[0]->eval()); return cacheValue;
   }
   throw std::runtime_error("Unknown operation.");
 }

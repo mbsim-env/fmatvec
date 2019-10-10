@@ -4,9 +4,6 @@
 #include "fmatvec/ast.h"
 #include "fmatvec/fmatvec.h"
 
-//mfmf remove everything with AST
-//mfmf replace auto with a explicit type
-
 using namespace std;
 using namespace fmatvec;
 
@@ -71,32 +68,32 @@ int checkComplex() {
 }
 
 int checkSym() {
-  typedef Vector<Var, Expr> VecExpr;
-  typedef Matrix<General, Var, Var, Expr> MatExpr;
+  typedef Vector<Var, SymbolicExpression> VecSymExpr;
+  typedef Matrix<General, Var, Var, SymbolicExpression> MatSymExpr;
 
   {
-    VecExpr v2;
-    VecExpr v(3);
+    VecSymExpr v2;
+    VecSymExpr v(3);
   }
-  VecExpr v2;
-  VecExpr v(3);
-  v(0)=Expr(AST::Var::create());//mfmf must be removed but this does not work for now
-  v(1)=Expr(AST::Var::create());//mfmf must be removed but this does not work for now
-  v(2)=Expr(AST::Var::create());//mfmf must be removed but this does not work for now
-  Expr a(3.0);
-  VecExpr r1=v*a;
-  VecExpr r2=a*v;
-  VecExpr r3=v*3.0;
-  VecExpr r4=v*3;
-  VecExpr r5=3.0*v;
-  VecExpr r6=3*v;
-  VecExpr r11=v/a;
-  VecExpr r31=v/3.0;
-  VecExpr r41=v/3;
-  VecExpr r12=v+v;
-  VecExpr r22=v-v;
-  MatExpr m2;
-  MatExpr m(3,3);
+  VecSymExpr v2;
+  VecSymExpr v(3);
+  v(0)=SymbolicExpression(AST::Symbol::create());//mfmf must be removed but this does not work for now
+  v(1)=SymbolicExpression(AST::Symbol::create());//mfmf must be removed but this does not work for now
+  v(2)=SymbolicExpression(AST::Symbol::create());//mfmf must be removed but this does not work for now
+  SymbolicExpression a(3.0);
+  VecSymExpr r1=v*a;
+  VecSymExpr r2=a*v;
+  VecSymExpr r3=v*3.0;
+  VecSymExpr r4=v*3;
+  VecSymExpr r5=3.0*v;
+  VecSymExpr r6=3*v;
+  VecSymExpr r11=v/a;
+  VecSymExpr r31=v/3.0;
+  VecSymExpr r41=v/3;
+  VecSymExpr r12=v+v;
+  VecSymExpr r22=v-v;
+  MatSymExpr m2;
+  MatSymExpr m(3,3);
   m(0,0)=2.0;
   m(0,2)=3.0;
   m(1,0)=4.0;
@@ -105,24 +102,35 @@ int checkSym() {
   m(2,0)=7.0;
   m(2,1)=8.0;
   m(2,2)=9.0;
-  m(2,2)=Expr()+Expr();
-  MatExpr _r1=m*a;
-  MatExpr _r2=a*m;
-  MatExpr _r3=m*3.0;
-  MatExpr _r4=m*3;
-  MatExpr _r5=3.0*m;
-  MatExpr _r6=3*m;
-  MatExpr _r11=m/a;
-  MatExpr _r31=m/3.0;
-  MatExpr _r41=m/3;
-  MatExpr _r12=m+m;
-  MatExpr _r22=m-m;
-  MatExpr _rmm=m*m;
-  VecExpr _rmv=m*v;
+  m(2,2)=SymbolicExpression()+SymbolicExpression();
+  m(2,0)=log(pow(v(0), 3)+v(0));
+  MatSymExpr _r1=m*a;
+  MatSymExpr _r2=a*m;
+  MatSymExpr _r3=m*3.0;
+  MatSymExpr _r4=m*3;
+  MatSymExpr _r5=3.0*m;
+  MatSymExpr _r6=3*m;
+  MatSymExpr _r11=m/a;
+  MatSymExpr _r31=m/3.0;
+  MatSymExpr _r41=m/3;
+  MatSymExpr _r12=m+m;
+  MatSymExpr _r22=m-m;
+  MatSymExpr _rmm=m*m;
+  VecSymExpr _rmv=m*v;
+  SymbolicExpression norm=nrm2(_rmv);
 
-  auto parDer0=_rmv(0)->parDer(dynamic_pointer_cast<const AST::Var>(v(0)));
-  auto parDer1=_rmv(0)->parDer(dynamic_pointer_cast<const AST::Var>(v(1)));
-  auto parDer2=_rmv(0)->parDer(dynamic_pointer_cast<const AST::Var>(v(2)));
+  SymbolicExpression pd00=_rmv(0)->parDer(v(0));//mfmf this should be done by MatSymExpr pd=_rmv.parDer(v) 
+  SymbolicExpression pd01=_rmv(0)->parDer(v(1));
+  SymbolicExpression pd02=_rmv(0)->parDer(v(2));
+  SymbolicExpression pd10=_rmv(1)->parDer(v(0));
+  SymbolicExpression pd11=_rmv(1)->parDer(v(1));
+  SymbolicExpression pd12=_rmv(1)->parDer(v(2));
+  SymbolicExpression pd20=_rmv(2)->parDer(v(0));
+  SymbolicExpression pd21=_rmv(2)->parDer(v(1));
+  SymbolicExpression pd22=_rmv(2)->parDer(v(2));
+  SymbolicExpression pdn0=norm->parDer(v(0));//mfmf this should be done by VecSymExpr pdn=norm.parDer(v)
+  SymbolicExpression pdn1=norm->parDer(v(1));
+  SymbolicExpression pdn2=norm->parDer(v(2));
 
   string indepVar0; { stringstream str; v(0)->writeXMLFile(str); indepVar0=str.str(); }
   string indepVar1; { stringstream str; v(1)->writeXMLFile(str); indepVar1=str.str(); }
@@ -130,9 +138,19 @@ int checkSym() {
   string depVar0; { stringstream str; _rmv(0)->writeXMLFile(str); depVar0=str.str(); }
   string depVar1; { stringstream str; _rmv(1)->writeXMLFile(str); depVar1=str.str(); }
   string depVar2; { stringstream str; _rmv(2)->writeXMLFile(str); depVar2=str.str(); }
-  string depVar_indepVar0; { stringstream str; parDer0->writeXMLFile(str); depVar_indepVar0=str.str(); }
-  string depVar_indepVar1; { stringstream str; parDer1->writeXMLFile(str); depVar_indepVar1=str.str(); }
-  string depVar_indepVar2; { stringstream str; parDer2->writeXMLFile(str); depVar_indepVar2=str.str(); }
+  string normStr; { stringstream str; norm->writeXMLFile(str); normStr=str.str(); }
+  string depVar0_indepVar0; { stringstream str; pd00->writeXMLFile(str); depVar0_indepVar0=str.str(); }
+  string depVar0_indepVar1; { stringstream str; pd01->writeXMLFile(str); depVar0_indepVar1=str.str(); }
+  string depVar0_indepVar2; { stringstream str; pd02->writeXMLFile(str); depVar0_indepVar2=str.str(); }
+  string depVar1_indepVar0; { stringstream str; pd10->writeXMLFile(str); depVar1_indepVar0=str.str(); }
+  string depVar1_indepVar1; { stringstream str; pd11->writeXMLFile(str); depVar1_indepVar1=str.str(); }
+  string depVar1_indepVar2; { stringstream str; pd12->writeXMLFile(str); depVar1_indepVar2=str.str(); }
+  string depVar2_indepVar0; { stringstream str; pd20->writeXMLFile(str); depVar2_indepVar0=str.str(); }
+  string depVar2_indepVar1; { stringstream str; pd21->writeXMLFile(str); depVar2_indepVar1=str.str(); }
+  string depVar2_indepVar2; { stringstream str; pd22->writeXMLFile(str); depVar2_indepVar2=str.str(); }
+  string norm_indepVar0; { stringstream str; pdn0->writeXMLFile(str); norm_indepVar0=str.str(); }
+  string norm_indepVar1; { stringstream str; pdn1->writeXMLFile(str); norm_indepVar1=str.str(); }
+  string norm_indepVar2; { stringstream str; pdn2->writeXMLFile(str); norm_indepVar2=str.str(); }
 
   stringstream str;
   str<<"indepVar 0 = "<<indepVar0<<endl;
@@ -141,9 +159,19 @@ int checkSym() {
   str<<"depVar 0 = "<<depVar0<<endl;
   str<<"depVar 1 = "<<depVar1<<endl;
   str<<"depVar 2 = "<<depVar2<<endl;
-  str<<"depVar_indepVar 0 = "<<depVar_indepVar0<<endl;
-  str<<"depVar_indepVar 1 = "<<depVar_indepVar1<<endl;
-  str<<"depVar_indepVar 2 = "<<depVar_indepVar2<<endl;
+  str<<"norm = "<<normStr<<endl;
+  str<<"depVar0_indepVar 0 = "<<depVar0_indepVar0<<endl;
+  str<<"depVar0_indepVar 1 = "<<depVar0_indepVar1<<endl;
+  str<<"depVar0_indepVar 2 = "<<depVar0_indepVar2<<endl;
+  str<<"depVar1_indepVar 0 = "<<depVar1_indepVar0<<endl;
+  str<<"depVar1_indepVar 1 = "<<depVar1_indepVar1<<endl;
+  str<<"depVar1_indepVar 2 = "<<depVar1_indepVar2<<endl;
+  str<<"depVar2_indepVar 0 = "<<depVar2_indepVar0<<endl;
+  str<<"depVar2_indepVar 1 = "<<depVar2_indepVar1<<endl;
+  str<<"depVar2_indepVar 2 = "<<depVar2_indepVar2<<endl;
+  str<<"norm_indepVar 0 = "<<norm_indepVar0<<endl;
+  str<<"norm_indepVar 1 = "<<norm_indepVar1<<endl;
+  str<<"norm_indepVar 2 = "<<norm_indepVar2<<endl;
   cout<<str.str();
 
   if(indepVar0!="a1") return 100;
@@ -151,10 +179,20 @@ int checkSym() {
   if(indepVar2!="a3") return 102;
   if(depVar0!="(0 (0 (2 2 a1) (2 a4 a2)) (2 3 a3))") return 103;
   if(depVar1!="(0 (0 (2 4 a1) (2 5 a2)) (2 6 a3))") return 104;
-  if(depVar2!="(0 (0 (2 7 a1) (2 8 a2)) (2 (0 a5 a6) a3))") return 105;
-  if(depVar_indepVar0!="2") return 106;
-  if(depVar_indepVar1!="a4") return 107;
-  if(depVar_indepVar2!="3") return 108;
+  if(depVar2!="(0 (0 (2 (5 (0 (4 a1 3) a1)) a1) (2 8 a2)) (2 (0 a5 a6) a3))") return 105;
+  //if(normStr!="...") return 200;
+  if(depVar0_indepVar0!="2") return 106;
+  if(depVar0_indepVar1!="a4") return 107;
+  if(depVar0_indepVar2!="3") return 108;
+  if(depVar1_indepVar0!="4") return 109;
+  if(depVar1_indepVar1!="5") return 110;
+  if(depVar1_indepVar2!="6") return 111;
+  if(depVar2_indepVar0!="(0 (2 (3 (0 (2 (4 a1 3) (3 3 a1)) 1) (0 (4 a1 3) a1)) a1) (5 (0 (4 a1 3) a1)))") return 112;
+  if(depVar2_indepVar1!="8") return 113;
+  if(depVar2_indepVar2!="(0 a5 a6)") return 113;
+  //if(norm_indepVar0!="...") return 201
+  //if(norm_indepVar1!="...") return 202
+  //if(norm_indepVar2!="...") return 203
 
   return 0;
 }
