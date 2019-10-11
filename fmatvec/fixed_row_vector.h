@@ -63,8 +63,10 @@ namespace fmatvec {
 
       RowVector(Noinit ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
       RowVector(Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini,a) { }
+      RowVector(Symbol sym) : Matrix<General,Fixed<1>,Fixed<N>,AT>(sym) { }
       RowVector(int n, Noinit ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
       RowVector(int n, Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini,a) { }
+      RowVector(int n, Symbol sym) : Matrix<General,Fixed<1>,Fixed<N>,AT>(sym) { }
 
       /*! \brief String Constructor. 
        *

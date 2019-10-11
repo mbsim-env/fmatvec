@@ -95,6 +95,7 @@ namespace fmatvec {
 
       Matrix(int m_, int n_, Noinit) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { }
       Matrix(int m_, int n_, Init ini=INIT, const AT &a=AT()) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { init0(a); }
+      Matrix(int m_, int n_, Symbol sym) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { init(sym); }
       Matrix(int m_, int n_, Eye ini, const AT &a=1) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { init(ini,a); }
 
       /*! \brief Copy Constructor
@@ -427,6 +428,21 @@ namespace fmatvec {
        * */
       inline Matrix<General,Ref,Ref,AT>& init(const AT &val=AT());
       inline Matrix<General,Ref,Ref,AT>& init(Init, const AT &a=AT()) { return init(a); }
+      inline Matrix<General,Ref,Ref,AT>& init(Symbol) {
+
+        if(tp) {
+          for(int i=0; i<rows(); i++) 
+            for(int j=0; j<cols(); j++) 
+              et(i,j) = AT(SYMBOL); 
+        }
+        else {
+          for(int i=0; i<rows(); i++) 
+            for(int j=0; j<cols(); j++) 
+              er(i,j) = AT(SYMBOL); 
+        }
+
+        return *this;
+      }
       inline Matrix<General,Ref,Ref,AT>& init(Eye, const AT &val=1);
       inline Matrix<General,Ref,Ref,AT>& init(Noinit, const AT &a=AT()) { return *this; }
       inline Matrix<General,Ref,Ref,AT>& init0(const AT &val=AT());

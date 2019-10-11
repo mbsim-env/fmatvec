@@ -59,6 +59,20 @@
 
 namespace fmatvec {
 
+  /***** initialization types *****/
+
+  class Noinit { };
+  class Init { };
+  class Eye { };
+  class Symbol { };
+
+  static Noinit NONINIT = Noinit();
+  static Init INIT = Init();
+  static Eye EYE = Eye();
+  static Symbol SYMBOL = Symbol();
+
+  /***** matrix/vector (sub) types *****/
+
   class Ref {
   };
 

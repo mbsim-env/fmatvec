@@ -68,6 +68,15 @@ int checkComplex() {
 }
 
 int checkSym() {
+  {
+    RowVector<Fixed<3>, SymbolicExpression> rvf(SYMBOL);
+    RowVector<Var, SymbolicExpression> rvv(3, SYMBOL);
+    RowVector<Ref, SymbolicExpression> rvr(3, SYMBOL);
+    Vector<Fixed<3>, SymbolicExpression> vf(SYMBOL);
+    Vector<Var, SymbolicExpression> vv(3, SYMBOL);
+    Vector<Ref, SymbolicExpression> vr(3, SYMBOL);
+  }
+
   typedef Vector<Var, SymbolicExpression> VecSymExpr;
   typedef Matrix<General, Var, Var, SymbolicExpression> MatSymExpr;
 
@@ -76,10 +85,9 @@ int checkSym() {
     VecSymExpr v(3);
   }
   VecSymExpr v2;
-  VecSymExpr v(3);
-  v(0)=SymbolicExpression(AST::Symbol::create());//mfmf must be removed but this does not work for now
-  v(1)=SymbolicExpression(AST::Symbol::create());//mfmf must be removed but this does not work for now
-  v(2)=SymbolicExpression(AST::Symbol::create());//mfmf must be removed but this does not work for now
+  VecSymExpr v3(3);
+  if(!v3(2)->isZero()) return 300;
+  VecSymExpr v(3, SYMBOL);
   SymbolicExpression a(3.0);
   VecSymExpr r1=v*a;
   VecSymExpr r2=a*v;
@@ -93,7 +101,10 @@ int checkSym() {
   VecSymExpr r12=v+v;
   VecSymExpr r22=v-v;
   MatSymExpr m2;
+  MatSymExpr m3(3,3);
+  if(!m3(2,2)->isZero()) return 300;
   MatSymExpr m(3,3);
+  m(0,1)=SymbolicExpression(SYMBOL);
   m(0,0)=2.0;
   m(0,2)=3.0;
   m(1,0)=4.0;
@@ -102,7 +113,9 @@ int checkSym() {
   m(2,0)=7.0;
   m(2,1)=8.0;
   m(2,2)=9.0;
-  m(2,2)=SymbolicExpression()+SymbolicExpression();
+  auto a5=SymbolicExpression(SYMBOL);
+  auto a6=SymbolicExpression(SYMBOL);
+  m(2,2)=a5+a6;
   m(2,0)=log(pow(v(0), 3)+v(0));
   MatSymExpr _r1=m*a;
   MatSymExpr _r2=a*m;
@@ -193,6 +206,62 @@ int checkSym() {
   //if(norm_indepVar0!="...") return 201
   //if(norm_indepVar1!="...") return 202
   //if(norm_indepVar2!="...") return 203
+
+  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(v(0)))->set(1.1);//mfmf remove all the casts
+  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(v(1)))->set(2.2);
+  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(v(2)))->set(3.3);
+  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(m(0,1)))->set(4.4);
+  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(a5))->set(5.5);
+  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(a6))->set(6.6);
+#ifndef NDEBUG
+  SymbolicExpression::evalOperationsCount=0;
+#endif
+  cout<<"frist eval"<<endl;
+  cout<<"pdn0.eval = "<<pdn0->eval()<<endl;//mfmf replace this by pdn->eval() -> Vec<double>
+  cout<<"pdn1.eval = "<<pdn1->eval()<<endl;
+  cout<<"pdn2.eval = "<<pdn2->eval()<<endl;
+#ifndef NDEBUG
+  cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
+#endif
+#ifndef NDEBUG
+  SymbolicExpression::evalOperationsCount=0;
+#endif
+  cout<<"second eval with same values for independent variables"<<endl;
+  cout<<"pdn0.eval = "<<pdn0->eval()<<endl;
+  cout<<"pdn1.eval = "<<pdn1->eval()<<endl;
+  cout<<"pdn2.eval = "<<pdn2->eval()<<endl;
+#ifndef NDEBUG
+  cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
+#endif
+
+  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(v(0)))->set(3.1);//mfmf remove all the casts
+  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(v(1)))->set(4.2);
+  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(v(2)))->set(5.3);
+  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(m(0,1)))->set(6.4);
+  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(a5))->set(7.5);
+  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(a6))->set(8.6);
+#ifndef NDEBUG
+  SymbolicExpression::evalOperationsCount=0;
+#endif
+  cout<<"third eval with different values for independent variables"<<endl;
+  cout<<"pdn0.eval = "<<pdn0->eval()<<endl;
+  cout<<"pdn1.eval = "<<pdn1->eval()<<endl;
+  cout<<"pdn2.eval = "<<pdn2->eval()<<endl;
+#ifndef NDEBUG
+  cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
+#endif
+  if(abs(pdn0->eval()-7.6789773389265372217)>1e-10) return 401;
+  if(abs(pdn1->eval()-10.946007707881207693)>1e-10) return 402;
+  if(abs(pdn2->eval()-17.142920767274581806)>1e-10) return 403;
+
+#ifndef NDEBUG
+  SymbolicExpression::evalOperationsCount=0;
+#endif
+  _rmv(0)->eval();
+#ifndef NDEBUG
+  cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
+  if(SymbolicExpression::evalOperationsCount!=0) return 404;
+#endif
 
   return 0;
 }

@@ -10,6 +10,9 @@
 namespace fmatvec {
 
 // forward declarations
+
+class Symbol;
+
 namespace AST {
   class Vertex;
   class Symbol;
@@ -34,12 +37,14 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
   private:
     template<class T> SymbolicExpression(const shared_ptr<T> &x);
   public:
-    //! Creates a symbol (each call to this ctor creates a new symbol).
+    //! Creates the value 0.
     SymbolicExpression();
     //! Creates a integer constant.
     SymbolicExpression(int x);
     //! Creates a double constant.
     SymbolicExpression(double x);
+    //! Creates a symbol (each call to this ctor creates a new symbol)
+    SymbolicExpression(const Symbol&);
 
     // operators
     SymbolicExpression operator+(const SymbolicExpression &b) const;
@@ -50,11 +55,19 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
     SymbolicExpression& operator-=(const SymbolicExpression &b);
     SymbolicExpression& operator*=(const SymbolicExpression &b);
     SymbolicExpression& operator/=(const SymbolicExpression &b);
+
+#ifndef NDEBUG
+    static unsigned long evalOperationsCount;
+#endif
 };
 
 SymbolicExpression pow(const SymbolicExpression &a, const SymbolicExpression &b);
 SymbolicExpression log(const SymbolicExpression &a);
 SymbolicExpression sqrt(const SymbolicExpression &a);
+
+#ifndef NDEBUG
+unsigned long SymbolicExpression::evalOperationsCount = 0;
+#endif
 
 namespace AST { // internal namespace
 
@@ -75,7 +88,7 @@ class Vertex {
     //! Write a AST to a XML representation (serialization).
     virtual void writeXMLFile(std::ostream &parent) const=0;
     //! Rreturn true if this Vertex is a constant integer.
-    inline virtual bool isConstInt() const;
+    inline virtual bool isConstantInt() const;
     //! Rreturn true if this Vertex is a symbol.
     bool isSymbol() const;
     //! Returns true if this Vertex is a constant with value 0.
@@ -93,7 +106,7 @@ class Vertex {
     mutable std::map<std::weak_ptr<const Symbol>, unsigned long, std::owner_less<std::weak_ptr<const Symbol>>> dependsOn;
 };
 
-bool Vertex::isConstInt() const {
+bool Vertex::isConstantInt() const {
   return false;
 }
 
@@ -109,7 +122,7 @@ class Constant : public Vertex {
     inline double eval() const override;
     SymbolicExpression parDer(const SymbolicExpression &x) const override;
     void writeXMLFile(std::ostream &parent) const override;
-    inline bool isConstInt() const override;
+    inline bool isConstantInt() const override;
     //! Get the constant value of the vertex.
     inline const T& getValue() const;
 
@@ -122,12 +135,12 @@ class Constant : public Vertex {
 };
 
 template<>
-bool Constant<double>::isConstInt() const {
+bool Constant<double>::isConstantInt() const {
   return false;
 }
 
 template<>
-bool Constant<int>::isConstInt() const {
+bool Constant<int>::isConstantInt() const {
   return true;
 }
 
@@ -162,7 +175,7 @@ class Symbol : public Vertex {
   private:
 
     Symbol(const boost::uuids::uuid& uuid_);
-    double x;
+    double x = 0.0;
     unsigned long version;
     boost::uuids::uuid uuid; // each variable has a uuid (this is only used when the AST is serialized to XML)
     typedef boost::uuids::uuid CacheKey;
@@ -219,6 +232,9 @@ double Operation::eval() const {
     if(useCacheValue)
       return cacheValue;
   }
+#ifndef NDEBUG
+  SymbolicExpression::evalOperationsCount++;
+#endif
 
   switch(op) {
     case Plus: cacheValue = child[0]->eval() + child[1]->eval(); return cacheValue;
@@ -226,7 +242,7 @@ double Operation::eval() const {
     case Mult: cacheValue = child[0]->eval() * child[1]->eval(); return cacheValue;
     case Div: cacheValue = child[0]->eval() / child[1]->eval(); return cacheValue;
     case Pow:
-      if(child[1]->isConstInt())
+      if(child[1]->isConstantInt())
         cacheValue = std::pow(child[0]->eval(), static_cast<const Constant<int>*>(child[1].get())->getValue());
       else
         cacheValue = std::pow(child[0]->eval(), child[1]->eval());

@@ -92,6 +92,7 @@ namespace fmatvec {
 
       Vector(int m, Noinit ini) : Matrix<General,Ref,Ref,AT>(m,1,ini) { } 
       Vector(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Ref,Ref,AT>(m,1,ini,a) { } 
+      Vector(int m, Symbol sym) : Matrix<General,Ref,Ref,AT>(m,1,sym) { } 
 
       /*! \brief Regular Constructor
        *
@@ -156,7 +157,7 @@ namespace fmatvec {
         Matrix<General,Ref,Ref,AT>::resize(m,1,ini,a);
         return *this;
       }
-      
+
       /*! \brief Copy operator
        *
        * Copies the vector given by \em x.

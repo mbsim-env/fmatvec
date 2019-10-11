@@ -32,20 +32,13 @@
 #include <boost/scope_exit.hpp>
 #include "range.h"
 #include "toString.h"
+#include "types.h"
 
 /*! 
  * \brief Namespace fmatvec.
  *
  * */
 namespace fmatvec {
-
-  class Noinit { };
-  class Init { };
-  class Eye { };
-
-  static Noinit NONINIT = Noinit();
-  static Init INIT = Init();
-  static Eye EYE = Eye();
 
   /*! Enumerate for initialization of matrices
   */

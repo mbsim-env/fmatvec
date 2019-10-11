@@ -5,10 +5,11 @@ using namespace std;
 
 namespace fmatvec {
 
-SymbolicExpression::SymbolicExpression() : shared_ptr<const AST::Vertex>(AST::Symbol::create()) {}
+SymbolicExpression::SymbolicExpression() : shared_ptr<const AST::Vertex>(AST::Constant<int>::create(0)) {}
 template<class T> SymbolicExpression::SymbolicExpression(const shared_ptr<T> &x) : shared_ptr<const AST::Vertex>(x) {}
 SymbolicExpression::SymbolicExpression(int x) : shared_ptr<const AST::Vertex>(AST::Constant<int>::create(x)) {}
 SymbolicExpression::SymbolicExpression(double x) : shared_ptr<const AST::Vertex>(AST::Constant<double>::create(x)) {}
+SymbolicExpression::SymbolicExpression(const Symbol&) : shared_ptr<const AST::Vertex>(AST::Symbol::create()) {}
 SymbolicExpression SymbolicExpression::operator+(const SymbolicExpression &b) const {
   return AST::Operation::create(AST::Operation::Plus, {*this, b});
 }
@@ -66,13 +67,13 @@ SymbolicExpression Vertex::createUsingXML(const void *element) {
 }
 
 bool Vertex::isZero() const {
-  if(isConstInt() && static_cast<const Constant<int>*>(this)->getValue()==0)
+  if(isConstantInt() && static_cast<const Constant<int>*>(this)->getValue()==0)
     return true;
   return false;
 }
 
 bool Vertex::isOne() const {
-  if(isConstInt() && static_cast<const Constant<int>*>(this)->getValue()==1)
+  if(isConstantInt() && static_cast<const Constant<int>*>(this)->getValue()==1)
     return true;
   return false;
 }
@@ -208,7 +209,7 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
     return child_[0];
   // optimize Constant arguments (if ALL are Constant)
   bool allConst=all_of(child_.begin(), child_.end(), [](const SymbolicExpression& c) {
-    return c->isConstInt() || dynamic_pointer_cast<const Constant<double>>(c)!=nullptr;
+    return c->isConstantInt() || dynamic_pointer_cast<const Constant<double>>(c)!=nullptr;
   });
   if(allConst) {
     Operation op(op_, child_);
