@@ -284,21 +284,32 @@ double Operation::eval() const {
   SymbolicExpression::evalOperationsCount++;
 #endif
 
+  #define a child[0]->eval() // value of first argument
+  #define b child[1]->eval() // value of second argument
+  #define c child[2]->eval() // value of third argument
   switch(op) {
-    case Plus: cacheValue = child[0]->eval() + child[1]->eval(); return cacheValue;
-    case Minus: cacheValue = child[0]->eval() - child[1]->eval(); return cacheValue;
-    case Mult: cacheValue = child[0]->eval() * child[1]->eval(); return cacheValue;
-    case Div: cacheValue = child[0]->eval() / child[1]->eval(); return cacheValue;
+    case Plus:
+      return cacheValue = a + b;
+    case Minus:
+      return cacheValue = a - b;
+    case Mult:
+      return cacheValue = a * b;
+    case Div:
+      return cacheValue = a / b;
     case Pow:
       if(child[1]->isConstantInt())
-        cacheValue = std::pow(child[0]->eval(), static_cast<const Constant<int>*>(child[1].get())->getValue());
+        return cacheValue = std::pow(a, static_cast<const Constant<int>*>(child[1].get())->getValue());
       else
-        cacheValue = std::pow(child[0]->eval(), child[1]->eval());
-      return cacheValue;
-    case Log: cacheValue = std::log(child[0]->eval()); return cacheValue;
-    case Sqrt: cacheValue = std::sqrt(child[0]->eval()); return cacheValue;
+        return cacheValue = std::pow(a, b);
+    case Log:
+      return cacheValue = std::log(a);
+    case Sqrt:
+      return cacheValue = std::sqrt(a);
   }
-  throw std::runtime_error("Unknown operation.");
+  #undef a
+  #undef b
+  #undef c
+  assert(0);
 }
 
 } // end namespace AST

@@ -241,35 +241,35 @@ SymbolicExpression Operation::createUsingXML(const void *element) {
 SymbolicExpression Operation::parDer(const SymbolicExpression &x) const {
   if(dynamic_pointer_cast<const Symbol>(x)==nullptr)
     throw runtime_error("The independent variable of parDer must be a symbol.");
+  #define v SymbolicExpression(shared_from_this()) // expression to be differentiated
+  #define a child[0] // expression of first argument
+  #define b child[1] // expression of second argument
+  #define c child[2] // expression of third argument
+  #define ad child[0]->parDer(x) // pertial derivative of the expression of the first argument wrt the independent x
+  #define bd child[1]->parDer(x) // pertial derivative of the expression of the second argument wrt the independent x
+  #define cd child[2]->parDer(x) // pertial derivative of the expression of the third argument wrt the independent x
   switch(op) {
-    case Plus: return Operation::create(Plus, {child[0]->parDer(x), child[1]->parDer(x)});
-    case Minus: return Operation::create(Minus, {child[0]->parDer(x), child[1]->parDer(x)});
-    case Mult: {
-      auto a=Operation::create(Mult, {child[0]->parDer(x), child[1]});
-      auto b=Operation::create(Mult, {child[0], child[1]->parDer(x)});
-      return Operation::create(Plus, {a, b});
-    }
-    case Div: {
-      auto a=Operation::create(Mult, {child[0]->parDer(x), child[1]});
-      auto b=Operation::create(Mult, {child[0], child[1]->parDer(x)});
-      auto z=Operation::create(Minus, {a, b});
-      auto n=Operation::create(Mult, {child[1], child[1]});
-      return Operation::create(Div, {z, n});
-    }
-    case Pow: {
-      auto v=shared_from_this();
-      auto a=Operation::create(Mult, {child[1]->parDer(x), Operation::create(Log, {child[0]})});
-      auto b=Operation::create(Mult, {Operation::create(Div, {child[1], child[0]}), child[0]->parDer(x)});
-      auto c=Operation::create(Plus, {a, b});
-      return Operation::create(Mult, {v, c});
-    }
-    case Log: return Operation::create(Div, {child[0]->parDer(x), child[0]});
-    case Sqrt: {
-      auto v=shared_from_this();
-      auto a=Operation::create(Div, {0.5, v});
-      return Operation::create(Mult, {a, child[0]->parDer(x)});
-    }
+    case Plus:
+      return ad + bd;
+    case Minus:
+      return ad - bd;
+    case Mult:
+      return ad * b + a * bd;
+    case Div:
+      return (ad * b - a * bd) / (b * b);
+    case Pow:
+      return v * (bd * log(a) + b / a * ad);
+    case Log:
+      return ad / a;
+    case Sqrt:
+      return ad * 0.5 / v;
   }
+  #undef a
+  #undef b
+  #undef c
+  #undef ad
+  #undef bd
+  #undef cd
   throw runtime_error("Unknown operation.");
 }
 
