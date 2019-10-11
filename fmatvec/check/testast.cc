@@ -86,7 +86,7 @@ int checkSym() {
   }
   VecSymExpr v2;
   VecSymExpr v3(3);
-  if(!v3(2)->isZero()) return 300;
+  if(abs(v3(2).eval())>1e-12) return 300;
   VecSymExpr v(3, SYMBOL);
   SymbolicExpression a(3.0);
   VecSymExpr r1=v*a;
@@ -102,7 +102,7 @@ int checkSym() {
   VecSymExpr r22=v-v;
   MatSymExpr m2;
   MatSymExpr m3(3,3);
-  if(!m3(2,2)->isZero()) return 300;
+  if(abs(m3(2,2).eval())>1e-12) return 300;
   MatSymExpr m(3,3);
   m(0,1)=SymbolicExpression(SYMBOL);
   m(0,0)=2.0;
@@ -132,38 +132,38 @@ int checkSym() {
   VecSymExpr _rmv=m*v;
   SymbolicExpression norm=nrm2(_rmv);
 
-  SymbolicExpression pd00=_rmv(0)->parDer(v(0));//mfmf this should be done by MatSymExpr pd=_rmv.parDer(v) 
-  SymbolicExpression pd01=_rmv(0)->parDer(v(1));
-  SymbolicExpression pd02=_rmv(0)->parDer(v(2));
-  SymbolicExpression pd10=_rmv(1)->parDer(v(0));
-  SymbolicExpression pd11=_rmv(1)->parDer(v(1));
-  SymbolicExpression pd12=_rmv(1)->parDer(v(2));
-  SymbolicExpression pd20=_rmv(2)->parDer(v(0));
-  SymbolicExpression pd21=_rmv(2)->parDer(v(1));
-  SymbolicExpression pd22=_rmv(2)->parDer(v(2));
-  SymbolicExpression pdn0=norm->parDer(v(0));//mfmf this should be done by VecSymExpr pdn=norm.parDer(v)
-  SymbolicExpression pdn1=norm->parDer(v(1));
-  SymbolicExpression pdn2=norm->parDer(v(2));
+  SymbolicExpression pd00=_rmv(0).parDer(v(0));//mfmf this should be done by MatSymExpr pd=_rmv.parDer(v) 
+  SymbolicExpression pd01=_rmv(0).parDer(v(1));
+  SymbolicExpression pd02=_rmv(0).parDer(v(2));
+  SymbolicExpression pd10=_rmv(1).parDer(v(0));
+  SymbolicExpression pd11=_rmv(1).parDer(v(1));
+  SymbolicExpression pd12=_rmv(1).parDer(v(2));
+  SymbolicExpression pd20=_rmv(2).parDer(v(0));
+  SymbolicExpression pd21=_rmv(2).parDer(v(1));
+  SymbolicExpression pd22=_rmv(2).parDer(v(2));
+  SymbolicExpression pdn0=norm.parDer(v(0));//mfmf this should be done by VecSymExpr pdn=norm.parDer(v)
+  SymbolicExpression pdn1=norm.parDer(v(1));
+  SymbolicExpression pdn2=norm.parDer(v(2));
 
-  string indepVar0; { stringstream str; v(0)->writeXMLFile(str); indepVar0=str.str(); }
-  string indepVar1; { stringstream str; v(1)->writeXMLFile(str); indepVar1=str.str(); }
-  string indepVar2; { stringstream str; v(2)->writeXMLFile(str); indepVar2=str.str(); }
-  string depVar0; { stringstream str; _rmv(0)->writeXMLFile(str); depVar0=str.str(); }
-  string depVar1; { stringstream str; _rmv(1)->writeXMLFile(str); depVar1=str.str(); }
-  string depVar2; { stringstream str; _rmv(2)->writeXMLFile(str); depVar2=str.str(); }
-  string normStr; { stringstream str; norm->writeXMLFile(str); normStr=str.str(); }
-  string depVar0_indepVar0; { stringstream str; pd00->writeXMLFile(str); depVar0_indepVar0=str.str(); }
-  string depVar0_indepVar1; { stringstream str; pd01->writeXMLFile(str); depVar0_indepVar1=str.str(); }
-  string depVar0_indepVar2; { stringstream str; pd02->writeXMLFile(str); depVar0_indepVar2=str.str(); }
-  string depVar1_indepVar0; { stringstream str; pd10->writeXMLFile(str); depVar1_indepVar0=str.str(); }
-  string depVar1_indepVar1; { stringstream str; pd11->writeXMLFile(str); depVar1_indepVar1=str.str(); }
-  string depVar1_indepVar2; { stringstream str; pd12->writeXMLFile(str); depVar1_indepVar2=str.str(); }
-  string depVar2_indepVar0; { stringstream str; pd20->writeXMLFile(str); depVar2_indepVar0=str.str(); }
-  string depVar2_indepVar1; { stringstream str; pd21->writeXMLFile(str); depVar2_indepVar1=str.str(); }
-  string depVar2_indepVar2; { stringstream str; pd22->writeXMLFile(str); depVar2_indepVar2=str.str(); }
-  string norm_indepVar0; { stringstream str; pdn0->writeXMLFile(str); norm_indepVar0=str.str(); }
-  string norm_indepVar1; { stringstream str; pdn1->writeXMLFile(str); norm_indepVar1=str.str(); }
-  string norm_indepVar2; { stringstream str; pdn2->writeXMLFile(str); norm_indepVar2=str.str(); }
+  string indepVar0; { stringstream str; v(0).writeXMLFile(str); indepVar0=str.str(); }
+  string indepVar1; { stringstream str; v(1).writeXMLFile(str); indepVar1=str.str(); }
+  string indepVar2; { stringstream str; v(2).writeXMLFile(str); indepVar2=str.str(); }
+  string depVar0; { stringstream str; _rmv(0).writeXMLFile(str); depVar0=str.str(); }
+  string depVar1; { stringstream str; _rmv(1).writeXMLFile(str); depVar1=str.str(); }
+  string depVar2; { stringstream str; _rmv(2).writeXMLFile(str); depVar2=str.str(); }
+  string normStr; { stringstream str; norm.writeXMLFile(str); normStr=str.str(); }
+  string depVar0_indepVar0; { stringstream str; pd00.writeXMLFile(str); depVar0_indepVar0=str.str(); }
+  string depVar0_indepVar1; { stringstream str; pd01.writeXMLFile(str); depVar0_indepVar1=str.str(); }
+  string depVar0_indepVar2; { stringstream str; pd02.writeXMLFile(str); depVar0_indepVar2=str.str(); }
+  string depVar1_indepVar0; { stringstream str; pd10.writeXMLFile(str); depVar1_indepVar0=str.str(); }
+  string depVar1_indepVar1; { stringstream str; pd11.writeXMLFile(str); depVar1_indepVar1=str.str(); }
+  string depVar1_indepVar2; { stringstream str; pd12.writeXMLFile(str); depVar1_indepVar2=str.str(); }
+  string depVar2_indepVar0; { stringstream str; pd20.writeXMLFile(str); depVar2_indepVar0=str.str(); }
+  string depVar2_indepVar1; { stringstream str; pd21.writeXMLFile(str); depVar2_indepVar1=str.str(); }
+  string depVar2_indepVar2; { stringstream str; pd22.writeXMLFile(str); depVar2_indepVar2=str.str(); }
+  string norm_indepVar0; { stringstream str; pdn0.writeXMLFile(str); norm_indepVar0=str.str(); }
+  string norm_indepVar1; { stringstream str; pdn1.writeXMLFile(str); norm_indepVar1=str.str(); }
+  string norm_indepVar2; { stringstream str; pdn2.writeXMLFile(str); norm_indepVar2=str.str(); }
 
   stringstream str;
   str<<"indepVar 0 = "<<indepVar0<<endl;
@@ -207,19 +207,19 @@ int checkSym() {
   //if(norm_indepVar1!="...") return 202
   //if(norm_indepVar2!="...") return 203
 
-  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(v(0)))->set(1.1);//mfmf remove all the casts
-  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(v(1)))->set(2.2);
-  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(v(2)))->set(3.3);
-  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(m(0,1)))->set(4.4);
-  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(a5))->set(5.5);
-  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(a6))->set(6.6);
+  v(0).setSymbolValue(1.1);
+  v(1).setSymbolValue(2.2);
+  v(2).setSymbolValue(3.3);
+  m(0,1).setSymbolValue(4.4);
+  a5.setSymbolValue(5.5);
+  a6.setSymbolValue(6.6);
 #ifndef NDEBUG
   SymbolicExpression::evalOperationsCount=0;
 #endif
   cout<<"frist eval"<<endl;
-  cout<<"pdn0.eval = "<<pdn0->eval()<<endl;//mfmf replace this by pdn->eval() -> Vec<double>
-  cout<<"pdn1.eval = "<<pdn1->eval()<<endl;
-  cout<<"pdn2.eval = "<<pdn2->eval()<<endl;
+  cout<<"pdn0.eval = "<<pdn0.eval()<<endl;//mfmf replace this by pdn->eval() -> Vec<double>
+  cout<<"pdn1.eval = "<<pdn1.eval()<<endl;
+  cout<<"pdn2.eval = "<<pdn2.eval()<<endl;
 #ifndef NDEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
@@ -227,37 +227,37 @@ int checkSym() {
   SymbolicExpression::evalOperationsCount=0;
 #endif
   cout<<"second eval with same values for independent variables"<<endl;
-  cout<<"pdn0.eval = "<<pdn0->eval()<<endl;
-  cout<<"pdn1.eval = "<<pdn1->eval()<<endl;
-  cout<<"pdn2.eval = "<<pdn2->eval()<<endl;
+  cout<<"pdn0.eval = "<<pdn0.eval()<<endl;
+  cout<<"pdn1.eval = "<<pdn1.eval()<<endl;
+  cout<<"pdn2.eval = "<<pdn2.eval()<<endl;
 #ifndef NDEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
 
-  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(v(0)))->set(3.1);//mfmf remove all the casts
-  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(v(1)))->set(4.2);
-  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(v(2)))->set(5.3);
-  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(m(0,1)))->set(6.4);
-  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(a5))->set(7.5);
-  const_pointer_cast<AST::Symbol>(dynamic_pointer_cast<const AST::Symbol>(a6))->set(8.6);
+  v(0).setSymbolValue(3.1);
+  v(1).setSymbolValue(4.2);
+  v(2).setSymbolValue(5.3);
+  m(0,1).setSymbolValue(6.4);
+  a5.setSymbolValue(7.5);
+  a6.setSymbolValue(8.6);
 #ifndef NDEBUG
   SymbolicExpression::evalOperationsCount=0;
 #endif
   cout<<"third eval with different values for independent variables"<<endl;
-  cout<<"pdn0.eval = "<<pdn0->eval()<<endl;
-  cout<<"pdn1.eval = "<<pdn1->eval()<<endl;
-  cout<<"pdn2.eval = "<<pdn2->eval()<<endl;
+  cout<<"pdn0.eval = "<<pdn0.eval()<<endl;
+  cout<<"pdn1.eval = "<<pdn1.eval()<<endl;
+  cout<<"pdn2.eval = "<<pdn2.eval()<<endl;
 #ifndef NDEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
-  if(abs(pdn0->eval()-7.6789773389265372217)>1e-10) return 401;
-  if(abs(pdn1->eval()-10.946007707881207693)>1e-10) return 402;
-  if(abs(pdn2->eval()-17.142920767274581806)>1e-10) return 403;
+  if(abs(pdn0.eval()-7.6789773389265372217)>1e-10) return 401;
+  if(abs(pdn1.eval()-10.946007707881207693)>1e-10) return 402;
+  if(abs(pdn2.eval()-17.142920767274581806)>1e-10) return 403;
 
 #ifndef NDEBUG
   SymbolicExpression::evalOperationsCount=0;
 #endif
-  _rmv(0)->eval();
+  _rmv(0).eval();
 #ifndef NDEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
   if(SymbolicExpression::evalOperationsCount!=0) return 404;

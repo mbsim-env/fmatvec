@@ -78,10 +78,6 @@ bool Vertex::isOne() const {
   return false;
 }
 
-bool Vertex::isSymbol() const {
-  return dynamic_cast<const Symbol*>(this)!=nullptr;
-}
-
 const map<weak_ptr<const Symbol>, unsigned long, owner_less<weak_ptr<const Symbol>>>& Vertex::getDependsOn() const {
   return dependsOn;
 }
@@ -111,7 +107,8 @@ SymbolicExpression Constant<T>::createUsingXML(const void *element) {
 
 template<class T>
 SymbolicExpression Constant<T>::parDer(const SymbolicExpression &x) const {
-  assert(dynamic_pointer_cast<const Symbol>(x));
+  if(dynamic_pointer_cast<const Symbol>(x)==nullptr)
+    throw runtime_error("The independent variable of parDer must be a symbol.");
   return Constant<int>::create(0);
 }
 
@@ -156,7 +153,8 @@ SymbolicExpression Symbol::createUsingXML(const void *element) {
 }
 
 SymbolicExpression Symbol::parDer(const SymbolicExpression &x) const {
-  assert(dynamic_pointer_cast<const Symbol>(x));
+  if(dynamic_pointer_cast<const Symbol>(x)==nullptr)
+    throw runtime_error("The independent variable of parDer must be a symbol.");
   return this == x.get() ? Constant<int>::create(1) : Constant<int>::create(0);
 }
 
@@ -168,11 +166,6 @@ void Symbol::writeXMLFile(ostream &parent) const {
 //  DOMElement *var=D(doc)->createElement(AST%"Symbol");
 //  parent->insertBefore(var, nullptr);
 //  E(var)->setAttribute("uuid", to_string(uuid));
-}
-
-void Symbol::set(double x_) {
-  version++;
-  x=x_;
 }
 
 Symbol::Symbol(const boost::uuids::uuid& uuid_) : version(0), uuid(uuid_) {}
@@ -221,7 +214,10 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
   }
 
   vector<weak_ptr<const Vertex>> weakChild;
-  copy(child_.begin(), child_.end(), back_inserter(weakChild));
+  // we cannot just use std::copy here since std::shared_ptr is a private base of SymbolicExpression
+  transform(child_.begin(), child_.end(), back_inserter(weakChild), [](const SymbolicExpression &x){
+    return weak_ptr<const Vertex>(x);
+  });
   auto r=cache.insert(make_pair(make_pair(op_, weakChild), weak_ptr<const Operation>()));
   if(!r.second) {
     auto oldPtr=r.first->second.lock();
@@ -243,7 +239,8 @@ SymbolicExpression Operation::createUsingXML(const void *element) {
 }
 
 SymbolicExpression Operation::parDer(const SymbolicExpression &x) const {
-  assert(dynamic_pointer_cast<const Symbol>(x));
+  if(dynamic_pointer_cast<const Symbol>(x)==nullptr)
+    throw runtime_error("The independent variable of parDer must be a symbol.");
   switch(op) {
     case Plus: return Operation::create(Plus, {child[0]->parDer(x), child[1]->parDer(x)});
     case Minus: return Operation::create(Minus, {child[0]->parDer(x), child[1]->parDer(x)});

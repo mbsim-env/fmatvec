@@ -29,7 +29,7 @@ namespace AST {
 //! than any other expression can be differentiated with respect to this symbol.
 //! See the public member function of fmatvec::AST::Vertex for all function being
 //! callable as this->memberFunc(...).
-class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
+class SymbolicExpression : private std::shared_ptr<const AST::Vertex> {
   friend class AST::Symbol;
   friend class AST::Operation;
   friend class AST::Constant<int>;
@@ -46,6 +46,36 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
     //! Creates a symbol (each call to this ctor creates a new symbol)
     SymbolicExpression(const Symbol&);
 
+    // default ctors and assignment operators
+    SymbolicExpression(const SymbolicExpression& x) = default;
+    SymbolicExpression(SymbolicExpression&& x) = default;
+    SymbolicExpression& operator=(const SymbolicExpression& x) = default;
+    SymbolicExpression& operator=(SymbolicExpression&& x) = default;
+    ~SymbolicExpression() = default;
+
+    // member functions from std::shared_ptr
+    using std::shared_ptr<const AST::Vertex>::reset;
+    using std::shared_ptr<const AST::Vertex>::swap;
+    using std::shared_ptr<const AST::Vertex>::use_count;
+    using std::shared_ptr<const AST::Vertex>::owner_before;
+
+    //! Set the double value of the symbol stored in the SymbolicExpression.
+    //! If this object does not store a symbol an exception is thrown.
+    inline void setSymbolValue(double x);
+
+    //! Evaluate the SymbolicExpression.
+    //! The returned value depends on the symbolic expression and on the current values of all independent
+    //! variables this symbolic expression depends on.
+    //! Also see Symbol ant Vertex::getDependsOn().
+    inline double eval() const;
+
+    //! Generate a new SymbolicExpression being the partial derivate of this SymbolicExpression
+    //! with respect to the variable x.
+    inline SymbolicExpression parDer(const SymbolicExpression &x) const;
+
+    //! Write a SymbolicExpression to a XML representation (serialization).
+    void writeXMLFile(std::ostream &parent) const;
+
     // operators
     SymbolicExpression operator+(const SymbolicExpression &b) const;
     SymbolicExpression operator-(const SymbolicExpression &b) const;
@@ -61,6 +91,10 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
 #endif
 };
 
+// Some member function definition of vSymbolicExpression are moved ot the end of this file
+// since they need the defintion of the other class defined in this file.
+
+// function operations overloaded for SymbolicExpression
 SymbolicExpression pow(const SymbolicExpression &a, const SymbolicExpression &b);
 SymbolicExpression log(const SymbolicExpression &a);
 SymbolicExpression sqrt(const SymbolicExpression &a);
@@ -90,7 +124,7 @@ class Vertex {
     //! Rreturn true if this Vertex is a constant integer.
     inline virtual bool isConstantInt() const;
     //! Rreturn true if this Vertex is a symbol.
-    bool isSymbol() const;
+    inline virtual bool isSymbol() const;
     //! Returns true if this Vertex is a constant with value 0.
     //! Note that only integer constants can be 0. Double constants are never treated as 0 by this function.
     bool isZero() const;
@@ -107,6 +141,10 @@ class Vertex {
 };
 
 bool Vertex::isConstantInt() const {
+  return false;
+}
+
+bool Vertex::isSymbol() const {
   return false;
 }
 
@@ -165,9 +203,10 @@ class Symbol : public Vertex {
     inline double eval() const override;
     SymbolicExpression parDer(const SymbolicExpression &x) const override;
     void writeXMLFile(std::ostream &parent) const override;
+    inline bool isSymbol() const override;
     //! Set the value of this independent variable.
     //! This has an influence on the evaluation of all ASTs which depend on this independent variable.
-    void set(double x_);
+    inline void setValue(double x_);
     //! Eeturn the "version" of this variable.
     //! Each call to Symbol::set increased this "version count". This is used for caching evaluations.
     inline unsigned long getVersion() const;
@@ -182,12 +221,21 @@ class Symbol : public Vertex {
     static std::map<CacheKey, std::weak_ptr<const Symbol>> cache;
 };
 
+void Symbol::setValue(double x_) {
+  version++;
+  x=x_;
+}
+
 double Symbol::eval() const {
   return x;
 }
 
 unsigned long Symbol::getVersion() const {
   return version;
+}
+
+bool Symbol::isSymbol() const {
+  return true;
 }
 
 // ***** Operation *****
@@ -254,6 +302,25 @@ double Operation::eval() const {
 }
 
 } // end namespace AST
+
+void SymbolicExpression::setSymbolValue(double x) {
+  if(!get()->isSymbol())
+    throw std::runtime_error("Cannot call setSymbolValue on a object being not a symbol.");
+  const_cast<AST::Symbol*>(static_cast<const AST::Symbol*>(get()))->setValue(x);
+}
+
+double SymbolicExpression::eval() const {
+  return get()->eval();
+}
+
+SymbolicExpression SymbolicExpression::parDer(const SymbolicExpression &x) const {
+  return get()->parDer(x);
+}
+
+void SymbolicExpression::writeXMLFile(std::ostream &parent) const {
+  get()->writeXMLFile(parent);
+}
+
 } // end namespace fmatvec
 
 #endif
