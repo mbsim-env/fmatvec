@@ -132,18 +132,8 @@ int checkSym() {
   VecSymExpr _rmv=m*v;
   SymbolicExpression norm=nrm2(_rmv);
 
-  SymbolicExpression pd00=_rmv(0).parDer(v(0));//mfmf this should be done by MatSymExpr pd=_rmv.parDer(v) 
-  SymbolicExpression pd01=_rmv(0).parDer(v(1));
-  SymbolicExpression pd02=_rmv(0).parDer(v(2));
-  SymbolicExpression pd10=_rmv(1).parDer(v(0));
-  SymbolicExpression pd11=_rmv(1).parDer(v(1));
-  SymbolicExpression pd12=_rmv(1).parDer(v(2));
-  SymbolicExpression pd20=_rmv(2).parDer(v(0));
-  SymbolicExpression pd21=_rmv(2).parDer(v(1));
-  SymbolicExpression pd22=_rmv(2).parDer(v(2));
-  SymbolicExpression pdn0=norm.parDer(v(0));//mfmf this should be done by VecSymExpr pdn=norm.parDer(v)
-  SymbolicExpression pdn1=norm.parDer(v(1));
-  SymbolicExpression pdn2=norm.parDer(v(2));
+  MatSymExpr pd=parDer(_rmv, v);
+  RowVector<Var, SymbolicExpression> pdn=parDer(norm, v);
 
   string indepVar0; { stringstream str; v(0).writeXMLFile(str); indepVar0=str.str(); }
   string indepVar1; { stringstream str; v(1).writeXMLFile(str); indepVar1=str.str(); }
@@ -152,18 +142,18 @@ int checkSym() {
   string depVar1; { stringstream str; _rmv(1).writeXMLFile(str); depVar1=str.str(); }
   string depVar2; { stringstream str; _rmv(2).writeXMLFile(str); depVar2=str.str(); }
   string normStr; { stringstream str; norm.writeXMLFile(str); normStr=str.str(); }
-  string depVar0_indepVar0; { stringstream str; pd00.writeXMLFile(str); depVar0_indepVar0=str.str(); }
-  string depVar0_indepVar1; { stringstream str; pd01.writeXMLFile(str); depVar0_indepVar1=str.str(); }
-  string depVar0_indepVar2; { stringstream str; pd02.writeXMLFile(str); depVar0_indepVar2=str.str(); }
-  string depVar1_indepVar0; { stringstream str; pd10.writeXMLFile(str); depVar1_indepVar0=str.str(); }
-  string depVar1_indepVar1; { stringstream str; pd11.writeXMLFile(str); depVar1_indepVar1=str.str(); }
-  string depVar1_indepVar2; { stringstream str; pd12.writeXMLFile(str); depVar1_indepVar2=str.str(); }
-  string depVar2_indepVar0; { stringstream str; pd20.writeXMLFile(str); depVar2_indepVar0=str.str(); }
-  string depVar2_indepVar1; { stringstream str; pd21.writeXMLFile(str); depVar2_indepVar1=str.str(); }
-  string depVar2_indepVar2; { stringstream str; pd22.writeXMLFile(str); depVar2_indepVar2=str.str(); }
-  string norm_indepVar0; { stringstream str; pdn0.writeXMLFile(str); norm_indepVar0=str.str(); }
-  string norm_indepVar1; { stringstream str; pdn1.writeXMLFile(str); norm_indepVar1=str.str(); }
-  string norm_indepVar2; { stringstream str; pdn2.writeXMLFile(str); norm_indepVar2=str.str(); }
+  string depVar0_indepVar0; { stringstream str; pd(0,0).writeXMLFile(str); depVar0_indepVar0=str.str(); }
+  string depVar0_indepVar1; { stringstream str; pd(0,1).writeXMLFile(str); depVar0_indepVar1=str.str(); }
+  string depVar0_indepVar2; { stringstream str; pd(0,2).writeXMLFile(str); depVar0_indepVar2=str.str(); }
+  string depVar1_indepVar0; { stringstream str; pd(1,0).writeXMLFile(str); depVar1_indepVar0=str.str(); }
+  string depVar1_indepVar1; { stringstream str; pd(1,1).writeXMLFile(str); depVar1_indepVar1=str.str(); }
+  string depVar1_indepVar2; { stringstream str; pd(1,2).writeXMLFile(str); depVar1_indepVar2=str.str(); }
+  string depVar2_indepVar0; { stringstream str; pd(2,0).writeXMLFile(str); depVar2_indepVar0=str.str(); }
+  string depVar2_indepVar1; { stringstream str; pd(2,1).writeXMLFile(str); depVar2_indepVar1=str.str(); }
+  string depVar2_indepVar2; { stringstream str; pd(2,2).writeXMLFile(str); depVar2_indepVar2=str.str(); }
+  string norm_indepVar0; { stringstream str; pdn(0).writeXMLFile(str); norm_indepVar0=str.str(); }
+  string norm_indepVar1; { stringstream str; pdn(1).writeXMLFile(str); norm_indepVar1=str.str(); }
+  string norm_indepVar2; { stringstream str; pdn(2).writeXMLFile(str); norm_indepVar2=str.str(); }
 
   stringstream str;
   str<<"indepVar 0 = "<<indepVar0<<endl;
@@ -217,9 +207,9 @@ int checkSym() {
   SymbolicExpression::evalOperationsCount=0;
 #endif
   cout<<"frist eval"<<endl;
-  cout<<"pdn0.eval = "<<pdn0.eval()<<endl;//mfmf replace this by pdn->eval() -> Vec<double>
-  cout<<"pdn1.eval = "<<pdn1.eval()<<endl;
-  cout<<"pdn2.eval = "<<pdn2.eval()<<endl;
+  cout<<"pdn0.eval = "<<pdn(0).eval()<<endl;//mfmf replace this by pdn->eval() -> Vec<double>
+  cout<<"pdn1.eval = "<<pdn(1).eval()<<endl;
+  cout<<"pdn2.eval = "<<pdn(2).eval()<<endl;
 #ifndef NDEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
@@ -227,9 +217,9 @@ int checkSym() {
   SymbolicExpression::evalOperationsCount=0;
 #endif
   cout<<"second eval with same values for independent variables"<<endl;
-  cout<<"pdn0.eval = "<<pdn0.eval()<<endl;
-  cout<<"pdn1.eval = "<<pdn1.eval()<<endl;
-  cout<<"pdn2.eval = "<<pdn2.eval()<<endl;
+  cout<<"pdn0.eval = "<<pdn(0).eval()<<endl;
+  cout<<"pdn1.eval = "<<pdn(1).eval()<<endl;
+  cout<<"pdn2.eval = "<<pdn(2).eval()<<endl;
 #ifndef NDEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
@@ -244,15 +234,15 @@ int checkSym() {
   SymbolicExpression::evalOperationsCount=0;
 #endif
   cout<<"third eval with different values for independent variables"<<endl;
-  cout<<"pdn0.eval = "<<pdn0.eval()<<endl;
-  cout<<"pdn1.eval = "<<pdn1.eval()<<endl;
-  cout<<"pdn2.eval = "<<pdn2.eval()<<endl;
+  cout<<"pdn0.eval = "<<pdn(0).eval()<<endl;
+  cout<<"pdn1.eval = "<<pdn(1).eval()<<endl;
+  cout<<"pdn2.eval = "<<pdn(2).eval()<<endl;
 #ifndef NDEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
-  if(abs(pdn0.eval()-7.6789773389265372217)>1e-10) return 401;
-  if(abs(pdn1.eval()-10.946007707881207693)>1e-10) return 402;
-  if(abs(pdn2.eval()-17.142920767274581806)>1e-10) return 403;
+  if(abs(pdn(0).eval()-7.6789773389265372217)>1e-10) return 401;
+  if(abs(pdn(1).eval()-10.946007707881207693)>1e-10) return 402;
+  if(abs(pdn(2).eval()-17.142920767274581806)>1e-10) return 403;
 
 #ifndef NDEBUG
   SymbolicExpression::evalOperationsCount=0;
@@ -262,6 +252,47 @@ int checkSym() {
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
   if(SymbolicExpression::evalOperationsCount!=0) return 404;
 #endif
+
+  {
+    SymbolicExpression dep;
+    SymbolicExpression indep(SYMBOL);
+    SymbolicExpression ret=parDer(dep, indep);
+  }
+  {
+    SymbolicExpression dep;
+    Vector<Fixed<3>, SymbolicExpression> indep(SYMBOL);
+    RowVector<Fixed<3>, SymbolicExpression> ret=parDer(dep, indep);
+  }
+  {
+    Vector<Fixed<3>, SymbolicExpression> dep;
+    SymbolicExpression indep(SYMBOL);
+    Vector<Fixed<3>, SymbolicExpression> ret=parDer(dep, indep);
+  }
+  {
+    Vector<Fixed<3>, SymbolicExpression> dep;
+    Vector<Fixed<3>, SymbolicExpression> indep(SYMBOL);
+    Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression> ret=parDer(dep, indep);
+  }
+  {
+    RowVector<Fixed<3>, SymbolicExpression> dep;
+    SymbolicExpression indep(SYMBOL);
+    RowVector<Fixed<3>, SymbolicExpression> ret=parDer(dep, indep);
+  }
+  {
+    Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression> dep;
+    SymbolicExpression indep(SYMBOL);
+    Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression> ret=parDer(dep, indep);
+  }
+  {
+    Matrix<Rotation, Fixed<3>, Fixed<3>, SymbolicExpression> dep;
+    SymbolicExpression indep(SYMBOL);
+    Vector<Fixed<3>, SymbolicExpression> ret=parDer(dep, indep);
+  }
+  {
+    Matrix<Rotation, Fixed<3>, Fixed<3>, SymbolicExpression> dep;
+    Vector<Fixed<3>, SymbolicExpression> indep(SYMBOL);
+    Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression> ret=parDer(dep, indep);
+  }
 
   return 0;
 }

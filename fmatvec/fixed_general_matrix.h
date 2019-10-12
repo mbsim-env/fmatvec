@@ -623,22 +623,22 @@ namespace fmatvec {
    * Moreover we can overload some member functions here which capitalize the special
    * properties of rotation matrices, link "RotMat inv() { return trans(*this); }."
    */
-  template<int M>
-  class Matrix<Rotation,Fixed<M>,Fixed<M>,double> : public Matrix<General,Fixed<M>,Fixed<M>,double> {
+  template<int M, class AT>
+  class Matrix<Rotation,Fixed<M>,Fixed<M>,AT> : public Matrix<General,Fixed<M>,Fixed<M>,AT> {
     public:
-      typedef double value_type;
+      typedef AT value_type;
       // Constructors are not inherited. Hence we must redefine all ctors here.
 
       Matrix(Noinit ini) { }
-      Matrix(Init ini=INIT, const double &a=0) { this->init(a); }
-      Matrix(Eye ini, const double &a=1) { this->init(ini,a); }
+      Matrix(Init ini=INIT, const AT &a=0) { this->init(a); }
+      Matrix(Eye ini, const AT &a=1) { this->init(ini,a); }
       Matrix(int m, int n, Noinit ini) { }
-      Matrix(int m, int n, Init ini, const double &a=0) { this->init(a); }
-      Matrix(int m, int n, Eye ini, const double &a=1) { this->init(ini,a); }
-      explicit Matrix(const Matrix<General,Fixed<M>,Fixed<M>,double>&  A) { this->deepCopy(A); }
+      Matrix(int m, int n, Init ini, const AT &a=0) { this->init(a); }
+      Matrix(int m, int n, Eye ini, const AT &a=1) { this->init(ini,a); }
+      explicit Matrix(const Matrix<General,Fixed<M>,Fixed<M>,AT>&  A) { this->deepCopy(A); }
 
       template<class Row>
-      Matrix(const Matrix<Symmetric,Row,Row,double> &A) {
+      Matrix(const Matrix<Symmetric,Row,Row,AT> &A) {
 #ifndef FMATVEC_NO_SIZE_CHECK
 	assert(A.size() == M); 
 #endif
@@ -646,7 +646,7 @@ namespace fmatvec {
       }
 
       template<class Type, class Row, class Col>
-      explicit Matrix(const Matrix<Type,Row,Col,double> &A) {
+      explicit Matrix(const Matrix<Type,Row,Col,AT> &A) {
 #ifndef FMATVEC_NO_SIZE_CHECK
 	assert(A.rows() == M); 
 	assert(A.cols() == M);

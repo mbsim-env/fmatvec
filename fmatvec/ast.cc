@@ -51,6 +51,14 @@ SymbolicExpression sqrt(const SymbolicExpression &a) {
   return AST::Operation::create(AST::Operation::Sqrt, {a});
 }
 
+void SymbolicExpression::writeXMLFile(std::ostream &parent) const {
+  get()->writeXMLFile(parent);
+}
+
+SymbolicExpression parDer(const SymbolicExpression &dep, const SymbolicExpression &indep) {
+  return dep->parDer(indep);
+}
+
 namespace AST { // internal namespace
 
 // ***** Vertex *****

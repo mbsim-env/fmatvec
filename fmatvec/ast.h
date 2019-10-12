@@ -34,6 +34,7 @@ class SymbolicExpression : private std::shared_ptr<const AST::Vertex> {
   friend class AST::Operation;
   friend class AST::Constant<int>;
   friend class AST::Constant<double>;
+  friend SymbolicExpression parDer(const SymbolicExpression &dep, const SymbolicExpression &indep);
   private:
     template<class T> SymbolicExpression(const shared_ptr<T> &x);
   public:
@@ -69,10 +70,6 @@ class SymbolicExpression : private std::shared_ptr<const AST::Vertex> {
     //! Also see Symbol ant Vertex::getDependsOn().
     inline double eval() const;
 
-    //! Generate a new SymbolicExpression being the partial derivate of this SymbolicExpression
-    //! with respect to the variable x.
-    inline SymbolicExpression parDer(const SymbolicExpression &x) const;
-
     //! Write a SymbolicExpression to a XML representation (serialization).
     void writeXMLFile(std::ostream &parent) const;
 
@@ -93,6 +90,10 @@ class SymbolicExpression : private std::shared_ptr<const AST::Vertex> {
 
 // Some member function definition of vSymbolicExpression are moved ot the end of this file
 // since they need the defintion of the other class defined in this file.
+
+//! Generate a new SymbolicExpression being the partial derivate of dep
+//! with respect to indep (indep must be a symbol).
+SymbolicExpression parDer(const SymbolicExpression &dep, const SymbolicExpression &indep);
 
 // function operations overloaded for SymbolicExpression
 SymbolicExpression pow(const SymbolicExpression &a, const SymbolicExpression &b);
@@ -322,14 +323,6 @@ void SymbolicExpression::setSymbolValue(double x) {
 
 double SymbolicExpression::eval() const {
   return get()->eval();
-}
-
-SymbolicExpression SymbolicExpression::parDer(const SymbolicExpression &x) const {
-  return get()->parDer(x);
-}
-
-void SymbolicExpression::writeXMLFile(std::ostream &parent) const {
-  get()->writeXMLFile(parent);
 }
 
 } // end namespace fmatvec

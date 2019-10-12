@@ -24,6 +24,7 @@
 
 #include "linear_algebra.h"
 #include "linear_algebra_double.h"
+#include "symbolic.h"
 
 namespace fmatvec {
 
