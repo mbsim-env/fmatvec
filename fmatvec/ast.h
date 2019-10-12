@@ -35,6 +35,7 @@ class SymbolicExpression : private std::shared_ptr<const AST::Vertex> {
   friend class AST::Constant<int>;
   friend class AST::Constant<double>;
   friend SymbolicExpression parDer(const SymbolicExpression &dep, const SymbolicExpression &indep);
+  friend double eval(const SymbolicExpression &x);
   private:
     template<class T> SymbolicExpression(const shared_ptr<T> &x);
   public:
@@ -64,12 +65,6 @@ class SymbolicExpression : private std::shared_ptr<const AST::Vertex> {
     //! If this object does not store a symbol an exception is thrown.
     inline void setSymbolValue(double x);
 
-    //! Evaluate the SymbolicExpression.
-    //! The returned value depends on the symbolic expression and on the current values of all independent
-    //! variables this symbolic expression depends on.
-    //! Also see Symbol ant Vertex::getDependsOn().
-    inline double eval() const;
-
     //! Write a SymbolicExpression to a XML representation (serialization).
     void writeXMLFile(std::ostream &parent) const;
 
@@ -94,6 +89,12 @@ class SymbolicExpression : private std::shared_ptr<const AST::Vertex> {
 //! Generate a new SymbolicExpression being the partial derivate of dep
 //! with respect to indep (indep must be a symbol).
 SymbolicExpression parDer(const SymbolicExpression &dep, const SymbolicExpression &indep);
+
+//! Evaluate the SymbolicExpression.
+//! The returned value depends on the symbolic expression and on the current values of all independent
+//! variables this symbolic expression depends on.
+//! Also see Symbol ant Vertex::getDependsOn().
+inline double eval(const SymbolicExpression &x);
 
 // function operations overloaded for SymbolicExpression
 SymbolicExpression pow(const SymbolicExpression &a, const SymbolicExpression &b);
@@ -321,8 +322,8 @@ void SymbolicExpression::setSymbolValue(double x) {
   const_cast<AST::Symbol*>(static_cast<const AST::Symbol*>(get()))->setValue(x);
 }
 
-double SymbolicExpression::eval() const {
-  return get()->eval();
+double eval(const SymbolicExpression &x) {
+  return x->eval();
 }
 
 } // end namespace fmatvec

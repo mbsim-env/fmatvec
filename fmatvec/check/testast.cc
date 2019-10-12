@@ -86,7 +86,7 @@ int checkSym() {
   }
   VecSymExpr v2;
   VecSymExpr v3(3);
-  if(abs(v3(2).eval())>1e-12) return 300;
+  if(abs(eval(v3(2)))>1e-12) return 300;
   VecSymExpr v(3, SYMBOL);
   SymbolicExpression a(3.0);
   VecSymExpr r1=v*a;
@@ -102,7 +102,7 @@ int checkSym() {
   VecSymExpr r22=v-v;
   MatSymExpr m2;
   MatSymExpr m3(3,3);
-  if(abs(m3(2,2).eval())>1e-12) return 300;
+  if(abs(eval(m3(2,2)))>1e-12) return 300;
   MatSymExpr m(3,3);
   m(0,1)=SymbolicExpression(SYMBOL);
   m(0,0)=2.0;
@@ -207,9 +207,7 @@ int checkSym() {
   SymbolicExpression::evalOperationsCount=0;
 #endif
   cout<<"frist eval"<<endl;
-  cout<<"pdn0.eval = "<<pdn(0).eval()<<endl;//mfmf replace this by pdn->eval() -> Vec<double>
-  cout<<"pdn1.eval = "<<pdn(1).eval()<<endl;
-  cout<<"pdn2.eval = "<<pdn(2).eval()<<endl;
+  cout<<"pdn.eval = "<<eval(pdn)<<endl;
 #ifndef NDEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
@@ -217,9 +215,7 @@ int checkSym() {
   SymbolicExpression::evalOperationsCount=0;
 #endif
   cout<<"second eval with same values for independent variables"<<endl;
-  cout<<"pdn0.eval = "<<pdn(0).eval()<<endl;
-  cout<<"pdn1.eval = "<<pdn(1).eval()<<endl;
-  cout<<"pdn2.eval = "<<pdn(2).eval()<<endl;
+  cout<<"pdn.eval = "<<eval(pdn)<<endl;
 #ifndef NDEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
@@ -234,20 +230,18 @@ int checkSym() {
   SymbolicExpression::evalOperationsCount=0;
 #endif
   cout<<"third eval with different values for independent variables"<<endl;
-  cout<<"pdn0.eval = "<<pdn(0).eval()<<endl;
-  cout<<"pdn1.eval = "<<pdn(1).eval()<<endl;
-  cout<<"pdn2.eval = "<<pdn(2).eval()<<endl;
+  cout<<"pdn.eval = "<<eval(pdn)<<endl;
 #ifndef NDEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
-  if(abs(pdn(0).eval()-7.6789773389265372217)>1e-10) return 401;
-  if(abs(pdn(1).eval()-10.946007707881207693)>1e-10) return 402;
-  if(abs(pdn(2).eval()-17.142920767274581806)>1e-10) return 403;
+  if(abs(eval(pdn(0))-7.6789773389265372217)>1e-10) return 401;
+  if(abs(eval(pdn(1))-10.946007707881207693)>1e-10) return 402;
+  if(abs(eval(pdn(2))-17.142920767274581806)>1e-10) return 403;
 
 #ifndef NDEBUG
   SymbolicExpression::evalOperationsCount=0;
 #endif
-  _rmv(0).eval();
+  eval(_rmv(0));
 #ifndef NDEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
   if(SymbolicExpression::evalOperationsCount!=0) return 404;
@@ -292,6 +286,19 @@ int checkSym() {
     Matrix<Rotation, Fixed<3>, Fixed<3>, SymbolicExpression> dep;
     Vector<Fixed<3>, SymbolicExpression> indep(SYMBOL);
     Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression> ret=parDer(dep, indep);
+  }
+
+  {
+    stringstream dummy; // dump all ret* vars to this stream must to avoid set but unused warnings
+    double retd=eval(SymbolicExpression()); dummy<<retd;
+    Vector<Var, double> retvv=eval(Vector<Var, SymbolicExpression>(3)); dummy<<retvv;
+    Vector<Fixed<3>, double> retvf=eval(Vector<Fixed<3>, SymbolicExpression>()); dummy<<retvf;
+    RowVector<Var, double> retrvv=eval(RowVector<Var, SymbolicExpression>(3)); dummy<<retrvv;
+    RowVector<Fixed<3>, double> retrvf=eval(RowVector<Fixed<3>, SymbolicExpression>()); dummy<<retrvf;
+    Matrix<General, Var, Var, double> retmvv=eval(Matrix<General, Var, Var, SymbolicExpression>(3,3)); dummy<<retmvv;
+    Matrix<General, Fixed<3>, Var, double> retmfv=eval(Matrix<General, Fixed<3>, Var, SymbolicExpression>(3)); dummy<<retmfv;
+    Matrix<General, Var, Fixed<3>, double> retmvf=eval(Matrix<General, Var, Fixed<3>, SymbolicExpression>(3)); dummy<<retmvf;
+    Matrix<General, Fixed<3>, Fixed<3>, double> retmff=eval(Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression>()); dummy<<retmff;
   }
 
   return 0;

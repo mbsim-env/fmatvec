@@ -59,6 +59,74 @@ Matrix<General, Fixed<3>, Fixed<3>, AT> parDer(const Matrix<Rotation, Fixed<3>, 
   return ret;
 }
 
+template<class Shape, class AT>
+Vector<Shape, double> eval(const Vector<Shape, AT> &x) {
+  Vector<Shape, double> ret(x.size());
+  for(int i=0; i<x.size(); ++i)
+    ret(i)=eval(x(i));
+  return ret;
+}
+
+template<class Shape, class AT>
+RowVector<Shape, double> eval(const RowVector<Shape, AT> &x) {
+  RowVector<Shape, double> ret(x.size());
+  for(int i=0; i<x.size(); ++i)
+    ret(i)=eval(x(i));
+  return ret;
+}
+
+template<int N, class AT>
+Vector<Fixed<N>, double> eval(const Vector<Fixed<N>, AT> &x) {
+  Vector<Fixed<N>, double> ret;
+  for(int i=0; i<N; ++i)
+    ret(i)=eval(x(i));
+  return ret;
+}
+
+template<int N, class AT>
+RowVector<Fixed<N>, double> eval(const RowVector<Fixed<N>, AT> &x) {
+  RowVector<Fixed<N>, double> ret;
+  for(int i=0; i<N; ++i)
+    ret(i)=eval(x(i));
+  return ret;
+}
+
+template<class Type, class RowShape, class ColShape, class AT>
+Matrix<Type, RowShape, ColShape, double> eval(const Matrix<Type, RowShape, ColShape, AT> &x) {
+  Matrix<Type, RowShape, ColShape, double> ret(x.rows(), x.cols());
+  for(int r=0; r<x.rows(); ++r)
+    for(int c=0; c<x.cols(); ++c)
+      ret(r,c)=eval(x(r,c));
+  return ret;
+}
+
+template<class Type, int N, class ColShape, class AT>
+Matrix<Type, Fixed<N>, ColShape, double> eval(const Matrix<Type, Fixed<N>, ColShape, AT> &x) {
+  Matrix<Type, Fixed<N>, ColShape, double> ret(x.cols());
+  for(int r=0; r<N; ++r)
+    for(int c=0; c<x.cols(); ++c)
+      ret(r,c)=eval(x(r,c));
+  return ret;
+}
+
+template<class Type, class RowShape, int M, class AT>
+Matrix<Type, RowShape, Fixed<M>, double> eval(const Matrix<Type, RowShape, Fixed<M>, AT> &x) {
+  Matrix<Type, RowShape, Fixed<M>, double> ret(x.rows());
+  for(int r=0; r<x.rows(); ++r)
+    for(int c=0; c<M; ++c)
+      ret(r,c)=eval(x(r,c));
+  return ret;
+}
+
+template<class Type, int N, int M, class AT>
+Matrix<Type, Fixed<N>, Fixed<M>, double> eval(const Matrix<Type, Fixed<N>, Fixed<M>, AT> &x) {
+  Matrix<Type, Fixed<N>, Fixed<M>, double> ret;
+  for(int r=0; r<N; ++r)
+    for(int c=0; c<M; ++c)
+      ret(r,c)=eval(x(r,c));
+  return ret;
+}
+
 }
 
 #endif
