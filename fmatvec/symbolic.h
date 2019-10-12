@@ -3,6 +3,9 @@
 
 namespace fmatvec {
 
+// definitions of matrix/vector operations/functions only usefull for symbolic calculations
+// like building partial derivatives, evaluation of symbolic expressions to double values, ...
+
 template<class DepVec, class AT>
 DepVec parDer(const DepVec &dep, const AT &indep) {
   DepVec ret(dep.size());
