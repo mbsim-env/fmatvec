@@ -130,6 +130,37 @@ Matrix<Type, Fixed<N>, Fixed<M>, double> eval(const Matrix<Type, Fixed<N>, Fixed
   return ret;
 }
 
+template<class ShapeDst, class ShapeSrc, class AT>
+Vector<ShapeDst, AT>& operator&=(Vector<ShapeDst, AT> &dst, const Vector<ShapeSrc, double> &src) {
+  assert(dst.size()==src.size());
+  for(int i=0; i<dst.size(); ++i)
+    dst(i)&=src(i);
+  return dst;
+}
+
+template<int N, class AT>
+Vector<Fixed<N>, AT>& operator&=(Vector<Fixed<N>, AT> &dst, const Vector<Fixed<N>, double> &src) {
+  for(int i=0; i<N; ++i)
+    dst(i)&=src(i);
+  return dst;
+}
+
+template<int N, class ShapeSrc, class AT>
+Vector<Fixed<N>, AT>& operator&=(Vector<Fixed<N>, AT> &dst, const Vector<ShapeSrc, double> &src) {
+  assert(N==src.size());
+  for(int i=0; i<N; ++i)
+    dst(i)&=src(i);
+  return dst;
+}
+
+template<class ShapeDst, int N, class AT>
+Vector<ShapeDst, AT>& operator&=(Vector<ShapeDst, AT> &dst, const Vector<Fixed<N>, double> &src) {
+  assert(N==src.size());
+  for(int i=0; i<N; ++i)
+    dst(i)&=src(i);
+  return dst;
+}
+
 }
 
 #endif

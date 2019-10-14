@@ -63,7 +63,7 @@ class SymbolicExpression : private std::shared_ptr<const AST::Vertex> {
 
     //! Set the double value of the symbol stored in the SymbolicExpression.
     //! If this object does not store a symbol an exception is thrown.
-    inline void setSymbolValue(double x);
+    inline SymbolicExpression& operator&=(double x);
 
     //! Write a SymbolicExpression to a XML representation (serialization).
     void writeXMLFile(std::ostream &parent) const;
@@ -316,10 +316,11 @@ double Operation::eval() const {
 
 } // end namespace AST
 
-void SymbolicExpression::setSymbolValue(double x) {
+SymbolicExpression& SymbolicExpression::operator&=(double x) {
   if(!get()->isSymbol())
-    throw std::runtime_error("Cannot call setSymbolValue on a object being not a symbol.");
+    throw std::runtime_error("Cannot call operator&= on a object being not a symbol.");
   const_cast<AST::Symbol*>(static_cast<const AST::Symbol*>(get()))->setValue(x);
+  return *this;
 }
 
 double eval(const SymbolicExpression &x) {

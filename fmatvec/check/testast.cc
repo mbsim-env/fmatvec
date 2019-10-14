@@ -197,12 +197,11 @@ int checkSym() {
   //if(norm_indepVar1!="...") return 202
   //if(norm_indepVar2!="...") return 203
 
-  v(0).setSymbolValue(1.1);
-  v(1).setSymbolValue(2.2);
-  v(2).setSymbolValue(3.3);
-  m(0,1).setSymbolValue(4.4);
-  a5.setSymbolValue(5.5);
-  a6.setSymbolValue(6.6);
+  Vec3 vdouble3({1.1,2.2,3.3});
+  v&=vdouble3;
+  m(0,1)&=4.4;
+  a5&=5.5;
+  a6&=6.6;
 #ifndef NDEBUG
   SymbolicExpression::evalOperationsCount=0;
 #endif
@@ -220,12 +219,11 @@ int checkSym() {
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
 
-  v(0).setSymbolValue(3.1);
-  v(1).setSymbolValue(4.2);
-  v(2).setSymbolValue(5.3);
-  m(0,1).setSymbolValue(6.4);
-  a5.setSymbolValue(7.5);
-  a6.setSymbolValue(8.6);
+  VecV vdoublev({3.1,4.2,5.3});
+  v&=vdoublev;
+  m(0,1)&=6.4;
+  a5&=7.5;
+  a6&=8.6;
 #ifndef NDEBUG
   SymbolicExpression::evalOperationsCount=0;
 #endif
