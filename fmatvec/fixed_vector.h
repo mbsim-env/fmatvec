@@ -65,10 +65,8 @@ namespace fmatvec {
 
       Vector(Noinit ini) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini) { }
       Vector(Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini,a) { }
-      Vector(Symbol sym) : Matrix<General,Fixed<M>,Fixed<1>,AT>(sym) { }
       Vector(int m, Noinit ini) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini) { }
       Vector(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini,a) { }
-      Vector(int m, Symbol sym) : Matrix<General,Fixed<M>,Fixed<1>,AT>(sym) { }
 
       /*! \brief String Constructor. 
        *

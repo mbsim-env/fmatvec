@@ -68,7 +68,6 @@ namespace fmatvec {
 
       Vector(int m, Noinit ini) : Matrix<General,Var,Fixed<1>,AT>(m,ini) { } 
       Vector(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Var,Fixed<1>,AT>(m,ini,a) { } 
-      Vector(int m, Symbol sym) : Matrix<General,Var,Fixed<1>,AT>(m,sym) { } 
 
       /*! \brief String Constructor. 
        *

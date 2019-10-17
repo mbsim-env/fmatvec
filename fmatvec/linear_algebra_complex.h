@@ -47,6 +47,18 @@ namespace fmatvec {
    * */
   Vector<Ref, std::complex<double> > slvLU(const SquareMatrix<Ref, std::complex<double> > &A, const Vector<Ref, std::complex<double> > &b);
 
+  // Because template argument deduction does not consider implicit conversions, the complex standard operators
+  // cannot be used for mixed integer/complex arithmetic. Hence, we define these here for mixed
+  // integer/complex arithmetic.
+  template<class T> std::complex<T> operator+(const std::complex<T> &x, int y) { return x+static_cast<T>(y); }
+  template<class T> std::complex<T> operator-(const std::complex<T> &x, int y) { return x+static_cast<T>(y); }
+  template<class T> std::complex<T> operator*(const std::complex<T> &x, int y) { return x+static_cast<T>(y); }
+  template<class T> std::complex<T> operator/(const std::complex<T> &x, int y) { return x+static_cast<T>(y); }
+  template<class T> std::complex<T> operator+(int x, const std::complex<T> &y) { return static_cast<T>(x)+y; }
+  template<class T> std::complex<T> operator-(int x, const std::complex<T> &y) { return static_cast<T>(x)+y; }
+  template<class T> std::complex<T> operator*(int x, const std::complex<T> &y) { return static_cast<T>(x)+y; }
+  template<class T> std::complex<T> operator/(int x, const std::complex<T> &y) { return static_cast<T>(x)+y; }
+
 }
 
 #endif

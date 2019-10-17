@@ -6,57 +6,57 @@ namespace fmatvec {
 // definitions of matrix/vector operations/functions only usefull for symbolic calculations
 // like building partial derivatives, evaluation of symbolic expressions to double values, ...
 
-template<class DepVec, class AT>
-DepVec parDer(const DepVec &dep, const AT &indep) {
+template<class DepVec, class ATIndep>
+DepVec parDer(const DepVec &dep, const ATIndep &indep) {
   DepVec ret(dep.size());
   for(int i=0; i<dep.size(); ++i)
     ret(i)=parDer(dep(i), indep);
   return ret;
 }
 
-template<class Type, class RowShape, class ColShape, class AT>
-Matrix<Type, RowShape, ColShape, AT> parDer(const Matrix<Type, RowShape, ColShape, AT> &dep, const AT &indep) {
-  Matrix<Type, RowShape, ColShape, AT> ret(dep.rows(), dep.cols());
+template<class Type, class RowShape, class ColShape, class ATDep, class ATIndep>
+Matrix<Type, RowShape, ColShape, ATDep> parDer(const Matrix<Type, RowShape, ColShape, ATDep> &dep, const ATIndep &indep) {
+  Matrix<Type, RowShape, ColShape, ATDep> ret(dep.rows(), dep.cols());
   for(int r=0; r<dep.rows(); ++r)
     for(int c=0; c<dep.cols(); ++c)
       ret(r,c)=parDer(dep(r,c), indep);
   return ret;
 }
 
-template<class DepShape, class IndepShape, class AT>
-Matrix<General, DepShape, IndepShape, AT> parDer(const Vector<DepShape, AT> &dep, const Vector<IndepShape, AT> &indep) {
-  Matrix<General, DepShape, IndepShape, AT> ret(dep.size(), indep.size());
+template<class DepShape, class IndepShape, class ATDep, class ATIndep>
+Matrix<General, DepShape, IndepShape, ATDep> parDer(const Vector<DepShape, ATDep> &dep, const Vector<IndepShape, ATIndep> &indep) {
+  Matrix<General, DepShape, IndepShape, ATDep> ret(dep.size(), indep.size());
   for(int r=0; r<dep.size(); ++r)
     for(int c=0; c<indep.size(); ++c)
       ret(r,c)=parDer(dep(r), indep(c));
   return ret;
 }
 
-template<class IndepShape, class AT>
-RowVector<IndepShape, AT> parDer(const AT &dep, const Vector<IndepShape, AT> &indep) {
-  RowVector<IndepShape, AT> ret(indep.size());
+template<class IndepShape, class ATDep, class ATIndep>
+RowVector<IndepShape, ATDep> parDer(const ATDep &dep, const Vector<IndepShape, ATIndep> &indep) {
+  RowVector<IndepShape, ATDep> ret(indep.size());
   for(int r=0; r<indep.size(); ++r)
     ret(r)=parDer(dep, indep(r));
   return ret;
 }
 
-template<class AT>
-Vector<Fixed<3>, AT> parDer(const Matrix<Rotation, Fixed<3>, Fixed<3>, AT> &R, const AT &x) {
-  Matrix<General, Fixed<3>, Fixed<3>, AT> Rs;
+template<class ATDep, class ATIndep>
+Vector<Fixed<3>, ATDep> parDer(const Matrix<Rotation, Fixed<3>, Fixed<3>, ATDep> &R, const ATIndep &x) {
+  Matrix<General, Fixed<3>, Fixed<3>, ATDep> Rs;
   for(int r=0; r<3; ++r)
     for(int c=0; c<3; ++c)
       Rs(r,c)=parDer(R(r,c), x);
   auto retTilde=Rs*trans(R);
-  Vector<Fixed<3>, AT> ret;
+  Vector<Fixed<3>, ATDep> ret;
   ret(0)=retTilde(2,1);
   ret(1)=retTilde(0,2);
   ret(2)=retTilde(1,0);
   return ret;
 }
 
-template<class AT>
-Matrix<General, Fixed<3>, Fixed<3>, AT> parDer(const Matrix<Rotation, Fixed<3>, Fixed<3>, AT> &R, const Vector<Fixed<3>, AT> &x) {
-  Matrix<General, Fixed<3>, Fixed<3>, AT> ret;
+template<class ATDep, class ATIndep>
+Matrix<General, Fixed<3>, Fixed<3>, ATDep> parDer(const Matrix<Rotation, Fixed<3>, Fixed<3>, ATDep> &R, const Vector<Fixed<3>, ATIndep> &x) {
+  Matrix<General, Fixed<3>, Fixed<3>, ATDep> ret;
   for(int i=0; i<3; ++i)
     ret.set(i, parDer(R, x(i)));
   return ret;
@@ -130,31 +130,32 @@ Matrix<Type, Fixed<N>, Fixed<M>, double> eval(const Matrix<Type, Fixed<N>, Fixed
   return ret;
 }
 
-template<class ShapeDst, class ShapeSrc, class AT>
-Vector<ShapeDst, AT>& operator&=(Vector<ShapeDst, AT> &dst, const Vector<ShapeSrc, double> &src) {
+//mfmf change operator &= to something better
+template<class ShapeDst, class ShapeSrc, class ATIndep>
+Vector<ShapeDst, ATIndep>& operator&=(Vector<ShapeDst, ATIndep> &dst, const Vector<ShapeSrc, double> &src) {
   assert(dst.size()==src.size());
   for(int i=0; i<dst.size(); ++i)
     dst(i)&=src(i);
   return dst;
 }
 
-template<int N, class AT>
-Vector<Fixed<N>, AT>& operator&=(Vector<Fixed<N>, AT> &dst, const Vector<Fixed<N>, double> &src) {
+template<int N, class ATIndep>
+Vector<Fixed<N>, ATIndep>& operator&=(Vector<Fixed<N>, ATIndep> &dst, const Vector<Fixed<N>, double> &src) {
   for(int i=0; i<N; ++i)
     dst(i)&=src(i);
   return dst;
 }
 
-template<int N, class ShapeSrc, class AT>
-Vector<Fixed<N>, AT>& operator&=(Vector<Fixed<N>, AT> &dst, const Vector<ShapeSrc, double> &src) {
+template<int N, class ShapeSrc, class ATIndep>
+Vector<Fixed<N>, ATIndep>& operator&=(Vector<Fixed<N>, ATIndep> &dst, const Vector<ShapeSrc, double> &src) {
   assert(N==src.size());
   for(int i=0; i<N; ++i)
     dst(i)&=src(i);
   return dst;
 }
 
-template<class ShapeDst, int N, class AT>
-Vector<ShapeDst, AT>& operator&=(Vector<ShapeDst, AT> &dst, const Vector<Fixed<N>, double> &src) {
+template<class ShapeDst, int N, class ATIndep>
+Vector<ShapeDst, ATIndep>& operator&=(Vector<ShapeDst, ATIndep> &dst, const Vector<Fixed<N>, double> &src) {
   assert(N==src.size());
   for(int i=0; i<N; ++i)
     dst(i)&=src(i);

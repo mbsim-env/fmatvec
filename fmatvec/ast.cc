@@ -5,35 +5,49 @@ using namespace std;
 
 namespace fmatvec {
 
+// ***** SymbolicExpression *****
+
+#ifndef NDEBUG
+unsigned long SymbolicExpression::evalOperationsCount = 0;
+#endif
+
 SymbolicExpression::SymbolicExpression() : shared_ptr<const AST::Vertex>(AST::Constant<int>::create(0)) {}
 template<class T> SymbolicExpression::SymbolicExpression(const shared_ptr<T> &x) : shared_ptr<const AST::Vertex>(x) {}
 SymbolicExpression::SymbolicExpression(int x) : shared_ptr<const AST::Vertex>(AST::Constant<int>::create(x)) {}
 SymbolicExpression::SymbolicExpression(double x) : shared_ptr<const AST::Vertex>(AST::Constant<double>::create(x)) {}
-SymbolicExpression::SymbolicExpression(const Symbol&) : shared_ptr<const AST::Vertex>(AST::Symbol::create()) {}
+SymbolicExpression::SymbolicExpression(ConstructSymbol) : shared_ptr<const AST::Vertex>(AST::Symbol::create()) {}
+
 SymbolicExpression SymbolicExpression::operator+(const SymbolicExpression &b) const {
   return AST::Operation::create(AST::Operation::Plus, {*this, b});
 }
+
 SymbolicExpression SymbolicExpression::operator-(const SymbolicExpression &b) const {
   return AST::Operation::create(AST::Operation::Minus, {*this, b});
 }
+
 SymbolicExpression SymbolicExpression::operator*(const SymbolicExpression &b) const {
   return AST::Operation::create(AST::Operation::Mult, {*this, b});
 }
+
 SymbolicExpression SymbolicExpression::operator/(const SymbolicExpression &b) const {
   return AST::Operation::create(AST::Operation::Div, {*this, b});
 }
+
 SymbolicExpression& SymbolicExpression::operator+=(const SymbolicExpression &b) {
   *this=AST::Operation::create(AST::Operation::Plus, {*this, b});
   return *this;
 }
+
 SymbolicExpression& SymbolicExpression::operator-=(const SymbolicExpression &b) {
   *this=AST::Operation::create(AST::Operation::Minus, {*this, b});
   return *this;
 }
+
 SymbolicExpression& SymbolicExpression::operator*=(const SymbolicExpression &b) {
   *this=AST::Operation::create(AST::Operation::Mult, {*this, b});
   return *this;
 }
+
 SymbolicExpression& SymbolicExpression::operator/=(const SymbolicExpression &b) {
   *this=AST::Operation::create(AST::Operation::Div, {*this, b});
   return *this;
@@ -55,9 +69,13 @@ void SymbolicExpression::writeXMLFile(std::ostream &parent) const {
   get()->writeXMLFile(parent);
 }
 
-SymbolicExpression parDer(const SymbolicExpression &dep, const SymbolicExpression &indep) {
+SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep) {
   return dep->parDer(indep);
 }
+
+// ***** IndependentVariable *****
+
+IndependentVariable::IndependentVariable() : SymbolicExpression(constructSymbol) {}
 
 namespace AST { // internal namespace
 
@@ -114,9 +132,7 @@ SymbolicExpression Constant<T>::createUsingXML(const void *element) {
 }
 
 template<class T>
-SymbolicExpression Constant<T>::parDer(const SymbolicExpression &x) const {
-  if(dynamic_pointer_cast<const Symbol>(x)==nullptr)
-    throw runtime_error("The independent variable of parDer must be a symbol.");
+SymbolicExpression Constant<T>::parDer(const IndependentVariable &x) const {
   return Constant<int>::create(0);
 }
 
@@ -133,8 +149,8 @@ template SymbolicExpression Constant<int   >::create(const int   &c_);
 template SymbolicExpression Constant<double>::create(const double&c_);
 template SymbolicExpression Constant<int   >::createUsingXML(const void *element);
 template SymbolicExpression Constant<double>::createUsingXML(const void *element);
-template SymbolicExpression Constant<int   >::parDer(const SymbolicExpression &x) const;
-template SymbolicExpression Constant<double>::parDer(const SymbolicExpression &x) const;
+template SymbolicExpression Constant<int   >::parDer(const IndependentVariable &x) const;
+template SymbolicExpression Constant<double>::parDer(const IndependentVariable &x) const;
 template void Constant<int   >::writeXMLFile(ostream &parent) const;
 template void Constant<double>::writeXMLFile(ostream &parent) const;
 
@@ -160,9 +176,7 @@ SymbolicExpression Symbol::createUsingXML(const void *element) {
   return SymbolicExpression();
 }
 
-SymbolicExpression Symbol::parDer(const SymbolicExpression &x) const {
-  if(dynamic_pointer_cast<const Symbol>(x)==nullptr)
-    throw runtime_error("The independent variable of parDer must be a symbol.");
+SymbolicExpression Symbol::parDer(const IndependentVariable &x) const {
   return this == x.get() ? Constant<int>::create(1) : Constant<int>::create(0);
 }
 
@@ -246,9 +260,7 @@ SymbolicExpression Operation::createUsingXML(const void *element) {
   return SymbolicExpression();
 }
 
-SymbolicExpression Operation::parDer(const SymbolicExpression &x) const {
-  if(dynamic_pointer_cast<const Symbol>(x)==nullptr)
-    throw runtime_error("The independent variable of parDer must be a symbol.");
+SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
   #define v SymbolicExpression(shared_from_this()) // expression to be differentiated
   #define a child[0] // expression of first argument
   #define b child[1] // expression of second argument

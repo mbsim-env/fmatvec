@@ -91,7 +91,6 @@ namespace fmatvec {
 
       RowVector(int n, Noinit ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
       RowVector(int n, Init ini=INIT, const AT &a=AT()) : Matrix<General,Ref,Ref,AT>(1,n,ini,a) { } 
-      RowVector(int n, Symbol sym) : Matrix<General,Ref,Ref,AT>(1,n,sym) { } 
 
       /*! \brief Regular Constructor
        *

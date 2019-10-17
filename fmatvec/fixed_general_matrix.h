@@ -67,7 +67,6 @@ namespace fmatvec {
 
       Matrix(Noinit) { }
       Matrix(Init ini=INIT, const AT &a=AT()) { init(a); }
-      Matrix(Symbol sym) { init(sym); }
       Matrix(Eye ini, const AT &a=1) { init(ini,a); }
       Matrix(int m, int n, Noinit) { }
       Matrix(int m, int n, Init ini=INIT, const AT &a=AT()) { init(a); }
@@ -298,7 +297,6 @@ namespace fmatvec {
       inline Matrix<General,Fixed<M>,Fixed<N>,AT>& init(const AT &val=AT()); 
       inline Matrix<General,Fixed<M>,Fixed<N>,AT>& init(Init, const AT &a=AT()) { return init(a); };
       inline Matrix<General,Fixed<M>,Fixed<N>,AT>& init(Eye, const AT &val=1);
-      inline Matrix<General,Fixed<M>,Fixed<N>,AT>& init(Symbol);
       inline Matrix<General,Fixed<M>,Fixed<N>,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
       /*! \brief Cast to std::vector<std::vector<AT> >.
@@ -387,14 +385,6 @@ namespace fmatvec {
       for(int i=0; i<M; i++)
         for(int j=0; j<N; j++)
           e(i,j) = (i==j) ? val : 0;
-      return *this;
-    }
-
-  template <int M, int N, class AT>
-    inline Matrix<General,Fixed<M>,Fixed<N>,AT>& Matrix<General,Fixed<M>,Fixed<N>,AT>::init(Symbol) {
-      for(int i=0; i<M; i++)
-        for(int j=0; j<N; j++)
-          e(i,j) = AT(SYMBOL);
       return *this;
     }
 

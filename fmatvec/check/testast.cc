@@ -3,9 +3,18 @@
 #include <iostream>
 #include "fmatvec/ast.h"
 #include "fmatvec/fmatvec.h"
+#include "fmatvec/linear_algebra_complex.h"
 
 using namespace std;
 using namespace fmatvec;
+
+int checkDoubleComplex() {
+  Matrix<General, Var, Var, complex<double>> M(3,3);
+  Vector<Var, double> v(3);
+  Vector<Var, complex<double>> r=M*v;
+
+  return 0;
+}
 
 int checkComplex() {
   typedef Vector<Var, complex<double>> VecComplex;
@@ -69,15 +78,20 @@ int checkComplex() {
 
 int checkSym() {
   {
-    RowVector<Fixed<3>, SymbolicExpression> rvf(SYMBOL);
-    RowVector<Var, SymbolicExpression> rvv(3, SYMBOL);
-    RowVector<Ref, SymbolicExpression> rvr(3, SYMBOL);
-    Vector<Fixed<3>, SymbolicExpression> vf(SYMBOL);
-    Vector<Var, SymbolicExpression> vv(3, SYMBOL);
-    Vector<Ref, SymbolicExpression> vr(3, SYMBOL);
+    RowVector<Fixed<3>, SymbolicExpression> rvf;
+    RowVector<Var, SymbolicExpression> rvv(3);
+    RowVector<Ref, SymbolicExpression> rvr(3);
+    Vector<Fixed<3>, SymbolicExpression> vf;
+    Vector<Var, SymbolicExpression> vv(3);
+    Vector<Ref, SymbolicExpression> vr(3);
+
+    Vector<Fixed<3>, IndependentVariable> vf_indep;
+    Vector<Var, IndependentVariable> vv_indep(3);
+    Vector<Ref, IndependentVariable> vr_indep(3);
   }
 
   typedef Vector<Var, SymbolicExpression> VecSymExpr;
+  typedef Vector<Var, IndependentVariable> VecIndep;
   typedef Matrix<General, Var, Var, SymbolicExpression> MatSymExpr;
 
   {
@@ -87,7 +101,7 @@ int checkSym() {
   VecSymExpr v2;
   VecSymExpr v3(3);
   if(abs(eval(v3(2)))>1e-12) return 300;
-  VecSymExpr v(3, SYMBOL);
+  VecIndep v(3, NONINIT);
   SymbolicExpression a(3.0);
   VecSymExpr r1=v*a;
   VecSymExpr r2=a*v;
@@ -104,7 +118,8 @@ int checkSym() {
   MatSymExpr m3(3,3);
   if(abs(eval(m3(2,2)))>1e-12) return 300;
   MatSymExpr m(3,3);
-  m(0,1)=SymbolicExpression(SYMBOL);
+  IndependentVariable a_=IndependentVariable();
+  m(0,1)=a_;
   m(0,0)=2.0;
   m(0,2)=3.0;
   m(1,0)=4.0;
@@ -113,8 +128,8 @@ int checkSym() {
   m(2,0)=7.0;
   m(2,1)=8.0;
   m(2,2)=9.0;
-  auto a5=SymbolicExpression(SYMBOL);
-  auto a6=SymbolicExpression(SYMBOL);
+  auto a5=IndependentVariable();
+  auto a6=IndependentVariable();
   m(2,2)=a5+a6;
   m(2,0)=log(pow(v(0), 3)+v(0));
   MatSymExpr _r1=m*a;
@@ -199,7 +214,7 @@ int checkSym() {
 
   Vec3 vdouble3({1.1,2.2,3.3});
   v&=vdouble3;
-  m(0,1)&=4.4;
+  a_&=4.4;
   a5&=5.5;
   a6&=6.6;
 #ifndef NDEBUG
@@ -221,7 +236,7 @@ int checkSym() {
 
   VecV vdoublev({3.1,4.2,5.3});
   v&=vdoublev;
-  m(0,1)&=6.4;
+  a_&=6.4;
   a5&=7.5;
   a6&=8.6;
 #ifndef NDEBUG
@@ -247,42 +262,42 @@ int checkSym() {
 
   {
     SymbolicExpression dep;
-    SymbolicExpression indep(SYMBOL);
+    IndependentVariable indep;
     SymbolicExpression ret=parDer(dep, indep);
   }
   {
     SymbolicExpression dep;
-    Vector<Fixed<3>, SymbolicExpression> indep(SYMBOL);
+    Vector<Fixed<3>, IndependentVariable> indep;
     RowVector<Fixed<3>, SymbolicExpression> ret=parDer(dep, indep);
   }
   {
     Vector<Fixed<3>, SymbolicExpression> dep;
-    SymbolicExpression indep(SYMBOL);
+    IndependentVariable indep;
     Vector<Fixed<3>, SymbolicExpression> ret=parDer(dep, indep);
   }
   {
     Vector<Fixed<3>, SymbolicExpression> dep;
-    Vector<Fixed<3>, SymbolicExpression> indep(SYMBOL);
+    Vector<Fixed<3>, IndependentVariable> indep;
     Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression> ret=parDer(dep, indep);
   }
   {
     RowVector<Fixed<3>, SymbolicExpression> dep;
-    SymbolicExpression indep(SYMBOL);
+    IndependentVariable indep;
     RowVector<Fixed<3>, SymbolicExpression> ret=parDer(dep, indep);
   }
   {
     Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression> dep;
-    SymbolicExpression indep(SYMBOL);
+    IndependentVariable indep;
     Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression> ret=parDer(dep, indep);
   }
   {
     Matrix<Rotation, Fixed<3>, Fixed<3>, SymbolicExpression> dep;
-    SymbolicExpression indep(SYMBOL);
+    IndependentVariable indep;
     Vector<Fixed<3>, SymbolicExpression> ret=parDer(dep, indep);
   }
   {
     Matrix<Rotation, Fixed<3>, Fixed<3>, SymbolicExpression> dep;
-    Vector<Fixed<3>, SymbolicExpression> indep(SYMBOL);
+    Vector<Fixed<3>, IndependentVariable> indep;
     Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression> ret=parDer(dep, indep);
   }
 
@@ -307,9 +322,12 @@ int main() {
   assert(feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)!=-1);
 #endif
 
+  int retdc=checkDoubleComplex();
   int retc=checkComplex();
   int rete=checkSym();
 
+  if(retdc!=0)
+    return retdc;
   if(retc!=0)
     return retc;
   if(rete!=0)
