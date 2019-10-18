@@ -1126,7 +1126,7 @@ namespace fmatvec {
    * \return The product.
    * */
   template <class Col, class Row, class AT1, class AT2>
-  typename OperatorResult<AT1, AT2>::Type operator*(const RowVector<Col, AT1> &x, const Vector<Row, AT1> &y) {
+  typename OperatorResult<AT1, AT2>::Type operator*(const RowVector<Col, AT1> &x, const Vector<Row, AT2> &y) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
