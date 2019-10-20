@@ -65,8 +65,39 @@ SymbolicExpression sqrt(const SymbolicExpression &a) {
   return AST::Operation::create(AST::Operation::Sqrt, {a});
 }
 
-void SymbolicExpression::writeXMLFile(std::ostream &parent) const {
-  get()->writeXMLFile(parent);
+ostream& operator<<(ostream& s, const SymbolicExpression& se) {
+  s<<"[";
+  se->serializeToStream(s);
+  s<<" ]";
+  return s;
+}
+
+istream& operator>>(istream& s, SymbolicExpression &se) {
+  string str;
+  s>>str;
+  if(str!="[")
+    throw runtime_error("The SymbolicExpression in the stream is not starting with [.");
+  se=AST::Vertex::createFromStream(s);
+  s>>str;
+  if(str!="]")
+    throw runtime_error("The SymbolicExpression in the stream is not ending with ].");
+  return s;
+}
+
+AST::SubstHelper subst(SymbolicExpression &se, const map<IndependentVariable, IndependentVariable> &substitution) {
+  return AST::SubstHelper(se, substitution);
+}
+
+istream& operator>>(istream& s, const AST::SubstHelper &sh) {
+  string str;
+  s>>str;
+  if(str!="[")
+    throw runtime_error("The SymbolicExpression in the stream is not starting with [.");
+  sh.se=AST::Vertex::createFromStream(s, sh.substitution);
+  s>>str;
+  if(str!="]")
+    throw runtime_error("The SymbolicExpression in the stream is not ending with ].");
+  return s;
 }
 
 SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep) {
@@ -81,15 +112,20 @@ namespace AST { // internal namespace
 
 // ***** Vertex *****
 
-SymbolicExpression Vertex::createUsingXML(const void *element) {
-//  if(E(element)->getTagName()==AST%"Constant")
-//    return Constant::createUsingXML(element);
-//  else if(E(element)->getTagName()==AST%"Symbol")
-//    return Symbol::createUsingXML(element);
-//  else if(E(element)->getTagName()==AST%"Operation")
-//    return Operation::createUsingXML(element);
-//  throw runtime_error("Unknown vertex "+E(element)->getTagName().second);
-  return SymbolicExpression();
+SymbolicExpression Vertex::createFromStream(istream &s,
+  const std::map<IndependentVariable, IndependentVariable> &substitution) {
+  string className;
+  s>>className;
+  if(className=="i")
+    return Constant<int>::createFromStream(s, substitution);
+  else if(className=="d")
+    return Constant<double>::createFromStream(s, substitution);
+  else if(className=="s")
+    return Symbol::createFromStream(s, substitution);
+  else if(className=="o")
+    return Operation::createFromStream(s, substitution);
+  else
+    throw runtime_error("Unknown class "+className);
 }
 
 bool Vertex::isZero() const {
@@ -126,9 +162,11 @@ SymbolicExpression Constant<T>::create(const T&c_) {
 }
 
 template<class T>
-SymbolicExpression Constant<T>::createUsingXML(const void *element) {
-//  return create(E(element)->getText<double>());
-  return SymbolicExpression();
+SymbolicExpression Constant<T>::createFromStream(istream &s,
+  const std::map<IndependentVariable, IndependentVariable> &substitution) {
+  T c;
+  s>>c;
+  return Constant<T>::create(c);
 }
 
 template<class T>
@@ -136,10 +174,14 @@ SymbolicExpression Constant<T>::parDer(const IndependentVariable &x) const {
   return Constant<int>::create(0);
 }
 
-template<class T>
-void Constant<T>::writeXMLFile(ostream &parent) const {
-  parent<<c;
-//  E(parent)->addElementText(AST%"Constant", boost::lexical_cast<double>(c));
+template<>
+void Constant<int>::serializeToStream(ostream &s) const {
+  s<<" i "<<c;
+}
+
+template<>
+void Constant<double>::serializeToStream(ostream &s) const {
+  s<<" d "<<c;
 }
 
 template<class T>
@@ -147,12 +189,14 @@ Constant<T>::Constant(const T& c_) : c(c_) {}
 
 template SymbolicExpression Constant<int   >::create(const int   &c_);
 template SymbolicExpression Constant<double>::create(const double&c_);
-template SymbolicExpression Constant<int   >::createUsingXML(const void *element);
-template SymbolicExpression Constant<double>::createUsingXML(const void *element);
+template SymbolicExpression Constant<int   >::createFromStream(istream &s,
+  const std::map<IndependentVariable, IndependentVariable> &substitution);
+template SymbolicExpression Constant<double>::createFromStream(istream &s,
+  const std::map<IndependentVariable, IndependentVariable> &substitution);
 template SymbolicExpression Constant<int   >::parDer(const IndependentVariable &x) const;
 template SymbolicExpression Constant<double>::parDer(const IndependentVariable &x) const;
-template void Constant<int   >::writeXMLFile(ostream &parent) const;
-template void Constant<double>::writeXMLFile(ostream &parent) const;
+template void Constant<int   >::serializeToStream(ostream &s) const;
+template void Constant<double>::serializeToStream(ostream &s) const;
 
 // ***** Symbol *****
 
@@ -171,23 +215,26 @@ SymbolicExpression Symbol::create(const boost::uuids::uuid& uuid_) {
   return newPtr;
 }
 
-SymbolicExpression Symbol::createUsingXML(const void *element) {
-//  return create(boost::uuids::string_generator()(E(element)->getAttribute("uuid")));
-  return SymbolicExpression();
+SymbolicExpression Symbol::createFromStream(istream &s,
+  const std::map<IndependentVariable, IndependentVariable> &substitution) {
+  // get uuid from stream
+  boost::uuids::uuid uuid;
+  s>>uuid;
+  // create a, maybe temporary, Symbol with this uuid
+  auto indep=Symbol::create(uuid);
+  // if this indep in substituted then return the substituted indep, if not return itself.
+  auto it=substitution.find(static_cast<IndependentVariable&>(indep));
+  if(it!=substitution.end())
+    return it->second;
+  return indep;
 }
 
 SymbolicExpression Symbol::parDer(const IndependentVariable &x) const {
   return this == x.get() ? Constant<int>::create(1) : Constant<int>::create(0);
 }
 
-void Symbol::writeXMLFile(ostream &parent) const {
-  static map<boost::uuids::uuid, int> varName;
-  auto it=varName.insert(make_pair(uuid, varName.size()+1)).first;
-  parent<<"a"<<it->second;
-//  DOMDocument *doc=parent->getOwnerDocument();
-//  DOMElement *var=D(doc)->createElement(AST%"Symbol");
-//  parent->insertBefore(var, nullptr);
-//  E(var)->setAttribute("uuid", to_string(uuid));
+void Symbol::serializeToStream(ostream &s) const {
+  s<<" s "<<uuid;
 }
 
 Symbol::Symbol(const boost::uuids::uuid& uuid_) : version(0), uuid(uuid_) {}
@@ -251,13 +298,15 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
   return newPtr;
 }
 
-SymbolicExpression Operation::createUsingXML(const void *element) {
-//  Operation::Operator op=static_cast<Operation::Operator>(boost::lexical_cast<int>(E(element)->getAttribute("op")));
-//  vector<SymbolicExpression> arg;
-//  for(auto a=element->getFirstElementChild(); a!=nullptr; a=a->getNextElementSibling())
-//    arg.push_back(Vertex::createUsingXML(a));
-//  return create(op, arg);
-  return SymbolicExpression();
+SymbolicExpression Operation::createFromStream(istream &s,
+  const std::map<IndependentVariable, IndependentVariable> &substitution) {
+  int opInt;
+  size_t size;
+  vector<SymbolicExpression> child;
+  s>>opInt>>size;
+  for(size_t i=0; i<size; ++i)
+    child.push_back(Vertex::createFromStream(s, substitution));
+  return Operation::create(static_cast<Operator>(opInt), child);
 }
 
 SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
@@ -293,19 +342,10 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
   throw runtime_error("Unknown operation.");
 }
 
-void Operation::writeXMLFile(ostream &parent) const {
-  parent<<"("<<op;
-  for(auto &c : child) {
-    parent<<" ";
-    c->writeXMLFile(parent);
-  }
-  parent<<")";
-//  DOMDocument *doc=parent->getOwnerDocument();
-//  DOMElement *opEle=D(doc)->createElement(AST%"Operation");
-//  parent->insertBefore(opEle, nullptr);
-//  E(opEle)->setAttribute("op", op);
-//  for(auto &c : child)
-//    c->writeXMLFile(opEle);
+void Operation::serializeToStream(ostream &s) const {
+  s<<" o "<<op<<" "<<child.size();
+  for(auto &c : child)
+    c->serializeToStream(s);
 }
 
 Operation::Operation(Operator op_, const vector<SymbolicExpression> &child_) : op(op_), child(child_) {
@@ -323,6 +363,9 @@ bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) {
       return ol(l.second[i], r.second[i]);
   return false;
 }
+
+SubstHelper::SubstHelper(SymbolicExpression &se_, const std::map<IndependentVariable, IndependentVariable> &substitution_)
+  : se(se_), substitution(substitution_) {}
 
 } // end namespace AST
 } // end namespace fmatvec

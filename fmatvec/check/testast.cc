@@ -76,7 +76,14 @@ int checkComplex() {
   return 0;
 }
 
-int checkSym() {
+int checkSym(double &pdn0Value,
+             string &a1Ser,
+             string &a2Ser,
+             string &a3Ser,
+             string &a_Ser,
+             string &a5Ser,
+             string &a6Ser,
+             string &pdn0Ser) {
   {
     RowVector<Fixed<3>, SymbolicExpression> rvf;
     RowVector<Var, SymbolicExpression> rvv(3);
@@ -150,67 +157,25 @@ int checkSym() {
   MatSymExpr pd=parDer(_rmv, v);
   RowVector<Var, SymbolicExpression> pdn=parDer(norm, v);
 
-  string indepVar0; { stringstream str; v(0).writeXMLFile(str); indepVar0=str.str(); }
-  string indepVar1; { stringstream str; v(1).writeXMLFile(str); indepVar1=str.str(); }
-  string indepVar2; { stringstream str; v(2).writeXMLFile(str); indepVar2=str.str(); }
-  string depVar0; { stringstream str; _rmv(0).writeXMLFile(str); depVar0=str.str(); }
-  string depVar1; { stringstream str; _rmv(1).writeXMLFile(str); depVar1=str.str(); }
-  string depVar2; { stringstream str; _rmv(2).writeXMLFile(str); depVar2=str.str(); }
-  string normStr; { stringstream str; norm.writeXMLFile(str); normStr=str.str(); }
-  string depVar0_indepVar0; { stringstream str; pd(0,0).writeXMLFile(str); depVar0_indepVar0=str.str(); }
-  string depVar0_indepVar1; { stringstream str; pd(0,1).writeXMLFile(str); depVar0_indepVar1=str.str(); }
-  string depVar0_indepVar2; { stringstream str; pd(0,2).writeXMLFile(str); depVar0_indepVar2=str.str(); }
-  string depVar1_indepVar0; { stringstream str; pd(1,0).writeXMLFile(str); depVar1_indepVar0=str.str(); }
-  string depVar1_indepVar1; { stringstream str; pd(1,1).writeXMLFile(str); depVar1_indepVar1=str.str(); }
-  string depVar1_indepVar2; { stringstream str; pd(1,2).writeXMLFile(str); depVar1_indepVar2=str.str(); }
-  string depVar2_indepVar0; { stringstream str; pd(2,0).writeXMLFile(str); depVar2_indepVar0=str.str(); }
-  string depVar2_indepVar1; { stringstream str; pd(2,1).writeXMLFile(str); depVar2_indepVar1=str.str(); }
-  string depVar2_indepVar2; { stringstream str; pd(2,2).writeXMLFile(str); depVar2_indepVar2=str.str(); }
-  string norm_indepVar0; { stringstream str; pdn(0).writeXMLFile(str); norm_indepVar0=str.str(); }
-  string norm_indepVar1; { stringstream str; pdn(1).writeXMLFile(str); norm_indepVar1=str.str(); }
-  string norm_indepVar2; { stringstream str; pdn(2).writeXMLFile(str); norm_indepVar2=str.str(); }
-
-  stringstream str;
-  str<<"indepVar 0 = "<<indepVar0<<endl;
-  str<<"indepVar 1 = "<<indepVar1<<endl;
-  str<<"indepVar 2 = "<<indepVar2<<endl;
-  str<<"depVar 0 = "<<depVar0<<endl;
-  str<<"depVar 1 = "<<depVar1<<endl;
-  str<<"depVar 2 = "<<depVar2<<endl;
-  str<<"norm = "<<normStr<<endl;
-  str<<"depVar0_indepVar 0 = "<<depVar0_indepVar0<<endl;
-  str<<"depVar0_indepVar 1 = "<<depVar0_indepVar1<<endl;
-  str<<"depVar0_indepVar 2 = "<<depVar0_indepVar2<<endl;
-  str<<"depVar1_indepVar 0 = "<<depVar1_indepVar0<<endl;
-  str<<"depVar1_indepVar 1 = "<<depVar1_indepVar1<<endl;
-  str<<"depVar1_indepVar 2 = "<<depVar1_indepVar2<<endl;
-  str<<"depVar2_indepVar 0 = "<<depVar2_indepVar0<<endl;
-  str<<"depVar2_indepVar 1 = "<<depVar2_indepVar1<<endl;
-  str<<"depVar2_indepVar 2 = "<<depVar2_indepVar2<<endl;
-  str<<"norm_indepVar 0 = "<<norm_indepVar0<<endl;
-  str<<"norm_indepVar 1 = "<<norm_indepVar1<<endl;
-  str<<"norm_indepVar 2 = "<<norm_indepVar2<<endl;
-  cout<<str.str();
-
-  if(indepVar0!="a1") return 100;
-  if(indepVar1!="a2") return 101;
-  if(indepVar2!="a3") return 102;
-  if(depVar0!="(0 (0 (2 2 a1) (2 a4 a2)) (2 3 a3))") return 103;
-  if(depVar1!="(0 (0 (2 4 a1) (2 5 a2)) (2 6 a3))") return 104;
-  if(depVar2!="(0 (0 (2 (5 (0 (4 a1 3) a1)) a1) (2 8 a2)) (2 (0 a5 a6) a3))") return 105;
-  //if(normStr!="...") return 200;
-  if(depVar0_indepVar0!="2") return 106;
-  if(depVar0_indepVar1!="a4") return 107;
-  if(depVar0_indepVar2!="3") return 108;
-  if(depVar1_indepVar0!="4") return 109;
-  if(depVar1_indepVar1!="5") return 110;
-  if(depVar1_indepVar2!="6") return 111;
-  if(depVar2_indepVar0!="(0 (2 (3 (0 (2 (4 a1 3) (3 3 a1)) 1) (0 (4 a1 3) a1)) a1) (5 (0 (4 a1 3) a1)))") return 112;
-  if(depVar2_indepVar1!="8") return 113;
-  if(depVar2_indepVar2!="(0 a5 a6)") return 113;
-  //if(norm_indepVar0!="...") return 201
-  //if(norm_indepVar1!="...") return 202
-  //if(norm_indepVar2!="...") return 203
+  cout<<"indepVar 0 = "<<v(0)<<endl;
+  cout<<"indepVar 1 = "<<v(1)<<endl;
+  cout<<"indepVar 2 = "<<v(2)<<endl;
+  cout<<"depVar 0 = "<<_rmv(0)<<endl;
+  cout<<"depVar 1 = "<<_rmv(1)<<endl;
+  cout<<"depVar 2 = "<<_rmv(2)<<endl;
+  cout<<"norm = "<<norm<<endl;
+  cout<<"depVar0_indepVar 0 = "<<pd(0,0)<<endl;
+  cout<<"depVar0_indepVar 1 = "<<pd(0,1)<<endl;
+  cout<<"depVar0_indepVar 2 = "<<pd(0,2)<<endl;
+  cout<<"depVar1_indepVar 0 = "<<pd(1,0)<<endl;
+  cout<<"depVar1_indepVar 1 = "<<pd(1,1)<<endl;
+  cout<<"depVar1_indepVar 2 = "<<pd(1,2)<<endl;
+  cout<<"depVar2_indepVar 0 = "<<pd(2,0)<<endl;
+  cout<<"depVar2_indepVar 1 = "<<pd(2,1)<<endl;
+  cout<<"depVar2_indepVar 2 = "<<pd(2,2)<<endl;
+  cout<<"norm_indepVar 0 = "<<pdn(0)<<endl;
+  cout<<"norm_indepVar 1 = "<<pdn(1)<<endl;
+  cout<<"norm_indepVar 2 = "<<pdn(2)<<endl;
 
   Vec3 vdouble3({1.1,2.2,3.3});
   v&=vdouble3;
@@ -314,6 +279,90 @@ int checkSym() {
     Matrix<General, Fixed<3>, Fixed<3>, double> retmff=eval(Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression>()); dummy<<retmff;
   }
 
+  {
+    { stringstream ostr; ostr<<v(0); a1Ser=ostr.str(); }
+    { stringstream ostr; ostr<<v(1); a2Ser=ostr.str(); }
+    { stringstream ostr; ostr<<v(2); a3Ser=ostr.str(); }
+    { stringstream ostr; ostr<<a_; a_Ser=ostr.str(); }
+    { stringstream ostr; ostr<<a5; a5Ser=ostr.str(); }
+    { stringstream ostr; ostr<<a6; a6Ser=ostr.str(); }
+    { stringstream ostr; ostr<<pdn(0); pdn0Ser=ostr.str(); }
+    pdn0Value=eval(pdn(0));
+  }
+
+  return 0;
+}
+
+int checkSymReread(double pdn0Value,
+                   const string &a1Ser,
+                   const string &a2Ser,
+                   const string &a3Ser,
+                   const string &a_Ser,
+                   const string &a5Ser,
+                   const string &a6Ser,
+                   const string &pdn0Ser) {
+  IndependentVariable a1; { stringstream istr(a1Ser); istr>>a1; }
+  IndependentVariable a2; { stringstream istr(a2Ser); istr>>a2; }
+  IndependentVariable a3; { stringstream istr(a3Ser); istr>>a3; }
+  IndependentVariable a_; { stringstream istr(a_Ser); istr>>a_; }
+  IndependentVariable a5; { stringstream istr(a5Ser); istr>>a5; }
+  IndependentVariable a6; { stringstream istr(a6Ser); istr>>a6; }
+
+  SymbolicExpression pdn0; { stringstream istr(pdn0Ser); istr>>pdn0; }
+
+  a1&=3.1;
+  a2&=4.2;
+  a3&=5.3;
+  a_&=6.4;
+  a5&=7.5;
+  a6&=8.6;
+
+  cout<<"reread "<<pdn0Value<<" == "<<eval(pdn0)<<endl;
+
+  if(pdn0Value!=eval(pdn0)) return 150;
+
+  return 0;
+}
+
+int checkSymRereadExistingIndeps(double pdn0Value,
+                                 const string &a1Ser,
+                                 const string &a2Ser,
+                                 const string &a3Ser,
+                                 const string &a_Ser,
+                                 const string &a5Ser,
+                                 const string &a6Ser,
+                                 const string &pdn0Ser) {
+  IndependentVariable a1;
+  IndependentVariable a2;
+  IndependentVariable a3;
+  IndependentVariable a_;
+  IndependentVariable a5;
+  IndependentVariable a6;
+
+  IndependentVariable a1FromSer; { stringstream istr(a1Ser); istr>>a1FromSer; }
+  IndependentVariable a2FromSer; { stringstream istr(a2Ser); istr>>a2FromSer; }
+  IndependentVariable a3FromSer; { stringstream istr(a3Ser); istr>>a3FromSer; }
+  IndependentVariable a_FromSer; { stringstream istr(a_Ser); istr>>a_FromSer; }
+  IndependentVariable a5FromSer; { stringstream istr(a5Ser); istr>>a5FromSer; }
+  IndependentVariable a6FromSer; { stringstream istr(a6Ser); istr>>a6FromSer; }
+
+  SymbolicExpression pdn0;
+  {
+    stringstream istr(pdn0Ser);
+    istr>>subst(pdn0, {{a1FromSer, a1},{a2FromSer, a2},{a3FromSer, a3},{a_FromSer, a_},{a5FromSer, a5},{a6FromSer, a6}});
+  }
+
+  a1&=3.1;
+  a2&=4.2;
+  a3&=5.3;
+  a_&=6.4;
+  a5&=7.5;
+  a6&=8.6;
+
+  cout<<"reread "<<pdn0Value<<" == "<<eval(pdn0)<<endl;
+
+  if(pdn0Value!=eval(pdn0)) return 151;
+
   return 0;
 }
 
@@ -324,7 +373,11 @@ int main() {
 
   int retdc=checkDoubleComplex();
   int retc=checkComplex();
-  int rete=checkSym();
+  double pdn0Value;
+  string a1, a2, a3, a_, a5, a6, pdn0Ser;
+  int rete=checkSym(pdn0Value, a1, a2, a3, a_, a5, a6, pdn0Ser);
+  int reterr1=checkSymReread(pdn0Value, a1, a2, a3, a_, a5, a6, pdn0Ser);
+  int reterr2=checkSymRereadExistingIndeps(pdn0Value, a1, a2, a3, a_, a5, a6, pdn0Ser);
 
   if(retdc!=0)
     return retdc;
@@ -332,6 +385,10 @@ int main() {
     return retc;
   if(rete!=0)
     return rete;
+  if(reterr1!=0)
+    return reterr1;
+  if(reterr2!=0)
+    return reterr2;
 
   return 0;  
 }

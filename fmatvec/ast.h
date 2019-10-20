@@ -19,6 +19,7 @@ namespace AST {
   class Symbol;
   class Operation;
   template<class T> class Constant;
+  class SubstHelper;
 }
 
 //! A symbolic expression.
@@ -26,18 +27,25 @@ namespace AST {
 //! This can either be the special case of just a symbol
 //! or an arbitary expression consisting of a hierarchiy
 //! of operations consisting itself of expressions, symbols or constants.
-class SymbolicExpression : protected std::shared_ptr<const AST::Vertex> {
+class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
   friend class AST::Symbol;
   friend class AST::Operation;
   friend class AST::Constant<int>;
   friend class AST::Constant<double>;
   friend SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
   friend double eval(const SymbolicExpression &x);
+  friend std::ostream& operator<<(std::ostream& s, const SymbolicExpression& se);
+  friend std::istream& operator>>(std::istream& s, SymbolicExpression &se);
   private:
     template<class T> SymbolicExpression(const shared_ptr<T> &x);
   protected:
     static struct ConstructSymbol{} constructSymbol; // just used for tag dispatching
     SymbolicExpression(ConstructSymbol);
+
+    // do not allow to call these functions inherited from std::shared_ptr
+    using std::shared_ptr<const AST::Vertex>::get;
+    using std::shared_ptr<const AST::Vertex>::operator*;
+    using std::shared_ptr<const AST::Vertex>::operator->;
   public:
     //! Creates the value 0.
     SymbolicExpression();
@@ -52,15 +60,6 @@ class SymbolicExpression : protected std::shared_ptr<const AST::Vertex> {
     SymbolicExpression& operator=(const SymbolicExpression& x) = default;
     SymbolicExpression& operator=(SymbolicExpression&& x) = default;
     ~SymbolicExpression() = default;
-
-    // member functions from std::shared_ptr
-    using std::shared_ptr<const AST::Vertex>::reset;
-    using std::shared_ptr<const AST::Vertex>::swap;
-    using std::shared_ptr<const AST::Vertex>::use_count;
-    using std::shared_ptr<const AST::Vertex>::owner_before;
-
-    //! Write a SymbolicExpression to a XML representation (serialization).
-    void writeXMLFile(std::ostream &parent) const;
 
     // operators
     SymbolicExpression operator+(const SymbolicExpression &b) const;
@@ -101,9 +100,8 @@ FMATVEC_OPERATORRESULT2(IndependentVariable, int, SymbolicExpression)
 FMATVEC_OPERATORRESULT2(IndependentVariable, double, SymbolicExpression)
 FMATVEC_OPERATORRESULT2(IndependentVariable, SymbolicExpression, SymbolicExpression)
 
-// Some member function definition of SymbolicExpression are moved to the end of this file
+// Some member function definition of SymbolicExpression/IndependentVariable are moved to the end of this file
 // since they need the defintion of the other class defined in this file.
-// mfmf move back????
 
 //! Generate a new SymbolicExpression being the partial derivate of dep
 //! with respect to indep (indep must be a symbol).
@@ -114,6 +112,15 @@ SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariab
 //! variables this symbolic expression depends on.
 //! Also see Symbol ant Vertex::getDependsOn().
 inline double eval(const SymbolicExpression &x);
+
+//! Write a SymbolicExpression to a stream using serialization.
+std::ostream& operator<<(std::ostream& s, const SymbolicExpression& se);
+//! Create/initialize a SymbolicExpression from a stream using deserialization.
+std::istream& operator>>(std::istream& s, SymbolicExpression &se);
+//! Makes substutitions of IndependentVariable's during deserializing from a stream.
+AST::SubstHelper subst(SymbolicExpression &se, const std::map<IndependentVariable, IndependentVariable> &substitution);
+//! See subst.
+std::istream& operator>>(std::istream& s, const AST::SubstHelper &sh);
 
 // function operations overloaded for SymbolicExpression
 SymbolicExpression pow(const SymbolicExpression &a, const SymbolicExpression &b);
@@ -128,16 +135,17 @@ namespace AST { // internal namespace
 class Vertex {
   public:
 
-    //! Create a AST from a XML representation (deserialization).
-    static SymbolicExpression createUsingXML(const void *element);
+    //! Create a AST from a by deserialization a stream.
+    static SymbolicExpression createFromStream(std::istream &s,
+      const std::map<IndependentVariable, IndependentVariable> &substitution={});
     //! Evaluate the AST.
     //! The returned value depends on the AST and on the current values of all independent variables this AST depends on.
     //! Also see Symbol ant Vertex::getDependsOn().
     virtual double eval() const=0;
     //! Generate a new AST being the partial derivate of this AST with respect to the variable x.
     virtual SymbolicExpression parDer(const IndependentVariable &x) const=0;
-    //! Write a AST to a XML representation (serialization).
-    virtual void writeXMLFile(std::ostream &parent) const=0;
+    //! Write/serailize a AST to a stream.
+    virtual void serializeToStream(std::ostream &s) const=0;
     //! Rreturn true if this Vertex is a constant integer.
     inline virtual bool isConstantInt() const;
     //! Returns true if this Vertex is a constant with value 0.
@@ -167,10 +175,11 @@ class Constant : public Vertex {
   public:
 
     static SymbolicExpression create(const T& c_);
-    static SymbolicExpression createUsingXML(const void *element);
+    static SymbolicExpression createFromStream(std::istream &s,
+      const std::map<IndependentVariable, IndependentVariable> &substitution={});
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
-    void writeXMLFile(std::ostream &parent) const override;
+    void serializeToStream(std::ostream &s) const override;
     inline bool isConstantInt() const override;
     //! Get the constant value of the vertex.
     inline const T& getValue() const;
@@ -210,10 +219,11 @@ class Symbol : public Vertex {
   public:
 
     static SymbolicExpression create(const boost::uuids::uuid& uuid_=boost::uuids::random_generator()());
-    static SymbolicExpression createUsingXML(const void *element);
+    static SymbolicExpression createFromStream(std::istream &s,
+      const std::map<IndependentVariable, IndependentVariable> &substitution={});
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
-    void writeXMLFile(std::ostream &parent) const override;
+    void serializeToStream(std::ostream &s) const override;
     //! Set the value of this independent variable.
     //! This has an influence on the evaluation of all ASTs which depend on this independent variable.
     inline void setValue(double x_) const;
@@ -226,7 +236,7 @@ class Symbol : public Vertex {
     Symbol(const boost::uuids::uuid& uuid_);
     mutable double x = 0.0;
     mutable unsigned long version;
-    boost::uuids::uuid uuid; // each variable has a uuid (this is only used when the AST is serialized to XML)
+    boost::uuids::uuid uuid; // each variable has a uuid (this is only used when the AST is serialized and for caching)
     typedef boost::uuids::uuid CacheKey;
     static std::map<CacheKey, std::weak_ptr<const Symbol>> cache;
 };
@@ -253,10 +263,11 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
     //! Defined operations.
     enum Operator { Plus, Minus, Mult, Div, Pow, Log, Sqrt };
     static SymbolicExpression create(Operator op_, const std::vector<SymbolicExpression> &child_);
-    static SymbolicExpression createUsingXML(const void *element);
+    static SymbolicExpression createFromStream(std::istream &s,
+      const std::map<IndependentVariable, IndependentVariable> &substitution={});
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
-    void writeXMLFile(std::ostream &parent) const override;
+    void serializeToStream(std::ostream &s) const override;
 
   private:
 
@@ -317,6 +328,12 @@ double Operation::eval() const {
   #undef c
   throw std::runtime_error("Unknown operation.");
 }
+
+struct SubstHelper {
+  SubstHelper(SymbolicExpression &se_, const std::map<IndependentVariable, IndependentVariable> &substitution_);
+  SymbolicExpression &se;
+  const std::map<IndependentVariable, IndependentVariable> substitution;
+};
 
 } // end namespace AST
 
