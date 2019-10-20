@@ -231,11 +231,37 @@ SymbolicExpression Symbol::create(const boost::uuids::uuid& uuid_) {
   return newPtr;
 }
 
+#ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
+// when in a debug build the envvar FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID is set then a Symbol is not
+// serialized by it uuid but by a process global integer id. This way one can generate the same Symbol id
+// in the serialized output. This is quite usefull to write tests.
+// This envvar should NOT be set in normal program. It will generate wrong results if more than one
+// process in involved.
+static map<boost::uuids::uuid, int> mapUUIDInt;
+#endif
+
 SymbolicExpression Symbol::createFromStream(istream &s,
   const std::map<IndependentVariable, IndependentVariable> &substitution) {
   // get uuid from stream
   boost::uuids::uuid uuid;
+#ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
+  if(getenv("FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID")) {
+    int id;
+    s>>id;
+    auto itm=find_if(mapUUIDInt.begin(), mapUUIDInt.end(), [id](const pair<boost::uuids::uuid, int> &x){
+      return id==x.second;
+    });
+    if(itm!=mapUUIDInt.end())
+      uuid=itm->first;
+    else
+      uuid=boost::uuids::random_generator()();
+  }
+  else
+    s>>uuid;
+#else
   s>>uuid;
+#endif
+
   // create a, maybe temporary, Symbol with this uuid
   auto indep=Symbol::create(uuid);
   // if this indep in substituted then return the substituted indep, if not return itself.
@@ -250,7 +276,16 @@ SymbolicExpression Symbol::parDer(const IndependentVariable &x) const {
 }
 
 void Symbol::serializeToStream(ostream &s) const {
+#ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
+  if(getenv("FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID")) {
+    auto res=mapUUIDInt.insert(make_pair(uuid, mapUUIDInt.size()+1));
+    s<<" s "<<res.first->second;
+  }
+  else
+    s<<" s "<<uuid;
+#else
   s<<" s "<<uuid;
+#endif
 }
 
 Symbol::Symbol(const boost::uuids::uuid& uuid_) : version(0), uuid(uuid_) {}

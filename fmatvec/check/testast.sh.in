@@ -1,3 +1,16 @@
 #!/bin/bash
 
-@XC_EXEC_PREFIX@ ./testast@EXEEXT@ || exit
+export FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID=1
+@XC_EXEC_PREFIX@ ./testast@EXEEXT@ > testast.out
+RET=$?
+
+cat testast.out
+
+if [ @DEBUGBUILD@ -eq 1 ]; then
+  echo "This is a debug build -> checking output"
+  diff @abs_srcdir@/testast.ref testast.out || exit 1
+else
+  echo "This is a release build -> NOT checking output"
+fi
+
+exit $RET

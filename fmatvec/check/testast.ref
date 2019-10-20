@@ -1,0 +1,41 @@
+complex 0 = (6.6,9.9)
+complex 1 = (23.2,19.8)
+complex 2 = (9.95,14.52)
+v3 [{ i 0 }; { i 0 }; { i 0 }]
+m3 [{ i 0 }, { i 0 }, { i 0 }; { i 0 }, { i 0 }, { i 0 }; { i 0 }, { i 0 }, { i 0 }]
+indepVar 0 = { s 1 }
+indepVar 1 = { s 2 }
+indepVar 2 = { s 3 }
+depVar 0 = { o 0 2 o 0 2 o 2 2 d 2 s 1 o 2 2 s 4 s 2 o 2 2 d 3 s 3 }
+depVar 1 = { o 0 2 o 0 2 o 2 2 d 4 s 1 o 2 2 d 5 s 2 o 2 2 d 6 s 3 }
+depVar 2 = { o 0 2 o 0 2 o 2 2 o 5 1 o 0 2 o 4 2 s 1 i 3 s 1 s 1 o 2 2 d 8 s 2 o 2 2 o 0 2 s 5 s 6 s 3 }
+norm = { o 6 1 o 0 2 o 0 2 o 4 2 o 0 2 o 0 2 o 2 2 d 2 s 1 o 2 2 s 4 s 2 o 2 2 d 3 s 3 i 2 o 4 2 o 0 2 o 0 2 o 2 2 d 4 s 1 o 2 2 d 5 s 2 o 2 2 d 6 s 3 i 2 o 4 2 o 0 2 o 0 2 o 2 2 o 5 1 o 0 2 o 4 2 s 1 i 3 s 1 s 1 o 2 2 d 8 s 2 o 2 2 o 0 2 s 5 s 6 s 3 i 2 }
+depVar0_indepVar 0 = { d 2 }
+depVar0_indepVar 1 = { s 4 }
+depVar0_indepVar 2 = { d 3 }
+depVar1_indepVar 0 = { d 4 }
+depVar1_indepVar 1 = { d 5 }
+depVar1_indepVar 2 = { d 6 }
+depVar2_indepVar 0 = { o 0 2 o 2 2 o 3 2 o 0 2 o 2 2 o 4 2 s 1 i 3 o 3 2 i 3 s 1 i 1 o 0 2 o 4 2 s 1 i 3 s 1 s 1 o 5 1 o 0 2 o 4 2 s 1 i 3 s 1 }
+depVar2_indepVar 1 = { d 8 }
+depVar2_indepVar 2 = { o 0 2 s 5 s 6 }
+norm_indepVar 0 = { o 3 2 o 2 2 o 0 2 o 0 2 o 2 2 o 4 2 o 0 2 o 0 2 o 2 2 d 2 s 1 o 2 2 s 4 s 2 o 2 2 d 3 s 3 i 2 o 2 2 o 3 2 i 2 o 0 2 o 0 2 o 2 2 d 2 s 1 o 2 2 s 4 s 2 o 2 2 d 3 s 3 d 2 o 2 2 o 4 2 o 0 2 o 0 2 o 2 2 d 4 s 1 o 2 2 d 5 s 2 o 2 2 d 6 s 3 i 2 o 2 2 o 3 2 i 2 o 0 2 o 0 2 o 2 2 d 4 s 1 o 2 2 d 5 s 2 o 2 2 d 6 s 3 d 4 o 2 2 o 4 2 o 0 2 o 0 2 o 2 2 o 5 1 o 0 2 o 4 2 s 1 i 3 s 1 s 1 o 2 2 d 8 s 2 o 2 2 o 0 2 s 5 s 6 s 3 i 2 o 2 2 o 3 2 i 2 o 0 2 o 0 2 o 2 2 o 5 1 o 0 2 o 4 2 s 1 i 3 s 1 s 1 o 2 2 d 8 s 2 o 2 2 o 0 2 s 5 s 6 s 3 o 0 2 o 2 2 o 3 2 o 0 2 o 2 2 o 4 2 s 1 i 3 o 3 2 i 3 s 1 i 1 o 0 2 o 4 2 s 1 i 3 s 1 s 1 o 5 1 o 0 2 o 4 2 s 1 i 3 s 1 d 0.5 o 6 1 o 0 2 o 0 2 o 4 2 o 0 2 o 0 2 o 2 2 d 2 s 1 o 2 2 s 4 s 2 o 2 2 d 3 s 3 i 2 o 4 2 o 0 2 o 0 2 o 2 2 d 4 s 1 o 2 2 d 5 s 2 o 2 2 d 6 s 3 i 2 o 4 2 o 0 2 o 0 2 o 2 2 o 5 1 o 0 2 o 4 2 s 1 i 3 s 1 s 1 o 2 2 d 8 s 2 o 2 2 o 0 2 s 5 s 6 s 3 i 2 }
+norm_indepVar 1 = { o 3 2 o 2 2 o 0 2 o 0 2 o 2 2 o 4 2 o 0 2 o 0 2 o 2 2 d 2 s 1 o 2 2 s 4 s 2 o 2 2 d 3 s 3 i 2 o 2 2 o 3 2 i 2 o 0 2 o 0 2 o 2 2 d 2 s 1 o 2 2 s 4 s 2 o 2 2 d 3 s 3 s 4 o 2 2 o 4 2 o 0 2 o 0 2 o 2 2 d 4 s 1 o 2 2 d 5 s 2 o 2 2 d 6 s 3 i 2 o 2 2 o 3 2 i 2 o 0 2 o 0 2 o 2 2 d 4 s 1 o 2 2 d 5 s 2 o 2 2 d 6 s 3 d 5 o 2 2 o 4 2 o 0 2 o 0 2 o 2 2 o 5 1 o 0 2 o 4 2 s 1 i 3 s 1 s 1 o 2 2 d 8 s 2 o 2 2 o 0 2 s 5 s 6 s 3 i 2 o 2 2 o 3 2 i 2 o 0 2 o 0 2 o 2 2 o 5 1 o 0 2 o 4 2 s 1 i 3 s 1 s 1 o 2 2 d 8 s 2 o 2 2 o 0 2 s 5 s 6 s 3 d 8 d 0.5 o 6 1 o 0 2 o 0 2 o 4 2 o 0 2 o 0 2 o 2 2 d 2 s 1 o 2 2 s 4 s 2 o 2 2 d 3 s 3 i 2 o 4 2 o 0 2 o 0 2 o 2 2 d 4 s 1 o 2 2 d 5 s 2 o 2 2 d 6 s 3 i 2 o 4 2 o 0 2 o 0 2 o 2 2 o 5 1 o 0 2 o 4 2 s 1 i 3 s 1 s 1 o 2 2 d 8 s 2 o 2 2 o 0 2 s 5 s 6 s 3 i 2 }
+norm_indepVar 2 = { o 3 2 o 2 2 o 0 2 o 0 2 o 2 2 o 4 2 o 0 2 o 0 2 o 2 2 d 2 s 1 o 2 2 s 4 s 2 o 2 2 d 3 s 3 i 2 o 2 2 o 3 2 i 2 o 0 2 o 0 2 o 2 2 d 2 s 1 o 2 2 s 4 s 2 o 2 2 d 3 s 3 d 3 o 2 2 o 4 2 o 0 2 o 0 2 o 2 2 d 4 s 1 o 2 2 d 5 s 2 o 2 2 d 6 s 3 i 2 o 2 2 o 3 2 i 2 o 0 2 o 0 2 o 2 2 d 4 s 1 o 2 2 d 5 s 2 o 2 2 d 6 s 3 d 6 o 2 2 o 4 2 o 0 2 o 0 2 o 2 2 o 5 1 o 0 2 o 4 2 s 1 i 3 s 1 s 1 o 2 2 d 8 s 2 o 2 2 o 0 2 s 5 s 6 s 3 i 2 o 2 2 o 3 2 i 2 o 0 2 o 0 2 o 2 2 o 5 1 o 0 2 o 4 2 s 1 i 3 s 1 s 1 o 2 2 d 8 s 2 o 2 2 o 0 2 s 5 s 6 s 3 o 0 2 s 5 s 6 d 0.5 o 6 1 o 0 2 o 0 2 o 4 2 o 0 2 o 0 2 o 2 2 d 2 s 1 o 2 2 s 4 s 2 o 2 2 d 3 s 3 i 2 o 4 2 o 0 2 o 0 2 o 2 2 d 4 s 1 o 2 2 d 5 s 2 o 2 2 d 6 s 3 i 2 o 4 2 o 0 2 o 0 2 o 2 2 o 5 1 o 0 2 o 4 2 s 1 i 3 s 1 s 1 o 2 2 d 8 s 2 o 2 2 o 0 2 s 5 s 6 s 3 i 2 }
+frist eval
+pdn.eval = [5.007801888075632, 10.3236496457691, 13.7363680526641]
+number of operations evaluated = 64
+second eval with same values for independent variables
+pdn.eval = [5.007801888075632, 10.3236496457691, 13.7363680526641]
+number of operations evaluated = 0
+third eval with different values for independent variables
+pdn.eval = [7.678977338926537, 10.94600770788121, 17.14292076727458]
+number of operations evaluated = 64
+number of operations evaluated = 0
+reread 7.67898 == 7.67898
+indepvar ser [{ s 7 }; { s 8 }; { s 9 }]
+depvar ser [{ i 1 }, { o 0 2 d 2 s 7 }, { i 3 }; { o 0 2 d 4 o 5 1 s 8 }, { i 5 }, { i 6 }; { i 7 }, { i 8 }, { o 2 2 d 9 s 9 }]
+depvar ser [{ o 0 2 o 0 2 s 7 o 2 2 o 0 2 d 2 s 7 s 8 o 2 2 i 3 s 9 }; { o 0 2 o 0 2 o 2 2 o 0 2 d 4 o 5 1 s 8 s 7 o 2 2 i 5 s 8 o 2 2 i 6 s 9 }; { o 0 2 o 0 2 o 2 2 i 7 s 7 o 2 2 i 8 s 8 o 2 2 o 2 2 d 9 s 9 s 9 }]
+reread [{ s 7 }; { s 8 }; { s 9 }]
+reread [{ o 0 2 o 0 2 s 7 o 2 2 o 0 2 d 2 s 7 s 8 o 2 2 i 3 s 9 }; { o 0 2 o 0 2 o 2 2 o 0 2 d 4 o 5 1 s 8 s 7 o 2 2 i 5 s 8 o 2 2 i 6 s 9 }; { o 0 2 o 0 2 o 2 2 i 7 s 7 o 2 2 i 8 s 8 o 2 2 o 2 2 d 9 s 9 s 9 }]
+reread 7.67898 == 7.67898

@@ -234,6 +234,11 @@ if test "$cross_compiling" == "yes"; then
   AC_SUBST([XC_EXEC_PREFIX],[wine])
 fi
 
+# check for debug build
+DEBUGBUILD=1
+echo $CFLAGS $CXXFLAGS $CPPFLAGS | grep "\-DNDEBUG" > /dev/null && DEBUGBUILD=0
+AC_SUBST([DEBUGBUILD])
+
 AC_SUBST(LIBS)
 AC_SUBST([INCDIRS])
 AC_SUBST([LIBDIRS])
