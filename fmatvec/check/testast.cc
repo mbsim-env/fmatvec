@@ -321,6 +321,26 @@ int checkSymReread(double pdn0Value,
 
   if(pdn0Value!=eval(pdn0)) return 150;
 
+  {
+    Vector<Fixed<3>, IndependentVariable> v(NONINIT);
+    Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression> M;
+    M(0,0)=1;
+    M(0,1)=2+v(0);
+    M(0,2)=3;
+    M(1,0)=4+log(v(1));
+    M(1,1)=5;
+    M(1,2)=6;
+    M(2,0)=7;
+    M(2,1)=8;
+    M(2,2)=9*v(2);
+    Vector<Fixed<3>, SymbolicExpression> y=M*v;
+    cout<<"indepvar ser "<<v<<endl;
+    cout<<"depvar ser "<<M<<endl;
+    cout<<"depvar ser "<<y<<endl;
+    { stringstream str; str<<v; Vector<Fixed<3>, IndependentVariable> vrr; str>>vrr; cout<<"reread "<<vrr<<endl; }
+    { stringstream str; str<<y; Vector<Fixed<3>, SymbolicExpression>  yrr; str>>yrr; cout<<"reread "<<yrr<<endl; }
+  }
+
   return 0;
 }
 

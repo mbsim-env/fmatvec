@@ -103,6 +103,11 @@ FMATVEC_OPERATORRESULT2(IndependentVariable, SymbolicExpression, SymbolicExpress
 // Some member function definition of SymbolicExpression/IndependentVariable are moved to the end of this file
 // since they need the defintion of the other class defined in this file.
 
+SymbolicExpression operator+(double a, const SymbolicExpression &b);
+SymbolicExpression operator-(double a, const SymbolicExpression &b);
+SymbolicExpression operator*(double a, const SymbolicExpression &b);
+SymbolicExpression operator/(double a, const SymbolicExpression &b);
+
 //! Generate a new SymbolicExpression being the partial derivate of dep
 //! with respect to indep (indep must be a symbol).
 SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);

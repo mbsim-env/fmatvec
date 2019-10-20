@@ -66,21 +66,21 @@ SymbolicExpression sqrt(const SymbolicExpression &a) {
 }
 
 ostream& operator<<(ostream& s, const SymbolicExpression& se) {
-  s<<"[";
+  s<<"{";
   se->serializeToStream(s);
-  s<<" ]";
+  s<<" }";
   return s;
 }
 
 istream& operator>>(istream& s, SymbolicExpression &se) {
-  string str;
-  s>>str;
-  if(str!="[")
-    throw runtime_error("The SymbolicExpression in the stream is not starting with [.");
+  char ch;
+  s>>ch;
+  if(ch!='{')
+    throw runtime_error("The SymbolicExpression in the stream is not starting with {.");
   se=AST::Vertex::createFromStream(s);
-  s>>str;
-  if(str!="]")
-    throw runtime_error("The SymbolicExpression in the stream is not ending with ].");
+  s>>ch;
+  if(ch!='}')
+    throw runtime_error("The SymbolicExpression in the stream is not ending with }.");
   return s;
 }
 
@@ -89,15 +89,31 @@ AST::SubstHelper subst(SymbolicExpression &se, const map<IndependentVariable, In
 }
 
 istream& operator>>(istream& s, const AST::SubstHelper &sh) {
-  string str;
-  s>>str;
-  if(str!="[")
-    throw runtime_error("The SymbolicExpression in the stream is not starting with [.");
+  char ch;
+  s>>ch;
+  if(ch!='{')
+    throw runtime_error("The SymbolicExpression in the stream is not starting with {.");
   sh.se=AST::Vertex::createFromStream(s, sh.substitution);
-  s>>str;
-  if(str!="]")
-    throw runtime_error("The SymbolicExpression in the stream is not ending with ].");
+  s>>ch;
+  if(ch!='}')
+    throw runtime_error("The SymbolicExpression in the stream is not ending with }.");
   return s;
+}
+
+SymbolicExpression operator+(double a, const SymbolicExpression &b) {
+  return SymbolicExpression(a)+b;
+}
+
+SymbolicExpression operator-(double a, const SymbolicExpression &b) {
+  return SymbolicExpression(a)-b;
+}
+
+SymbolicExpression operator*(double a, const SymbolicExpression &b) {
+  return SymbolicExpression(a)*b;
+}
+
+SymbolicExpression operator/(double a, const SymbolicExpression &b) {
+  return SymbolicExpression(a)/b;
 }
 
 SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep) {
