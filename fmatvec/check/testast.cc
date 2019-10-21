@@ -70,9 +70,7 @@ void checkComplex() {
 }
 
 void checkSym(double &pdn0Value,
-              string &a1Ser,
-              string &a2Ser,
-              string &a3Ser,
+              string &vSer,
               string &a_Ser,
               string &a5Ser,
               string &a6Ser,
@@ -269,9 +267,7 @@ void checkSym(double &pdn0Value,
   }
 
   {
-    { stringstream ostr; ostr<<v(0); a1Ser=ostr.str(); }
-    { stringstream ostr; ostr<<v(1); a2Ser=ostr.str(); }
-    { stringstream ostr; ostr<<v(2); a3Ser=ostr.str(); }
+    { stringstream ostr; ostr<<v; vSer=ostr.str(); }
     { stringstream ostr; ostr<<a_; a_Ser=ostr.str(); }
     { stringstream ostr; ostr<<a5; a5Ser=ostr.str(); }
     { stringstream ostr; ostr<<a6; a6Ser=ostr.str(); }
@@ -281,25 +277,19 @@ void checkSym(double &pdn0Value,
 }
 
 void checkSymReread(double pdn0Value,
-                    const string &a1Ser,
-                    const string &a2Ser,
-                    const string &a3Ser,
+                    const string &vSer,
                     const string &a_Ser,
                     const string &a5Ser,
                     const string &a6Ser,
                     const string &pdn0Ser) {
-  IndependentVariable a1; { stringstream istr(a1Ser); istr>>a1; }
-  IndependentVariable a2; { stringstream istr(a2Ser); istr>>a2; }
-  IndependentVariable a3; { stringstream istr(a3Ser); istr>>a3; }
+  Vector<Fixed<3>, IndependentVariable> v; { stringstream istr(vSer); istr>>v; }
   IndependentVariable a_; { stringstream istr(a_Ser); istr>>a_; }
   IndependentVariable a5; { stringstream istr(a5Ser); istr>>a5; }
   IndependentVariable a6; { stringstream istr(a6Ser); istr>>a6; }
 
   SymbolicExpression pdn0; { stringstream istr(pdn0Ser); istr>>pdn0; }
 
-  a1&=3.1;
-  a2&=4.2;
-  a3&=5.3;
+  v&=Vec3({3.1,4.2,5.3});
   a_&=6.4;
   a5&=7.5;
   a6&=8.6;
@@ -328,23 +318,17 @@ void checkSymReread(double pdn0Value,
 }
 
 void checkSymRereadExistingIndeps(double pdn0Value,
-                                  const string &a1Ser,
-                                  const string &a2Ser,
-                                  const string &a3Ser,
+                                  const string &vSer,
                                   const string &a_Ser,
                                   const string &a5Ser,
                                   const string &a6Ser,
                                   const string &pdn0Ser) {
-  IndependentVariable a1;
-  IndependentVariable a2;
-  IndependentVariable a3;
+  Vector<Fixed<3>, IndependentVariable> v(NONINIT);
   IndependentVariable a_;
   IndependentVariable a5;
   IndependentVariable a6;
 
-  IndependentVariable a1FromSer; { stringstream istr(a1Ser); istr>>a1FromSer; }
-  IndependentVariable a2FromSer; { stringstream istr(a2Ser); istr>>a2FromSer; }
-  IndependentVariable a3FromSer; { stringstream istr(a3Ser); istr>>a3FromSer; }
+  Vector<Fixed<3>, IndependentVariable> vFromSer;  { stringstream istr(vSer);  istr>>vFromSer; }
   IndependentVariable a_FromSer; { stringstream istr(a_Ser); istr>>a_FromSer; }
   IndependentVariable a5FromSer; { stringstream istr(a5Ser); istr>>a5FromSer; }
   IndependentVariable a6FromSer; { stringstream istr(a6Ser); istr>>a6FromSer; }
@@ -352,12 +336,10 @@ void checkSymRereadExistingIndeps(double pdn0Value,
   SymbolicExpression pdn0;
   {
     stringstream istr(pdn0Ser);
-    istr>>subst(pdn0, {{a1FromSer, a1},{a2FromSer, a2},{a3FromSer, a3},{a_FromSer, a_},{a5FromSer, a5},{a6FromSer, a6}});
+    istr>>subst(pdn0, {{vFromSer(0), v(0)},{vFromSer(1), v(1)},{vFromSer(2), v(2)},{a_FromSer, a_},{a5FromSer, a5},{a6FromSer, a6}});//MFMF
   }
 
-  a1&=3.1;
-  a2&=4.2;
-  a3&=5.3;
+  v&=Vec3({3.1,4.2,5.3});
   a_&=6.4;
   a5&=7.5;
   a6&=8.6;
@@ -373,10 +355,10 @@ int main() {
   checkDoubleComplex();
   checkComplex();
   double pdn0Value;
-  string a1, a2, a3, a_, a5, a6, pdn0Ser;
-  checkSym(pdn0Value, a1, a2, a3, a_, a5, a6, pdn0Ser);
-  checkSymReread(pdn0Value, a1, a2, a3, a_, a5, a6, pdn0Ser);
-  checkSymRereadExistingIndeps(pdn0Value, a1, a2, a3, a_, a5, a6, pdn0Ser);
+  string v, a_, a5, a6, pdn0Ser;
+  checkSym(pdn0Value, v, a_, a5, a6, pdn0Ser);
+  checkSymReread(pdn0Value, v, a_, a5, a6, pdn0Ser);
+  checkSymRereadExistingIndeps(pdn0Value, v, a_, a5, a6, pdn0Ser);
 
   return 0;  
 }
