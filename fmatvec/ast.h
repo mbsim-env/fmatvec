@@ -36,9 +36,8 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
   friend double eval(const SymbolicExpression &x);
   friend std::ostream& operator<<(std::ostream& s, const SymbolicExpression& se);
   friend std::istream& operator>>(std::istream& s, SymbolicExpression &se);
-  private:
-    template<class T> SymbolicExpression(const shared_ptr<T> &x);
   protected:
+    template<class T> SymbolicExpression(const shared_ptr<T> &x);
     static struct ConstructSymbol{} constructSymbol; // just used for tag dispatching
     SymbolicExpression(ConstructSymbol);
 
@@ -80,12 +79,16 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
 //! Any SymbolicExpression can be partialliy differentiated with respect to a independent variable.
 //! An independent varible can also be assigned a value which is used if eval is called.
 class IndependentVariable : public SymbolicExpression {
+  friend class AST::Symbol;
   public:
     //! Creates a IndependentVariable variable (each call to this ctor creates a new independent variable)
     IndependentVariable();
 
     //! Set the double value of the independent value.
     inline IndependentVariable& operator&=(double x);
+
+  private:
+    IndependentVariable(const shared_ptr<const AST::Symbol> &x);
 };
 
 // define the operator results of SymbolicExpression and IndependentVariable with other AT types.
@@ -223,8 +226,8 @@ const T& Constant<T>::getValue() const {
 class Symbol : public Vertex {
   public:
 
-    static SymbolicExpression create(const boost::uuids::uuid& uuid_=boost::uuids::random_generator()());
-    static SymbolicExpression createFromStream(std::istream &s,
+    static IndependentVariable create(const boost::uuids::uuid& uuid_=boost::uuids::random_generator()());
+    static IndependentVariable createFromStream(std::istream &s,
       const std::map<IndependentVariable, IndependentVariable> &substitution={});
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;

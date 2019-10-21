@@ -124,6 +124,8 @@ SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariab
 
 IndependentVariable::IndependentVariable() : SymbolicExpression(constructSymbol) {}
 
+IndependentVariable::IndependentVariable(const shared_ptr<const AST::Symbol> &x) : SymbolicExpression(x) {}
+
 namespace AST { // internal namespace
 
 // ***** Vertex *****
@@ -218,14 +220,14 @@ template void Constant<double>::serializeToStream(ostream &s) const;
 
 map<Symbol::CacheKey, weak_ptr<const Symbol>> Symbol::cache;
 
-SymbolicExpression Symbol::create(const boost::uuids::uuid& uuid_) {
+IndependentVariable Symbol::create(const boost::uuids::uuid& uuid_) {
   auto r=cache.insert(make_pair(uuid_, weak_ptr<const Symbol>()));
   if(!r.second) {
     auto oldPtr=r.first->second.lock();
     if(oldPtr)
       return oldPtr;
   }
-  auto newPtr=shared_ptr<Symbol>(new Symbol(uuid_));
+  auto newPtr=shared_ptr<const Symbol>(new Symbol(uuid_));
   newPtr->dependsOn.insert(make_pair(weak_ptr<const Symbol>(newPtr), 0)); // we cannot call this in Symbol::Symbol (it may be possible with weak_from_this() for C++17)
   r.first->second=newPtr;
   return newPtr;
@@ -240,7 +242,7 @@ SymbolicExpression Symbol::create(const boost::uuids::uuid& uuid_) {
 static map<boost::uuids::uuid, int> mapUUIDInt;
 #endif
 
-SymbolicExpression Symbol::createFromStream(istream &s,
+IndependentVariable Symbol::createFromStream(istream &s,
   const std::map<IndependentVariable, IndependentVariable> &substitution) {
   // get uuid from stream
   boost::uuids::uuid uuid;
