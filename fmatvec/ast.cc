@@ -84,6 +84,16 @@ istream& operator>>(istream& s, SymbolicExpression &se) {
   return s;
 }
 
+istream& operator>>(istream& s, IndependentVariable &v) {
+  SymbolicExpression se;
+  s>>se;
+  auto sym=dynamic_pointer_cast<const AST::Symbol>(se);
+  if(!sym)
+    throw runtime_error("The stream does not contain a IndependentVariable.");
+  v=IndependentVariable(sym);
+  return s;
+}
+
 AST::SubstHelper subst(SymbolicExpression &se, const map<IndependentVariable, IndependentVariable> &substitution) {
   return AST::SubstHelper(se, substitution);
 }

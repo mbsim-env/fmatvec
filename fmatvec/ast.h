@@ -80,6 +80,7 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
 //! An independent varible can also be assigned a value which is used if eval is called.
 class IndependentVariable : public SymbolicExpression {
   friend class AST::Symbol;
+  friend std::istream& operator>>(std::istream& s, IndependentVariable &v);
   public:
     //! Creates a IndependentVariable variable (each call to this ctor creates a new independent variable)
     IndependentVariable();
@@ -125,6 +126,8 @@ inline double eval(const SymbolicExpression &x);
 std::ostream& operator<<(std::ostream& s, const SymbolicExpression& se);
 //! Create/initialize a SymbolicExpression from a stream using deserialization.
 std::istream& operator>>(std::istream& s, SymbolicExpression &se);
+//! Create/initialize a IndependentVariable from a stream using deserialization.
+std::istream& operator>>(std::istream& s, IndependentVariable &v);
 //! Makes substutitions of IndependentVariable's during deserializing from a stream.
 AST::SubstHelper subst(SymbolicExpression &se, const std::map<IndependentVariable, IndependentVariable> &substitution);
 //! See subst.
