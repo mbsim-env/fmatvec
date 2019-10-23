@@ -234,6 +234,13 @@ if test "$cross_compiling" == "yes"; then
   AC_SUBST([XC_EXEC_PREFIX],[wine])
 fi
 
+dnl Check for MinGW
+AC_CANONICAL_HOST
+if test "_$host_os" = "_mingw32" ; then
+  WIN32=yes
+fi
+AM_CONDITIONAL([COND_WIN32], [test "_$WIN32" = "_yes"])
+
 # check for debug build
 DEBUGBUILD=1
 echo $CFLAGS $CXXFLAGS $CPPFLAGS | grep "\-DNDEBUG" > /dev/null && DEBUGBUILD=0
