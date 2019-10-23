@@ -17,6 +17,19 @@ SymbolicExpression::SymbolicExpression(int x) : shared_ptr<const AST::Vertex>(AS
 SymbolicExpression::SymbolicExpression(double x) : shared_ptr<const AST::Vertex>(AST::Constant<double>::create(x)) {}
 SymbolicExpression::SymbolicExpression(ConstructSymbol) : shared_ptr<const AST::Vertex>(AST::Symbol::create()) {}
 
+template<class T>
+void erase(T &cache) {
+  for(auto it=cache.begin(), endIt=cache.end(); it!=endIt; )
+    if(it->second.expired()) it=cache.erase(it); else ++it;
+}
+
+void SymbolicExpression::garbageCollect() {
+  erase(AST::Constant<int>::cache);
+  erase(AST::Constant<double>::cache);
+  erase(AST::Symbol::cache);
+  erase(AST::Operation::cache);
+}
+
 SymbolicExpression SymbolicExpression::operator+(const SymbolicExpression &b) const {
   return AST::Operation::create(AST::Operation::Plus, {*this, b});
 }

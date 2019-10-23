@@ -357,6 +357,7 @@ int main() {
   double pdn0Value;
   string v, a_, a5, a6, pdn0Ser;
   checkSym(pdn0Value, v, a_, a5, a6, pdn0Ser);
+  SymbolicExpression::garbageCollect();
   checkSymReread(pdn0Value, v, a_, a5, a6, pdn0Ser);
   checkSymRereadExistingIndeps(pdn0Value, v, a_, a5, a6, pdn0Ser);
 

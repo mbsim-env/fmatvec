@@ -53,6 +53,11 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
     //! Creates a double constant.
     SymbolicExpression(double x);
 
+    //! Garbage collect everything.
+    //! The only "garbage" which can be left by this class are empty weak_ptr's stored in global maps.
+    //! This routine removes such garbage.
+    static void garbageCollect();
+
     // default ctors and assignment operators
     SymbolicExpression(const SymbolicExpression& x) = default;
     SymbolicExpression(SymbolicExpression&& x) = default;
@@ -183,6 +188,7 @@ bool Vertex::isConstantInt() const {
 //! A vertex of the AST representing a constant (int or double)
 template<class T>
 class Constant : public Vertex {
+  friend SymbolicExpression;
   public:
 
     static SymbolicExpression create(const T& c_);
@@ -227,6 +233,7 @@ const T& Constant<T>::getValue() const {
 
 //! A vertex of the AST representing a independent variable.
 class Symbol : public Vertex {
+  friend SymbolicExpression;
   public:
 
     static IndependentVariable create(const boost::uuids::uuid& uuid_=boost::uuids::random_generator()());
@@ -269,6 +276,7 @@ unsigned long Symbol::getVersion() const {
 
 //! A vertex of the AST representing an operation.
 class Operation : public Vertex, public std::enable_shared_from_this<Operation> {
+  friend SymbolicExpression;
   public:
 
     //! Defined operations.
