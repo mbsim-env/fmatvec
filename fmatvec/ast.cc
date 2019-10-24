@@ -107,20 +107,20 @@ istream& operator>>(istream& s, IndependentVariable &v) {
   return s;
 }
 
-AST::SubstHelper subst(SymbolicExpression &se, const map<IndependentVariable, IndependentVariable> &substitution) {
-  return AST::SubstHelper(se, substitution);
-}
-
-istream& operator>>(istream& s, const AST::SubstHelper &sh) {
-  char ch;
-  s>>ch;
-  if(ch!='{')
-    throw runtime_error("The SymbolicExpression in the stream is not starting with {.");
-  sh.se=AST::Vertex::createFromStream(s, sh.substitution);
-  s>>ch;
-  if(ch!='}')
-    throw runtime_error("The SymbolicExpression in the stream is not ending with }.");
-  return s;
+SymbolicExpression subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b) {
+  // if se is the indep a to be replaced -> return b
+  if(se==a)
+    return b;
+  // if se is a constant -> return se
+  auto o=dynamic_cast<const AST::Operation*>(se.get());
+  if(!o)
+    return se;
+  // if se is a Operation -> copy the operation and call subst on its childs
+  vector<SymbolicExpression> child;
+  transform(o->child.begin(), o->child.end(), back_inserter(child), [&a, &b](const SymbolicExpression &x){
+    return subst(x, a, b);
+  });
+  return AST::Operation::create(o->op, child);
 }
 
 SymbolicExpression operator+(double a, const SymbolicExpression &b) {
@@ -153,18 +153,17 @@ namespace AST { // internal namespace
 
 // ***** Vertex *****
 
-SymbolicExpression Vertex::createFromStream(istream &s,
-  const std::map<IndependentVariable, IndependentVariable> &substitution) {
+SymbolicExpression Vertex::createFromStream(istream &s) {
   string className;
   s>>className;
   if(className=="i")
-    return Constant<int>::createFromStream(s, substitution);
+    return Constant<int>::createFromStream(s);
   else if(className=="d")
-    return Constant<double>::createFromStream(s, substitution);
+    return Constant<double>::createFromStream(s);
   else if(className=="s")
-    return Symbol::createFromStream(s, substitution);
+    return Symbol::createFromStream(s);
   else if(className=="o")
-    return Operation::createFromStream(s, substitution);
+    return Operation::createFromStream(s);
   else
     throw runtime_error("Unknown class "+className);
 }
@@ -203,8 +202,7 @@ SymbolicExpression Constant<T>::create(const T&c_) {
 }
 
 template<class T>
-SymbolicExpression Constant<T>::createFromStream(istream &s,
-  const std::map<IndependentVariable, IndependentVariable> &substitution) {
+SymbolicExpression Constant<T>::createFromStream(istream &s) {
   T c;
   s>>c;
   return Constant<T>::create(c);
@@ -230,10 +228,8 @@ Constant<T>::Constant(const T& c_) : c(c_) {}
 
 template SymbolicExpression Constant<int   >::create(const int   &c_);
 template SymbolicExpression Constant<double>::create(const double&c_);
-template SymbolicExpression Constant<int   >::createFromStream(istream &s,
-  const std::map<IndependentVariable, IndependentVariable> &substitution);
-template SymbolicExpression Constant<double>::createFromStream(istream &s,
-  const std::map<IndependentVariable, IndependentVariable> &substitution);
+template SymbolicExpression Constant<int   >::createFromStream(istream &s);
+template SymbolicExpression Constant<double>::createFromStream(istream &s);
 template SymbolicExpression Constant<int   >::parDer(const IndependentVariable &x) const;
 template SymbolicExpression Constant<double>::parDer(const IndependentVariable &x) const;
 template void Constant<int   >::serializeToStream(ostream &s) const;
@@ -265,8 +261,7 @@ IndependentVariable Symbol::create(const boost::uuids::uuid& uuid_) {
 static map<boost::uuids::uuid, int> mapUUIDInt;
 #endif
 
-IndependentVariable Symbol::createFromStream(istream &s,
-  const std::map<IndependentVariable, IndependentVariable> &substitution) {
+IndependentVariable Symbol::createFromStream(istream &s) {
   // get uuid from stream
   boost::uuids::uuid uuid;
 #ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
@@ -287,13 +282,8 @@ IndependentVariable Symbol::createFromStream(istream &s,
   s>>uuid;
 #endif
 
-  // create a, maybe temporary, Symbol with this uuid
-  auto indep=Symbol::create(uuid);
-  // if this indep in substituted then return the substituted indep, if not return itself.
-  auto it=substitution.find(static_cast<IndependentVariable&>(indep));
-  if(it!=substitution.end())
-    return it->second;
-  return indep;
+  // create a Symbol with this uuid
+  return Symbol::create(uuid);
 }
 
 SymbolicExpression Symbol::parDer(const IndependentVariable &x) const {
@@ -374,14 +364,13 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
   return newPtr;
 }
 
-SymbolicExpression Operation::createFromStream(istream &s,
-  const std::map<IndependentVariable, IndependentVariable> &substitution) {
+SymbolicExpression Operation::createFromStream(istream &s) {
   int opInt;
   size_t size;
   vector<SymbolicExpression> child;
   s>>opInt>>size;
   for(size_t i=0; i<size; ++i)
-    child.push_back(Vertex::createFromStream(s, substitution));
+    child.push_back(Vertex::createFromStream(s));
   return Operation::create(static_cast<Operator>(opInt), child);
 }
 
@@ -439,9 +428,6 @@ bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) {
       return ol(l.second[i], r.second[i]);
   return false;
 }
-
-SubstHelper::SubstHelper(SymbolicExpression &se_, const std::map<IndependentVariable, IndependentVariable> &substitution_)
-  : se(se_), substitution(substitution_) {}
 
 } // end namespace AST
 } // end namespace fmatvec

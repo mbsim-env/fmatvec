@@ -130,6 +130,34 @@ Matrix<Type, Fixed<N>, Fixed<M>, double> eval(const Matrix<Type, Fixed<N>, Fixed
   return ret;
 }
 
+template<class DepR, class ShapeA, class IndepA, class ShapeB, class DepB>
+DepR subst(const DepR &se, const Vector<ShapeA, IndepA>& a, const Vector<ShapeB, DepB> &b) {
+  if(a.size()!=b.size())
+    throw std::runtime_error("The size of the independent and the dependent substitution variable does not match.");
+  DepR ret=se;
+  for(int i=0; i<a.size(); ++i)
+    ret=subst(ret, a(i), b(i));
+  return ret;
+}
+
+template<class ShapeR, class DepR, class ShapeA, class IndepA, class ShapeB, class DepB>
+Vector<ShapeR, DepR> subst(const Vector<ShapeR, DepR> &se, const IndepA& a, const DepB &b) {
+  Vector<ShapeR, DepR> ret(se.size());
+  for(int i=0; i<se.size(); ++i)
+    ret(i)=subst(se(i), a, b);
+  return ret;
+}
+
+template<class TypeR, class RowShapeR, class ColShapeR, class DepR, class ShapeA, class IndepA, class ShapeB, class DepB>
+Matrix<TypeR, RowShapeR, ColShapeR, DepR> subst(const Matrix<TypeR, RowShapeR, ColShapeR, DepR> &se,
+                                                const IndepA& a, const DepB &b) {
+  Matrix<TypeR, RowShapeR, ColShapeR, DepR> ret(se.rows(), se.cols());
+  for(int r=0; r<se.rows(); ++r)
+    for(int c=0; c<se.cols(); ++c)
+      ret(r,c)=subst(se(r,c), a, b);
+  return ret;
+}
+
 //mfmf change operator &= to something better
 template<class ShapeDst, class ShapeSrc, class ATIndep>
 Vector<ShapeDst, ATIndep>& operator&=(Vector<ShapeDst, ATIndep> &dst, const Vector<ShapeSrc, double> &src) {

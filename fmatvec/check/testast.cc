@@ -336,7 +336,9 @@ void checkSymRereadExistingIndeps(double pdn0Value,
   SymbolicExpression pdn0;
   {
     stringstream istr(pdn0Ser);
-    istr>>subst(pdn0, {{vFromSer(0), v(0)},{vFromSer(1), v(1)},{vFromSer(2), v(2)},{a_FromSer, a_},{a5FromSer, a5},{a6FromSer, a6}});//MFMF
+    istr>>pdn0;
+    pdn0=subst(pdn0, vFromSer, v);
+    pdn0=subst(subst(subst(pdn0, a_FromSer, a_), a5FromSer, a5), a6FromSer, a6);
   }
 
   v&=Vec3({3.1,4.2,5.3});
