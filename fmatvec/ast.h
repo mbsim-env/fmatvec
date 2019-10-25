@@ -116,6 +116,10 @@ SymbolicExpression operator+(double a, const SymbolicExpression &b);
 SymbolicExpression operator-(double a, const SymbolicExpression &b);
 SymbolicExpression operator*(double a, const SymbolicExpression &b);
 SymbolicExpression operator/(double a, const SymbolicExpression &b);
+SymbolicExpression operator+(int a, const SymbolicExpression &b);
+SymbolicExpression operator-(int a, const SymbolicExpression &b);
+SymbolicExpression operator*(int a, const SymbolicExpression &b);
+SymbolicExpression operator/(int a, const SymbolicExpression &b);
 
 //! Generate a new SymbolicExpression being the partial derivate of dep
 //! with respect to indep (indep must be a symbol).

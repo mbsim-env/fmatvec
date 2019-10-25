@@ -139,6 +139,22 @@ SymbolicExpression operator/(double a, const SymbolicExpression &b) {
   return SymbolicExpression(a)/b;
 }
 
+SymbolicExpression operator+(int a, const SymbolicExpression &b) {
+  return SymbolicExpression(a)+b;
+}
+
+SymbolicExpression operator-(int a, const SymbolicExpression &b) {
+  return SymbolicExpression(a)-b;
+}
+
+SymbolicExpression operator*(int a, const SymbolicExpression &b) {
+  return SymbolicExpression(a)*b;
+}
+
+SymbolicExpression operator/(int a, const SymbolicExpression &b) {
+  return SymbolicExpression(a)/b;
+}
+
 SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep) {
   return dep->parDer(indep);
 }
