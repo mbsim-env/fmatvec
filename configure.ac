@@ -256,6 +256,7 @@ AC_CONFIG_COMMANDS([doc/doxy_template/doxyfile_common_fmatvec],
   )
 AC_CONFIG_FILES([fmatvec/check/testfunction.sh], [chmod +x fmatvec/check/testfunction.sh])
 AC_CONFIG_FILES([fmatvec/check/testast.sh], [chmod +x fmatvec/check/testast.sh])
+AC_CONFIG_FILES([fmatvec/check/valgrindtestast.sh], [chmod +x fmatvec/check/valgrindtestast.sh])
 AC_OUTPUT
 
 echo "

@@ -9,12 +9,14 @@ using namespace std;
 using namespace fmatvec;
 
 void checkDoubleComplex() {
+  // check compile of OperatorResult for double / complex<double>
   Matrix<General, Var, Var, complex<double>> M(3,3);
   Vector<Var, double> v(3);
   Vector<Var, complex<double>> r=M*v;
 }
 
 void checkComplex() {
+  // check operators for mat/vec with double /complex<double>
   typedef Vector<Var, complex<double>> VecComplex;
   typedef Matrix<General, Var, Var, complex<double>> MatComplex;
 
@@ -60,6 +62,7 @@ void checkComplex() {
   MatComplex _rmm=m*m;
   VecComplex _rmv=m*v;
 
+  // dump output
   cout<<"complex 0 = "<<_rmv(0)<<endl;
   cout<<"complex 1 = "<<_rmv(1)<<endl;
   cout<<"complex 2 = "<<_rmv(2)<<endl;
@@ -76,6 +79,7 @@ void checkSym(double &pdn0Value,
               string &a6Ser,
               string &pdn0Ser) {
   {
+    // check all vector variants as expression and independent
     RowVector<Fixed<3>, SymbolicExpression> rvf;
     RowVector<Var, SymbolicExpression> rvv(3);
     RowVector<Ref, SymbolicExpression> rvr(3);
@@ -96,6 +100,7 @@ void checkSym(double &pdn0Value,
     VecSymExpr v2;
     VecSymExpr v(3);
   }
+  // check operators for mat/vec with IndependentVariable / SymbolicExpression
   VecSymExpr v2;
   VecSymExpr v3(3);
   cout<<"v3 "<<v3<<endl;
@@ -145,9 +150,11 @@ void checkSym(double &pdn0Value,
   VecSymExpr _rmv=m*v;
   SymbolicExpression norm=nrm2(_rmv);
 
+  // check partial derivatives
   MatSymExpr pd=parDer(_rmv, v);
   RowVector<Var, SymbolicExpression> pdn=parDer(norm, v);
 
+  // dump output
   cout<<"indepVar 0 = "<<v(0)<<endl;
   cout<<"indepVar 1 = "<<v(1)<<endl;
   cout<<"indepVar 2 = "<<v(2)<<endl;
@@ -168,6 +175,7 @@ void checkSym(double &pdn0Value,
   cout<<"norm_indepVar 1 = "<<pdn(1)<<endl;
   cout<<"norm_indepVar 2 = "<<pdn(2)<<endl;
 
+  // check evaluation
   Vec3 vdouble3({1.1,2.2,3.3});
   v&=vdouble3;
   a_&=4.4;
@@ -212,6 +220,7 @@ void checkSym(double &pdn0Value,
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
 
+  // check all variants of partial derivatives
   {
     SymbolicExpression dep;
     IndependentVariable indep;
@@ -253,8 +262,9 @@ void checkSym(double &pdn0Value,
     Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression> ret=parDer(dep, indep);
   }
 
+  // dump all ret* vars to this stream just to avoid set but unused warnings
   {
-    stringstream dummy; // dump all ret* vars to this stream must to avoid set but unused warnings
+    stringstream dummy;
     double retd=eval(SymbolicExpression()); dummy<<retd;
     Vector<Var, double> retvv=eval(Vector<Var, SymbolicExpression>(3)); dummy<<retvv;
     Vector<Fixed<3>, double> retvf=eval(Vector<Fixed<3>, SymbolicExpression>()); dummy<<retvf;
@@ -266,6 +276,7 @@ void checkSym(double &pdn0Value,
     Matrix<General, Fixed<3>, Fixed<3>, double> retmff=eval(Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression>()); dummy<<retmff;
   }
 
+  // write to stream for later reread
   {
     { stringstream ostr; ostr<<v; vSer=ostr.str(); }
     { stringstream ostr; ostr<<a_; a_Ser=ostr.str(); }
@@ -282,6 +293,7 @@ void checkSymReread(double pdn0Value,
                     const string &a5Ser,
                     const string &a6Ser,
                     const string &pdn0Ser) {
+  // read expressions from streams
   Vector<Fixed<3>, IndependentVariable> v; { stringstream istr(vSer); istr>>v; }
   IndependentVariable a_; { stringstream istr(a_Ser); istr>>a_; }
   IndependentVariable a5; { stringstream istr(a5Ser); istr>>a5; }
@@ -289,13 +301,16 @@ void checkSymReread(double pdn0Value,
 
   SymbolicExpression pdn0; { stringstream istr(pdn0Ser); istr>>pdn0; }
 
+  // set independent variables
   v&=Vec3({3.1,4.2,5.3});
   a_&=6.4;
   a5&=7.5;
   a6&=8.6;
 
+  // print evaluated value after reading the expressions from stream
   cout<<"reread "<<pdn0Value<<" == "<<eval(pdn0)<<endl;
 
+  // more streamout/in tests
   {
     Vector<Fixed<3>, IndependentVariable> v(NONINIT);
     Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression> M;
@@ -315,6 +330,21 @@ void checkSymReread(double pdn0Value,
     { stringstream str; str<<v; Vector<Fixed<3>, IndependentVariable> vrr; str>>vrr; cout<<"reread "<<vrr<<endl; }
     { stringstream str; str<<y; Vector<Fixed<3>, SymbolicExpression>  yrr; str>>yrr; cout<<"reread "<<yrr<<endl; }
   }
+
+  // check for bit-identical write/read to/from stream
+  {
+    SymbolicExpression x=3;
+    SymbolicExpression a=1/x;
+    SymbolicExpression b=2/x;
+    stringstream ostr;
+    ostr<<a<<b;
+    stringstream istr(ostr.str());
+    SymbolicExpression ar;
+    SymbolicExpression br;
+    istr>>ar>>br;
+    cout<<"reread-precision "<<(a==ar)<<" "<<(eval(a)==eval(ar))<<endl;
+    cout<<"reread-precision "<<(b==br)<<" "<<(eval(b)==eval(br))<<endl;
+  }
 }
 
 void checkSymRereadExistingIndeps(double pdn0Value,
@@ -323,6 +353,7 @@ void checkSymRereadExistingIndeps(double pdn0Value,
                                   const string &a5Ser,
                                   const string &a6Ser,
                                   const string &pdn0Ser) {
+  // read expression and independent variables from stream
   Vector<Fixed<3>, IndependentVariable> v(NONINIT);
   IndependentVariable a_;
   IndependentVariable a5;
@@ -333,6 +364,7 @@ void checkSymRereadExistingIndeps(double pdn0Value,
   IndependentVariable a5FromSer; { stringstream istr(a5Ser); istr>>a5FromSer; }
   IndependentVariable a6FromSer; { stringstream istr(a6Ser); istr>>a6FromSer; }
 
+  // Substitutes the independent variables from the stream with already exising ones from c++
   SymbolicExpression pdn0;
   {
     stringstream istr(pdn0Ser);
@@ -341,11 +373,13 @@ void checkSymRereadExistingIndeps(double pdn0Value,
     pdn0=subst(subst(subst(pdn0, a_FromSer, a_), a5FromSer, a5), a6FromSer, a6);
   }
 
+  // set independent variables
   v&=Vec3({3.1,4.2,5.3});
   a_&=6.4;
   a5&=7.5;
   a6&=8.6;
 
+  // dump output
   cout<<"reread "<<pdn0Value<<" == "<<eval(pdn0)<<endl;
 }
 

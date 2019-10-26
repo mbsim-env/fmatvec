@@ -1,0 +1,52 @@
+{
+   needed for old boost/valgrind
+   Memcheck:Cond
+   fun:seed<boost::uuids::detail::generator_iterator<boost::uuids::detail::seed_rng> >
+   fun:seed<boost::random::mersenne_twister_engine<unsigned int, 32ul, 624ul, 397ul, 31ul, 2567483615u, 11ul, 4294967295u, 7ul, 2636928640u, 15ul, 4022730752u, 18ul, 1812433253u> >
+   fun:basic_random_generator
+}
+{
+   needed for old boost/valgrind
+   Memcheck:Cond
+   ...
+   fun:__lc<unsigned char, unsigned char>
+   fun:__lexicographical_compare_aux<unsigned char const*, unsigned char const*>
+   fun:lexicographical_compare<unsigned char const*, unsigned char const*>
+   fun:operator<
+   fun:operator()
+}
+{
+   needed for old boost/valgrind
+   Memcheck:Cond
+   fun:_M_get_insert_unique_pos
+   fun:_ZNSt8_Rb_treeIN5boost5uuids4uuidESt4pairIKS2_St8weak_ptrIKN7fmatvec3AST6SymbolEEESt10_Select1stISB_ESt4lessIS2_ESaISB_EE16_M_insert_uniqueIS3_IS2_SA_EEES3_ISt17_Rb_tree_iteratorISB_EbEOT_
+   fun:insert<std::pair<boost::uuids::uuid, std::weak_ptr<const fmatvec::AST::Symbol> >, void>
+}
+{
+   needed for old boost/valgrind
+   Memcheck:Cond
+   fun:_ZSt29_Rb_tree_insert_and_rebalancebPSt18_Rb_tree_node_baseS0_RS_
+   fun:_M_insert_<std::pair<boost::uuids::uuid, std::weak_ptr<const fmatvec::AST::Symbol> > >
+   fun:_ZNSt8_Rb_treeIN5boost5uuids4uuidESt4pairIKS2_St8weak_ptrIKN7fmatvec3AST6SymbolEEESt10_Select1stISB_ESt4lessIS2_ESaISB_EE16_M_insert_uniqueIS3_IS2_SA_EEES3_ISt17_Rb_tree_iteratorISB_EbEOT_
+   fun:insert<std::pair<boost::uuids::uuid, std::weak_ptr<const fmatvec::AST::Symbol> >, void>
+}
+{
+   needed for old boost/valgrind
+   Memcheck:Value8
+   obj:/usr/lib64/libstdc++.so.6.0.19
+   fun:_ZNKSt7num_putIcSt19ostreambuf_iteratorIcSt11char_traitsIcEEE13_M_insert_intImEES3_S3_RSt8ios_basecT_
+   fun:_ZNKSt7num_putIcSt19ostreambuf_iteratorIcSt11char_traitsIcEEE6do_putES3_RSt8ios_basecm
+   fun:_ZNSo9_M_insertImEERSoT_
+   fun:operator<<
+   fun:_ZN5boost5uuidslsIcSt11char_traitsIcEEERSt13basic_ostreamIT_T0_ES8_RKNS0_4uuidE
+}
+{
+   needed for old boost/valgrind
+   Memcheck:Cond
+   obj:/usr/lib64/libstdc++.so.6.0.19
+   fun:_ZNKSt7num_putIcSt19ostreambuf_iteratorIcSt11char_traitsIcEEE13_M_insert_intImEES3_S3_RSt8ios_basecT_
+   fun:_ZNKSt7num_putIcSt19ostreambuf_iteratorIcSt11char_traitsIcEEE6do_putES3_RSt8ios_basecm
+   fun:_ZNSo9_M_insertImEERSoT_
+   fun:operator<<
+   fun:_ZN5boost5uuidslsIcSt11char_traitsIcEEERSt13basic_ostreamIT_T0_ES8_RKNS0_4uuidE
+}

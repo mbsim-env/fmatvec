@@ -38,4 +38,6 @@ depvar ser [{ i 1 }, { o 0 2 i 2 s 7 }, { i 3 }; { o 0 2 i 4 o 5 1 s 8 }, { i 5 
 depvar ser [{ o 0 2 o 0 2 s 7 o 2 2 o 0 2 i 2 s 7 s 8 o 2 2 i 3 s 9 }; { o 0 2 o 0 2 o 2 2 o 0 2 i 4 o 5 1 s 8 s 7 o 2 2 i 5 s 8 o 2 2 i 6 s 9 }; { o 0 2 o 0 2 o 2 2 i 7 s 7 o 2 2 i 8 s 8 o 2 2 o 2 2 i 9 s 9 s 9 }]
 reread [{ s 7 }; { s 8 }; { s 9 }]
 reread [{ o 0 2 o 0 2 s 7 o 2 2 o 0 2 i 2 s 7 s 8 o 2 2 i 3 s 9 }; { o 0 2 o 0 2 o 2 2 o 0 2 i 4 o 5 1 s 8 s 7 o 2 2 i 5 s 8 o 2 2 i 6 s 9 }; { o 0 2 o 0 2 o 2 2 i 7 s 7 o 2 2 i 8 s 8 o 2 2 o 2 2 i 9 s 9 s 9 }]
+reread-precision 1 1
+reread-precision 1 1
 reread 7.67898 == 7.67898
