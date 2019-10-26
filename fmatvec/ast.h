@@ -38,7 +38,7 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
   friend std::istream& operator>>(std::istream& s, SymbolicExpression &se);
   protected:
     template<class T> SymbolicExpression(const shared_ptr<T> &x);
-    static struct ConstructSymbol{} constructSymbol; // just used for tag dispatching
+    static const struct ConstructSymbol{} constructSymbol; // just used for tag dispatching
     SymbolicExpression(ConstructSymbol);
 
     // do not allow to call these functions inherited from std::shared_ptr
@@ -151,6 +151,7 @@ namespace AST { // internal namespace
 
 //! A abstract class for a Vertex of the AST (abstract syntax tree).
 class Vertex {
+  friend Operation;
   public:
 
     //! Create a AST from a by deserialization a stream.
@@ -176,6 +177,12 @@ class Vertex {
 
   protected:
 
+    // helper function to make it easy to implement new expression optimizations. See ast.cc Operation::create for details.
+    // Returns true if this Vertex the Vertex (SymbolicExpression) b. Every Symbol variables in this Vertex are free. This
+    // means that true is also returned if the Symbols in this Vertex can be replaced by anything such that the expressions
+    // are equal. All these required replacements are stored in m.
+    virtual bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const=0;
+
     // the value of this map (the unsigned long = version) must be mutable
     mutable std::map<std::weak_ptr<const Symbol>, unsigned long, std::owner_less<std::weak_ptr<const Symbol>>> dependsOn;
 };
@@ -188,7 +195,7 @@ bool Vertex::isConstantInt() const {
 
 //! A vertex of the AST representing a constant (int or double)
 template<class T>
-class Constant : public Vertex {
+class Constant : public Vertex, public std::enable_shared_from_this<Constant<T>> {
   friend SymbolicExpression;
   public:
 
@@ -205,6 +212,7 @@ class Constant : public Vertex {
 
     Constant(const T& c_);
     T c;
+    bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
     typedef T CacheKey;
     static std::map<CacheKey, std::weak_ptr<const Constant>> cache;
 };
@@ -232,7 +240,7 @@ const T& Constant<T>::getValue() const {
 // ***** Symbol *****
 
 //! A vertex of the AST representing a independent variable.
-class Symbol : public Vertex {
+class Symbol : public Vertex, public std::enable_shared_from_this<Symbol> {
   friend SymbolicExpression;
   public:
 
@@ -251,6 +259,7 @@ class Symbol : public Vertex {
   private:
 
     Symbol(const boost::uuids::uuid& uuid_);
+    bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
     mutable double x = 0.0;
     mutable unsigned long version;
     boost::uuids::uuid uuid; // each variable has a uuid (this is only used when the AST is serialized and for caching)
@@ -290,6 +299,7 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
   private:
 
     Operation(Operator op_, const std::vector<SymbolicExpression> &child_);
+    bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
     Operator op;
     std::vector<SymbolicExpression> child;
     typedef std::pair<Operator, std::vector<std::weak_ptr<const Vertex>>> CacheKey;
@@ -319,9 +329,10 @@ double Operation::eval() const {
   SymbolicExpression::evalOperationsCount++;
 #endif
 
+  // we do not use "double a=child.size()>=1 ? child[0]->eval() : 0;" here
+  // for optimal performance, to avoid the child.size() call.
   #define a child[0]->eval() // value of first argument
   #define b child[1]->eval() // value of second argument
-  #define c child[2]->eval() // value of third argument
   switch(op) {
     case Plus:
       return cacheValue = a + b;
@@ -343,7 +354,6 @@ double Operation::eval() const {
   }
   #undef a
   #undef b
-  #undef c
   throw std::runtime_error("Unknown operation.");
 }
 

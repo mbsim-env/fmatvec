@@ -225,6 +225,12 @@ SymbolicExpression Constant<T>::createFromStream(istream &s) {
 }
 
 template<class T>
+bool Constant<T>::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
+  // a constant is only equal to b if b is the same as this.
+  return this->shared_from_this()==b;
+}
+
+template<class T>
 SymbolicExpression Constant<T>::parDer(const IndependentVariable &x) const {
   return Constant<int>::create(0);
 }
@@ -246,6 +252,8 @@ template SymbolicExpression Constant<int   >::create(const int   &c_);
 template SymbolicExpression Constant<double>::create(const double&c_);
 template SymbolicExpression Constant<int   >::createFromStream(istream &s);
 template SymbolicExpression Constant<double>::createFromStream(istream &s);
+template bool Constant<int   >::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const;
+template bool Constant<double>::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const;
 template SymbolicExpression Constant<int   >::parDer(const IndependentVariable &x) const;
 template SymbolicExpression Constant<double>::parDer(const IndependentVariable &x) const;
 template void Constant<int   >::serializeToStream(ostream &s) const;
@@ -266,6 +274,19 @@ IndependentVariable Symbol::create(const boost::uuids::uuid& uuid_) {
   newPtr->dependsOn.insert(make_pair(weak_ptr<const Symbol>(newPtr), 0)); // we cannot call this in Symbol::Symbol (it may be possible with weak_from_this() for C++17)
   r.first->second=newPtr;
   return newPtr;
+}
+
+bool Symbol::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
+  // if this symbol is not already listed in m than this symbol is still free.
+  // This means that the the symbol can be equal to b if this symbol is set to b...
+  auto ret=m.insert(pair<IndependentVariable, SymbolicExpression>(shared_from_this(), SymbolicExpression()));
+  if(ret.second) {
+    // ... this is done here (store this symbol in m and map it to b.
+    ret.first->second=b;
+    return true;
+  }
+  // if this symbol is already listed in m then true is returned if the mapped expression equal b.
+  return ret.first->second==b;
 }
 
 #ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
@@ -326,42 +347,67 @@ Symbol::Symbol(const boost::uuids::uuid& uuid_) : version(0), uuid(uuid_) {}
 map<Operation::CacheKey, weak_ptr<const Operation>, Operation::CacheKeyComp> Operation::cache;
 
 SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpression> &child_) {
-  // optimize Plus
-  if(op_==Plus && child_[0]->isZero())
-    return child_[1];
-  if(op_==Plus && child_[1]->isZero())
-    return child_[0];
-  // optimize Minus
-  if(op_==Minus && child_[1]->isZero())
-    return child_[0];
-  // optimize Mult
-  if(op_==Mult && (child_[0]->isZero() || child_[1]->isZero()))
-    return Constant<int>::create(0);
-  if(op_==Mult && child_[0]->isOne())
-    return child_[1];
-  if(op_==Mult && child_[1]->isOne())
-    return child_[0];
-  // optimize Div
-  if(op_==Div && child_[1]->isOne())
-    return child_[0];
-  if(op_==Div && child_[0]->isZero())
-    return Constant<int>::create(0);
-  // optimize Pow
-  if(op_==Pow && child_[1]->isZero())
-    return Constant<int>::create(1);
-  if(op_==Pow && child_[1]->isOne())
-    return child_[0];
-  // optimize Constant arguments (if ALL are Constant)
-  bool allConst=all_of(child_.begin(), child_.end(), [](const SymbolicExpression& c) {
-    return c->isConstantInt() || dynamic_pointer_cast<const Constant<double>>(c)!=nullptr;
-  });
-  if(allConst) {
-    Operation op(op_, child_);
-    double doubleValue=op.eval();
-    int intValue=lround(doubleValue);
-    if(abs(intValue-doubleValue)<2*numeric_limits<double>::epsilon())
-      return Constant<int>::create(intValue);
-    return Constant<double>::create(doubleValue);
+  static bool optimizeExpressions=true; // this is "always" true (except for the initial call, see below)
+  static bool firstCall=true;
+  static vector<pair<SymbolicExpression,SymbolicExpression>> optExpr; // list of expression optimizations
+  if(firstCall) { // on the first call build the list of expression optimizations
+    firstCall=false;
+    IndependentVariable a;
+    IndependentVariable b;
+    // we need to disable the expression optimization during buildup of the expressions to optimize
+    optimizeExpressions=false;
+    optExpr={
+      // list of expressions (the left ones) to optimize; the right ones are the optimized expressions
+      // which must mathematically equal the left ones but are simpler.
+      { 0+a       , a},
+      { a+0       , a},
+      { a-0       , a},
+      { 0*a       , 0},
+      { a*0       , 0},
+      { 1*a       , a},
+      { a*1       , a},
+      { a*a       , pow(a,2)},
+      { a/1       , a},
+      { a/a       , 1}, // we do not care about the 0/0 case here :-(
+      { 0/a       , 0}, // we do not care about the /0 case here :-(
+      { pow(a,1)  , a},
+      { pow(a,0)  , 1},
+      { pow(a,b)*a, pow(a,b+1)},
+      { a*pow(a,b), pow(a,b+1)},
+      { pow(a,b)/a, pow(a,b-1)} // we do not care about the /0 case here :-(
+    };
+    // now enable the optimizations again
+    optimizeExpressions=true;
+  }
+
+  if(optimizeExpressions) { // optimizeExpressions is "always" true (except for the initial call, see above)
+    // build the current operation
+    SymbolicExpression curOp=shared_ptr<Operation>(new Operation(op_, child_));
+    // loop over all optimization expressions
+    for(auto &opt : optExpr) {
+      SymbolicExpression in=opt.first;
+      SymbolicExpression out=opt.second;
+      map<IndependentVariable, SymbolicExpression> m;
+      if(in->equal(curOp, m)) {
+        // if this optimization expression matches then return the optimized expressions with all symbols of m replaced.
+        for(auto &x : m)
+          out=subst(out, x.first, x.second);
+        return out;
+      }
+    }
+
+    // optimize Constant arguments (if ALL are Constant)
+    bool allConst=all_of(child_.begin(), child_.end(), [](const SymbolicExpression& c) {
+      return c->isConstantInt() || dynamic_pointer_cast<const Constant<double>>(c)!=nullptr;
+    });
+    if(allConst) {
+      Operation op(op_, child_);
+      double doubleValue=op.eval();
+      int intValue=lround(doubleValue);
+      if(abs(intValue-doubleValue)<2*numeric_limits<double>::epsilon())
+        return Constant<int>::create(intValue);
+      return Constant<double>::create(doubleValue);
+    }
   }
 
   vector<weak_ptr<const Vertex>> weakChild;
@@ -390,14 +436,27 @@ SymbolicExpression Operation::createFromStream(istream &s) {
   return Operation::create(static_cast<Operator>(opInt), child);
 }
 
+bool Operation::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
+  // a operation equals b only if b is also a operation
+  auto bo=dynamic_pointer_cast<const Operation>(b);
+  if(!bo)
+    return false;
+  // if the operation are not the same -> return false
+  if(op!=bo->op)
+    return false;
+  // if any of the children vertexes are not equal -> return false
+  for(size_t i=0; i<child.size(); ++i)
+    if(!child[i]->equal(bo->child[i], m))
+      return false;
+  return true;
+}
+
 SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
-  #define v SymbolicExpression(shared_from_this()) // expression to be differentiated
-  #define a child[0] // expression of first argument
-  #define b child[1] // expression of second argument
-  #define c child[2] // expression of third argument
-  #define ad child[0]->parDer(x) // pertial derivative of the expression of the first argument wrt the independent x
-  #define bd child[1]->parDer(x) // pertial derivative of the expression of the second argument wrt the independent x
-  #define cd child[2]->parDer(x) // pertial derivative of the expression of the third argument wrt the independent x
+  auto v=SymbolicExpression(shared_from_this()); // expression to be differentiated
+  auto a=child.size()>=1 ? child[0] : SymbolicExpression(); // expression of first argument
+  auto b=child.size()>=2 ? child[1] : SymbolicExpression(); // expression of second argument
+  auto ad=child.size()>=1 ? child[0]->parDer(x) : SymbolicExpression(); // pertial derivative of the expression of the first argument wrt the independent x
+  auto bd=child.size()>=2 ? child[1]->parDer(x) : SymbolicExpression(); // pertial derivative of the expression of the second argument wrt the independent x
   switch(op) {
     case Plus:
       return ad + bd;
@@ -414,12 +473,6 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
     case Sqrt:
       return ad * 0.5 / v;
   }
-  #undef a
-  #undef b
-  #undef c
-  #undef ad
-  #undef bd
-  #undef cd
   throw runtime_error("Unknown operation.");
 }
 
