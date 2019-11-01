@@ -43,4 +43,6 @@ fmatvecinclude_HEADERS = diagonal_matrix.h \
 			 wrapper.h\
 			 ast.h\
 			 symbolic.h\
-			 function.h
+			 function.h\
+			 symbolic_function.h\
+			 symbolic_function_temp.h

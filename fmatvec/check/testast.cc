@@ -1,7 +1,7 @@
 #include <cfenv>
 #include <cassert>
 #include <iostream>
-#include "fmatvec/ast.h"
+#include "fmatvec/symbolic.h"
 #include "fmatvec/fmatvec.h"
 #include "fmatvec/linear_algebra_complex.h"
 

@@ -171,6 +171,22 @@ struct Der<Matrix<Rotation, Fixed<3>, Fixed<3>, double>, Vector<IndepVecShape, d
   typedef Matrix<General, Fixed<3>, IndepVecShape, double> type;
 };
 
+/*! Defines the resulting type of the directional derivative of a value of type Dep with respect to a value of type Indep.
+ * This struct handles all types except rotation matrixes.
+ */
+template<typename Dep, typename Indep>
+struct DirDer {
+  typedef Dep type;
+};
+
+/*! Defines the resulting type of the directional derivative of a value of type Dep with respect to a value of type Indep.
+ * This struct handles rotation matrixes.
+ */
+template<typename Indep>
+struct DirDer<Matrix<Rotation, Fixed<3>, Fixed<3>, double>, Indep> {
+  typedef Vector<Fixed<3>, double> type;
+};
+
 /*! A function object of arbitary type (defined like in std::function).
  * The number of arguments is variable and always one value is returned.
  * The type of the arguments and the return value is also variable using templates.
@@ -191,6 +207,7 @@ class Function<Ret(Arg)> : virtual public Atom {
   public:
 
     using DRetDArg = typename Der<Ret, Arg>::type;
+    using DRetDDir = typename DirDer<Ret, Arg>::type;
     using DDRetDDArg = typename Der<DRetDArg, Arg>::type;
 
     //! Compile time size of the return value: =0 == unknown compile time size
@@ -214,7 +231,7 @@ class Function<Ret(Arg)> : virtual public Atom {
     }
 
     //! First derivative: directional derivative of the function value with respect to the argument.
-    virtual Ret dirDer(const Arg &argDir, const Arg &arg) {
+    virtual DRetDDir dirDer(const Arg &argDir, const Arg &arg) {
       throw std::runtime_error("dirDer must be overloaded by derived class.");
     }
 
@@ -229,7 +246,7 @@ class Function<Ret(Arg)> : virtual public Atom {
     }
 
     //! Second derivative: directional derivative of dirDer with respect to the argument.
-    virtual Ret dirDerDirDer(const Arg &argDir_1, const Arg &argDir_2, const Arg &arg) {
+    virtual DRetDDir dirDerDirDer(const Arg &argDir_1, const Arg &argDir_2, const Arg &arg) {
       throw std::runtime_error("dirDerDirDer must be overloaded by derived class.");
     }
 
