@@ -91,3 +91,12 @@
    fun:_ZNSo9_M_insertImEERSoT_
    fun:_ZN5boost5uuidslsIcSt11char_traitsIcEEERSt13basic_ostreamIT_T0_ES8_RKNS0_4uuidE
 }
+{
+   needed for old boost/valgrind
+   Memcheck:Cond
+   obj:/usr/lib64/libstdc++.so.6.0.19
+   fun:_ZNKSt7num_putIcSt19ostreambuf_iteratorIcSt11char_traitsIcEEE13_M_insert_intImEES3_S3_RSt8ios_basecT_
+   fun:_ZNKSt7num_putIcSt19ostreambuf_iteratorIcSt11char_traitsIcEEE6do_putES3_RSt8ios_basecm
+   fun:_ZNSo9_M_insertImEERSoT_
+   fun:_ZN5boost5uuidslsIcSt11char_traitsIcEEERSt13basic_ostreamIT_T0_ES8_RKNS0_4uuidE
+}
