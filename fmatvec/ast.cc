@@ -94,6 +94,42 @@ SymbolicExpression tan(const SymbolicExpression &a) {
   return AST::Operation::create(AST::Operation::Tan, {a});
 }
 
+SymbolicExpression sinh(const SymbolicExpression &a) {
+  return AST::Operation::create(AST::Operation::Sinh, {a});
+}
+
+SymbolicExpression cosh(const SymbolicExpression &a) {
+  return AST::Operation::create(AST::Operation::Cosh, {a});
+}
+
+SymbolicExpression tanh(const SymbolicExpression &a) {
+  return AST::Operation::create(AST::Operation::Tanh, {a});
+}
+
+SymbolicExpression asin(const SymbolicExpression &a) {
+  return AST::Operation::create(AST::Operation::ASin, {a});
+}
+
+SymbolicExpression acos(const SymbolicExpression &a) {
+  return AST::Operation::create(AST::Operation::ACos, {a});
+}
+
+SymbolicExpression atan(const SymbolicExpression &a) {
+  return AST::Operation::create(AST::Operation::ATan, {a});
+}
+
+SymbolicExpression asinh(const SymbolicExpression &a) {
+  return AST::Operation::create(AST::Operation::ASinh, {a});
+}
+
+SymbolicExpression acosh(const SymbolicExpression &a) {
+  return AST::Operation::create(AST::Operation::ACosh, {a});
+}
+
+SymbolicExpression atanh(const SymbolicExpression &a) {
+  return AST::Operation::create(AST::Operation::ATanh, {a});
+}
+
 ostream& operator<<(ostream& s, const SymbolicExpression& se) {
   auto oldPrecision=s.precision(numeric_limits<double>::digits10+1);
   s<<"{";
@@ -498,6 +534,24 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
       return - sin(a) * ad;
     case Tan:
       return ad / pow(cos(a), 2);
+    case Sinh:
+      return cosh(a) * ad;
+    case Cosh:
+      return sinh(a) * ad;
+    case Tanh:
+      return (1 - pow(tanh(a), 2)) * ad;
+    case ASin:
+      return ad / sqrt(1 - pow(a, 2));
+    case ACos:
+      return - ad / sqrt(1 - pow(a, 2));
+    case ATan:
+      return ad / (1 + pow(a, 2));
+    case ASinh:
+      return ad / sqrt(pow(a, 2) + 1);
+    case ACosh:
+      return ad / sqrt(pow(a, 2) - 1);
+    case ATanh:
+      return ad / (1 - pow(a, 2));
   }
   throw runtime_error("Unknown operation.");
 }

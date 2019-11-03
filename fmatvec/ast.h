@@ -148,6 +148,15 @@ SymbolicExpression sqrt(const SymbolicExpression &a);
 SymbolicExpression sin(const SymbolicExpression &a);
 SymbolicExpression cos(const SymbolicExpression &a);
 SymbolicExpression tan(const SymbolicExpression &a);
+SymbolicExpression sinh(const SymbolicExpression &a);
+SymbolicExpression cosh(const SymbolicExpression &a);
+SymbolicExpression tanh(const SymbolicExpression &a);
+SymbolicExpression asin(const SymbolicExpression &a);
+SymbolicExpression acos(const SymbolicExpression &a);
+SymbolicExpression atan(const SymbolicExpression &a);
+SymbolicExpression asinh(const SymbolicExpression &a);
+SymbolicExpression acosh(const SymbolicExpression &a);
+SymbolicExpression atanh(const SymbolicExpression &a);
 
 namespace AST { // internal namespace
 
@@ -293,7 +302,7 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
   public:
 
     //! Defined operations.
-    enum Operator { Plus, Minus, Mult, Div, Pow, Log, Sqrt, Neg, Sin, Cos, Tan };
+    enum Operator { Plus, Minus, Mult, Div, Pow, Log, Sqrt, Neg, Sin, Cos, Tan, Sinh, Cosh, Tanh, ASin, ACos, ATan, ASinh, ACosh, ATanh };
     static SymbolicExpression create(Operator op_, const std::vector<SymbolicExpression> &child_);
     static SymbolicExpression createFromStream(std::istream &s);
     inline double eval() const override;
@@ -363,6 +372,24 @@ double Operation::eval() const {
       return cacheValue = std::cos(a);
     case Tan:
       return cacheValue = std::tan(a);
+    case Sinh:
+      return cacheValue = std::sinh(a);
+    case Cosh:
+      return cacheValue = std::cosh(a);
+    case Tanh:
+      return cacheValue = std::tanh(a);
+    case ASin:
+      return cacheValue = std::asin(a);
+    case ACos:
+      return cacheValue = std::acos(a);
+    case ATan:
+      return cacheValue = std::atan(a);
+    case ASinh:
+      return cacheValue = std::asinh(a);
+    case ACosh:
+      return cacheValue = std::acosh(a);
+    case ATanh:
+      return cacheValue = std::atanh(a);
   }
   #undef a
   #undef b

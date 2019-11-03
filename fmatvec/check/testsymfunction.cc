@@ -255,7 +255,7 @@ int main() {
     SymbolicFunction<Mat3x3(Vec3, Vec3)> funcM(x1, x2, matrix);
     SymbolicFunction<RotMat3(Vec3, Vec3)> funcR(x1, x2, rotMatrix);
 
-    Vec3 arg1({1.2,1.2,1.2});//mfmf compiles with double!!!!!!
+    Vec3 arg1({1.2,1.2,1.2});
     Vec3 arg2({2.3,2.3,2.3});
     Vec3 arg1Dir({3.4,3.4,3.4});
     Vec3 arg2Dir({4.5,4.5,4.5});
