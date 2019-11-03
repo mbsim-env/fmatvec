@@ -70,6 +70,7 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
     SymbolicExpression operator-(const SymbolicExpression &b) const;
     SymbolicExpression operator*(const SymbolicExpression &b) const;
     SymbolicExpression operator/(const SymbolicExpression &b) const;
+    SymbolicExpression operator-() const;
     SymbolicExpression& operator+=(const SymbolicExpression &b);
     SymbolicExpression& operator-=(const SymbolicExpression &b);
     SymbolicExpression& operator*=(const SymbolicExpression &b);
@@ -144,6 +145,9 @@ SymbolicExpression subst(const SymbolicExpression &se, const IndependentVariable
 SymbolicExpression pow(const SymbolicExpression &a, const SymbolicExpression &b);
 SymbolicExpression log(const SymbolicExpression &a);
 SymbolicExpression sqrt(const SymbolicExpression &a);
+SymbolicExpression sin(const SymbolicExpression &a);
+SymbolicExpression cos(const SymbolicExpression &a);
+SymbolicExpression tan(const SymbolicExpression &a);
 
 namespace AST { // internal namespace
 
@@ -289,7 +293,7 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
   public:
 
     //! Defined operations.
-    enum Operator { Plus, Minus, Mult, Div, Pow, Log, Sqrt };
+    enum Operator { Plus, Minus, Mult, Div, Pow, Log, Sqrt, Neg, Sin, Cos, Tan };
     static SymbolicExpression create(Operator op_, const std::vector<SymbolicExpression> &child_);
     static SymbolicExpression createFromStream(std::istream &s);
     inline double eval() const override;
@@ -351,6 +355,14 @@ double Operation::eval() const {
       return cacheValue = std::log(a);
     case Sqrt:
       return cacheValue = std::sqrt(a);
+    case Neg:
+      return cacheValue = - a;
+    case Sin:
+      return cacheValue = std::sin(a);
+    case Cos:
+      return cacheValue = std::cos(a);
+    case Tan:
+      return cacheValue = std::tan(a);
   }
   #undef a
   #undef b

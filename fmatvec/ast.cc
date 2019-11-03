@@ -78,6 +78,22 @@ SymbolicExpression sqrt(const SymbolicExpression &a) {
   return AST::Operation::create(AST::Operation::Sqrt, {a});
 }
 
+SymbolicExpression SymbolicExpression::operator-() const {
+  return AST::Operation::create(AST::Operation::Neg, {*this});
+}
+
+SymbolicExpression sin(const SymbolicExpression &a) {
+  return AST::Operation::create(AST::Operation::Sin, {a});
+}
+
+SymbolicExpression cos(const SymbolicExpression &a) {
+  return AST::Operation::create(AST::Operation::Cos, {a});
+}
+
+SymbolicExpression tan(const SymbolicExpression &a) {
+  return AST::Operation::create(AST::Operation::Tan, {a});
+}
+
 ostream& operator<<(ostream& s, const SymbolicExpression& se) {
   auto oldPrecision=s.precision(numeric_limits<double>::digits10+1);
   s<<"{";
@@ -474,6 +490,14 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
       return ad / a;
     case Sqrt:
       return ad * 0.5 / v;
+    case Neg:
+      return - ad;
+    case Sin:
+      return cos(a) * ad;
+    case Cos:
+      return - sin(a) * ad;
+    case Tan:
+      return ad / pow(cos(a), 2);
   }
   throw runtime_error("Unknown operation.");
 }

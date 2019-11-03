@@ -1,5 +1,5 @@
 template<TEMPLATE>
-class SymbolicFunction<RET(ARG)> : public Function<RET(ARG)> {
+class SymbolicFunction<RET(ARG)> : public virtual Function<RET(ARG)> {
   public:
     using DRetDArg = typename Function<RET(ARG)>::DRetDArg;
     using DRetDDir = typename Function<RET(ARG)>::DRetDDir;
@@ -7,7 +7,15 @@ class SymbolicFunction<RET(ARG)> : public Function<RET(ARG)> {
     using ArgS = typename ReplaceAT<ARG, IndependentVariable>::Type;
     using RetS = typename ReplaceAT<RET, SymbolicExpression>::Type;
 
-    SymbolicFunction(const ArgS &argS_, const RetS &retS_);
+    SymbolicFunction();
+    SymbolicFunction(const ArgS &argS_, const RetS &retS_); // calls init() at the end
+    void setIndependentVariable(const ArgS &argS_);
+    void setDependentFunction(const RetS &retS_);
+    void init(); // must be called after setIndependentVariable/setDependentFunction.
+
+    std::pair<int, int> getRetSize() const override;
+    int getArgSize() const override;
+
     RET operator()(const ARG &arg) override;
 #ifdef PARDER
     DRetDArg parDer(const ARG &arg) override;
@@ -43,9 +51,35 @@ class SymbolicFunction<RET(ARG)> : public Function<RET(ARG)> {
 };
 
 template<TEMPLATE>
-SymbolicFunction<RET(ARG)>::SymbolicFunction(const ArgS &argS_, const RetS &retS_) :
-  argS(argS_), argDirS(ARGDIRINIT), argDirS_2(ARGDIRINIT), retS(retS_) {
-    
+SymbolicFunction<RET(ARG)>::SymbolicFunction() {
+#ifdef PARDER
+  isParDerConst=false;
+#endif
+}
+
+template<TEMPLATE>
+SymbolicFunction<RET(ARG)>::SymbolicFunction(const ArgS &argS_, const RetS &retS_) : argS(argS_), retS(retS_) {
+#ifdef PARDER
+  isParDerConst=false;
+#endif
+  init();
+}
+
+template<TEMPLATE>
+void SymbolicFunction<RET(ARG)>::setIndependentVariable(const ArgS &argS_) {
+  argS=argS_;
+}
+
+template<TEMPLATE>
+void SymbolicFunction<RET(ARG)>::setDependentFunction(const RetS &retS_) {
+  retS=retS_;
+}
+
+template<TEMPLATE>
+void SymbolicFunction<RET(ARG)>::init() {
+  Helper<ArgS>::initIndep(argDirS, Helper<ArgS>::size1(argS));
+  Helper<ArgS>::initIndep(argDirS, Helper<ArgS>::size1(argS));
+  Helper<ArgS>::initIndep(argDirS_2, Helper<ArgS>::size1(argS));
 #ifdef PARDER
   pd=fmatvec::parDer(retS, argS);
 #endif
@@ -57,10 +91,16 @@ SymbolicFunction<RET(ARG)>::SymbolicFunction(const ArgS &argS_, const RetS &retS
   pddd=fmatvec::dirDer(fmatvec::parDer(retS, argS), argDirS, argS);
 #endif
   dddd=fmatvec::dirDer(fmatvec::dirDer(retS, argDirS, argS), argDirS_2, argS);
+}
 
-#ifdef PARDER
-  isParDerConst=false;
-#endif
+template<TEMPLATE>
+std::pair<int, int> SymbolicFunction<RET(ARG)>::getRetSize() const {
+  return std::make_pair(Helper<RetS>::size1(retS), Helper<RetS>::size2(retS));
+}
+
+template<TEMPLATE>
+int SymbolicFunction<RET(ARG)>::getArgSize() const {
+  return Helper<ArgS>::size1(argS);
 }
 
 template<TEMPLATE>

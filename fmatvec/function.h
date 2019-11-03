@@ -260,9 +260,10 @@ template<typename Ret, typename Arg1, typename Arg2>
 class Function<Ret(Arg1, Arg2)> : virtual public Atom {
 
   public:
-
     using DRetDArg1 = typename Der<Ret, Arg1>::type;
     using DRetDArg2 = typename Der<Ret, Arg2>::type;
+    using DRetDDir1 = typename DirDer<Ret, Arg1>::type;
+    using DRetDDir2 = typename DirDer<Ret, Arg2>::type;
     using DDRetDDArg1 = typename Der<DRetDArg1, Arg1>::type;
     using DDRetDDArg2 = typename Der<DRetDArg2, Arg2>::type;
     using DDRetDArg1DArg2 = typename Der<DRetDArg1, Arg2>::type;
@@ -293,7 +294,7 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
     }
 
     //! First derivative: directional derivative of the function value with respect to the first argument.
-    virtual Ret dirDer1(const Arg1 &arg1Dir, const Arg1 &arg1, const Arg2 &arg2) {
+    virtual DRetDDir1 dirDer1(const Arg1 &arg1Dir, const Arg1 &arg1, const Arg2 &arg2) {
       throw std::runtime_error("dirDer1 must be overloaded by derived class.");
     }
 
@@ -303,7 +304,7 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
     }
 
     //! First derivative: directional derivative of the function value with respect to the second argument.
-    virtual Ret dirDer2(const Arg2 &arg2Dir, const Arg1 &arg1, const Arg2 &arg2) {
+    virtual DRetDDir2 dirDer2(const Arg2 &arg2Dir, const Arg1 &arg1, const Arg2 &arg2) {
       throw std::runtime_error("dirDer2 must be overloaded by derived class.");
     }
 
@@ -318,7 +319,7 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
     }
 
     //! Second derivative: directional derivative of dirDer1 with respect to the first argument.
-    virtual Ret dirDer1DirDer1(const Arg1 &arg1Dir_1, const Arg1 &arg1Dir_2, const Arg1 &arg1, const Arg2 &arg2) {
+    virtual DRetDDir1 dirDer1DirDer1(const Arg1 &arg1Dir_1, const Arg1 &arg1Dir_2, const Arg1 &arg1, const Arg2 &arg2) {
       throw std::runtime_error("dirDer1DirDer1 must be overloaded by derived class.");
     }
 
@@ -333,7 +334,7 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
     }
 
     //! Second derivative: directional derivative of dirDer2 with respect to the first argument.
-    virtual Ret dirDer2DirDer2(const Arg2 &arg2Dir_1, const Arg2 &arg2Dir_2, const Arg1 &arg1, const Arg2 &arg2) {
+    virtual DRetDDir2 dirDer2DirDer2(const Arg2 &arg2Dir_1, const Arg2 &arg2Dir_2, const Arg1 &arg1, const Arg2 &arg2) {
       throw std::runtime_error("dirDer2DirDer2 must be overloaded by derived class.");
     }
 
@@ -348,7 +349,7 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
     }
 
     //! Second mixed derivative: directional derivative of dirDer2 with respect to the first argument.
-    virtual Ret dirDer2DirDer1(const Arg2 &arg1Dir, const Arg1 &arg1, const Arg2 &arg2) {
+    virtual DRetDDir2 dirDer2DirDer1(const Arg2 &arg2Dir, const Arg1 &arg1Dir, const Arg1 &arg1, const Arg2 &arg2) {
       throw std::runtime_error("dirDer2DirDer1 must be overloaded by derived class.");
     }
 

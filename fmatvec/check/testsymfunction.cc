@@ -129,5 +129,453 @@ int main() {
     cout<<funcR.dirDerDirDer(argd, argd2, arg)<<endl;
   }
 
+  {
+    IndependentVariable x1;
+    IndependentVariable x2;
+    SymbolicExpression scalar;
+    Vector<Fixed<3>, SymbolicExpression> vector;
+    RowVector<Fixed<3>, SymbolicExpression> rowVector;
+    Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression> matrix;
+    Matrix<Rotation, Fixed<3>, Fixed<3>, SymbolicExpression> rotMatrix;
+    SymbolicFunction<double(double, double)> funcS(x1, x2, scalar);
+    SymbolicFunction<Vec3(double, double)> funcV(x1, x2, vector);
+    SymbolicFunction<RowVec3(double, double)> funcRV(x1, x2, rowVector);
+    SymbolicFunction<Mat3x3(double, double)> funcM(x1, x2, matrix);
+    SymbolicFunction<RotMat3(double, double)> funcR(x1, x2, rotMatrix);
+
+    double arg1(1.2);
+    double arg2(2.3);
+    double arg1Dir(3.4);
+    double arg2Dir(4.5);
+    double arg1Dir_2(5.6);
+    double arg2Dir_2(6.7);
+
+    funcS (arg1, arg2);
+    funcV (arg1, arg2);
+    funcRV(arg1, arg2);
+    funcM (arg1, arg2);
+    funcR (arg1, arg2);
+
+    funcS .parDer1(arg1, arg2);
+    funcV .parDer1(arg1, arg2);
+    funcRV.parDer1(arg1, arg2);
+    funcM .parDer1(arg1, arg2);
+    funcR .parDer1(arg1, arg2);
+
+    funcS .dirDer1(arg1Dir, arg1, arg2);
+    funcV .dirDer1(arg1Dir, arg1, arg2);
+    funcRV.dirDer1(arg1Dir, arg1, arg2);
+    funcM .dirDer1(arg1Dir, arg1, arg2);
+    funcR .dirDer1(arg1Dir, arg1, arg2);
+
+    funcS .parDer2(arg1, arg2);
+    funcV .parDer2(arg1, arg2);
+    funcRV.parDer2(arg1, arg2);
+    funcM .parDer2(arg1, arg2);
+    funcR .parDer2(arg1, arg2);
+
+    funcS .dirDer2(arg2Dir, arg1, arg2);
+    funcV .dirDer2(arg2Dir, arg1, arg2);
+    funcRV.dirDer2(arg2Dir, arg1, arg2);
+    funcM .dirDer2(arg2Dir, arg1, arg2);
+    funcR .dirDer2(arg2Dir, arg1, arg2);
+
+    funcS .parDer1ParDer1(arg1, arg2);
+    funcV .parDer1ParDer1(arg1, arg2);
+    funcRV.parDer1ParDer1(arg1, arg2);
+    funcM .parDer1ParDer1(arg1, arg2);
+    funcR .parDer1ParDer1(arg1, arg2);
+
+    funcS .parDer1DirDer1(arg1Dir, arg1, arg2);
+    funcV .parDer1DirDer1(arg1Dir, arg1, arg2);
+    funcRV.parDer1DirDer1(arg1Dir, arg1, arg2);
+    funcM .parDer1DirDer1(arg1Dir, arg1, arg2);
+    funcR .parDer1DirDer1(arg1Dir, arg1, arg2);
+
+    funcS .dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+    funcV .dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+    funcRV.dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+    funcM .dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+    funcR .dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+
+    funcS .parDer2ParDer2(arg1, arg2);
+    funcV .parDer2ParDer2(arg1, arg2);
+    funcRV.parDer2ParDer2(arg1, arg2);
+    funcM .parDer2ParDer2(arg1, arg2);
+    funcR .parDer2ParDer2(arg1, arg2);
+
+    funcS .parDer2DirDer2(arg2Dir, arg1, arg2);
+    funcV .parDer2DirDer2(arg2Dir, arg1, arg2);
+    funcRV.parDer2DirDer2(arg2Dir, arg1, arg2);
+    funcM .parDer2DirDer2(arg2Dir, arg1, arg2);
+    funcR .parDer2DirDer2(arg2Dir, arg1, arg2);
+
+    funcS .dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+    funcV .dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+    funcRV.dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+    funcM .dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+    funcR .dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+
+    funcS .parDer1ParDer2(arg1, arg2);
+    funcV .parDer1ParDer2(arg1, arg2);
+    funcRV.parDer1ParDer2(arg1, arg2);
+    funcM .parDer1ParDer2(arg1, arg2);
+    funcR .parDer1ParDer2(arg1, arg2);
+
+    funcS .parDer1DirDer2(arg2Dir, arg1, arg2);
+    funcV .parDer1DirDer2(arg2Dir, arg1, arg2);
+    funcRV.parDer1DirDer2(arg2Dir, arg1, arg2);
+    funcM .parDer1DirDer2(arg2Dir, arg1, arg2);
+    funcR .parDer1DirDer2(arg2Dir, arg1, arg2);
+
+    funcS .dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+    funcV .dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+    funcRV.dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+    funcM .dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+    funcR .dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+
+    funcS .parDer2DirDer1(arg1Dir, arg1, arg2);
+    funcV .parDer2DirDer1(arg1Dir, arg1, arg2);
+    funcRV.parDer2DirDer1(arg1Dir, arg1, arg2);
+    funcM .parDer2DirDer1(arg1Dir, arg1, arg2);
+    funcR .parDer2DirDer1(arg1Dir, arg1, arg2);
+  }
+
+  {
+    Vector<Fixed<3>, IndependentVariable> x1(NONINIT);
+    Vector<Fixed<3>, IndependentVariable> x2(NONINIT);
+    SymbolicExpression scalar;
+    Vector<Fixed<3>, SymbolicExpression> vector;
+    RowVector<Fixed<3>, SymbolicExpression> rowVector;
+    Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression> matrix;
+    Matrix<Rotation, Fixed<3>, Fixed<3>, SymbolicExpression> rotMatrix;
+    SymbolicFunction<double(Vec3, Vec3)> funcS(x1, x2, scalar);
+    SymbolicFunction<Vec3(Vec3, Vec3)> funcV(x1, x2, vector);
+    SymbolicFunction<RowVec3(Vec3, Vec3)> funcRV(x1, x2, rowVector);
+    SymbolicFunction<Mat3x3(Vec3, Vec3)> funcM(x1, x2, matrix);
+    SymbolicFunction<RotMat3(Vec3, Vec3)> funcR(x1, x2, rotMatrix);
+
+    Vec3 arg1({1.2,1.2,1.2});//mfmf compiles with double!!!!!!
+    Vec3 arg2({2.3,2.3,2.3});
+    Vec3 arg1Dir({3.4,3.4,3.4});
+    Vec3 arg2Dir({4.5,4.5,4.5});
+    Vec3 arg1Dir_2({5.6,5.6,5.6});
+    Vec3 arg2Dir_2({6.7,6.7,6.7});
+
+    funcS (arg1, arg2);
+    funcV (arg1, arg2);
+    funcRV(arg1, arg2);
+    funcM (arg1, arg2);
+    funcR (arg1, arg2);
+
+    funcS .parDer1(arg1, arg2);
+    funcV .parDer1(arg1, arg2);
+    //funcRV.parDer1(arg1, arg2);
+    //funcM .parDer1(arg1, arg2);
+    funcR .parDer1(arg1, arg2);
+
+    funcS .dirDer1(arg1Dir, arg1, arg2);
+    funcV .dirDer1(arg1Dir, arg1, arg2);
+    funcRV.dirDer1(arg1Dir, arg1, arg2);
+    funcM .dirDer1(arg1Dir, arg1, arg2);
+    funcR .dirDer1(arg1Dir, arg1, arg2);
+
+    funcS .parDer2(arg1, arg2);
+    funcV .parDer2(arg1, arg2);
+    //funcRV.parDer2(arg1, arg2);
+    //funcM .parDer2(arg1, arg2);
+    funcR .parDer2(arg1, arg2);
+
+    funcS .dirDer2(arg2Dir, arg1, arg2);
+    funcV .dirDer2(arg2Dir, arg1, arg2);
+    funcRV.dirDer2(arg2Dir, arg1, arg2);
+    funcM .dirDer2(arg2Dir, arg1, arg2);
+    funcR .dirDer2(arg2Dir, arg1, arg2);
+
+    //funcS .parDer1ParDer1(arg1, arg2);
+    //funcV .parDer1ParDer1(arg1, arg2);
+    //funcRV.parDer1ParDer1(arg1, arg2);
+    //funcM .parDer1ParDer1(arg1, arg2);
+    //funcR .parDer1ParDer1(arg1, arg2);
+
+    funcS .parDer1DirDer1(arg1Dir, arg1, arg2);
+    funcV .parDer1DirDer1(arg1Dir, arg1, arg2);
+    //funcRV.parDer1DirDer1(arg1Dir, arg1, arg2);
+    //funcM .parDer1DirDer1(arg1Dir, arg1, arg2);
+    funcR .parDer1DirDer1(arg1Dir, arg1, arg2);
+
+    funcS .dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+    funcV .dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+    funcRV.dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+    funcM .dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+    funcR .dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+
+    //funcS .parDer2ParDer2(arg1, arg2);
+    //funcV .parDer2ParDer2(arg1, arg2);
+    //funcRV.parDer2ParDer2(arg1, arg2);
+    //funcM .parDer2ParDer2(arg1, arg2);
+    //funcR .parDer2ParDer2(arg1, arg2);
+
+    funcS .parDer2DirDer2(arg2Dir, arg1, arg2);
+    funcV .parDer2DirDer2(arg2Dir, arg1, arg2);
+    //funcRV.parDer2DirDer2(arg2Dir, arg1, arg2);
+    //funcM .parDer2DirDer2(arg2Dir, arg1, arg2);
+    funcR .parDer2DirDer2(arg2Dir, arg1, arg2);
+
+    funcS .dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+    funcV .dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+    funcRV.dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+    funcM .dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+    funcR .dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+
+    //funcS .parDer1ParDer2(arg1, arg2);
+    //funcV .parDer1ParDer2(arg1, arg2);
+    //funcRV.parDer1ParDer2(arg1, arg2);
+    //funcM .parDer1ParDer2(arg1, arg2);
+    //funcR .parDer1ParDer2(arg1, arg2);
+
+    funcS .parDer1DirDer2(arg2Dir, arg1, arg2);
+    funcV .parDer1DirDer2(arg2Dir, arg1, arg2);
+    //funcRV.parDer1DirDer2(arg2Dir, arg1, arg2);
+    //funcM .parDer1DirDer2(arg2Dir, arg1, arg2);
+    funcR .parDer1DirDer2(arg2Dir, arg1, arg2);
+
+    funcS .dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+    funcV .dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+    funcRV.dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+    funcM .dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+    funcR .dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+
+    funcS .parDer2DirDer1(arg1Dir, arg1, arg2);
+    funcV .parDer2DirDer1(arg1Dir, arg1, arg2);
+    //funcRV.parDer2DirDer1(arg1Dir, arg1, arg2);
+    //funcM .parDer2DirDer1(arg1Dir, arg1, arg2);
+    funcR .parDer2DirDer1(arg1Dir, arg1, arg2);
+  }
+
+  {
+    IndependentVariable x1;
+    Vector<Fixed<3>, IndependentVariable> x2(NONINIT);
+    SymbolicExpression scalar;
+    Vector<Fixed<3>, SymbolicExpression> vector;
+    RowVector<Fixed<3>, SymbolicExpression> rowVector;
+    Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression> matrix;
+    Matrix<Rotation, Fixed<3>, Fixed<3>, SymbolicExpression> rotMatrix;
+    SymbolicFunction<double(double, Vec3)> funcS(x1, x2, scalar);
+    SymbolicFunction<Vec3(double, Vec3)> funcV(x1, x2, vector);
+    SymbolicFunction<RowVec3(double, Vec3)> funcRV(x1, x2, rowVector);
+    SymbolicFunction<Mat3x3(double, Vec3)> funcM(x1, x2, matrix);
+    SymbolicFunction<RotMat3(double, Vec3)> funcR(x1, x2, rotMatrix);
+
+    double arg1(1.2);
+    Vec3 arg2({2.3,2.3,2.3});
+    double arg1Dir(3.4);
+    Vec3 arg2Dir({4.5,4.5,4.5});
+    double arg1Dir_2(5.6);
+    Vec3 arg2Dir_2({6.7,6.7,6.7});
+
+    funcS (arg1, arg2);
+    funcV (arg1, arg2);
+    funcRV(arg1, arg2);
+    funcM (arg1, arg2);
+    funcR (arg1, arg2);
+
+    funcS .parDer1(arg1, arg2);
+    funcV .parDer1(arg1, arg2);
+    funcRV.parDer1(arg1, arg2);
+    funcM .parDer1(arg1, arg2);
+    funcR .parDer1(arg1, arg2);
+
+    funcS .dirDer1(arg1Dir, arg1, arg2);
+    funcV .dirDer1(arg1Dir, arg1, arg2);
+    funcRV.dirDer1(arg1Dir, arg1, arg2);
+    funcM .dirDer1(arg1Dir, arg1, arg2);
+    funcR .dirDer1(arg1Dir, arg1, arg2);
+
+    funcS .parDer2(arg1, arg2);
+    funcV .parDer2(arg1, arg2);
+    //funcRV.parDer2(arg1, arg2);
+    //funcM .parDer2(arg1, arg2);
+    funcR .parDer2(arg1, arg2);
+
+    funcS .dirDer2(arg2Dir, arg1, arg2);
+    funcV .dirDer2(arg2Dir, arg1, arg2);
+    funcRV.dirDer2(arg2Dir, arg1, arg2);
+    funcM .dirDer2(arg2Dir, arg1, arg2);
+    funcR .dirDer2(arg2Dir, arg1, arg2);
+
+    funcS .parDer1ParDer1(arg1, arg2);
+    funcV .parDer1ParDer1(arg1, arg2);
+    funcRV.parDer1ParDer1(arg1, arg2);
+    funcM .parDer1ParDer1(arg1, arg2);
+    funcR .parDer1ParDer1(arg1, arg2);
+
+    funcS .parDer1DirDer1(arg1Dir, arg1, arg2);
+    funcV .parDer1DirDer1(arg1Dir, arg1, arg2);
+    funcRV.parDer1DirDer1(arg1Dir, arg1, arg2);
+    funcM .parDer1DirDer1(arg1Dir, arg1, arg2);
+    funcR .parDer1DirDer1(arg1Dir, arg1, arg2);
+
+    funcS .dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+    funcV .dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+    funcRV.dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+    funcM .dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+    funcR .dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+
+    //funcS .parDer2ParDer2(arg1, arg2);
+    //funcV .parDer2ParDer2(arg1, arg2);
+    //funcRV.parDer2ParDer2(arg1, arg2);
+    //funcM .parDer2ParDer2(arg1, arg2);
+    //funcR .parDer2ParDer2(arg1, arg2);
+
+    funcS .parDer2DirDer2(arg2Dir, arg1, arg2);
+    funcV .parDer2DirDer2(arg2Dir, arg1, arg2);
+    //funcRV.parDer2DirDer2(arg2Dir, arg1, arg2);
+    //funcM .parDer2DirDer2(arg2Dir, arg1, arg2);
+    funcR .parDer2DirDer2(arg2Dir, arg1, arg2);
+
+    funcS .dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+    funcV .dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+    funcRV.dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+    funcM .dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+    funcR .dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+
+    funcS .parDer1ParDer2(arg1, arg2);
+    funcV .parDer1ParDer2(arg1, arg2);
+    //funcRV.parDer1ParDer2(arg1, arg2);
+    //funcM .parDer1ParDer2(arg1, arg2);
+    funcR .parDer1ParDer2(arg1, arg2);
+
+    funcS .parDer1DirDer2(arg2Dir, arg1, arg2);
+    funcV .parDer1DirDer2(arg2Dir, arg1, arg2);
+    funcRV.parDer1DirDer2(arg2Dir, arg1, arg2);
+    funcM .parDer1DirDer2(arg2Dir, arg1, arg2);
+    funcR .parDer1DirDer2(arg2Dir, arg1, arg2);
+
+    funcS .dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+    funcV .dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+    funcRV.dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+    funcM .dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+    funcR .dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+
+    funcS .parDer2DirDer1(arg1Dir, arg1, arg2);
+    funcV .parDer2DirDer1(arg1Dir, arg1, arg2);
+    //funcRV.parDer2DirDer1(arg1Dir, arg1, arg2);
+    //funcM .parDer2DirDer1(arg1Dir, arg1, arg2);
+    funcR .parDer2DirDer1(arg1Dir, arg1, arg2);
+  }
+
+  {
+    Vector<Fixed<3>, IndependentVariable> x1(NONINIT);
+    IndependentVariable x2;
+    SymbolicExpression scalar;
+    Vector<Fixed<3>, SymbolicExpression> vector;
+    RowVector<Fixed<3>, SymbolicExpression> rowVector;
+    Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression> matrix;
+    Matrix<Rotation, Fixed<3>, Fixed<3>, SymbolicExpression> rotMatrix;
+    SymbolicFunction<double(Vec3, double)> funcS(x1, x2, scalar);
+    SymbolicFunction<Vec3(Vec3, double)> funcV(x1, x2, vector);
+    SymbolicFunction<RowVec3(Vec3, double)> funcRV(x1, x2, rowVector);
+    SymbolicFunction<Mat3x3(Vec3, double)> funcM(x1, x2, matrix);
+    SymbolicFunction<RotMat3(Vec3, double)> funcR(x1, x2, rotMatrix);
+
+    Vec3 arg1({1.2,1.2,1.2});
+    double arg2(2.3);
+    Vec3 arg1Dir({3.4,3.4,3.4});
+    double arg2Dir(4.5);
+    Vec3 arg1Dir_2({5.6,5.6,5.6});
+    double arg2Dir_2(6.7);
+
+    funcS (arg1, arg2);
+    funcV (arg1, arg2);
+    funcRV(arg1, arg2);
+    funcM (arg1, arg2);
+    funcR (arg1, arg2);
+
+    funcS .parDer1(arg1, arg2);
+    funcV .parDer1(arg1, arg2);
+    //funcRV.parDer1(arg1, arg2);
+    //funcM .parDer1(arg1, arg2);
+    funcR .parDer1(arg1, arg2);
+
+    funcS .dirDer1(arg1Dir, arg1, arg2);
+    funcV .dirDer1(arg1Dir, arg1, arg2);
+    funcRV.dirDer1(arg1Dir, arg1, arg2);
+    funcM .dirDer1(arg1Dir, arg1, arg2);
+    funcR .dirDer1(arg1Dir, arg1, arg2);
+
+    funcS .parDer2(arg1, arg2);
+    funcV .parDer2(arg1, arg2);
+    funcRV.parDer2(arg1, arg2);
+    funcM .parDer2(arg1, arg2);
+    funcR .parDer2(arg1, arg2);
+
+    funcS .dirDer2(arg2Dir, arg1, arg2);
+    funcV .dirDer2(arg2Dir, arg1, arg2);
+    funcRV.dirDer2(arg2Dir, arg1, arg2);
+    funcM .dirDer2(arg2Dir, arg1, arg2);
+    funcR .dirDer2(arg2Dir, arg1, arg2);
+
+    //funcS .parDer1ParDer1(arg1, arg2);
+    //funcV .parDer1ParDer1(arg1, arg2);
+    //funcRV.parDer1ParDer1(arg1, arg2);
+    //funcM .parDer1ParDer1(arg1, arg2);
+    //funcR .parDer1ParDer1(arg1, arg2);
+
+    funcS .parDer1DirDer1(arg1Dir, arg1, arg2);
+    funcV .parDer1DirDer1(arg1Dir, arg1, arg2);
+    //funcRV.parDer1DirDer1(arg1Dir, arg1, arg2);
+    //funcM .parDer1DirDer1(arg1Dir, arg1, arg2);
+    funcR .parDer1DirDer1(arg1Dir, arg1, arg2);
+
+    funcS .dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+    funcV .dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+    funcRV.dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+    funcM .dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+    funcR .dirDer1DirDer1(arg1Dir, arg1Dir_2, arg1, arg2);
+
+    funcS .parDer2ParDer2(arg1, arg2);
+    funcV .parDer2ParDer2(arg1, arg2);
+    funcRV.parDer2ParDer2(arg1, arg2);
+    funcM .parDer2ParDer2(arg1, arg2);
+    funcR .parDer2ParDer2(arg1, arg2);
+
+    funcS .parDer2DirDer2(arg2Dir, arg1, arg2);
+    funcV .parDer2DirDer2(arg2Dir, arg1, arg2);
+    funcRV.parDer2DirDer2(arg2Dir, arg1, arg2);
+    funcM .parDer2DirDer2(arg2Dir, arg1, arg2);
+    funcR .parDer2DirDer2(arg2Dir, arg1, arg2);
+
+    funcS .dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+    funcV .dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+    funcRV.dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+    funcM .dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+    funcR .dirDer2DirDer2(arg2Dir, arg2Dir_2, arg1, arg2);
+
+    funcS .parDer1ParDer2(arg1, arg2);
+    funcV .parDer1ParDer2(arg1, arg2);
+    //funcRV.parDer1ParDer2(arg1, arg2);
+    //funcM .parDer1ParDer2(arg1, arg2);
+    funcR .parDer1ParDer2(arg1, arg2);
+
+    funcS .parDer1DirDer2(arg2Dir, arg1, arg2);
+    funcV .parDer1DirDer2(arg2Dir, arg1, arg2);
+    //funcRV.parDer1DirDer2(arg2Dir, arg1, arg2);
+    //funcM .parDer1DirDer2(arg2Dir, arg1, arg2);
+    funcR .parDer1DirDer2(arg2Dir, arg1, arg2);
+
+    funcS .dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+    funcV .dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+    funcRV.dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+    funcM .dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+    funcR .dirDer2DirDer1(arg2Dir, arg1Dir, arg1, arg2);
+
+    funcS .parDer2DirDer1(arg1Dir, arg1, arg2);
+    funcV .parDer2DirDer1(arg1Dir, arg1, arg2);
+    funcRV.parDer2DirDer1(arg1Dir, arg1, arg2);
+    funcM .parDer2DirDer1(arg1Dir, arg1, arg2);
+    funcR .parDer2DirDer1(arg1Dir, arg1, arg2);
+  }
+
   return 0;  
 }

@@ -57,10 +57,10 @@ Vector<Fixed<3>, ATDep> parDer(const Matrix<Rotation, Fixed<3>, Fixed<3>, ATDep>
   return ret;
 }
 
-template<class ATDep, class ATIndep>
-Matrix<General, Fixed<3>, Fixed<3>, ATDep> parDer(const Matrix<Rotation, Fixed<3>, Fixed<3>, ATDep> &R, const Vector<Fixed<3>, ATIndep> &x) {
-  Matrix<General, Fixed<3>, Fixed<3>, ATDep> ret;
-  for(int i=0; i<3; ++i)
+template<class ATDep, class Shape, class ATIndep>
+Matrix<General, Fixed<3>, Fixed<3>, ATDep> parDer(const Matrix<Rotation, Fixed<3>, Fixed<3>, ATDep> &R, const Vector<Shape, ATIndep> &x) {
+  Matrix<General, Fixed<3>, Shape, ATDep> ret;
+  for(int i=0; i<x.size(); ++i)
     ret.set(i, parDer(R, x(i)));
   return ret;
 }
