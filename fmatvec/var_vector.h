@@ -61,13 +61,13 @@ namespace fmatvec {
        *
        * Constructs a vector with no size. 
        * */
-      Vector() : Matrix<General,Var,Fixed<1>,AT>() { }
+      explicit Vector() : Matrix<General,Var,Fixed<1>,AT>() { }
 
 //      template<class Ini=All<AT> >
 //        Vector(int m, Ini ini=All<AT>()) : Matrix<General,Var,Fixed<1>,AT>(m,ini) { } 
 
-      Vector(int m, Noinit ini) : Matrix<General,Var,Fixed<1>,AT>(m,ini) { } 
-      Vector(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Var,Fixed<1>,AT>(m,ini,a) { } 
+      explicit Vector(int m, Noinit ini) : Matrix<General,Var,Fixed<1>,AT>(m,ini) { } 
+      explicit Vector(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Var,Fixed<1>,AT>(m,ini,a) { } 
 
       /*! \brief String Constructor. 
        *

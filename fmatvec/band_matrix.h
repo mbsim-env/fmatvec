@@ -51,7 +51,7 @@ namespace fmatvec {
 
       inline void deepCopy(const Matrix<GeneralBand,Ref,Ref,AT> &A); 
 
-      Matrix(int n_, int kl_, int ku_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_), kl(kl_), ku(ku_) {
+      explicit Matrix(int n_, int kl_, int ku_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_), kl(kl_), ku(ku_) {
       }
 
       /// @endcond
@@ -64,7 +64,7 @@ namespace fmatvec {
        *
        * Constructs a band matrix with no size. 
        * */
-      Matrix() : memory(), ele(0) {
+      explicit Matrix() : memory(), ele(0) {
       }
 
 //      template<class Ini=All<AT> >
@@ -76,12 +76,12 @@ namespace fmatvec {
 //          init(ini);
 //        }
 
-      Matrix(int n_, int kl_, int ku_, Noinit) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { }
-      Matrix(int n_, int kl_, int ku_, Init ini=INIT, const AT &a=AT()) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(a); }
-      Matrix(int n_, int kl_, int ku_, Eye ini, const AT &a=1) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(ini,a); }
-      Matrix(int m_, int n_, int kl_, int ku_, Noinit) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { }
-      Matrix(int m_, int n_, int kl_, int ku_, Init ini=INIT, const AT &a=AT()) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(a); }
-      Matrix(int m_, int n_, int kl_, int ku_, Eye ini, const AT &a=1) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(ini,a); }
+      explicit Matrix(int n_, int kl_, int ku_, Noinit) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { }
+      explicit Matrix(int n_, int kl_, int ku_, Init ini=INIT, const AT &a=AT()) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(a); }
+      explicit Matrix(int n_, int kl_, int ku_, Eye ini, const AT &a=1) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(ini,a); }
+      explicit Matrix(int m_, int n_, int kl_, int ku_, Noinit) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { }
+      explicit Matrix(int m_, int n_, int kl_, int ku_, Init ini=INIT, const AT &a=AT()) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(a); }
+      explicit Matrix(int m_, int n_, int kl_, int ku_, Eye ini, const AT &a=1) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) { init(ini,a); }
 
       /*! \brief Copy Constructor
        *
@@ -102,7 +102,7 @@ namespace fmatvec {
        * \param ku_ The number of superdiagonals.
        * \param ele_ The physical memory the matrix will point to.
        * */
-      Matrix(int n_, int kl_, int ku_, AT* ele_) : memory(), ele(ele_), n(n_), kl(kl_), ku(ku_) { 
+      explicit Matrix(int n_, int kl_, int ku_, AT* ele_) : memory(), ele(ele_), n(n_), kl(kl_), ku(ku_) { 
       }
 
       /*! \brief Destructor. 

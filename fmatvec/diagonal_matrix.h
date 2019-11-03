@@ -48,7 +48,7 @@ namespace fmatvec {
 
 	void deepCopy(const Matrix<Diagonal,Ref,Ref,AT> &A);
 
-	Matrix(int n_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_) {
+	explicit Matrix(int n_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_) {
 	}
 
 	const AT* elePtr(int i) const {
@@ -69,17 +69,17 @@ namespace fmatvec {
 	 *
 	 * Construckts a matrix with no size.
 	 * */
-	Matrix() : memory(), ele(0) { }
+	explicit Matrix() : memory(), ele(0) { }
 
 //        template<class Ini=All<AT> >
 //          Matrix(int n_, Ini ini=All<AT>()) : memory(n_), ele((AT*)memory.get()), n(n_) { init(ini); }
 //        template<class Ini=All<AT> >
 //          Matrix(int m_, int n_, Ini ini=All<AT>()) : memory(n_), ele((AT*)memory.get()), n(n_) { init(ini); }
 
-        Matrix(int n_, Noinit) : memory(n_), ele((AT*)memory.get()), n(n_) { }
-        Matrix(int n_, Init ini=INIT, const AT &a=AT()) : memory(n_), ele((AT*)memory.get()), n(n_) { init(a); }
-        Matrix(int n_, Eye ini, const AT &a=1) : memory(n_), ele((AT*)memory.get()), n(n_) { init(ini,a); }
-        Matrix(int m_, int n_, Noinit) : memory(n_), ele((AT*)memory.get()), n(n_) { }
+        explicit Matrix(int n_, Noinit) : memory(n_), ele((AT*)memory.get()), n(n_) { }
+        explicit Matrix(int n_, Init ini=INIT, const AT &a=AT()) : memory(n_), ele((AT*)memory.get()), n(n_) { init(a); }
+        explicit Matrix(int n_, Eye ini, const AT &a=1) : memory(n_), ele((AT*)memory.get()), n(n_) { init(ini,a); }
+        explicit Matrix(int m_, int n_, Noinit) : memory(n_), ele((AT*)memory.get()), n(n_) { }
 
 	/*! \brief Copy Constructor
 	 *

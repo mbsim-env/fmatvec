@@ -61,10 +61,10 @@ namespace fmatvec {
 //      template<class Ini=All<AT> >
 //        RowVector(int n, Ini ini=All<AT>()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
 
-      RowVector(Noinit ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
-      RowVector(Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini,a) { }
-      RowVector(int n, Noinit ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
-      RowVector(int n, Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini,a) { }
+      explicit RowVector(Noinit ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
+      explicit RowVector(Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini,a) { }
+      explicit RowVector(int n, Noinit ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { assert(n==N); }
+      explicit RowVector(int n, Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini,a) { assert(n==N); }
 
       /*! \brief String Constructor. 
        *

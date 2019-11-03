@@ -56,7 +56,7 @@ namespace fmatvec {
  
     public:
 
-      Matrix() :  ele(nullptr) { }
+      explicit Matrix() :  ele(nullptr) { }
 
 //      template<class Ini=All<AT> >
 //      Matrix(int m, Ini ini=All<AT>()) :  M(m), ele(new AT[M*N]) {
@@ -67,12 +67,12 @@ namespace fmatvec {
 //        init(ini);
 //      }
 
-      Matrix(int m, Noinit) : M(m), ele(new AT[M*N]) { }
-      Matrix(int m, Init ini=INIT, const AT &a=AT()) : M(m), ele(new AT[M*N]) { init(a); }
-      Matrix(int m, Eye ini, const AT &a=1) : M(m), ele(new AT[M*N]) { init(ini,a); }
-      Matrix(int m, int n, Noinit) : M(m), ele(new AT[M*N]) { }
-      Matrix(int m, int n, Init ini=INIT, const AT &a=AT()) : M(m), ele(new AT[M*N]) { init(a); }
-      Matrix(int m, int n, Eye ini, const AT &a=1) : M(m), ele(new AT[M*N]) { init(ini,a); }
+      explicit Matrix(int m, Noinit) : M(m), ele(new AT[M*N]) { }
+      explicit Matrix(int m, Init ini=INIT, const AT &a=AT()) : M(m), ele(new AT[M*N]) { init(a); }
+      explicit Matrix(int m, Eye ini, const AT &a=1) : M(m), ele(new AT[M*N]) { init(ini,a); }
+      explicit Matrix(int m, int n, Noinit) : M(m), ele(new AT[M*N]) { assert(n==N); }
+      explicit Matrix(int m, int n, Init ini=INIT, const AT &a=AT()) : M(m), ele(new AT[M*N]) {  assert(n==N); init(a); }
+      explicit Matrix(int m, int n, Eye ini, const AT &a=1) : M(m), ele(new AT[M*N]) {  assert(n==N); init(ini,a); }
 
       /*! \brief Copy Constructor
        *

@@ -74,7 +74,7 @@ namespace fmatvec {
 	return tp ? ele+i*lda+j : ele+i+j*lda; 
       };
 
-      Matrix(int m_, int n_, int lda_, bool tp_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), m(m_), n(n_), lda(lda_), tp(tp_) {
+      explicit Matrix(int m_, int n_, int lda_, bool tp_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), m(m_), n(n_), lda(lda_), tp(tp_) {
       }
 
  /// @endcond
@@ -85,7 +85,7 @@ namespace fmatvec {
        *
        * Constructs a matrix with no size. 
        * */
-      Matrix() : memory(), ele(nullptr) { }
+      explicit Matrix() : memory(), ele(nullptr) { }
 
 // Works with -std=gnu++0x only
 //      template<class Ini=All<AT> >
@@ -93,9 +93,9 @@ namespace fmatvec {
 //        init(ini);
 //      }
 
-      Matrix(int m_, int n_, Noinit) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { }
-      Matrix(int m_, int n_, Init ini=INIT, const AT &a=AT()) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { init0(a); }
-      Matrix(int m_, int n_, Eye ini, const AT &a=1) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { init(ini,a); }
+      explicit Matrix(int m_, int n_, Noinit) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { }
+      explicit Matrix(int m_, int n_, Init ini=INIT, const AT &a=AT()) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { init0(a); }
+      explicit Matrix(int m_, int n_, Eye ini, const AT &a=1) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) { init(ini,a); }
 
       /*! \brief Copy Constructor
        *
@@ -114,7 +114,7 @@ namespace fmatvec {
        * \param n_ The number of columns.
        * \param ele_ The physical memory the matrix will point to.
        * */
-      Matrix(int m_, int n_, AT* ele_) : memory(), ele(ele_), m(m_), n(n_), lda(m_) { 
+      explicit Matrix(int m_, int n_, AT* ele_) : memory(), ele(ele_), m(m_), n(n_), lda(m_) { 
       }
 
       /*! \brief String Constructor. 

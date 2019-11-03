@@ -75,7 +75,7 @@ namespace fmatvec {
       return tp ? ele+lda*i : ele+i;
     };
 
-    Vector(int n_, int lda_, bool tp, Memory<AT> memory, const AT* ele_) : Matrix<General,Ref,Ref,AT>(n_, 1, lda_, tp, memory, ele_) { }
+    explicit Vector(int n_, int lda_, bool tp, Memory<AT> memory, const AT* ele_) : Matrix<General,Ref,Ref,AT>(n_, 1, lda_, tp, memory, ele_) { }
 
     /// @endcond
     
@@ -85,13 +85,13 @@ namespace fmatvec {
        *
        * Constructs a vector with no size. 
        * */
-      Vector() : Matrix<General,Ref,Ref,AT>() { n=1; }
+      explicit Vector() : Matrix<General,Ref,Ref,AT>() { n=1; }
 
 //      template<class Ini=All<AT> >
 //        Vector(int m, Ini ini=All<AT>()) : Matrix<General,Ref,Ref,AT>(m,1,ini) { } 
 
-      Vector(int m, Noinit ini) : Matrix<General,Ref,Ref,AT>(m,1,ini) { } 
-      Vector(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Ref,Ref,AT>(m,1,ini,a) { } 
+      explicit Vector(int m, Noinit ini) : Matrix<General,Ref,Ref,AT>(m,1,ini) { } 
+      explicit Vector(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Ref,Ref,AT>(m,1,ini,a) { } 
 
       /*! \brief Regular Constructor
        *
@@ -99,7 +99,7 @@ namespace fmatvec {
        * \param m The size.
        * \param ele The physical memory the vector will point to.
        * */
-      Vector(int m, AT* ele) : Matrix<General,Ref,Ref,AT>(m,1,ele) { 
+      explicit Vector(int m, AT* ele) : Matrix<General,Ref,Ref,AT>(m,1,ele) { 
       }
 
       /*! \brief String Constructor. 

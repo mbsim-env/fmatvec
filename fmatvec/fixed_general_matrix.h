@@ -65,12 +65,12 @@ namespace fmatvec {
 //        init(ini);
 //      }
 
-      Matrix(Noinit) { }
-      Matrix(Init ini=INIT, const AT &a=AT()) { init(a); }
-      Matrix(Eye ini, const AT &a=1) { init(ini,a); }
-      Matrix(int m, int n, Noinit) { }
-      Matrix(int m, int n, Init ini=INIT, const AT &a=AT()) { init(a); }
-      Matrix(int m, int n, Eye ini, const AT &a=1) { init(ini,a); }
+      explicit Matrix(Noinit) { }
+      explicit Matrix(Init ini=INIT, const AT &a=AT()) { init(a); }
+      explicit Matrix(Eye ini, const AT &a=1) { init(ini,a); }
+      explicit Matrix(int m, int n, Noinit) { assert(m==M && n==N); }
+      explicit Matrix(int m, int n, Init ini=INIT, const AT &a=AT()) { assert(m==M && n==N); init(a); }
+      explicit Matrix(int m, int n, Eye ini, const AT &a=1) { assert(m==M && n==N); init(ini,a); }
 
       template<class Row, class Col>
       Matrix(const Matrix<General,Row,Col,AT> &A) {

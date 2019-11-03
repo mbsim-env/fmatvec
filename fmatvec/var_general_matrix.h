@@ -59,7 +59,7 @@ namespace fmatvec {
        *
        * Constructs a matrix with no size. 
        * */
-      Matrix() :  ele(nullptr) { }
+      explicit Matrix() :  ele(nullptr) { }
 
 // Works with -std=gnu++0x only
 //      template<class Ini=All<AT> >
@@ -67,9 +67,9 @@ namespace fmatvec {
 //        init(ini);
 //      }
 
-      Matrix(int m, int n, Noinit) :  M(m), N(n), ele(new AT[M*N]) { }
-      Matrix(int m, int n, Init ini=INIT, const AT &a=AT()) :  M(m), N(n), ele(new AT[M*N]) { init(a); }
-      Matrix(int m, int n, Eye ini, const AT &a=1) :  M(m), N(n), ele(new AT[M*N]) { init(ini,a); }
+      explicit Matrix(int m, int n, Noinit) :  M(m), N(n), ele(new AT[M*N]) { }
+      explicit Matrix(int m, int n, Init ini=INIT, const AT &a=AT()) :  M(m), N(n), ele(new AT[M*N]) { init(a); }
+      explicit Matrix(int m, int n, Eye ini, const AT &a=1) :  M(m), N(n), ele(new AT[M*N]) { init(ini,a); }
 
       /*! \brief Copy Constructor
        *

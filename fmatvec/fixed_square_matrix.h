@@ -45,12 +45,12 @@ namespace fmatvec {
 //      template<class Ini=All<AT> >
 //      SquareMatrix(int m, Ini ini=All<AT>()) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { } 
 
-      SquareMatrix(Noinit ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
-      SquareMatrix(Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { }
-      SquareMatrix(Eye ini, const AT &a=1) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { }
-      SquareMatrix(int m, Noinit ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
-      SquareMatrix(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { }
-      SquareMatrix(int m, Eye ini, const AT &a=1) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { }
+      explicit SquareMatrix(Noinit ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
+      explicit SquareMatrix(Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { }
+      explicit SquareMatrix(Eye ini, const AT &a=1) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { }
+      explicit SquareMatrix(int m, Noinit ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { assert(m==M); }
+      explicit SquareMatrix(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { assert(m==M); }
+      explicit SquareMatrix(int m, Eye ini, const AT &a=1) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { assert(m==M); }
 
       SquareMatrix(const char *str) : Matrix<General,Fixed<M>,Fixed<M>,AT>(str) { }
 

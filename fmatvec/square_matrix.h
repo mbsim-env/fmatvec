@@ -59,7 +59,7 @@ namespace fmatvec {
 
     protected:
 
-    SquareMatrix(int n, int lda, int tp, Memory<AT> memory, const AT* ele) : Matrix<General,Ref,Ref,AT>(n, n, lda, tp, memory, ele) {
+    explicit SquareMatrix(int n, int lda, int tp, Memory<AT> memory, const AT* ele) : Matrix<General,Ref,Ref,AT>(n, n, lda, tp, memory, ele) {
     }
 
     /// @endcond
@@ -70,14 +70,14 @@ namespace fmatvec {
        *
        * Constructs a squarematrix with no size. 
        * */
-      SquareMatrix() : Matrix<General,Ref,Ref,AT>() { }
+      explicit SquareMatrix() : Matrix<General,Ref,Ref,AT>() { }
 
 //      template<class Ini=All<AT> >
 //      SquareMatrix(int m, Ini ini=All<AT>()) : Matrix<General,Ref,Ref,AT>(m,m,ini) { } 
 
-      SquareMatrix(int m, Noinit ini) : Matrix<General,Ref,Ref,AT>(m,m,ini) { } 
-      SquareMatrix(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Ref,Ref,AT>(m,m,ini,a) { } 
-      SquareMatrix(int m, Eye ini, const AT &a=1) : Matrix<General,Ref,Ref,AT>(m,m,ini,a) { } 
+      explicit SquareMatrix(int m, Noinit ini) : Matrix<General,Ref,Ref,AT>(m,m,ini) { } 
+      explicit SquareMatrix(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Ref,Ref,AT>(m,m,ini,a) { } 
+      explicit SquareMatrix(int m, Eye ini, const AT &a=1) : Matrix<General,Ref,Ref,AT>(m,m,ini,a) { } 
 
       /*! \brief Regular Constructor
        *
@@ -86,7 +86,7 @@ namespace fmatvec {
        * \param m The number of rows and columns.
        * \param ele The physical memory the matrix will point to.
        * */
-      SquareMatrix(int m, AT* ele) : Matrix<General,Ref,Ref,AT>(m,m,ele) { }
+      explicit SquareMatrix(int m, AT* ele) : Matrix<General,Ref,Ref,AT>(m,m,ele) { }
 
       SquareMatrix(const char *str) : Matrix<General,Ref,Ref,AT>(str) { }
 

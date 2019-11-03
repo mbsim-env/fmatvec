@@ -59,12 +59,12 @@ namespace fmatvec {
 //        init(ini);
 //      }
 
-      Matrix(Noinit ini) { }
-      Matrix(Init ini=INIT, const AT &a=AT()) { init(a); }
-      Matrix(Eye ini, const AT &a=1) { init(ini,a); }
-      Matrix(int m, int n, Noinit ini) { }
-      Matrix(int m, int n, Init ini, const AT &a=AT()) { init(a); }
-      Matrix(int m, int n, Eye ini, const AT &a=1) { init(ini,a); }
+      explicit Matrix(Noinit ini) { }
+      explicit Matrix(Init ini=INIT, const AT &a=AT()) { init(a); }
+      explicit Matrix(Eye ini, const AT &a=1) { init(ini,a); }
+      explicit Matrix(int m, int n, Noinit ini) { assert(m==M && n==M); }
+      explicit Matrix(int m, int n, Init ini, const AT &a=AT()) { assert(m==M && n==M); init(a); }
+      explicit Matrix(int m, int n, Eye ini, const AT &a=1) { assert(m==M && n==M); init(ini,a); }
 
       explicit Matrix(const Matrix<General,Fixed<M>,Fixed<M>,AT>&  A) {
 	deepCopy(A);

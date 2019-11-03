@@ -73,7 +73,7 @@ namespace fmatvec {
       return tp ? ele+i : ele+lda*i;
     };
 
-    RowVector(int n_, int lda_, bool tp, Memory<AT> memory, const AT* ele_) : Matrix<General,Ref,Ref,AT>(1,n_, lda_, tp, memory, ele_) {
+    explicit RowVector(int n_, int lda_, bool tp, Memory<AT> memory, const AT* ele_) : Matrix<General,Ref,Ref,AT>(1,n_, lda_, tp, memory, ele_) {
     }
 
     /// @endcond
@@ -84,13 +84,13 @@ namespace fmatvec {
        *
        * Constructs a rowvector with no size. 
        * */
-      RowVector() : Matrix<General,Ref,Ref,AT>() { m=1; }
+      explicit RowVector() : Matrix<General,Ref,Ref,AT>() { m=1; }
 
 //      template<class Ini=All<AT> >
 //        RowVector(int n, Ini ini=All<AT>()) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
 
-      RowVector(int n, Noinit ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
-      RowVector(int n, Init ini=INIT, const AT &a=AT()) : Matrix<General,Ref,Ref,AT>(1,n,ini,a) { } 
+      explicit RowVector(int n, Noinit ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
+      explicit RowVector(int n, Init ini=INIT, const AT &a=AT()) : Matrix<General,Ref,Ref,AT>(1,n,ini,a) { } 
 
       /*! \brief Regular Constructor
        *
@@ -98,7 +98,7 @@ namespace fmatvec {
        * \param n The size.
        * \param ele The physical memory the rowvector will point to.
        * */
-      RowVector(int n, AT* ele) : Matrix<General,Ref,Ref,AT>(1,n,ele) {
+      explicit RowVector(int n, AT* ele) : Matrix<General,Ref,Ref,AT>(1,n,ele) {
       }
 
       /*! \brief String Constructor. 

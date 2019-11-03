@@ -69,7 +69,7 @@ namespace fmatvec {
 	 *
 	 * Constructs a matrix with no size. 
 	 * */
-	Matrix() : memEle(),  ele(0) { }
+	explicit Matrix() : memEle(),  ele(0) { }
 
 //        template<class Ini=All<AT> >
 //          Matrix(int n_, Ini ini=All<AT>()) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) {
@@ -80,14 +80,14 @@ namespace fmatvec {
 //            init(ini);
 //          }
 
-        Matrix(int m_, int n_, int k_, Noinit) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) { }
-        Matrix(int m_, int n_, int k_, Init ini=INIT, const AT &a=AT()) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) {  init(a); }
+        explicit Matrix(int m_, int n_, int k_, Noinit) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) { }
+        explicit Matrix(int m_, int n_, int k_, Init ini=INIT, const AT &a=AT()) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) {  init(a); }
 
-        Matrix(int n_, Noinit) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { }
-        Matrix(int n_, Init ini=INIT, const AT &a=AT()) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { init(a); }
+        explicit Matrix(int n_, Noinit) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { }
+        explicit Matrix(int n_, Init ini=INIT, const AT &a=AT()) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { init(a); }
 
-        Matrix(int m_, int n_, Noinit) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { }
-        Matrix(int m_, int n_, Init ini=INIT, const AT &a=AT()) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { init(a); }
+        explicit Matrix(int m_, int n_, Noinit) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { }
+        explicit Matrix(int m_, int n_, Init ini=INIT, const AT &a=AT()) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) { init(a); }
 
 
 	/*! \brief Copy Constructor

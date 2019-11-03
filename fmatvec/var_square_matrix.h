@@ -47,14 +47,14 @@ namespace fmatvec {
        *
        * Constructs a squarematrix with no size. 
        * */
-      SquareMatrix() : Matrix<General,Var,Var,AT>() { }
+      explicit SquareMatrix() : Matrix<General,Var,Var,AT>() { }
 
 //      template<class Ini=All<AT> >
 //      SquareMatrix(int m, Ini ini=All<AT>()) : Matrix<General,Var,Var,AT>(m,m,ini) { } 
 
-      SquareMatrix(int m, Noinit ini) : Matrix<General,Var,Var,AT>(m,m,ini) { } 
-      SquareMatrix(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Var,Var,AT>(m,m,ini,a) { } 
-      SquareMatrix(int m, Eye ini, const AT &a=1) : Matrix<General,Var,Var,AT>(m,m,ini,a) { } 
+      explicit SquareMatrix(int m, Noinit ini) : Matrix<General,Var,Var,AT>(m,m,ini) { } 
+      explicit SquareMatrix(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Var,Var,AT>(m,m,ini,a) { } 
+      explicit SquareMatrix(int m, Eye ini, const AT &a=1) : Matrix<General,Var,Var,AT>(m,m,ini,a) { } 
 
       SquareMatrix(const char *str) : Matrix<General,Var,Var,AT>(str) { }
 
