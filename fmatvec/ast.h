@@ -48,6 +48,8 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
   public:
     //! Creates the value 0.
     SymbolicExpression();
+    //! Creates a expression form the specified string (the string must be a serialized SymbolicExpression).
+    SymbolicExpression(const std::string &str);
     //! Creates a integer constant.
     SymbolicExpression(int x);
     //! Creates a double constant.
@@ -90,6 +92,8 @@ class IndependentVariable : public SymbolicExpression {
   public:
     //! Creates a IndependentVariable variable (each call to this ctor creates a new independent variable)
     IndependentVariable();
+    //! Creates a IndependentVariable variable from the specified string (the string is a serialized IndependentVariable).
+    IndependentVariable(const std::string &str);
 
     //! Set the double value of the independent value.
     inline IndependentVariable& operator&=(double x);

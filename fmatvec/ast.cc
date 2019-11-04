@@ -1,5 +1,6 @@
 #include "ast.h"
 #include <boost/uuid/uuid_io.hpp>
+#include <sstream>
 
 using namespace std;
 
@@ -11,7 +12,16 @@ namespace fmatvec {
 unsigned long SymbolicExpression::evalOperationsCount = 0;
 #endif
 
+namespace {
+  SymbolicExpression stringCTorHelper(const string &str) {
+    istringstream s(str);
+    SymbolicExpression ret;
+    s>>ret;
+    return ret;
+  }
+}
 SymbolicExpression::SymbolicExpression() : shared_ptr<const AST::Vertex>(AST::Constant<int>::create(0)) {}
+SymbolicExpression::SymbolicExpression(const string &str) : SymbolicExpression(stringCTorHelper(str)) {}
 template<class T> SymbolicExpression::SymbolicExpression(const shared_ptr<T> &x) : shared_ptr<const AST::Vertex>(x) {}
 SymbolicExpression::SymbolicExpression(int x) : shared_ptr<const AST::Vertex>(AST::Constant<int>::create(x)) {}
 SymbolicExpression::SymbolicExpression(double x) : shared_ptr<const AST::Vertex>(AST::Constant<double>::create(x)) {}
@@ -216,6 +226,8 @@ SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariab
 // ***** IndependentVariable *****
 
 IndependentVariable::IndependentVariable() : SymbolicExpression(constructSymbol) {}
+
+IndependentVariable::IndependentVariable(const string &str) : SymbolicExpression(str) {}
 
 IndependentVariable::IndependentVariable(const shared_ptr<const AST::Symbol> &x) : SymbolicExpression(x) {}
 
