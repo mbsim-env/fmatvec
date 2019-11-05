@@ -1,5 +1,6 @@
 #include "ast.h"
 #include <boost/uuid/uuid_io.hpp>
+#include <boost/assign/list_of.hpp>
 #include <sstream>
 
 using namespace std;
@@ -412,6 +413,29 @@ Symbol::Symbol(const boost::uuids::uuid& uuid_) : version(0), uuid(uuid_) {}
 
 map<Operation::CacheKey, weak_ptr<const Operation>, Operation::CacheKeyComp> Operation::cache;
 
+boost::bimap<Operation::Operator, string> Operation::opMap =
+  boost::assign::list_of<boost::bimap<Operation::Operator, string>::relation>
+  ( Plus,  "+")
+  ( Minus, "-")
+  ( Mult,  "*")
+  ( Div,   "/")
+  ( Pow,   "pow")
+  ( Log,   "log")
+  ( Sqrt,  "sqrt")
+  ( Neg,   "neg")
+  ( Sin,   "sin")
+  ( Cos,   "cos")
+  ( Tan,   "tan")
+  ( Sinh,  "sinh")
+  ( Cosh,  "cosh")
+  ( Tanh,  "tanh")
+  ( ASin,  "asin")
+  ( ACos,  "acos")
+  ( ATan,  "atan")
+  ( ASinh, "asinh")
+  ( ACosh, "acosh")
+  ( ATanh, "atanh");
+
 SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpression> &child_) {
   static bool optimizeExpressions=true; // this is "always" true (except for the initial call, see below)
   static bool firstCall=true;
@@ -493,13 +517,13 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
 }
 
 SymbolicExpression Operation::createFromStream(istream &s) {
-  int opInt;
+  string opStr;
   size_t size;
   vector<SymbolicExpression> child;
-  s>>opInt>>size;
+  s>>opStr>>size;
   for(size_t i=0; i<size; ++i)
     child.push_back(Vertex::createFromStream(s));
-  return Operation::create(static_cast<Operator>(opInt), child);
+  return Operation::create(opMap.right.at(opStr), child);
 }
 
 bool Operation::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
@@ -569,7 +593,7 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
 }
 
 void Operation::serializeToStream(ostream &s) const {
-  s<<" o "<<op<<" "<<child.size();
+  s<<" o "<<opMap.left.at(op)<<" "<<child.size();
   for(auto &c : child)
     c->serializeToStream(s);
 }

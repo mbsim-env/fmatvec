@@ -6,6 +6,7 @@
 #include <memory>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
+#include <boost/bimap.hpp>
 #include <fmatvec/types.h>
 
 namespace fmatvec {
@@ -327,6 +328,7 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
     };
     static std::map<CacheKey, std::weak_ptr<const Operation>, CacheKeyComp> cache;
     mutable double cacheValue;
+    static boost::bimap<Operator, std::string> opMap;
 };
 
 double Operation::eval() const {
