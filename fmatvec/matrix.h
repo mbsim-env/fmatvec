@@ -186,7 +186,7 @@ namespace fmatvec {
       else if(c==';' || c=='\n') { is.get(); m.resize(++r + 1); }
       else if(c==']'           ) { is.get(); break; }
     }
-    A = m;
+    A = Matrix<Type,Row,Col,AT>(m);
     return is;
   }
 
