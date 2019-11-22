@@ -36,7 +36,7 @@ namespace fmatvec {
    * atomic type of the vector. Valid types are int, float,
    * double, complex<float> and complex<double> 
    * */
-  template <class AT> class Vector<Var,AT> : public Matrix<General,Var,Fixed<1>,AT> {
+  template <class AT> class Vector<fmatvec::Var,AT> : public Matrix<fmatvec::General,fmatvec::Var,fmatvec::Fixed<1>,AT> {
     using Matrix<General,Var,Fixed<1>,AT>::M;
     using Matrix<General,Var,Fixed<1>,AT>::ele;
 
@@ -231,13 +231,13 @@ namespace fmatvec {
 
       inline const RowVector<Var,AT> T() const;
 
-      inline const Vector<Var,AT> operator()(const Range<Var,Var> &I) const;
+      inline const Vector<Var,AT> operator()(const fmatvec::Range<Var,Var> &I) const;
 
       template <class Row>
-      inline void set(const Range<Var,Var> &I, const Vector<Row,AT> &x);
+      inline void set(const fmatvec::Range<Var,Var> &I, const Vector<Row,AT> &x);
 
       template <class Row>
-      inline void add(const Range<Var,Var> &I, const Vector<Row,AT> &x);
+      inline void add(const fmatvec::Range<Var,Var> &I, const Vector<Row,AT> &x);
   };
 
   template <class AT>
@@ -318,7 +318,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline const Vector<Var,AT> Vector<Var,AT>::operator()(const Range<Var,Var> &I) const {
+    inline const Vector<Var,AT> Vector<Var,AT>::operator()(const fmatvec::Range<Var,Var> &I) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<M);
 #endif
@@ -331,7 +331,7 @@ namespace fmatvec {
     }
 
   template <class AT> template <class Row>
-    inline void Vector<Var,AT>::set(const Range<Var,Var> &I, const Vector<Row,AT> &x) {
+    inline void Vector<Var,AT>::set(const fmatvec::Range<Var,Var> &I, const Vector<Row,AT> &x) {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<size());
       assert(I.size()==x.size());
@@ -342,7 +342,7 @@ namespace fmatvec {
     }
 
   template <class AT> template <class Row>
-    inline void Vector<Var,AT>::add(const Range<Var,Var> &I, const Vector<Row,AT> &x) {
+    inline void Vector<Var,AT>::add(const fmatvec::Range<Var,Var> &I, const Vector<Row,AT> &x) {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<size());
       assert(I.size()==x.size());

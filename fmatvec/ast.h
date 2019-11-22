@@ -39,7 +39,9 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
   friend std::istream& operator>>(std::istream& s, SymbolicExpression &se);
   protected:
     template<class T> SymbolicExpression(const shared_ptr<T> &x);
+#ifndef SWIG
     static const struct ConstructSymbol{} constructSymbol; // just used for tag dispatching
+#endif
     SymbolicExpression(ConstructSymbol);
 
     // do not allow to call these functions inherited from std::shared_ptr
@@ -69,10 +71,12 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
     ~SymbolicExpression() = default;
 
     // operators
+#ifndef SWIG
     SymbolicExpression operator+(const SymbolicExpression &b) const;
     SymbolicExpression operator-(const SymbolicExpression &b) const;
     SymbolicExpression operator*(const SymbolicExpression &b) const;
     SymbolicExpression operator/(const SymbolicExpression &b) const;
+#endif
     SymbolicExpression operator-() const;
     SymbolicExpression& operator+=(const SymbolicExpression &b);
     SymbolicExpression& operator-=(const SymbolicExpression &b);
@@ -163,6 +167,7 @@ SymbolicExpression asinh(const SymbolicExpression &a);
 SymbolicExpression acosh(const SymbolicExpression &a);
 SymbolicExpression atanh(const SymbolicExpression &a);
 
+#ifndef SWIG
 namespace AST { // internal namespace
 
 // ***** Vertex *****
@@ -403,6 +408,7 @@ double Operation::eval() const {
 }
 
 } // end namespace AST
+#endif
 
 IndependentVariable& IndependentVariable::operator&=(double x) {
   static_cast<const AST::Symbol*>(get())->setValue(x);

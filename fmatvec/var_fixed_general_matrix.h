@@ -36,7 +36,7 @@ namespace fmatvec {
    * of the matrix. Valid types are int, float, double, complex<float> and
    * complex<double> 
    * */
-  template <int N, class AT> class Matrix<General,Var,Fixed<N>,AT> {
+  template <int N, class AT> class Matrix<fmatvec::General,fmatvec::Var,fmatvec::Fixed<N>,AT> {
 
     public:
       typedef AT value_type;

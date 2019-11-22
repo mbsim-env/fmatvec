@@ -36,7 +36,7 @@ namespace fmatvec {
    * of the matrix. Valid types are int, float, double, complex<float> and
    * complex<double> 
    * */
-  template <class AT> class Matrix<General,Var,Var,AT> {
+  template <class AT> class Matrix<fmatvec::General,fmatvec::Var,fmatvec::Var,AT> {
 
     public:
       typedef AT value_type;
@@ -45,7 +45,8 @@ namespace fmatvec {
 
     protected:
 
-      int M{0}, N{0};
+      int M{0};
+      int N{0};
 
       AT *ele;
 
@@ -304,16 +305,16 @@ namespace fmatvec {
        *
        * See operator()(const Range<Var,Var>&, const Range<Var,Var>&)
        * */
-      inline const Matrix<General,Var,Var,AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const;
+      inline const Matrix<General,Var,Var,AT> operator()(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J) const;
 
       template <int M1, int M2, int N1, int N2>
-      inline const Matrix<General,Fixed<M2-M1+1>,Fixed<N2-N1+1>,AT> operator()(const Range<Fixed<M1>,Fixed<M2> > &I, const Range<Fixed<N1>,Fixed<N2> > &J) const;
+      inline const Matrix<General,Fixed<M2-M1+1>,Fixed<N2-N1+1>,AT> operator()(const fmatvec::Range<Fixed<M1>,Fixed<M2> > &I, const fmatvec::Range<Fixed<N1>,Fixed<N2> > &J) const;
 
       template <int M1, int M2>
-      inline const Matrix<General,Fixed<M2-M1+1>,Var,AT> operator()(const Range<Fixed<M1>,Fixed<M2> > &I, const Range<Var,Var > &J) const;
+      inline const Matrix<General,Fixed<M2-M1+1>,Var,AT> operator()(const fmatvec::Range<Fixed<M1>,Fixed<M2> > &I, const fmatvec::Range<Var,Var > &J) const;
 
       template <int N1, int N2>
-      inline const Matrix<General,Var,Fixed<N2-N1+1>,AT> operator()(const Range<Var,Var> &I, const Range<Fixed<N1>,Fixed<N2> > &J) const;
+      inline const Matrix<General,Var,Fixed<N2-N1+1>,AT> operator()(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Fixed<N1>,Fixed<N2> > &J) const;
 
       inline const RowVector<Var,AT> row(int i) const;
       inline const Vector<Var,AT> col(int j) const;
@@ -349,13 +350,13 @@ namespace fmatvec {
 
       template<class Col> inline void set(int i, const RowVector<Col,AT> &x);
 
-      template<class Type, class Row, class Col> inline void set(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+      template<class Type, class Row, class Col> inline void set(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
 
       template<class Row> inline void add(int j, const Vector<Row,AT> &x);
 
       template<class Col> inline void add(int i, const RowVector<Col,AT> &x);
 
-      template<class Type, class Row, class Col> inline void add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+      template<class Type, class Row, class Col> inline void add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
 
   };
 
@@ -442,7 +443,7 @@ namespace fmatvec {
     }
 
   template <class AT> 
-    inline const Matrix<General,Var,Var,AT> Matrix<General,Var,Var,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
+    inline const Matrix<General,Var,Var,AT> Matrix<General,Var,Var,AT>::operator()(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<M);
       assert(J.end()<N);
@@ -457,7 +458,7 @@ namespace fmatvec {
     }
 
  template <class AT> template <int M1, int M2, int N1, int N2>
-    inline const Matrix<General,Fixed<M2-M1+1>,Fixed<N2-N1+1>,AT> Matrix<General,Var,Var,AT>::operator()(const Range<Fixed<M1>,Fixed<M2> > &I, const Range<Fixed<N1>,Fixed<N2> > &J) const {
+    inline const Matrix<General,Fixed<M2-M1+1>,Fixed<N2-N1+1>,AT> Matrix<General,Var,Var,AT>::operator()(const fmatvec::Range<Fixed<M1>,Fixed<M2> > &I, const fmatvec::Range<Fixed<N1>,Fixed<N2> > &J) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(M2<M);
       assert(N2<N);
@@ -472,7 +473,7 @@ namespace fmatvec {
     }
 
  template <class AT> template <int M1, int M2>
-    inline const Matrix<General,Fixed<M2-M1+1>,Var,AT> Matrix<General,Var,Var,AT>::operator()(const Range<Fixed<M1>,Fixed<M2> > &I, const Range<Var,Var> &J) const {
+    inline const Matrix<General,Fixed<M2-M1+1>,Var,AT> Matrix<General,Var,Var,AT>::operator()(const fmatvec::Range<Fixed<M1>,Fixed<M2> > &I, const fmatvec::Range<Var,Var> &J) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(M2<M);
       assert(J.end()<N);
@@ -487,7 +488,7 @@ namespace fmatvec {
     }
 
   template <class AT> template <int N1, int N2>
-    inline const Matrix<General,Var,Fixed<N2-N1+1>,AT> Matrix<General,Var,Var,AT>::operator()(const Range<Var,Var> &I, const Range<Fixed<N1>,Fixed<N2> > &J) const {
+    inline const Matrix<General,Var,Fixed<N2-N1+1>,AT> Matrix<General,Var,Var,AT>::operator()(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Fixed<N1>,Fixed<N2> > &J) const {
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<M);
       assert(N2<N);
@@ -565,7 +566,7 @@ namespace fmatvec {
     }
 
   template <class AT> template<class Type, class Row, class Col>
-    inline void Matrix<General,Var,Var,AT>::set(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
+    inline void Matrix<General,Var,Var,AT>::set(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<rows());
@@ -600,7 +601,7 @@ namespace fmatvec {
     }
 
   template <class AT> template<class Type, class Row, class Col>
-    inline void Matrix<General,Var,Var,AT>::add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
+    inline void Matrix<General,Var,Var,AT>::add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
 
 #ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<rows());

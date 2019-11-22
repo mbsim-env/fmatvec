@@ -280,8 +280,8 @@ namespace fmatvec {
   }
 
   // Matrix-Matrix
-  template <class Type1, class Row1, class Col1, class Type2, class Row2, class Col2, class Type3, class Row3, class Col3, class AT>
-  inline void add(const Matrix<Type1, Row1, Col1, AT> &A1, const Matrix<Type2, Row2, Col2, AT> &A2, Matrix<Type3, Row3, Col3, AT> &A3) {
+  template <class Type1, class Row1, class Col1, class Type2, class Row2, class Col2, class Type3, class Row3, class Col3, class AT1, class AT2, class AT3>
+  inline void add(const Matrix<Type1, Row1, Col1, AT1> &A1, const Matrix<Type2, Row2, Col2, AT2> &A2, Matrix<Type3, Row3, Col3, AT3> &A3) {
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(A1.rows() == A2.rows());
     assert(A1.cols() == A2.cols());
@@ -1165,15 +1165,15 @@ namespace fmatvec {
    * This function computes the cross product of two vectors.
    * \return The cross product.
    * */
-  template <class Row, class AT>
-  Vector<Row, AT> crossProduct(const Vector<Row, AT> &x, const Vector<Row, AT> &y) {
+  template <class Row1, class Row2, class AT1, class AT2>
+  Vector<Fixed<3>, typename OperatorResult<AT1, AT2>::Type> crossProduct(const Vector<Row1, AT1> &x, const Vector<Row2, AT2> &y) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == 3);
     assert(y.size() == 3);
 #endif
 
-    Vector<Row, AT> z(3, NONINIT);
+    Vector<Fixed<3>, typename OperatorResult<AT1, AT2>::Type> z(3, NONINIT);
 
     z.e(0) = x.e(1) * y.e(2) - x.e(2) * y.e(1);
     z.e(1) = x.e(2) * y.e(0) - x.e(0) * y.e(2);
@@ -1253,17 +1253,17 @@ namespace fmatvec {
     return B;
   }
 
-  template <class Row, class AT1, class AT2>
-  inline Matrix<Diagonal, Row, Row, typename OperatorResult<AT1, AT2>::TypT> operator*(const AT1 &alpha, const Matrix<Diagonal, Row, Row, AT2> &A) {
-    Matrix<Diagonal, Row, Row, typename OperatorResult<AT1, AT2>::Type> B(A.size(), A.size(), NONINIT);
-    for (int i = 0; i < A.size(); i++)
+  template <class AT1, class AT2>
+  inline Matrix<Diagonal, Ref, Ref, typename OperatorResult<AT1, AT2>::Type> operator*(const AT1 &alpha, const Matrix<Diagonal, Ref, Ref, AT2> &A) {
+    Matrix<Diagonal, Ref, Ref, typename OperatorResult<AT1, AT2>::Type> B(A.rows(), A.cols(), NONINIT);
+    for (int i = 0; i < A.rows(); i++)
       B.e(i) = A.e(i) * alpha;
     return B;
   }
 
-  template <class Row, class AT1, class AT2>
-  inline Matrix<Diagonal, Row, Row, typename OperatorResult<AT1, AT2>::Type> operator*(const Matrix<Diagonal, Row, Row, AT1> &A, const AT2 &alpha) {
-    Matrix<Diagonal, Row, Row, typename OperatorResult<AT1, AT2>::Type> B(A.size(), A.size(), NONINIT);
+  template <class AT1, class AT2>
+  inline Matrix<Diagonal, Ref, Ref, typename OperatorResult<AT1, AT2>::Type> operator*(const Matrix<Diagonal, Ref, Ref, AT1> &A, const AT2 &alpha) {
+    Matrix<Diagonal, Ref, Ref, typename OperatorResult<AT1, AT2>::Type> B(A.rows(), A.cols(), NONINIT);
     for (int i = 0; i < A.size(); i++)
       B.e(i) = A.e(i) * alpha;
     return B;
@@ -1569,16 +1569,16 @@ namespace fmatvec {
   }
 
   template <class Row, class AT>
-  inline AT nrm2(const Vector<Row, AT> &x) {
-    AT c = 0;
+  inline typename OperatorResult<AT, AT>::Type nrm2(const Vector<Row, AT> &x) {
+    typename OperatorResult<AT, AT>::Type c=typename OperatorResult<AT, AT>::Type();
     for (int i = 0; i < x.size(); i++)
       c += pow(x.e(i), 2);
     return sqrt(c);
   }
 
   template <class Col, class AT>
-  inline AT nrm2(const RowVector<Col, AT> &x) {
-    AT c = 0;
+  inline typename OperatorResult<AT, AT>::Type nrm2(const RowVector<Col, AT> &x) {
+    typename OperatorResult<AT, AT>::Type c=typename OperatorResult<AT, AT>::Type();
     for (int i = 0; i < x.size(); i++)
       c += pow(x.e(i), 2);
     return sqrt(c);
