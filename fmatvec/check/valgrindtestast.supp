@@ -3,7 +3,6 @@
    Memcheck:Cond
    fun:seed<boost::uuids::detail::generator_iterator<boost::uuids::detail::seed_rng> >
    fun:seed<boost::random::mersenne_twister_engine<unsigned int, 32ul, 624ul, 397ul, 31ul, 2567483615u, 11ul, 4294967295u, 7ul, 2636928640u, 15ul, 4022730752u, 18ul, 1812433253u> >
-   fun:basic_random_generator
 }
 {
    needed for old boost/valgrind
