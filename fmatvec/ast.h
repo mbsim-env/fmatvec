@@ -7,6 +7,7 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/bimap.hpp>
+#include <boost/math/special_functions/sign.hpp>
 #include <fmatvec/types.h>
 
 namespace fmatvec {
@@ -166,6 +167,8 @@ SymbolicExpression atan(const SymbolicExpression &a);
 SymbolicExpression asinh(const SymbolicExpression &a);
 SymbolicExpression acosh(const SymbolicExpression &a);
 SymbolicExpression atanh(const SymbolicExpression &a);
+SymbolicExpression exp(const SymbolicExpression &a);
+SymbolicExpression sign(const SymbolicExpression &a);
 
 #ifndef SWIG
 namespace AST { // internal namespace
@@ -312,7 +315,7 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
   public:
 
     //! Defined operations.
-    enum Operator { Plus, Minus, Mult, Div, Pow, Log, Sqrt, Neg, Sin, Cos, Tan, Sinh, Cosh, Tanh, ASin, ACos, ATan, ASinh, ACosh, ATanh };
+    enum Operator { Plus, Minus, Mult, Div, Pow, Log, Sqrt, Neg, Sin, Cos, Tan, Sinh, Cosh, Tanh, ASin, ACos, ATan, ASinh, ACosh, ATanh, Exp, Sign };
     static SymbolicExpression create(Operator op_, const std::vector<SymbolicExpression> &child_);
     static SymbolicExpression createFromStream(std::istream &s);
     inline double eval() const override;
@@ -401,6 +404,10 @@ double Operation::eval() const {
       return cacheValue = std::acosh(a);
     case ATanh:
       return cacheValue = std::atanh(a);
+    case Exp:
+      return cacheValue = std::exp(a);
+    case Sign:
+      return cacheValue = boost::math::sign(a);
   }
   #undef a
   #undef b

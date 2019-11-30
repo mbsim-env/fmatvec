@@ -1398,9 +1398,9 @@ namespace fmatvec {
    * \return The negation.
    * */
   template <class Row, class AT>
-  Vector<Row, AT> operator-(const Vector<Row, AT> &x) {
+  Vector<Row, typename OperatorResult<AT, AT>::Type> operator-(const Vector<Row, AT> &x) {
 
-    Vector<Row, AT> y(x.size(), NONINIT);
+    Vector<Row, typename OperatorResult<AT, AT>::Type> y(x.size(), NONINIT);
 
     for (int i = 0; i < x.size(); i++)
       y.e(i) = -x.e(i);
@@ -1414,9 +1414,9 @@ namespace fmatvec {
    * \return The negation.
    * */
   template <class Col, class AT>
-  RowVector<Col, AT> operator-(const RowVector<Col, AT> &a) {
+  RowVector<Col, typename OperatorResult<AT, AT>::Type> operator-(const RowVector<Col, AT> &a) {
 
-    RowVector<Col, AT> c(a.size(), NONINIT);
+    RowVector<Col, typename OperatorResult<AT, AT>::Type> c(a.size(), NONINIT);
 
     for (int i = 0; i < a.size(); i++)
       c.e(i) = -a.e(i);
@@ -1430,9 +1430,9 @@ namespace fmatvec {
    * \return The negation.
    * */
   template <class Row, class AT>
-  SquareMatrix<Row, AT> operator-(const SquareMatrix<Row, AT> &A) {
+  SquareMatrix<Row, typename OperatorResult<AT, AT>::Type> operator-(const SquareMatrix<Row, AT> &A) {
 
-    SquareMatrix<Row, AT> B(A.size(), NONINIT);
+    SquareMatrix<Row, typename OperatorResult<AT, AT>::Type> B(A.size(), NONINIT);
 
     for (int i = 0; i < A.size(); i++)
       for (int j = 0; j < A.size(); j++)
@@ -1447,9 +1447,9 @@ namespace fmatvec {
    * \return The negation.
    * */
   template <class Type, class Row, class Col, class AT>
-  Matrix<Type, Row, Col, AT> operator-(const Matrix<Type, Row, Col, AT> &A) {
+  Matrix<Type, Row, Col, typename OperatorResult<AT, AT>::Type> operator-(const Matrix<Type, Row, Col, AT> &A) {
 
-    Matrix<Type, Row, Col, AT> B(A.rows(), A.cols(), NONINIT);
+    Matrix<Type, Row, Col, typename OperatorResult<AT, AT>::Type> B(A.rows(), A.cols(), NONINIT);
 
     for (int i = 0; i < A.rows(); i++)
       for (int j = 0; j < A.cols(); j++)

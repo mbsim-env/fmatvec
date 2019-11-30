@@ -141,6 +141,14 @@ SymbolicExpression atanh(const SymbolicExpression &a) {
   return AST::Operation::create(AST::Operation::ATanh, {a});
 }
 
+SymbolicExpression exp(const SymbolicExpression &a) {
+  return AST::Operation::create(AST::Operation::Exp, {a});
+}
+
+SymbolicExpression sign(const SymbolicExpression &a) {
+  return AST::Operation::create(AST::Operation::Sign, {a});
+}
+
 ostream& operator<<(ostream& s, const SymbolicExpression& se) {
   auto oldPrecision=s.precision(numeric_limits<double>::digits10+1);
   s<<"{";
@@ -434,7 +442,10 @@ boost::bimap<Operation::Operator, string> Operation::opMap =
   ( ATan,  "atan")
   ( ASinh, "asinh")
   ( ACosh, "acosh")
-  ( ATanh, "atanh");
+  ( ATanh, "atanh")
+  ( Exp,   "exp")
+  ( Sign,  "sign")
+;
 
 SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpression> &child_) {
   static bool optimizeExpressions=true; // this is "always" true (except for the initial call, see below)
@@ -588,6 +599,10 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
       return ad / sqrt(pow(a, 2) - 1);
     case ATanh:
       return ad / (1 - pow(a, 2));
+    case Exp:
+      return exp(a) * ad;
+    case Sign:
+      return 0;
   }
   throw runtime_error("Unknown operation.");
 }
