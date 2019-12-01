@@ -23,16 +23,16 @@ norm_indepVar 0 = { o / 2 o * 2 o + 2 o + 2 o * 2 o pow 2 o + 2 o + 2 o * 2 d 2 
 norm_indepVar 1 = { o / 2 o * 2 o + 2 o + 2 o * 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o * 2 o / 2 i 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 s 4 o * 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o * 2 o / 2 i 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 d 5 o * 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 o * 2 o / 2 i 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 d 8 d 0.5 o sqrt 1 o + 2 o + 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 }
 norm_indepVar 2 = { o / 2 o * 2 o + 2 o + 2 o * 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o * 2 o / 2 i 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 d 3 o * 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o * 2 o / 2 i 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 d 6 o * 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 o * 2 o / 2 i 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 o + 2 s 5 s 6 d 0.5 o sqrt 1 o + 2 o + 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 }
 frist eval
-pdn.eval = [5.007801888075632, 10.3236496457691, 13.7363680526641]
+pdn.eval = [5.007801888, 10.32364965, 13.73636805]
 number of operations evaluated = 64
 second eval with same values for independent variables
-pdn.eval = [5.007801888075632, 10.3236496457691, 13.7363680526641]
+pdn.eval = [5.007801888, 10.32364965, 13.73636805]
 number of operations evaluated = 0
 third eval with different values for independent variables
-pdn.eval = [7.678977338926537, 10.94600770788121, 17.14292076727458]
+pdn.eval = [7.678977339, 10.94600771, 17.14292077]
 number of operations evaluated = 64
 number of operations evaluated = 0
-reread 7.67898 == 7.67898
+reread 7.678977339 == 7.678977339
 indepvar ser [{ s 7 }; { s 8 }; { s 9 }]
 depvar ser [{ i 1 }, { o + 2 i 2 s 7 }, { i 3 }; { o + 2 i 4 o log 1 s 8 }, { i 5 }, { i 6 }; { i 7 }, { i 8 }, { o * 2 i 9 s 9 }]
 depvar ser [{ o + 2 o + 2 s 7 o * 2 o + 2 i 2 s 7 s 8 o * 2 i 3 s 9 }; { o + 2 o + 2 o * 2 o + 2 i 4 o log 1 s 8 s 7 o * 2 i 5 s 8 o * 2 i 6 s 9 }; { o + 2 o + 2 o * 2 i 7 s 7 o * 2 i 8 s 8 o * 2 o * 2 i 9 s 9 s 9 }]
@@ -40,4 +40,4 @@ reread [{ s 7 }; { s 8 }; { s 9 }]
 reread [{ o + 2 o + 2 s 7 o * 2 o + 2 i 2 s 7 s 8 o * 2 i 3 s 9 }; { o + 2 o + 2 o * 2 o + 2 i 4 o log 1 s 8 s 7 o * 2 i 5 s 8 o * 2 i 6 s 9 }; { o + 2 o + 2 o * 2 i 7 s 7 o * 2 i 8 s 8 o * 2 o * 2 i 9 s 9 s 9 }]
 reread-precision 1 1
 reread-precision 1 1
-reread 7.67898 == 7.67898
+reread 7.678977339 == 7.678977339

@@ -145,7 +145,7 @@ namespace fmatvec {
    * \return A reference to the output stream.
    * */
   template <class Type, class Row, class Col, class AT> std::ostream& operator<<(std::ostream &os, const Matrix<Type,Row,Col,AT> &A) {
-    os << toString(static_cast<std::vector<std::vector<AT>>>(A));
+    os << toString(static_cast<std::vector<std::vector<AT>>>(A), os.precision());
     return os;
   }
 

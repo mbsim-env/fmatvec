@@ -150,11 +150,9 @@ SymbolicExpression sign(const SymbolicExpression &a) {
 }
 
 ostream& operator<<(ostream& s, const SymbolicExpression& se) {
-  auto oldPrecision=s.precision(numeric_limits<double>::digits10+1);
   s<<"{";
   se->serializeToStream(s);
   s<<" }";
-  s.precision(oldPrecision);
   return s;
 }
 
