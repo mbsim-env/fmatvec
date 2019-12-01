@@ -188,8 +188,6 @@ void checkSym(double &pdn0Value,
   cout<<"pdn.eval = "<<eval(pdn)<<endl;
 #ifndef NDEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
-#endif
-#ifndef NDEBUG
   SymbolicExpression::evalOperationsCount=0;
 #endif
   cout<<"second eval with same values for independent variables"<<endl;

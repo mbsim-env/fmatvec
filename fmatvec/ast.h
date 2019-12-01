@@ -84,7 +84,7 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
     SymbolicExpression& operator*=(const SymbolicExpression &b);
     SymbolicExpression& operator/=(const SymbolicExpression &b);
 
-#ifndef NDEBUG
+#if !defined(NDEBUG) && !defined(SWIG)
     static unsigned long evalOperationsCount;
 #endif
 };
@@ -352,7 +352,7 @@ double Operation::eval() const {
     if(useCacheValue)
       return cacheValue;
   }
-#ifndef NDEBUG
+#if !defined(NDEBUG) && !defined(SWIG)
   SymbolicExpression::evalOperationsCount++;
 #endif
 

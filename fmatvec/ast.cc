@@ -9,7 +9,7 @@ namespace fmatvec {
 
 // ***** SymbolicExpression *****
 
-#ifndef NDEBUG
+#if !defined(NDEBUG) && !defined(SWIG)
 unsigned long SymbolicExpression::evalOperationsCount = 0;
 #endif
 
