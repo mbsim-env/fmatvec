@@ -16,21 +16,21 @@ depVar0_indepVar 2 = { d 3 }
 depVar1_indepVar 0 = { d 4 }
 depVar1_indepVar 1 = { d 5 }
 depVar1_indepVar 2 = { d 6 }
-depVar2_indepVar 0 = { o + 2 o * 2 o / 2 o + 2 o * 2 o pow 2 s 1 i 3 o / 2 i 3 s 1 i 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o log 1 o + 2 o pow 2 s 1 i 3 s 1 }
+depVar2_indepVar 0 = { o + 2 o * 2 o / 2 o + 2 o * 2 i 3 o pow 2 s 1 i 2 i 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o log 1 o + 2 o pow 2 s 1 i 3 s 1 }
 depVar2_indepVar 1 = { d 8 }
 depVar2_indepVar 2 = { o + 2 s 5 s 6 }
-norm_indepVar 0 = { o / 2 o * 2 o + 2 o + 2 o * 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o * 2 o / 2 i 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 d 2 o * 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o * 2 o / 2 i 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 d 4 o * 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 o * 2 o / 2 i 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 o + 2 o * 2 o / 2 o + 2 o * 2 o pow 2 s 1 i 3 o / 2 i 3 s 1 i 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o log 1 o + 2 o pow 2 s 1 i 3 s 1 d 0.5 o sqrt 1 o + 2 o + 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 }
-norm_indepVar 1 = { o / 2 o * 2 o + 2 o + 2 o * 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o * 2 o / 2 i 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 s 4 o * 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o * 2 o / 2 i 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 d 5 o * 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 o * 2 o / 2 i 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 d 8 d 0.5 o sqrt 1 o + 2 o + 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 }
-norm_indepVar 2 = { o / 2 o * 2 o + 2 o + 2 o * 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o * 2 o / 2 i 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 d 3 o * 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o * 2 o / 2 i 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 d 6 o * 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 o * 2 o / 2 i 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 o + 2 s 5 s 6 d 0.5 o sqrt 1 o + 2 o + 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 }
+norm_indepVar 0 = { o / 2 o * 2 o + 2 o + 2 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 d 2 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 d 4 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 o + 2 o * 2 o / 2 o + 2 o * 2 i 3 o pow 2 s 1 i 2 i 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o log 1 o + 2 o pow 2 s 1 i 3 s 1 d 0.5 o sqrt 1 o + 2 o + 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 }
+norm_indepVar 1 = { o / 2 o * 2 o + 2 o + 2 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 s 4 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 d 5 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 d 8 d 0.5 o sqrt 1 o + 2 o + 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 }
+norm_indepVar 2 = { o / 2 o * 2 o + 2 o + 2 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 d 3 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 d 6 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 o + 2 s 5 s 6 d 0.5 o sqrt 1 o + 2 o + 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 }
 frist eval
 pdn.eval = [5.007801888, 10.32364965, 13.73636805]
-number of operations evaluated = 64
+number of operations evaluated = 55
 second eval with same values for independent variables
 pdn.eval = [5.007801888, 10.32364965, 13.73636805]
 number of operations evaluated = 0
 third eval with different values for independent variables
 pdn.eval = [7.678977339, 10.94600771, 17.14292077]
-number of operations evaluated = 64
+number of operations evaluated = 55
 number of operations evaluated = 0
 reread 7.678977339 == 7.678977339
 indepvar ser [{ s 7 }; { s 8 }; { s 9 }]

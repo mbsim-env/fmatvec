@@ -169,6 +169,7 @@ SymbolicExpression acosh(const SymbolicExpression &a);
 SymbolicExpression atanh(const SymbolicExpression &a);
 SymbolicExpression exp(const SymbolicExpression &a);
 SymbolicExpression sign(const SymbolicExpression &a);
+SymbolicExpression abs(const SymbolicExpression &a);
 
 #ifndef SWIG
 namespace AST { // internal namespace
@@ -315,7 +316,7 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
   public:
 
     //! Defined operations.
-    enum Operator { Plus, Minus, Mult, Div, Pow, Log, Sqrt, Neg, Sin, Cos, Tan, Sinh, Cosh, Tanh, ASin, ACos, ATan, ASinh, ACosh, ATanh, Exp, Sign };
+    enum Operator { Plus, Minus, Mult, Div, Pow, Log, Sqrt, Neg, Sin, Cos, Tan, Sinh, Cosh, Tanh, ASin, ACos, ATan, ASinh, ACosh, ATanh, Exp, Sign, Abs };
     static SymbolicExpression create(Operator op_, const std::vector<SymbolicExpression> &child_);
     static SymbolicExpression createFromStream(std::istream &s);
     inline double eval() const override;
@@ -408,6 +409,8 @@ double Operation::eval() const {
       return cacheValue = std::exp(a);
     case Sign:
       return cacheValue = boost::math::sign(a);
+    case Abs:
+      return cacheValue = std::abs(a);
   }
   #undef a
   #undef b

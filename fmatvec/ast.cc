@@ -149,6 +149,10 @@ SymbolicExpression sign(const SymbolicExpression &a) {
   return AST::Operation::create(AST::Operation::Sign, {a});
 }
 
+SymbolicExpression abs(const SymbolicExpression &a) {
+  return AST::Operation::create(AST::Operation::Abs, {a});
+}
+
 ostream& operator<<(ostream& s, const SymbolicExpression& se) {
   s<<"{";
   se->serializeToStream(s);
@@ -443,6 +447,7 @@ boost::bimap<Operation::Operator, string> Operation::opMap =
   ( ATanh, "atanh")
   ( Exp,   "exp")
   ( Sign,  "sign")
+  ( Abs,   "abs")
 ;
 
 SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpression> &child_) {
@@ -503,7 +508,7 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
       Operation op(op_, child_);
       double doubleValue=op.eval();
       int intValue=lround(doubleValue);
-      if(abs(intValue-doubleValue)<2*numeric_limits<double>::epsilon())
+      if(std::abs(intValue-doubleValue)<2*numeric_limits<double>::epsilon())
         return Constant<int>::create(intValue);
       return Constant<double>::create(doubleValue);
     }
@@ -566,7 +571,10 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
     case Div:
       return (ad * b - a * bd) / (b * b);
     case Pow:
-      return v * (bd * log(a) + b / a * ad);
+      if(b->isConstantInt())
+        return b * pow(a, static_cast<const Constant<int>*>(b.get())->getValue() - 1) * ad;
+      else
+        return pow(a, b-1) * (abs(a) * bd * log(abs(a)) + b * abs(ad));
     case Log:
       return ad / a;
     case Sqrt:
@@ -601,6 +609,8 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
       return exp(a) * ad;
     case Sign:
       return 0;
+    case Abs:
+      return sign(a);
   }
   throw runtime_error("Unknown operation.");
 }
