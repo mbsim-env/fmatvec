@@ -110,6 +110,16 @@ namespace fmatvec {
 
       template <class Type, class Row, class Col>
       inline Matrix<General,Fixed<M>,Fixed<N>,AT>& operator=(const Matrix<Type,Row,Col,AT> &A);
+
+      template <class AT2>
+      operator Matrix<General,Fixed<M>,Fixed<N>,AT2>() const {
+        Matrix<General,Fixed<M>,Fixed<N>,AT2> ret;
+        for(size_t r=0; r<M; ++r)
+          for(size_t c=0; c<N; ++c)
+            ret(r,c) = (*this)(r,c);
+        return ret;
+      }
+
       /*! \brief Element operator
        *
        * Returns a reference to the element in the i-th row and the j-th column. 

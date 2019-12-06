@@ -128,6 +128,14 @@ namespace fmatvec {
       template <class Row>
       inline Vector<Var,AT>& operator=(const Vector<Row,AT> &x);
 
+      template <class AT2>
+      operator Vector<Var,AT2>() const {
+        Vector<Var,AT2> ret(size());
+        for(size_t i=0; i<size(); ++i)
+          ret(i) = (*this)(i);
+        return ret;
+      }
+
       /*! \brief Copy operator
        *
        * Copies the vector given by \em x.

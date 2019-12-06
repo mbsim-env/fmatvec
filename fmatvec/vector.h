@@ -189,6 +189,14 @@ namespace fmatvec {
       template <class Row>
       inline Vector<Ref,AT>& operator=(const Vector<Row,AT> &x);
 
+      template <class AT2>
+      operator Vector<Ref,AT2>() const {
+        Vector<Ref,AT2> ret(size());
+        for(size_t i=0; i<size(); ++i)
+          ret(i) = (*this)(i);
+        return ret;
+      }
+
       /*! \brief Element operator
        *
        * Returns a reference to the i-th element. 

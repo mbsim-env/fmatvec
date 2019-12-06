@@ -175,6 +175,15 @@ namespace fmatvec {
       template<class Type, class Row, class Col>
       Matrix<General,Ref,Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A);
 
+      template <class AT2>
+      operator Matrix<General,Ref,Ref,AT2>() const {
+        Matrix<General,Ref,Ref,AT2> ret(rows(), cols());
+        for(size_t r=0; r<rows(); ++r)
+          for(size_t c=0; c<cols(); ++c)
+            ret(r,c) = (*this)(r,c);
+        return ret;
+      }
+
       /*! \brief Copy operator
        *
        * Copies the matrix given by \em A.
