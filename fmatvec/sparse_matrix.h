@@ -127,41 +127,31 @@ namespace fmatvec {
 
         Matrix<Sparse,Ref,Ref,AT>& resize(int n, int k, Init ini=INIT, const AT &a=AT()) { return resize(m,k,Noinit()).init(a); }
 
-	/*! \brief Copy operator
-	 *
-	 * Copies the sparse matrix given by \em A.
-	 * \param A The matrix to be copied. 
-	 * \return A reference to the calling matrix.
-	 * */
-	inline Matrix<Sparse,Ref,Ref,AT>& operator<<(const Matrix<Sparse,Ref,Ref,AT> &A);
-
 	/*! \brief Reference operator
 	 *
 	 * References the sparse matrix given by \em A.
 	 * \param A The matrix to be referenced. 
 	 * \return A reference to the calling matrix.
 	 * */
-	inline Matrix<Sparse,Ref,Ref,AT>& operator>>(const Matrix<Sparse,Ref,Ref,AT> &A);
+	inline Matrix<Sparse,Ref,Ref,AT>& operator&=(const Matrix<Sparse,Ref,Ref,AT> &A);
 
 	/*! \brief Element operator
 	 *
-	 * See operator<<(const Matrix<Sparse,Ref,Ref,T>&) 
+	 * See operator=(const Matrix<Sparse,Ref,Ref,T>&)
 	 * */
-	inline Matrix<Sparse,Ref,Ref,AT>& operator<<(const SquareMatrix<Ref,AT> &A);
+	inline Matrix<Sparse,Ref,Ref,AT>& operator=(const SquareMatrix<Ref,AT> &A);
 
-  /*! \brief Element operator
-   *
-   * See operator<<(const Matrix<Sparse,Ref,Ref,T>&)
-   * */
-  inline Matrix<Sparse,Ref,Ref,AT>& operator<<(const Matrix<Symmetric, Var, Var ,AT> &A);
+        /*! \brief Element operator
+         *
+         * See operator=(const Matrix<Sparse,Ref,Ref,T>&)
+         * */
+        inline Matrix<Sparse,Ref,Ref,AT>& operator=(const Matrix<Symmetric, Var, Var ,AT> &A);
 
 	/*! \brief Assignment operator
 	 *
-	 * Copies the sparse matrix given by \em A by calling operator<<().
+	 * Copies the sparse matrix given by \em A.
 	 * \param A The matrix to be assigned. 
 	 * \return A reference to the calling matrix.
-	 * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
-	 * \sa operator<<(), operator>>()
 	 * */
 	inline Matrix<Sparse,Ref,Ref,AT>& operator=(const Matrix<Sparse,Ref,Ref,AT> &A);
 
@@ -261,7 +251,7 @@ namespace fmatvec {
   // ----------------------------------------------------------------------------
 
   template <class AT>
-    inline Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator>>(const Matrix<Sparse,Ref,Ref,AT> &A) { 
+    inline Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator&=(const Matrix<Sparse,Ref,Ref,AT> &A) {
 
       m=A.m;
       n=A.n;
@@ -278,7 +268,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator=(const Matrix<Sparse,Ref,Ref,AT> &A) { 
+    inline Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator=(const Matrix<Sparse,Ref,Ref,AT> &A) {
 
       if(!ele) {
 	m = A.m;
@@ -305,29 +295,9 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator<<(const Matrix<Sparse,Ref,Ref,AT> &A) { 
+    inline Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator=(const SquareMatrix<Ref,AT> &A) {
 
-      if(m!=A.m || n!=A.n || k!=A.k) {
-	m = A.m;
-	n = A.n;
-	k = A.k;
-	memEle.resize(k);
-	memI.resize(m+1);
-	memJ.resize(k);
-	ele = (AT*)memEle.get();
-	I = (int*)memI.get();
-	J = (int*)memJ.get();
-      }
-
-      deepCopy(A);
-
-      return *this;
-    }
-
-  template <class AT>
-    inline Matrix<Sparse,Ref,Ref,AT>& Matrix<Sparse,Ref,Ref,AT>::operator<<(const SquareMatrix<Ref,AT> &A) { 
-
-      if(m!=A.rows() || n!=A.cols()) {
+      if(!ele) {
         m = A.rows();
         n = A.cols();
         k = countElements(A);
@@ -338,6 +308,10 @@ namespace fmatvec {
         I = (int*)memI.get();
         J = (int*)memJ.get();
       } else {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(m == A.rows());
+        assert(n == A.cols());
+#endif
         int k_ = countElements(A);
         if(k != k_) {
           k = k_;
@@ -354,9 +328,9 @@ namespace fmatvec {
     }
 
   template <class AT>
-  inline Matrix<Sparse, Ref, Ref, AT>& Matrix<Sparse, Ref, Ref, AT>::operator<<(const Matrix<Symmetric, Var, Var, AT> &A) {
+  inline Matrix<Sparse, Ref, Ref, AT>& Matrix<Sparse, Ref, Ref, AT>::operator=(const Matrix<Symmetric, Var, Var, AT> &A) {
 
-      if (m != A.rows() || n != A.cols()) {
+      if(!ele) {
         m = A.rows();
         n = A.cols();
         k = countElementsLT(A) * 2 - A.rows();
@@ -368,6 +342,10 @@ namespace fmatvec {
         J = (int*) memJ.get();
       }
       else {
+#ifndef FMATVEC_NO_SIZE_CHECK
+        assert(m == A.rows());
+        assert(n == A.cols());
+#endif
         int k_ = countElementsLT(A) * 2 - A.rows();
         if (k != k_) {
           k = k_;

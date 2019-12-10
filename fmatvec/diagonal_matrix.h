@@ -112,29 +112,19 @@ namespace fmatvec {
         Matrix<Diagonal,Ref,Ref,AT>& resize(int n, Init ini=INIT, const AT &a=AT()) { resize(n,Noinit()).init(a); }
         Matrix<Diagonal,Ref,Ref,AT>& resize(int n, Eye ini, const AT &a=1) { resize(n,Noinit()).init(ini,a); }
  
-	/*! \brief Copy operator
-	 *
-	 * Copies the diagonal matrix given by \em A.
-	 * \param A The matrix to be copied. 
-	 * \return A reference to the calling matrix.
-	 * */
-	inline Matrix<Diagonal,Ref,Ref,AT>& operator<<(const Matrix<Diagonal,Ref,Ref,AT> &A);
-
 	/*! \brief Reference operator
 	 *
 	 * References the diagoanl matrix given by \em A.
 	 * \param A The matrix to be referenced. 
 	 * \return A reference to the calling matrix.
 	 * */
-	inline Matrix<Diagonal,Ref,Ref,AT>& operator>>(const Matrix<Diagonal,Ref,Ref,AT> &A);
+	inline Matrix<Diagonal,Ref,Ref,AT>& operator&=(const Matrix<Diagonal,Ref,Ref,AT> &A);
 
 	/*! \brief Assignment operator
 	 *
-	 * Copies the square matrix given by \em A by calling operator<<().
+	 * Copies the diagonal matrix given by \em A.
 	 * \param A The matrix to be assigned. 
 	 * \return A reference to the calling matrix.
-	 * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
-	 * \sa operator<<(), operator>>()
 	 * */
 	inline Matrix<Diagonal,Ref,Ref,AT>& operator=(const Matrix<Diagonal,Ref,Ref,AT> &A);
 
@@ -283,7 +273,7 @@ namespace fmatvec {
     };
 
   template <class AT>
-    Matrix<Diagonal,Ref,Ref,AT>& Matrix<Diagonal,Ref,Ref,AT>::operator>>(const Matrix<Diagonal,Ref,Ref,AT> &A) { 
+    Matrix<Diagonal,Ref,Ref,AT>& Matrix<Diagonal,Ref,Ref,AT>::operator&=(const Matrix<Diagonal,Ref,Ref,AT> &A) {
       n=A.n;
       memory = A.memory;
       ele = A.ele;
@@ -292,7 +282,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    Matrix<Diagonal,Ref,Ref,AT>& Matrix<Diagonal,Ref,Ref,AT>::operator=(const Matrix<Diagonal,Ref,Ref,AT> &A) { 
+    Matrix<Diagonal,Ref,Ref,AT>& Matrix<Diagonal,Ref,Ref,AT>::operator=(const Matrix<Diagonal,Ref,Ref,AT> &A) {
       if(!ele) {
 	n = A.n;
 	memory.resize(n);
@@ -323,20 +313,6 @@ namespace fmatvec {
       }
     }
 
-
-  template <class AT>
-    Matrix<Diagonal,Ref,Ref,AT>& Matrix<Diagonal,Ref,Ref,AT>::operator<<(const Matrix<Diagonal,Ref,Ref,AT> &A) { 
-
-      if(n!=A.n) {
-	n = A.n;
-	memory.resize(n);
-	ele = (AT*)memory.get();
-      } 
-
-      deepCopy(A);
-
-      return *this;
-    }
 
   template <class AT>
     Matrix<Diagonal,Ref,Ref,AT>&  Matrix<Diagonal,Ref,Ref,AT>::init(const AT &val) {

@@ -108,6 +108,12 @@ namespace fmatvec {
       Matrix(const std::string &strs);
       Matrix(const char *strs);
 
+      /*! \brief Assignment operator
+       *
+       * Copies the matrix given by \em A.
+       * \param A The matrix to be assigned.
+       * \return A reference to the calling matrix.
+       * */
       template <class Type, class Row, class Col>
       inline Matrix<General,Fixed<M>,Fixed<N>,AT>& operator=(const Matrix<Type,Row,Col,AT> &A);
 

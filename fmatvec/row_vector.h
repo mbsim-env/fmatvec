@@ -152,29 +152,19 @@ namespace fmatvec {
       RowVector(const RowVector<Ref,AT> &x) : Matrix<General,Ref,Ref,AT>(x) {
       }
 
-      /*! \brief Copy operator
-       *
-       * Copies the rowvector given by \em x.
-       * \param x The rowvector to be copied. 
-       * \return A reference to the calling rowvector.
-       * */
-      inline RowVector<Ref,AT>& operator<<(const RowVector<Ref,AT> &x);
-
       /*! \brief Reference operator
        *
        * References the rowvector given by \em x.
        * \param x The rowvector to be referenced. 
        * \return A reference to the calling rowvector.
        * */
-      inline RowVector<Ref,AT>& operator>>(const RowVector<Ref,AT> &x);
+      inline RowVector<Ref,AT>& operator&=(const RowVector<Ref,AT> &x);
 
       /*! \brief Assignment operator
        *
-       * Copies the rowvector given by \em x by calling operator<<().
+       * Copies the rowvector given by \em x.
        * \param x The rowvector to be assigned. 
        * \return A reference to the calling rowvector.
-       * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
-       * \sa operator<<(), operator>>()
        * */
       inline RowVector<Ref,AT>& operator=(const RowVector<Ref,AT> &x);
 
@@ -387,24 +377,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline RowVector<Ref,AT>& RowVector<Ref,AT>::operator<<(const RowVector<Ref,AT> &x) { 
-
-      if(n!=x.size()) {
-	m = 1; 
-	n = x.size();
-	lda = m;
-	tp = false;
-	memory.resize(n);
-	ele = (AT*)memory.get();
-      } 
-
-      deepCopy(x);
-
-      return *this;
-    }
-
-  template <class AT>
-    inline RowVector<Ref,AT>& RowVector<Ref,AT>::operator>>(const RowVector<Ref,AT> &x) { 
+    inline RowVector<Ref,AT>& RowVector<Ref,AT>::operator&=(const RowVector<Ref,AT> &x) {
 
       m = 1;
       n = x.n;

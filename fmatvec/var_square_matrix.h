@@ -103,10 +103,10 @@ namespace fmatvec {
         resize(m);
       }
 
-      /*! \brief Copy operator
+      /*! \brief Assignment operator
        *
        * Copies the matrix given by \em A.
-       * \param A The matrix to be copied. 
+       * \param A The matrix to be assigned.
        * \return A reference to the calling matrix.
        * */
       template <class Type, class Row, class Col> SquareMatrix<Var,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {

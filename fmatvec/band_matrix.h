@@ -129,21 +129,11 @@ namespace fmatvec {
 
       /*! \brief Assignment operator
        *
-       * Copies the band matrix given by \em A by calling operator<<().
+       * Copies the band matrix given by \em A.
        * \param A The matrix to be assigned. 
        * \return A reference to the calling matrix.
-       * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
-       * \sa operator<<(), operator>>()
        * */
       inline Matrix<GeneralBand,Ref,Ref,AT>& operator=(const Matrix<GeneralBand,Ref,Ref,AT> &A);
-
-      /*! \brief Copy operator
-       *
-       * Copies the band matrix given by \em A.
-       * \param A The matrix to be copied. 
-       * \return A reference to the calling matrix.
-       * */
-      inline Matrix<GeneralBand,Ref,Ref,AT>& operator<<(const Matrix<GeneralBand,Ref,Ref,AT> &A);
 
       /*! \brief Reference operator
        *
@@ -151,7 +141,7 @@ namespace fmatvec {
        * \param A The matrix to be referenced. 
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<GeneralBand,Ref,Ref,AT>& operator>>(const Matrix<GeneralBand,Ref,Ref,AT> &A);
+      inline Matrix<GeneralBand,Ref,Ref,AT>& operator&=(const Matrix<GeneralBand,Ref,Ref,AT> &A);
 
       /*! \brief Element operator
        *
@@ -262,7 +252,7 @@ namespace fmatvec {
   };
 
   template <class AT>
-    inline Matrix<GeneralBand,Ref,Ref,AT>& Matrix<GeneralBand,Ref,Ref,AT>::operator>>(const Matrix<GeneralBand,Ref,Ref,AT> &A) { 
+    inline Matrix<GeneralBand,Ref,Ref,AT>& Matrix<GeneralBand,Ref,Ref,AT>::operator&=(const Matrix<GeneralBand,Ref,Ref,AT> &A) {
 
       n=A.n;
       memory = A.memory;
@@ -272,7 +262,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<GeneralBand,Ref,Ref,AT>& Matrix<GeneralBand,Ref,Ref,AT>::operator=(const Matrix<GeneralBand,Ref,Ref,AT> &A) { 
+    inline Matrix<GeneralBand,Ref,Ref,AT>& Matrix<GeneralBand,Ref,Ref,AT>::operator=(const Matrix<GeneralBand,Ref,Ref,AT> &A) {
 
      if(!ele) {
        n = A.n;
@@ -284,20 +274,6 @@ namespace fmatvec {
        assert(n == A.n);
 #endif
      }
-
-      deepCopy(A);
-
-      return *this;
-    }
-
-  template <class AT>
-    inline Matrix<GeneralBand,Ref,Ref,AT>& Matrix<GeneralBand,Ref,Ref,AT>::operator<<(const Matrix<GeneralBand,Ref,Ref,AT> &A) { 
-
-      if(n!=A.n) {
-	n = A.n;
-	memory.resize(n*n);
-	ele = (AT*)memory.get();
-      } 
 
       deepCopy(A);
 

@@ -126,17 +126,14 @@ namespace fmatvec {
        * */
       inline RowVector<Var,AT>& operator=(const RowVector<Var,AT> &x);
 
-      template <class Row>
-      inline RowVector<Var,AT>& operator=(const RowVector<Row,AT> &x);
-
-      /*! \brief Copy operator
+      /*! \brief Assignment operator
        *
-       * Copies the vector given by \em x.
-       * \param x The vector to be copied. 
+       * Copies the vector given by \em x .
+       * \param x The vector to be assigned.
        * \return A reference to the calling vector.
        * */
       template <class Row>
-        inline RowVector<Var,AT>& operator<<(const RowVector<Row,AT> &x);
+      inline RowVector<Var,AT>& operator=(const RowVector<Row,AT> &x);
 
       /*! \brief Element operator
        *
@@ -277,20 +274,6 @@ namespace fmatvec {
 #ifndef FMATVEC_NO_SIZE_CHECK
         assert(N == x.size());
 #endif
-      }
-
-      deepCopy(x);
-
-      return *this;
-    }
-
-  template <class AT> template<class Row>
-    inline RowVector<Var,AT>& RowVector<Var,AT>::operator<<(const RowVector<Row,AT> &x) { 
-
-      if(N!=x.size()) {
-        delete[] ele;
-        N = x.size(); 
-        ele = new AT[N];
       }
 
       deepCopy(x);

@@ -156,12 +156,15 @@ namespace fmatvec {
        * */
       inline Matrix<General,Var,Fixed<N>,AT>& operator=(const Matrix<General,Var,Fixed<N>,AT> &A);
 
+      /*! \brief Assignment operator
+       *
+       * Copies the matrix given by \em A.
+       * \param A The matrix to be assigned.
+       * \return A reference to the calling matrix.
+       * */
       template <class Type, class Row, class Col>
       inline Matrix<General,Var,Fixed<N>,AT>& operator=(const Matrix<Type,Row,Col,AT> &A);
       
-      template <class Type, class Row, class Col>
-      inline Matrix<General,Var,Fixed<N>,AT>& operator<<(const Matrix<Type,Row,Col,AT> &A);
-
       /*! \brief Element operator
        *
        * Returns a reference to the element in the i-th row and the j-th column. 
@@ -371,23 +374,6 @@ namespace fmatvec {
 #ifndef FMATVEC_NO_SIZE_CHECK
         assert(M == A.rows());
 #endif
-      }
-
-      deepCopy(A);
-
-      return *this;
-    }
-
-  template <int N, class AT> template< class Type, class Row, class Col>
-    inline Matrix<General,Var,Fixed<N>,AT>& Matrix<General,Var,Fixed<N>,AT>::operator<<(const Matrix<Type,Row,Col,AT> &A) { 
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(N == A.cols());
-#endif
-      if(M!=A.rows()) {
-        delete[] ele;
-        M = A.rows();
-        ele = new AT[M*N];
       }
 
       deepCopy(A);

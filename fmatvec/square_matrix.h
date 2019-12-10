@@ -143,28 +143,26 @@ namespace fmatvec {
 
       /*! \brief Assignment operator
        *
-       * Copies the matrix given by \em A by calling operator<<().
+       * Copies the matrix given by \em A.
        * \param A The matrix to be assigned. 
        * \return A reference to the calling matrix.
-       * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
-       * \sa operator<<(), operator>>()
        * */
       SquareMatrix<Ref,AT>& operator=(const SquareMatrix<Ref,AT>&  A) {
 	Matrix<General,Ref,Ref,AT>::operator=(A);
 	return *this;
       }
 
-      /*! \brief Copy operator
+      /*! \brief Assignment operator
        *
        * Copies the matrix given by \em A.
-       * \param A The matrix to be copied. 
+       * \param A The matrix to be assigned.
        * \return A reference to the calling matrix.
        * */
-      template<class Type, class Row, class Col> SquareMatrix<Ref,AT>& operator<<(const Matrix<Type,Row,Col,AT> &A) {
+      template<class Type, class Row, class Col> SquareMatrix<Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
 #ifndef FMATVEC_NO_SIZE_CHECK
         assert(A.rows() == A.cols());
 #endif
-	Matrix<General,Ref,Ref,AT>::operator<<(A);
+	Matrix<General,Ref,Ref,AT>::operator=(A);
 	return *this;
       }
 
@@ -174,16 +172,16 @@ namespace fmatvec {
        * \param A The matrix to be referenced. 
        * \return A reference to the calling matrix.
        * */
-      SquareMatrix<Ref,AT>& operator>>(const SquareMatrix<Ref,AT>&  A) {
-	Matrix<General,Ref,Ref,AT>::operator>>(A);
+      SquareMatrix<Ref,AT>& operator&=(const SquareMatrix<Ref,AT>&  A) {
+	Matrix<General,Ref,Ref,AT>::operator&=(A);
 	return *this;
       }
 
-      SquareMatrix<Ref,AT>& operator>>(const Matrix<General,Ref,Ref,AT>&  A) {
+      SquareMatrix<Ref,AT>& operator&=(const Matrix<General,Ref,Ref,AT>&  A) {
 #ifndef FMATVEC_NO_SIZE_CHECK
         assert(A.rows() == A.cols());
 #endif
-	Matrix<General,Ref,Ref,AT>::operator>>(A);
+	Matrix<General,Ref,Ref,AT>::operator&=(A);
 	return *this;
       }
 

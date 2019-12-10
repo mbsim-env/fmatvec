@@ -164,11 +164,9 @@ namespace fmatvec {
 
       /*! \brief Assignment operator
        *
-       * Copies the matrix given by \em A by calling operator<<().
+       * Copies the matrix given by \em A.
        * \param A The matrix to be assigned. 
        * \return A reference to the calling matrix.
-       * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
-       * \sa operator<<(), operator>>()
        * */
       inline Matrix<General,Ref,Ref,AT>& operator=(const Matrix<General,Ref,Ref,AT> &A);
 
@@ -184,22 +182,13 @@ namespace fmatvec {
         return ret;
       }
 
-      /*! \brief Copy operator
-       *
-       * Copies the matrix given by \em A.
-       * \param A The matrix to be copied. 
-       * \return A reference to the calling matrix.
-       * */
-      template<class Type, class Row, class Col>
-        inline Matrix<General,Ref,Ref,AT>& operator<<(const Matrix<Type,Row,Col,AT> &A);
-
       /*! \brief Reference operator
        *
        * References the matrix given by \em A.
        * \param A The matrix to be referenced. 
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<General,Ref,Ref,AT>& operator>>(const Matrix<General,Ref,Ref,AT> &A);
+      inline Matrix<General,Ref,Ref,AT>& operator&=(const Matrix<General,Ref,Ref,AT> &A);
 
       /*! \brief Element operator
        *
@@ -476,7 +465,7 @@ namespace fmatvec {
   template <class AT> Matrix<General,Ref,Ref,AT>::Matrix(const char *strs) : Matrix<General,Ref,Ref,AT>::Matrix(std::string(strs)) {}
 
   template <class AT>
-    inline Matrix<General,Ref,Ref,AT>& Matrix<General,Ref,Ref,AT>::operator>>(const Matrix<General,Ref,Ref,AT> &A) { 
+    inline Matrix<General,Ref,Ref,AT>& Matrix<General,Ref,Ref,AT>::operator&=(const Matrix<General,Ref,Ref,AT> &A) {
 
       m=A.m; 
       n=A.n;
@@ -489,7 +478,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<General,Ref,Ref,AT>& Matrix<General,Ref,Ref,AT>::operator=(const Matrix<General,Ref,Ref,AT> &A) { 
+    inline Matrix<General,Ref,Ref,AT>& Matrix<General,Ref,Ref,AT>::operator=(const Matrix<General,Ref,Ref,AT> &A) {
 
       if(!ele) {
         m = A.rows(); 
@@ -525,23 +514,6 @@ namespace fmatvec {
         assert(m == A.rows());
         assert(n == A.cols());
 #endif
-      }
-
-      deepCopy(A);
-
-      return *this;
-    }
-
-  template <class AT> template< class Type, class Row, class Col>
-    inline Matrix<General,Ref,Ref,AT>& Matrix<General,Ref,Ref,AT>::operator<<(const Matrix<Type,Row,Col,AT> &A) { 
-
-      if(m!=A.rows() || n!=A.cols()) {
-        m = A.rows(); 
-        n = A.cols();
-        lda = m;
-        tp = false;
-        memory.resize(m*n);
-        ele = (AT*)memory.get();
       }
 
       deepCopy(A);

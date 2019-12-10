@@ -136,15 +136,6 @@ namespace fmatvec {
         return ret;
       }
 
-      /*! \brief Copy operator
-       *
-       * Copies the vector given by \em x.
-       * \param x The vector to be copied. 
-       * \return A reference to the calling vector.
-       * */
-      template <class Row>
-        inline Vector<Var,AT>& operator<<(const Vector<Row,AT> &x);
-
       /*! \brief Element operator
        *
        * Returns a reference to the i-th element. 
@@ -284,20 +275,6 @@ namespace fmatvec {
 #ifndef FMATVEC_NO_SIZE_CHECK
         assert(M == x.size());
 #endif
-      }
-
-      deepCopy(x);
-
-      return *this;
-    }
-
-  template <class AT> template<class Row>
-    inline Vector<Var,AT>& Vector<Var,AT>::operator<<(const Vector<Row,AT> &x) { 
-
-      if(M!=x.size()) {
-        delete[] ele;
-        M = x.size(); 
-        ele = new AT[M];
       }
 
       deepCopy(x);

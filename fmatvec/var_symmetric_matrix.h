@@ -139,11 +139,14 @@ namespace fmatvec {
        * */
       inline Matrix<Symmetric,Var,Var,AT>& operator=(const Matrix<Symmetric,Var,Var,AT> &A);
 
+      /*! \brief Assignment operator
+       *
+       * Copies the symmetric matrix given by \em A.
+       * \param A The matrix to be assigned.
+       * \return A reference to the calling matrix.
+       * */
       template<class Type, class Row, class Col>
         inline Matrix<Symmetric,Var,Var,AT>& operator=(const Matrix<Type,Row,Col,AT> &A);
-
-      template<class Type, class Row, class Col>
-        inline Matrix<Symmetric,Var,Var,AT>& operator<<(const Matrix<Type,Row,Col,AT> &A);
 
       //! Resize a var symmetric matrix.
       //! Throw if the dimension does not match or resize to this dimension
@@ -328,24 +331,6 @@ namespace fmatvec {
         assert(M == A.rows());
 #endif
       }
-
-      deepCopy(A);
-
-      return *this;
-    }
-
-  template <class AT> template <class Type, class Row, class Col>
-    inline Matrix<Symmetric,Var,Var,AT>& Matrix<Symmetric,Var,Var,AT>::operator<<(const Matrix<Type,Row,Col,AT> &A) { 
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.rows() == A.cols());
-#endif
-
-      if(M!=A.rows()) {
-        delete[] ele;
-        M = A.rows(); 
-        ele = new AT[M*M];
-      } 
 
       deepCopy(A);
 

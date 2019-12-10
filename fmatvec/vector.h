@@ -157,35 +157,36 @@ namespace fmatvec {
         return *this;
       }
 
-      /*! \brief Copy operator
-       *
-       * Copies the vector given by \em x.
-       * \param x The vector to be copied. 
-       * \return A reference to the calling vector.
-       * */
-      template <class Row>
-        inline Vector<Ref,AT>& operator<<(const Vector<Row,AT> &x);
-
       /*! \brief Reference operator
        *
        * References the vector given by \em x.
-       * \param x The vector to be referenced. 
+       * \param x The vector to be referenced.
        * \return A reference to the calling vector.
        * */
-      inline Vector<Ref,AT>& operator>>(const Vector<Ref,AT> &x);
+      inline Vector<Ref,AT>& operator&=(const Vector<Ref,AT> &x);
 
-      inline Vector<Ref,AT>& operator>>(const Matrix<General,Ref,Ref,AT> &A);
+      /*! \brief Reference operator
+       *
+       * References the matrix given by \em x.
+       * \param x The matrix to be referenced.
+       * \return A reference to the calling vector.
+       * */
+      inline Vector<Ref,AT>& operator&=(const Matrix<General,Ref,Ref,AT> &A);
 
       /*! \brief Assignment operator
        *
-       * Copies the vector given by \em x by calling operator<<().
+       * Copies the vector given by \em x.
        * \param x The vector to be assigned. 
        * \return A reference to the calling vector.
-       * \remark To call operator>>() by default, define FMATVEC_NO_DEEP_ASSIGNMENT
-       * \sa operator<<(), operator>>()
        * */
       inline Vector<Ref,AT>& operator=(const Vector<Ref,AT> &x);
 
+      /*! \brief Assignment operator
+       *
+       * Copies the vector given by \em x.
+       * \param x The vector to be assigned.
+       * \return A reference to the calling vector.
+       * */
       template <class Row>
       inline Vector<Ref,AT>& operator=(const Vector<Row,AT> &x);
 
@@ -404,25 +405,8 @@ namespace fmatvec {
       return *this;
     }
 
-  template <class AT> template<class Row>
-    inline Vector<Ref,AT>& Vector<Ref,AT>::operator<<(const Vector<Row,AT> &x) { 
-
-      if(m!=x.size()) {
-        m = x.size(); 
-        n = 1;
-        lda = m;
-        tp = false;
-        memory.resize(m);
-        ele = (AT*)memory.get();
-      }
-
-      deepCopy(x);
-
-      return *this;
-    }
-
   template <class AT>
-    inline Vector<Ref,AT>& Vector<Ref,AT>::operator>>(const Vector<Ref,AT> &x) { 
+    inline Vector<Ref,AT>& Vector<Ref,AT>::operator&=(const Vector<Ref,AT> &x) {
 
       m = x.m; 
       n = 1;
@@ -435,7 +419,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Vector<Ref,AT>& Vector<Ref,AT>::operator>>(const Matrix<General,Ref,Ref,AT> &A) { 
+    inline Vector<Ref,AT>& Vector<Ref,AT>::operator&=(const Matrix<General,Ref,Ref,AT> &A) {
 
 #ifndef FMATVEC_NO_SIZE_CHECK
       assert(A.cols() == 1);
