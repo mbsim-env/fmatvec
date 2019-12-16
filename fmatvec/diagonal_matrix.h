@@ -83,24 +83,27 @@ namespace fmatvec {
 
 	/*! \brief Copy Constructor
 	 *
-	 * Constructs a reference to the diagonal matrix \em A.
-	 * \attention The physical memory of the matrix \em A 
-	 * will not be copied, only referenced.
-	 * \param A The matrix that will be referenced.
+	 * Constructs a copy of the diagonal matrix \em A.
+	 * \param A The matrix that will be copied.
 	 * */
-	Matrix(const Matrix<Diagonal,Ref,Ref,AT> &A) : memory(A.memory), ele(A.ele) ,n(A.n) {
+	Matrix(const Matrix<Diagonal,Ref,Ref,AT> &A) : memory(A.n), ele((AT*)memory.get()) ,n(A.n) {
+          deepCopy(A);
+	}
+
+	/*! \brief Copy Constructor
+	 *
+	 * Constructs a copy of the diagonal matrix \em A.
+	 * \param A The matrix that will be copied.
+	 * */
+        template<class Type, class Row, class Col>
+	Matrix(const Matrix<Type,Row,Col,AT> &A) : memory(A.rows()), ele((AT*)memory.get()) ,n(A.rows()) {
+          assert(A.rows() == A.cols());
+          deepCopy(A);
 	}
 
 	/*! \brief Destructor. 
 	 * */
 	~Matrix() = default;
-
-        Matrix<Diagonal,Ref,Ref,AT>& resize() { 
-          n = 0;
-          memory.resize(0);
-          ele = 0;
-          return *this;
-        }
 
         Matrix<Diagonal,Ref,Ref,AT>& resize(int n_, Noinit) { 
           n = n_;
@@ -112,13 +115,17 @@ namespace fmatvec {
         Matrix<Diagonal,Ref,Ref,AT>& resize(int n, Init ini=INIT, const AT &a=AT()) { resize(n,Noinit()).init(a); }
         Matrix<Diagonal,Ref,Ref,AT>& resize(int n, Eye ini, const AT &a=1) { resize(n,Noinit()).init(ini,a); }
  
-	/*! \brief Reference operator
+	/*! \brief Assignment operator
 	 *
-	 * References the diagoanl matrix given by \em A.
-	 * \param A The matrix to be referenced. 
+	 * Copies the diagonal matrix given by \em A.
+	 * \param A The matrix to be assigned. 
 	 * \return A reference to the calling matrix.
 	 * */
-	inline Matrix<Diagonal,Ref,Ref,AT>& operator&=(const Matrix<Diagonal,Ref,Ref,AT> &A);
+        inline Matrix<Diagonal,Ref,Ref,AT>& operator=(const Matrix<Diagonal,Ref,Ref,AT> &A) {
+          assert(n == A.n);
+          deepCopy(A);
+          return *this;
+        }
 
 	/*! \brief Assignment operator
 	 *
@@ -126,7 +133,35 @@ namespace fmatvec {
 	 * \param A The matrix to be assigned. 
 	 * \return A reference to the calling matrix.
 	 * */
-	inline Matrix<Diagonal,Ref,Ref,AT>& operator=(const Matrix<Diagonal,Ref,Ref,AT> &A);
+        template<class Type, class Row, class Col>
+	inline Matrix<Diagonal,Ref,Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
+          assert(n == A.rows());
+          assert(n == A.cols());
+          deepCopy(A);
+          return *this;
+        }
+
+	/*! \brief Reference operator
+	 *
+	 * References the diagoanl matrix given by \em A.
+	 * \param A The matrix to be referenced. 
+	 * \return A reference to the calling matrix.
+	 * */
+	inline Matrix<Diagonal,Ref,Ref,AT>& operator&=(const Matrix<Diagonal,Ref,Ref,AT> &A) {
+          n=A.n;
+          memory = A.memory;
+          ele = A.ele;
+          return *this;
+        }
+
+        /*! \brief Matrix replacement
+	 *
+	 * Copies the diagonal matrix given by \em A.
+	 * \param A The matrix to be copied. 
+	 * \return A reference to the calling matrix.
+	 * */
+        template<class Type, class Row, class Col>
+	inline Matrix<Diagonal,Ref,Ref,AT>& replace(const Matrix<Type,Row,Col,AT> &A);
 
 	Matrix<Diagonal,Ref,Ref,AT>(const std::vector<std::vector<AT>> &A);
 
@@ -136,19 +171,15 @@ namespace fmatvec {
 	 * \param i The i-th row of the matrix
 	 * \param j The j-th column of the matrix
 	 * \return A reference to the element A(i,j).
-	 * \remark The bounds are checked by default. 
-	 * To change this behavior, define
-	 * FMATVEC_NO_BOUNDS_CHECK.
+	 * \remark The bounds are checked in debug mode. 
 	 * \sa operator()(int,int) const
 	 * */
 	const AT& operator()(int i, int j) const {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	  assert(i>=0);
 	  assert(j>=0);
 	  assert(i<n);
 	  assert(j<n);
-#endif
 
 	  return e(i,j);
 	};
@@ -159,10 +190,8 @@ namespace fmatvec {
 	 * */
 	const AT& operator()(int i) const {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	  assert(i>=0);
 	  assert(i<n);
-#endif
 
 	  return e(i);
 	};
@@ -172,17 +201,13 @@ namespace fmatvec {
 	 * Returns a reference to the element in the i-th row and the i-th column. 
 	 * \param i The i-th row and column of the matrix
 	 * \return A reference to the element A(i,i).
-	 * \remark The bounds are checked by default. 
-	 * To change this behavior, define
-	 * FMATVEC_NO_BOUNDS_CHECK.
+	 * \remark The bounds are checked in debug mode. 
 	 * \sa operator()(int) const
 	 * */
 	AT& operator()(int i) {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	  assert(i>=0);
 	  assert(i<n);
-#endif
 
 	  return e(i);
 	};
@@ -246,13 +271,6 @@ namespace fmatvec {
     return  CblasColMajor;
 	};
 
-	/*! \brief Matrix duplicating.
-	 *
-	 * The calling matrix returns a \em deep copy of itself.  
-	 * \return The duplicate.
-	 * */
-	Matrix<Diagonal,Ref,Ref,AT> copy() const;
-
 	/*! \brief Initialization.
 	 *
 	 * Initializes all elements of the calling matrix with 
@@ -272,27 +290,14 @@ namespace fmatvec {
         operator std::vector<std::vector<AT> >() const;
     };
 
-  template <class AT>
-    Matrix<Diagonal,Ref,Ref,AT>& Matrix<Diagonal,Ref,Ref,AT>::operator&=(const Matrix<Diagonal,Ref,Ref,AT> &A) {
-      n=A.n;
-      memory = A.memory;
-      ele = A.ele;
+  template <class AT> template< class Type, class Row, class Col>
+    Matrix<Diagonal,Ref,Ref,AT>& Matrix<Diagonal,Ref,Ref,AT>::replace(const Matrix<Type,Row,Col,AT> &A) {
 
-      return *this;
-    }
-
-  template <class AT>
-    Matrix<Diagonal,Ref,Ref,AT>& Matrix<Diagonal,Ref,Ref,AT>::operator=(const Matrix<Diagonal,Ref,Ref,AT> &A) {
-      if(!ele) {
+      if(n!=A.n) {
 	n = A.n;
 	memory.resize(n);
 	ele = (AT*)memory.get();
       } 
-      else {
-#ifndef FMATVEC_NO_SIZE_CHECK
-        assert(n == A.n);
-#endif
-      }
 
       deepCopy(A);
 
@@ -319,16 +324,6 @@ namespace fmatvec {
       for(int i=0; i<rows(); i++) 
         e(i) = val;
       return *this;
-    }
-
-  template <class AT>
-    Matrix<Diagonal,Ref,Ref,AT> Matrix<Diagonal,Ref,Ref,AT>::copy() const {
-
-      Matrix<Diagonal,Ref,Ref,AT> A(n);
-
-      A.deepCopy(*this);
-
-      return A;
     }
 
   template <class AT>

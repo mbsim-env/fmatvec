@@ -56,7 +56,20 @@ namespace fmatvec {
       explicit SquareMatrix(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Var,Var,AT>(m,m,ini,a) { } 
       explicit SquareMatrix(int m, Eye ini, const AT &a=1) : Matrix<General,Var,Var,AT>(m,m,ini,a) { } 
 
-      SquareMatrix(const char *str) : Matrix<General,Var,Var,AT>(str) { }
+      /*! \brief Copy Constructor
+       *
+       * See SquareMatrix(const SquareMatrix<AT>&) 
+       * */
+      SquareMatrix(const SquareMatrix<Var,AT> &A) : Matrix<General,Var,Var,AT>(A) {
+      }
+
+      /*! \brief Copy Constructor
+       *
+       * See SquareMatrix(const SquareMatrix<AT>&) 
+       * */
+      template<class Row>
+      SquareMatrix(const SquareMatrix<Row,AT> &A) : Matrix<General,Var,Var,AT>(A) {
+      }
 
       /*! \brief Copy Constructor
        *
@@ -64,16 +77,10 @@ namespace fmatvec {
        * */
       template<class Type, class Row, class Col>
       explicit SquareMatrix(const Matrix<Type,Row,Col,AT>&  A) : Matrix<General,Var,Var,AT>(A) {
+	assert(A.rows() == A.cols()); 
       }
 
-      template<class Row>
-      SquareMatrix(const SquareMatrix<Row,AT> &A) : Matrix<General,Var,Var,AT>(A) {
-      }
-
-      SquareMatrix<Var,AT>& resize() {
-        Matrix<General,Var,Var,AT>::resize();
-        return *this;
-      }
+      SquareMatrix(const char *str) : Matrix<General,Var,Var,AT>(str) { }
 
       SquareMatrix<Var,AT>& resize(int m, Noinit) {
         Matrix<General,Var,Var,AT>::resize(m,m,Noinit());
@@ -101,6 +108,17 @@ namespace fmatvec {
         if(n!=m)
           throw std::runtime_error("Cannot resize a square matrix with different dimensions for rows and columns.");
         resize(m);
+      }
+
+      /*! \brief Assignment operator
+       *
+       * Copies the matrix given by \em A.
+       * \param A The matrix to be assigned.
+       * \return A reference to the calling matrix.
+       * */
+      SquareMatrix<Var,AT>& operator=(const SquareMatrix<Var,AT> &A) {
+	Matrix<General,Var,Var,AT>::operator=(A);
+	return *this;
       }
 
       /*! \brief Assignment operator

@@ -51,9 +51,7 @@ namespace fmatvec {
   template <class AT1, class AT2>
   inline Vector<Ref, typename OperatorResult<AT1, AT2>::Type> operator+(const Vector<Ref, AT1> &x, const Vector<Ref, AT2> &y) {
 
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(y.size() == x.size());
-#endif
 
     Vector<Ref, typename OperatorResult<AT1, AT2>::Type> z(x.size(), NONINIT);
 
@@ -80,36 +78,28 @@ namespace fmatvec {
   // Vector-Vector
   template <class Row1, class Row2, class Row3, class AT1, class AT2, class AT3>
   inline void add(const Vector<Row1, AT1> &a1, const Vector<Row2, AT2> &a2, Vector<Row3, AT3> &a3) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(a1.size() == a2.size());
-#endif
     for (int i = 0; i < a1.size(); i++)
       a3.e(i) = a1.e(i) + a2.e(i);
   }
 
   template <class Row1, class Row2, class AT>
   inline void add(Vector<Row1, AT> &a1, const Vector<Row2, AT> &a2) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(a1.size() == a2.size());
-#endif
     for (int i = 0; i < a1.size(); i++)
       a1.e(i) += a2.e(i);
   }
 
   template <class Row1, class Row2, class Row3, class AT1, class AT2>
   inline void sub(const Vector<Row1, AT1> &a1, const Vector<Row2, AT2> &a2, Vector<Row3, typename fmatvec::OperatorResult<AT1, AT2>::Type> &a3) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(a1.size() == a2.size());
-#endif
     for (int i = 0; i < a1.size(); i++)
       a3.e(i) = a1.e(i) - a2.e(i);
   }
 
   template <class Row1, class Row2, class AT1, class AT2>
   inline void sub(Vector<Row1, AT1> &a1, const Vector<Row2, AT2> &a2) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(a1.size() == a2.size());
-#endif
     for (int i = 0; i < a1.size(); i++)
       a1.e(i) -= a2.e(i);
   }
@@ -181,36 +171,28 @@ namespace fmatvec {
   // RowVector-Vector
   template <class Col1, class Col2, class Col3, class AT>
   inline void add(const RowVector<Col1, AT> &a1, const RowVector<Col2, AT> &a2, RowVector<Col3, AT> &a3) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(a1.size() == a2.size());
-#endif
     for (int i = 0; i < a1.size(); i++)
       a3.e(i) = a1.e(i) + a2.e(i);
   }
 
   template <class Col1, class Col2, class AT>
   inline void add(RowVector<Col1, AT> &a1, const RowVector<Col2, AT> &a2) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(a1.size() == a2.size());
-#endif
     for (int i = 0; i < a1.size(); i++)
       a1.e(i) += a2.e(i);
   }
 
   template <class Col1, class Col2, class Col3, class AT1, class AT2>
   inline void sub(const RowVector<Col1, AT1> &a1, const RowVector<Col2, AT2> &a2, RowVector<Col3, typename fmatvec::OperatorResult<AT1, AT2>::Type> &a3) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(a1.size() == a2.size());
-#endif
     for (int i = 0; i < a1.size(); i++)
       a3.e(i) = a1.e(i) - a2.e(i);
   }
 
   template <class Col1, class Col2, class AT1, class AT2>
   inline void sub(RowVector<Col1, AT1> &a1, const RowVector<Col2, AT2> &a2) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(a1.size() == a2.size());
-#endif
     for (int i = 0; i < a1.size(); i++)
       a1.e(i) -= a2.e(i);
   }
@@ -282,10 +264,8 @@ namespace fmatvec {
   // Matrix-Matrix
   template <class Type1, class Row1, class Col1, class Type2, class Row2, class Col2, class Type3, class Row3, class Col3, class AT1, class AT2, class AT3>
   inline void add(const Matrix<Type1, Row1, Col1, AT1> &A1, const Matrix<Type2, Row2, Col2, AT2> &A2, Matrix<Type3, Row3, Col3, AT3> &A3) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A1.rows() == A2.rows());
     assert(A1.cols() == A2.cols());
-#endif
     for (int i = 0; i < A1.rows(); i++)
       for (int j = 0; j < A2.cols(); j++)
         A3.e(i, j) = A1.e(i, j) + A2.e(i, j);
@@ -293,9 +273,7 @@ namespace fmatvec {
 
   template <class Row1, class Row2, class Row3, class AT>
   inline void add(const Matrix<Symmetric, Row1, Row1, AT> &A1, const Matrix<Symmetric, Row2, Row2, AT> &A2, Matrix<Symmetric, Row3, Row3, AT> &A3) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A1.size() == A2.size());
-#endif
     for (int i = 0; i < A1.size(); i++)
       for (int j = i; j < A2.size(); j++)
         A3.ej(i, j) = A1.ej(i, j) + A2.ej(i, j);
@@ -303,19 +281,15 @@ namespace fmatvec {
 
   template <class Row1, class Row2, class Row3, class AT>
   inline void add(const Matrix<Diagonal, Row1, Row1, AT> &A1, const Matrix<Diagonal, Row2, Row2, AT> &A2, Matrix<Diagonal, Row3, Row3, AT> &A3) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A1.size() == A2.size());
-#endif
     for (int i = 0; i < A3.size(); i++)
       A3.e(i) = A1.e(i) + A2.e(i);
   }
 
   template <class Type1, class Row1, class Col1, class Type2, class Row2, class Col2, class AT>
   inline void add(Matrix<Type1, Row1, Col1, AT> &A1, const Matrix<Type2, Row2, Col2, AT> &A2) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A1.rows() == A2.rows());
     assert(A1.cols() == A2.cols());
-#endif
     for (int i = 0; i < A1.rows(); i++)
       for (int j = 0; j < A2.cols(); j++)
         A1.e(i, j) += A2.e(i, j);
@@ -323,9 +297,7 @@ namespace fmatvec {
 
   template <class Row1, class Row2, class AT>
   inline void add(Matrix<Symmetric, Row1, Row1, AT> &A1, const Matrix<Symmetric, Row2, Row2, AT> &A2) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A1.size() == A2.size());
-#endif
     for (int i = 0; i < A1.size(); i++)
       for (int j = i; j < A2.size(); j++)
         A1.ej(i, j) += A2.ej(i, j);
@@ -333,10 +305,8 @@ namespace fmatvec {
 
   template <class Type1, class Row1, class Col1, class Type2, class Row2, class Col2, class Type3, class Row3, class Col3, class AT1, class AT2>
   inline void sub(const Matrix<Type1, Row1, Col1, AT1> &A1, const Matrix<Type2, Row2, Col2, AT2> &A2, Matrix<Type3, Row3, Col3, typename fmatvec::OperatorResult<AT1, AT2>::Type> &A3) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A1.rows() == A2.rows());
     assert(A1.cols() == A2.cols());
-#endif
     for (int i = 0; i < A1.rows(); i++)
       for (int j = 0; j < A2.cols(); j++)
         A3.e(i, j) = A1.e(i, j) - A2.e(i, j);
@@ -344,9 +314,7 @@ namespace fmatvec {
 
   template <class Row1, class Row2, class Row3, class AT1, class AT2>
   inline void sub(const Matrix<Symmetric, Row1, Row1, AT1> &A1, const Matrix<Symmetric, Row2, Row2, AT2> &A2, Matrix<Symmetric, Row3, Row3, typename fmatvec::OperatorResult<AT1, AT2>::Type> &A3) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A1.size() == A2.size());
-#endif
     for (int i = 0; i < A1.size(); i++)
       for (int j = i; j < A2.size(); j++)
         A3.ej(i, j) = A1.ej(i, j) - A2.ej(i, j);
@@ -354,19 +322,15 @@ namespace fmatvec {
 
   template <class Row1, class Row2, class Row3, class AT1, class AT2>
   inline void sub(const Matrix<Diagonal, Row1, Row1, AT1> &A1, const Matrix<Diagonal, Row2, Row2, AT2> &A2, Matrix<Diagonal, Row3, Row3, typename fmatvec::OperatorResult<AT1, AT2>::Type> &A3) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A1.size() == A2.size());
-#endif
     for (int i = 0; i < A3.size(); i++)
       A3.e(i) = A1.e(i) - A2.e(i);
   }
 
   template <class Type1, class Row1, class Col1, class Type2, class Row2, class Col2, class AT1, class AT2>
   inline void sub(Matrix<Type1, Row1, Col1, AT1> &A1, const Matrix<Type2, Row2, Col2, AT2> &A2) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A1.rows() == A2.rows());
     assert(A1.cols() == A2.cols());
-#endif
     for (int i = 0; i < A1.rows(); i++)
       for (int j = 0; j < A2.cols(); j++)
         A1.e(i, j) -= A2.e(i, j);
@@ -374,9 +338,7 @@ namespace fmatvec {
 
   template <class Row1, class Row2, class AT1, class AT2>
   inline void sub(Matrix<Symmetric, Row1, Row1, AT1> &A1, const Matrix<Symmetric, Row2, Row2, AT2> &A2) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A1.size() == A2.size());
-#endif
     for (int i = 0; i < A1.size(); i++)
       for (int j = i; j < A2.size(); j++)
         A1.ej(i, j) -= A2.ej(i, j);
@@ -749,9 +711,7 @@ namespace fmatvec {
   //////      
   template <class Type1, class Row1, class Col1, class Row2, class Row3, class AT1, class AT2>
   inline void mult(const Matrix<Type1, Row1, Col1, AT1> &A, const Vector<Row2, AT2> &x, Vector<Row3, typename fmatvec::OperatorResult<AT1, AT2>::Type> &y) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.cols() == x.size());
-#endif
     for (int i = 0; i < y.size(); i++) {
       y.e(i) = 0;
       for (int j = 0; j < x.size(); j++)
@@ -761,9 +721,7 @@ namespace fmatvec {
 
   template <class Row1, class Row2, class Row3, class AT1, class AT2>
   inline void mult(const Matrix<Symmetric, Row1, Row1, AT1> &A, const Vector<Row2, AT2> &x, Vector<Row3, typename fmatvec::OperatorResult<AT1, AT2>::Type> &y) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.cols() == x.size());
-#endif
     for (int i = 0; i < y.size(); i++) {
       y.e(i) = 0;
       for (int j = 0; j < i; j++)
@@ -814,9 +772,7 @@ namespace fmatvec {
   // RowVector-Matrix
   template <class Col1, class Type2, class Row2, class Col2, class Type3, class Col3, class AT1, class AT2>
   inline void mult(const RowVector<Col1, AT1> &x, const Matrix<Type2, Row2, Col2, AT2> &A, RowVector<Col3, typename fmatvec::OperatorResult<AT1, AT2>::Type> &y) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == A.rows());
-#endif
     for (int i = 0; i < y.size(); i++) {
       y.e(i) = 0;
       for (int j = 0; j < x.size(); j++)
@@ -826,9 +782,7 @@ namespace fmatvec {
 
   template <class Col1, class Row2, class Col3, class AT1, class AT2>
   inline void mult(const RowVector<Col1, AT1> &x, const Matrix<Symmetric, Row2, Row2, AT2> &A, RowVector<Col3, typename fmatvec::OperatorResult<AT1, AT2>::Type> &y) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == A.rows());
-#endif
     for (int i = 0; i < y.size(); i++) {
       y.e(i) = 0;
       for (int j = 0; j < i; j++)
@@ -866,9 +820,7 @@ namespace fmatvec {
   // Matrix-Matrix
   template <class Type1, class Row1, class Col1, class Type2, class Row2, class Col2, class Type3, class Row3, class Col3, class AT1, class AT2>
   inline void mult(const Matrix<Type1, Row1, Col1, AT1> &A1, const Matrix<Type2, Row2, Col2, AT2> &A2, Matrix<Type3, Row3, Col3, typename fmatvec::OperatorResult<AT1, AT2>::Type> &A3) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A1.cols() == A2.rows());
-#endif
     for (int i = 0; i < A3.rows(); i++) {
       for (int k = 0; k < A3.cols(); k++) {
         A3.e(i, k) = 0;
@@ -879,9 +831,7 @@ namespace fmatvec {
   }
   template <class Row1, class Type2, class Row2, class Col2, class Type3, class Row3, class Col3, class AT1, class AT2>
   inline void mult(const Matrix<Symmetric, Row1, Row1, AT1> &A1, const Matrix<Type2, Row2, Col2, AT2> &A2, Matrix<Type3, Row3, Col3, typename fmatvec::OperatorResult<AT1, AT2>::Type> &A3) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A1.size() == A2.rows());
-#endif
     for (int i = 0; i < A3.rows(); i++) {
       for (int k = 0; k < A3.cols(); k++) {
         A3.e(i, k) = 0;
@@ -894,9 +844,7 @@ namespace fmatvec {
   }
   template <class Row1, class Row2, class Row3, class AT1, class AT2>
   inline void mult(const Matrix<Diagonal, Row1, Row1, AT1> &A1, const Matrix<Diagonal, Row2, Row2, AT2> &A2, Matrix<Diagonal, Row3, Row3, typename fmatvec::OperatorResult<AT1, AT2>::Type> &A3) {
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A1.size() == A2.size());
-#endif
     for (int i = 0; i < A3.size(); i++)
       A3.e(i) = A1.e(i) * A2.e(i);
   }
@@ -1128,9 +1076,7 @@ namespace fmatvec {
   template <class Col, class Row, class AT1, class AT2>
   typename OperatorResult<AT1, AT2>::Type operator*(const RowVector<Col, AT1> &x, const Vector<Row, AT2> &y) {
 
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
-#endif
 
     typename OperatorResult<AT1, AT2>::Type res = 0;
 
@@ -1148,9 +1094,7 @@ namespace fmatvec {
   template <class Row, class AT>
   AT scalarProduct(const Vector<Row, AT> &x, const Vector<Row, AT> &y) {
 
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == y.size());
-#endif
 
     AT res = 0;
 
@@ -1168,10 +1112,8 @@ namespace fmatvec {
   template <class Row1, class Row2, class AT1, class AT2>
   Vector<Fixed<3>, typename OperatorResult<AT1, AT2>::Type> crossProduct(const Vector<Row1, AT1> &x, const Vector<Row2, AT2> &y) {
 
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() == 3);
     assert(y.size() == 3);
-#endif
 
     Vector<Fixed<3>, typename OperatorResult<AT1, AT2>::Type> z(3, NONINIT);
 
@@ -1190,11 +1132,9 @@ namespace fmatvec {
   template <class Row, class AT>
   double tripleProduct(const Vector<Row, AT> &a, const Vector<Row, AT> &x, const Vector<Row, AT> &y) {
 
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(a.size() == 3);
     assert(x.size() == 3);
     assert(y.size() == 3);
-#endif
 
     return a.e(0) * (x.e(1) * y.e(2) - x.e(2) * y.e(1)) + a.e(1) * (x.e(2) * y.e(0) - x.e(0) * y.e(2)) + a.e(2) * (x.e(0) * y.e(1) - x.e(1) * y.e(0));
   }
@@ -1469,7 +1409,7 @@ namespace fmatvec {
   template <class AT>
   RowVector<Ref, AT> trans(const Vector<Ref, AT> &x) {
 
-    return RowVector<Ref, AT>(x.m, x.lda, x.tp ? false : true, x.memory, x.ele).copy();
+    return RowVector<Ref, AT>(x.m, x.lda, x.tp ? false : true, x.memory, x.ele);
   }
 
   /*! \brief Transpose of a rowvector.
@@ -1482,7 +1422,7 @@ namespace fmatvec {
   template <class AT>
   Vector<Ref, AT> trans(const RowVector<Ref, AT> &x) {
 
-    return Vector<Ref, AT>(x.n, x.lda, x.tp ? false : true, x.memory, x.ele).copy();
+    return Vector<Ref, AT>(x.n, x.lda, x.tp ? false : true, x.memory, x.ele);
   }
 
   /*! \brief Transpose of a matrix.
@@ -1496,7 +1436,7 @@ namespace fmatvec {
   template <class AT>
   Matrix<General, Ref, Ref, AT> trans(const Matrix<General, Ref, Ref, AT> &A) {
 
-    return Matrix<General, Ref, Ref, AT>(A.n, A.m, A.lda, A.tp ? false : true, A.memory, A.ele).copy();
+    return Matrix<General, Ref, Ref, AT>(A.n, A.m, A.lda, A.tp ? false : true, A.memory, A.ele);
   }
 
   /*! \brief Transpose of a matrix.
@@ -1510,7 +1450,7 @@ namespace fmatvec {
   template <class AT>
   SquareMatrix<Ref, AT> trans(const SquareMatrix<Ref, AT> &A) {
 
-    return SquareMatrix<Ref, AT>(A.n, A.lda, A.tp ? false : true, A.memory, A.ele).copy();
+    return SquareMatrix<Ref, AT>(A.n, A.lda, A.tp ? false : true, A.memory, A.ele);
   }
 
   template <class Type, class Row, class Col, class AT>
@@ -1664,9 +1604,7 @@ namespace fmatvec {
   template <class Row, class AT>
   AT max(const Vector<Row, AT> &x) {
 
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() > 0);
-#endif
     AT maximum = x.e(0);
     for (int i = 1; i < x.size(); i++) {
       if (x.e(i) > maximum)
@@ -1683,9 +1621,7 @@ namespace fmatvec {
   template <class Row, class AT>
   int maxIndex(const Vector<Row, AT> &x) {
 
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() > 0);
-#endif
     AT maximum = x.e(0);
     int index = 0;
     for (int i = 1; i < x.size(); i++) {
@@ -1705,9 +1641,7 @@ namespace fmatvec {
   template <class Row, class AT>
   AT min(const Vector<Row, AT> &x) {
 
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() > 0);
-#endif
     AT minimum = x.e(0);
     for (int i = 1; i < x.size(); i++) {
       if (x.e(i) < minimum)
@@ -1724,9 +1658,7 @@ namespace fmatvec {
   template <class Row, class AT>
   int minIndex(const Vector<Row, AT> &x) {
 
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(x.size() > 0);
-#endif
     AT minimum = x.e(0);
     int index = 0;
     for (int i = 1; i < x.size(); i++) {
@@ -1748,12 +1680,10 @@ namespace fmatvec {
   template <class AT>
   Matrix<General, Ref, Ref, AT> bubbleSort(const Matrix<General, Ref, Ref, AT> &A_, int PivotCol) {
 
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A_.rows() > 0);
     assert(A_.cols() > 0);
     assert(A_.cols() > PivotCol);
-#endif
-    Matrix<General, Ref, Ref, AT> A = A_.copy();
+    Matrix<General, Ref, Ref, AT> A = A_;
     int i, j, N;
     RowVector<Ref, AT> tmp(A.cols(), NONINIT);
     N = A.rows();
@@ -1823,65 +1753,11 @@ namespace fmatvec {
    */
   template <class AT>
   Matrix<General, Ref, Ref, AT> quickSortMedian(const Matrix<General, Ref, Ref, AT> &A_, int PivotCol) {
-    Matrix<General, Ref, Ref, AT> A = A_.copy();
+    Matrix<General, Ref, Ref, AT> A = A_;
     int N = A.rows();
     RowVector<Ref, AT> tmp(A.cols(), NONINIT);
     quicksortmedian_intern(A, PivotCol, tmp, 0, N - 1);
     return A;
-  }
-
-  /*! \brief Count nonzero elements.
-   *
-   * This function counts the nonzero elements of a matrix. ALL diagonal
-   * elements are treated as NONZERO!!! (See the storage format for sparse matrix)
-   * \return The number of nonzero or diagonal elemets.
-   * */
-  template <class AT> int countElements(const SquareMatrix<Ref, AT> &A) {
-    int k = 0;
-    for (int i = 0; i < A.size(); i++) {
-      for (int j = 0; j < A.size(); j++) {
-        if (fabs(A(i, j)) > 1e-16 || i == j) {
-          k++;
-        }
-      }
-    }
-    return k;
-  }
-
-  /*! \brief Count nonzero elements of the low triangular part of a symmetric matrix.
-   *
-   * This function counts the nonzero elements of the low triangular part of a symmetric matrix. ALL diagonal
-   * elements are treated as NONZERO!!! (See the storage format for sparse matrix)
-   * \return The number of nonzero or diagonal elemets.
-   * */
-  template <class AT> int countElementsLT(const Matrix<Symmetric,Ref,Ref,AT> &A) {
-    int k = 0;
-    for (int j = 0; j < A.cols(); j++) {
-      for (int i = j; i < A.rows(); i++) {
-          if (fabs(A(i, j)) > 1e-17 || i == j) {
-          k++;
-        }
-      }
-    }
-    return k;
-  }
-
-  /*! \brief Count nonzero elements of the low triangular part of a symmetric matrix.
-   *
-   * This function counts the nonzero elements of the low triangular part of a symmetric matrix. ALL diagonal
-   * elements are treated as NONZERO!!! (See the storage format for sparse matrix)
-   * \return The number of nonzero or diagonal elemets.
-   * */
-  template <class AT> int countElementsLT(const Matrix<Symmetric,Var,Var,AT> &A) {
-    int k = 0;
-    for (int j = 0; j < A.cols(); j++) {
-      for (int i = j; i < A.rows(); i++) {
-          if (fabs(A(i, j)) > 1e-17 || i == j) {
-          k++;
-        }
-      }
-    }
-    return k;
   }
 
   template <class Row, class Col, class AT>

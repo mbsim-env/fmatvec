@@ -406,10 +406,8 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
   template <int size>
   Vector<Fixed<size>, double> slvLU(const SquareMatrix<Fixed<size>, double> &A, const Vector<Fixed<size>, double> &b, int & info) {
 
-#ifndef FMATVEC_NO_VOID_CHECK
     if (size == 0)
       return b;
-#endif
 
     int ipiv[size];
 

@@ -50,15 +50,6 @@ namespace fmatvec {
     public:
       typedef AT value_type;
 
-//      template<class Ini=All<AT> >
-//      Matrix(Ini ini=All<AT>()) {
-//        init(ini);
-//      }
-//      template<class Ini=All<AT> >
-//      Matrix(int m_, int n_, Ini ini=All<AT>()) {
-//        init(ini);
-//      }
-
       explicit Matrix(Noinit ini) { }
       explicit Matrix(Init ini=INIT, const AT &a=AT()) { init(a); }
       explicit Matrix(Eye ini, const AT &a=1) { init(ini,a); }
@@ -66,30 +57,71 @@ namespace fmatvec {
       explicit Matrix(int m, int n, Init ini, const AT &a=AT()) { assert(m==M && n==M); init(a); }
       explicit Matrix(int m, int n, Eye ini, const AT &a=1) { assert(m==M && n==M); init(ini,a); }
 
-      explicit Matrix(const Matrix<General,Fixed<M>,Fixed<M>,AT>&  A) {
+      /*! \brief Copy Constructor
+       *
+       * Constructs a copy of the matrix \em A.
+       * \param A The matrix that will be copied.
+       * */
+      Matrix(const Matrix<Symmetric,Fixed<M>,Fixed<M>,AT> &A) {
 	deepCopy(A);
       }
 
+      /*! \brief Copy Constructor
+       *
+       * Constructs a copy of the matrix \em A.
+       * \param A The matrix that will be copied.
+       * */
       template<class Row>
       Matrix(const Matrix<Symmetric,Row,Row,AT> &A) {
-
-#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(A.size() == M); 
-#endif
-
 	deepCopy(A);
       }
 
+      /*! \brief Copy Constructor
+       *
+       * Constructs a copy of the matrix \em A.
+       * \param A The matrix that will be copied.
+       * */
       template<class Type, class Row, class Col>
       explicit Matrix(const Matrix<Type,Row,Col,AT> &A) {
-
-#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(A.rows() == M); 
 	assert(A.cols() == M);
-#endif
-
 	deepCopy(A);
       }
+
+      /*! \brief Assignment operator
+       *
+       * Copies the symmetric matrix given by \em A.
+       * \param A The matrix to be assigned.
+       * \return A reference to the calling matrix.
+       * */
+      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& operator=(const Matrix<Symmetric,Fixed<M>,Fixed<M>,AT> &A) {
+        deepCopy(A);
+        return *this;
+      }
+
+      /*! \brief Assignment operator
+       *
+       * Copies the symmetric matrix given by \em A.
+       * \param A The matrix to be assigned.
+       * \return A reference to the calling matrix.
+       * */
+      template<class Type, class Row, class Col>
+      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
+        assert(A.rows() == A.cols());
+        assert(M == A.rows());
+        deepCopy(A);
+        return *this;
+      }
+
+      /*! \brief Matrix replacement
+       *
+       * Copies the matrix given by \em A.
+       * \param A The matrix to be copied. 
+       * \return A reference to the calling matrix.
+       * */
+      template<class Type, class Row, class Col>
+      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& replace(const Matrix<Type,Row,Col,AT> &A) { return operator=(A); }
 
       //! Resize a fixed matrix
       //! Do nothing for the fixed dimension and throw for any other dimension.
@@ -109,18 +141,14 @@ namespace fmatvec {
        * \param i The i-th row of the matrix
        * \param j The j-th column of the matrix
        * \return A reference to the element A(i,j).
-       * \remark The bounds are checked by default. 
-       * To change this behavior, define
-       * FMATVEC_NO_BOUNDS_CHECK.
+       * \remark The bounds are checked in debug mode.
        * \sa operator()(int,int) const
        * */
       AT& operator()(int i, int j) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(j>=0);
 	assert(i<M);
 	assert(j<M);
-#endif
 
 	return e(i,j);
       };
@@ -130,12 +158,10 @@ namespace fmatvec {
        * See operator()(int,int) 
        * */
       const AT& operator()(int i, int j) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(j>=0);
 	assert(i<M);
 	assert(j<M);
-#endif
 
 	return e(i,j);
       };

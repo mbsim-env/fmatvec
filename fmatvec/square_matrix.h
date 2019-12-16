@@ -79,6 +79,31 @@ namespace fmatvec {
       explicit SquareMatrix(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Ref,Ref,AT>(m,m,ini,a) { } 
       explicit SquareMatrix(int m, Eye ini, const AT &a=1) : Matrix<General,Ref,Ref,AT>(m,m,ini,a) { } 
 
+      /*! \brief Copy Constructor
+       *
+       * Constructs a copy of the matrix \em A.
+       * \param A The matrix that will copied.
+       * */
+      SquareMatrix(const SquareMatrix<Ref,AT>&  A) : Matrix<General,Ref,Ref,AT>(A) { }
+
+      /*! \brief Copy Constructor
+       *
+       * Constructs a copy of the matrix \em A.
+       * \param A The matrix that will copied.
+       * */
+      template<class Row>
+      SquareMatrix(const SquareMatrix<Row,AT>&  A) : Matrix<General,Ref,Ref,AT>(A) { }
+
+      /*! \brief Copy Constructor
+       *
+       * Constructs a copy of the matrix \em A.
+       * \param A The matrix that will copied.
+       * */
+      template<class Type, class Row, class Col>
+      explicit SquareMatrix(const Matrix<Type,Row,Col,AT> &A) : Matrix<General,Ref,Ref,AT>(A)  {
+        assert(A.rows() == A.cols());
+      }
+     
       /*! \brief Regular Constructor
        *
        * Constructs a matrix of size m x m with the pyhsical
@@ -89,34 +114,6 @@ namespace fmatvec {
       explicit SquareMatrix(int m, AT* ele) : Matrix<General,Ref,Ref,AT>(m,m,ele) { }
 
       SquareMatrix(const char *str) : Matrix<General,Ref,Ref,AT>(str) { }
-
-      /*! \brief Copy Constructor
-       *
-       * Constructs a reference to the matrix \em A.
-       * \attention The physical memory of the matrix \em A will not be copied, only
-       * referenced.
-       * \param A The matrix that will be referenced.
-       * */
-      SquareMatrix(const SquareMatrix<Ref,AT>&  A) : Matrix<General,Ref,Ref,AT>(A) { }
-
-      /*! \brief Copy Constructor
-       *
-       * See SquareMatrix(const SquareMatrix<General,Ref,Ref,AT>&) 
-       * */
-      explicit SquareMatrix(const Matrix<General,Ref,Ref,AT>&  A) : Matrix<General,Ref,Ref,AT>(A) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-	assert(A.rows() == A.cols());
-#endif
-      }
-
-      template<class Type, class Row, class Col>
-        explicit SquareMatrix(const Matrix<Type,Row,Col,AT> &x) : Matrix<General,Ref,Ref,AT>(x)  {
-        }
-     
-      SquareMatrix<Ref,AT>& resize() {
-        Matrix<General,Ref,Ref,AT>::resize();
-        return *this;
-      }
 
       SquareMatrix<Ref,AT>& resize(int m, Noinit) {
         Matrix<General,Ref,Ref,AT>::resize(m,m,Noinit());
@@ -144,10 +141,10 @@ namespace fmatvec {
       /*! \brief Assignment operator
        *
        * Copies the matrix given by \em A.
-       * \param A The matrix to be assigned. 
+       * \param A The matrix to be assigned.
        * \return A reference to the calling matrix.
        * */
-      SquareMatrix<Ref,AT>& operator=(const SquareMatrix<Ref,AT>&  A) {
+      inline SquareMatrix<Ref,AT>& operator=(const SquareMatrix<Ref,AT> &A) {
 	Matrix<General,Ref,Ref,AT>::operator=(A);
 	return *this;
       }
@@ -158,10 +155,8 @@ namespace fmatvec {
        * \param A The matrix to be assigned.
        * \return A reference to the calling matrix.
        * */
-      template<class Type, class Row, class Col> SquareMatrix<Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
-#ifndef FMATVEC_NO_SIZE_CHECK
+      template<class Type, class Row, class Col> inline SquareMatrix<Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
         assert(A.rows() == A.cols());
-#endif
 	Matrix<General,Ref,Ref,AT>::operator=(A);
 	return *this;
       }
@@ -178,10 +173,20 @@ namespace fmatvec {
       }
 
       SquareMatrix<Ref,AT>& operator&=(const Matrix<General,Ref,Ref,AT>&  A) {
-#ifndef FMATVEC_NO_SIZE_CHECK
         assert(A.rows() == A.cols());
-#endif
 	Matrix<General,Ref,Ref,AT>::operator&=(A);
+	return *this;
+      }
+
+      /*! \brief Matrix replacement
+       *
+       * Copies the matrix given by \em A.
+       * \param A The matrix to be copied. 
+       * \return A reference to the calling matrix.
+       * */
+      template<class Type, class Row, class Col> SquareMatrix<Ref,AT>& replace(const Matrix<Type,Row,Col,AT> &A) {
+        assert(A.rows() == A.cols());
+	Matrix<General,Ref,Ref,AT>::operator<<(A);
 	return *this;
       }
 
@@ -190,13 +195,6 @@ namespace fmatvec {
        * \return The number of rows and columns of the matrix.
        * */
       int size() const {return m;};
-
-      /*! \brief Matrix duplicating.
-       *
-       * The calling matrix returns a \em deep copy of itself.  
-       * \return The duplicate.
-       * */
-      inline SquareMatrix<Ref,AT> copy() const;
 
       using Matrix<General,Ref,Ref,AT>::operator();
 
@@ -214,15 +212,6 @@ namespace fmatvec {
 	return SquareMatrix<Ref,AT>(n, lda, tp?false:true, memory, ele);
       }
   };
-
-  template <class AT>
-    inline SquareMatrix<Ref,AT> SquareMatrix<Ref,AT>::copy() const {
-
-      SquareMatrix<Ref,AT> A(m,NONINIT);
-      A.deepCopy(*this);
-
-      return A;
-    }
 
   template <class AT>
     inline SquareMatrix<Ref,AT>::operator std::vector<std::vector<AT> >() const {

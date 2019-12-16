@@ -58,15 +58,36 @@ namespace fmatvec {
     
     public:
 
-//      template<class Ini=All<AT> >
-//        Vector(Ini ini=All<AT>()) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini) { }
-//      template<class Ini=All<AT> >
-//        Vector(int m, Ini ini=All<AT>()) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini) { }
-
       explicit Vector(Noinit ini) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini) { }
       explicit Vector(Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini,a) { }
       explicit Vector(int m, Noinit ini) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini) { assert(m==M); }
       explicit Vector(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini,a) { assert(m==M); }
+
+      /*! \brief Copy Constructor
+       *
+       * Constructs a reference to the vector \em x.
+       * \attention The physical memory of the vector
+       * \em x will not be copied, only referenced.
+       * \param x The vector that will be referenced.
+       * */
+      Vector(const Vector<Fixed<M>,AT> &x) : Matrix<General,Fixed<M>,Fixed<1>,AT>(x) {
+      }
+
+      /*! \brief Copy Constructor
+       *
+       * See Vector(const Vector<General, AT>&) 
+       * */
+      template<class Row>
+      Vector(const Vector<Row,AT> &A) : Matrix<General,Fixed<M>,Fixed<1>,AT>(A) {
+      }
+
+      /*! \brief Copy Constructor
+       *
+       * See Vector(const Vector<General, AT>&) 
+       * */
+      template<class Type, class Row, class Col>
+      explicit Vector(const Matrix<Type,Row,Col,AT> &A) : Matrix<General,Fixed<M>,Fixed<1>,AT>(A) {
+      }
 
       /*! \brief String Constructor. 
        *
@@ -83,27 +104,38 @@ namespace fmatvec {
       Vector(const char *str) : Matrix<General,Fixed<M>,Fixed<1>,AT>(str) {
       }
 
-      /*! \brief Copy Constructor
+      /*! \brief Assignment operator
        *
-       * Constructs a reference to the vector \em x.
-       * \attention The physical memory of the vector
-       * \em x will not be copied, only referenced.
-       * \param x The vector that will be referenced.
+       * Copies the vector given by \em x.
+       * \param x The vector to be assigned.
+       * \return A reference to the calling vector.
        * */
-      template<class Row>
-      Vector(const Vector<Row,AT> &x) : Matrix<General,Fixed<M>,Fixed<1>,AT>(x) {
+      inline Vector<Fixed<M>,AT>& operator=(const Vector<Fixed<M>,AT> &x) {
+        deepCopy(x);
+        return *this;
       }
 
-      /*! \brief Copy Constructor
+      /*! \brief Assignment operator
        *
-       * See Vector(const Vector<General, AT>&) 
+       * Copies the vector given by \em x.
+       * \param x The vector to be assigned.
+       * \return A reference to the calling vector.
        * */
-      template<class Type, class Row, class Col>
-      explicit Vector(const Matrix<Type,Row,Col,AT> &A) : Matrix<General,Fixed<M>,Fixed<1>,AT>(A) {
-      }
-
       template <class Row>
-      inline Vector<Fixed<M>,AT>& operator=(const Vector<Row,AT> &x);
+      inline Vector<Fixed<M>,AT>& operator=(const Vector<Row,AT> &x) {
+        assert(x.size() == M);
+        deepCopy(x);
+        return *this;
+      }
+
+      /*! \brief Vector replacement
+       *
+       * Copies the vector given by \em x.
+       * \param x The vector to be copied. 
+       * \return A reference to the calling vector.
+       * */
+      template <class Row>
+      inline Vector<Fixed<M>,AT>& replace(const Vector<Row,AT> &x) { return operator=(x); }
 
       template <class AT2>
       operator Vector<Fixed<M>,AT2>() const {
@@ -118,17 +150,13 @@ namespace fmatvec {
        * Returns a reference to the i-th element. 
        * \param i The i-th element.
        * \return A reference to the element x(i).
-       * \remark The bounds are checked by default. 
-       * To change this behavior, define
-       * FMATVEC_NO_BOUNDS_CHECK.
+       * \remark The bounds are checked in debug mode.
        * \sa operator()(int) const
        * */
       AT& operator()(int i) {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(i<M);
-#endif
 
 	return e(i);
       };
@@ -139,10 +167,8 @@ namespace fmatvec {
        * */
       const AT& operator()(int i) const {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(i<M);
-#endif
 
 	return e(i);
       };
@@ -237,27 +263,13 @@ namespace fmatvec {
 
   template <int M, class AT> template <int M1, int M2>
     inline const Vector<Fixed<M2-M1+1>,AT> Vector<Fixed<M>,AT>::operator()(const Range<Fixed<M1>,Fixed<M2> > &I) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(M2<M);
-#endif
       Vector<Fixed<M2-M1+1>,AT> x(NONINIT);
 
       for(int i=0; i<x.size(); i++) 
         x.e(i) = e(M1+i);
 
       return x;
-    }
-
-  template <int M, class AT> template <class Row>
-    inline Vector<Fixed<M>,AT>& Vector<Fixed<M>,AT>::operator=(const Vector<Row,AT> &x) { 
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-       assert(x.size() == M);
-#endif
-
-      deepCopy(x);
-
-      return *this;
     }
 
   template <int M, class AT>

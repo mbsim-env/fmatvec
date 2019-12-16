@@ -69,6 +69,32 @@ namespace fmatvec {
       explicit Vector(int m, Noinit ini) : Matrix<General,Var,Fixed<1>,AT>(m,ini) { } 
       explicit Vector(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Var,Fixed<1>,AT>(m,ini,a) { } 
 
+      /*! \brief Copy Constructor
+       *
+       * Constructs a copy of the vector \em x.
+       * \param x The vector that will be copied.
+       * */
+      Vector(const Vector<Var,AT> &x) : Matrix<General,Var,Fixed<1>,AT>(x) {
+      }
+
+      /*! \brief Copy Constructor
+       *
+       * Constructs a copy of the vector \em x.
+       * \param x The vector that will be copied.
+       * */
+      template<class Row>
+      Vector(const Vector<Row,AT> &A) : Matrix<General,Var,Fixed<1>,AT>(A) {
+      }
+
+      /*! \brief Copy Constructor
+       *
+       * Constructs a copy of the vector \em x.
+       * \param x The vector that will be copied.
+       * */
+      template<class Type, class Row, class Col>
+      explicit Vector(const Matrix<Type,Row,Col,AT> &A) : Matrix<General,Var,Fixed<1>,AT>(A) {
+      }
+
       /*! \brief String Constructor. 
        *
        * Constructs and initializes a vector with a string in a matlab-like
@@ -84,29 +110,6 @@ namespace fmatvec {
       Vector(const char *str) : Matrix<General,Var,Fixed<1>,AT>(str) {
       }
 
-      /*! \brief Copy Constructor
-       *
-       * Constructs a reference to the vector \em x.
-       * \attention The physical memory of the vector
-       * \em x will not be copied, only referenced.
-       * \param x The vector that will be referenced.
-       * */
-      Vector(const Vector<Var,AT> &x) : Matrix<General,Var,Fixed<1>,AT>(x) {
-      }
-
-      template<class Row>
-      Vector(const Vector<Row,AT> &x) : Matrix<General,Var,Fixed<1>,AT>(x) {
-      }
-
-      template<class Type, class Row, class Col>
-      explicit Vector(const Matrix<Type,Row,Col,AT> &A) : Matrix<General,Var,Fixed<1>,AT>(A) {
-      }
-
-      Vector<Var,AT>& resize() {
-        Matrix<General,Var,Fixed<1>,AT>::resize();
-        return *this;
-      }
-
       Vector<Var,AT>& resize(int m, Noinit) {
         Matrix<General,Var,Fixed<1>,AT>::resize(m,Noinit());
         return *this;
@@ -119,14 +122,37 @@ namespace fmatvec {
 
       /*! \brief Assignment operator
        *
-       * Copies the vector given by \em x .
-       * \param x The vector to be assigned. 
+       * Copies the vector given by \em x.
+       * \param x The vector to be assigned.
        * \return A reference to the calling vector.
        * */
-      inline Vector<Var,AT>& operator=(const Vector<Var,AT> &x);
+      inline Vector<Var,AT>& operator=(const Vector<Var,AT> &x) {
+        assert(M == x.size());
+        deepCopy(x);
+        return *this;
+      }
 
+      /*! \brief Assignment operator
+       *
+       * Copies the vector given by \em x.
+       * \param x The vector to be assigned.
+       * \return A reference to the calling vector.
+       * */
       template <class Row>
-      inline Vector<Var,AT>& operator=(const Vector<Row,AT> &x);
+      inline Vector<Var,AT>& operator=(const Vector<Row,AT> &x) {
+        assert(M == x.size());
+        deepCopy(x);
+        return *this;
+      }
+
+      /*! \brief Vector replacement
+       *
+       * Copies the vector given by \em x.
+       * \param x The vector to be copied. 
+       * \return A reference to the calling vector.
+       * */
+      template <class Row>
+        inline Vector<Var,AT>& replace(const Vector<Row,AT> &x);
 
       template <class AT2>
       operator Vector<Var,AT2>() const {
@@ -141,17 +167,13 @@ namespace fmatvec {
        * Returns a reference to the i-th element. 
        * \param i The i-th element.
        * \return A reference to the element x(i).
-       * \remark The bounds are checked by default. 
-       * To change this behavior, define
-       * FMATVEC_NO_BOUNDS_CHECK.
+       * \remark The bounds are checked in debug mode.
        * \sa operator()(int) const
        * */
       AT& operator()(int i) {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(i<M);
-#endif
 
 	return e(i);
       };
@@ -162,10 +184,8 @@ namespace fmatvec {
        * */
       const AT& operator()(int i) const {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(i<M);
-#endif
 
 	return e(i);
       };
@@ -246,35 +266,13 @@ namespace fmatvec {
       return *this;
     }
 
-  template <class AT>
-    inline Vector<Var,AT>& Vector<Var,AT>::operator=(const Vector<Var,AT> &x) { 
-
-      if(!ele) {
-        delete[] ele;
-        M = x.size(); 
-        ele = new AT[M];
-      } else {
-#ifndef FMATVEC_NO_SIZE_CHECK
-        assert(M == x.size());
-#endif
-      }
-
-      deepCopy(x);
-
-      return *this;
-    }
-
   template <class AT> template<class Row>
-    inline Vector<Var,AT>& Vector<Var,AT>::operator=(const Vector<Row,AT> &x) { 
+    inline Vector<Var,AT>& Vector<Var,AT>::replace(const Vector<Row,AT> &x) { 
 
-      if(!ele) {
+      if(M!=x.size()) {
         delete[] ele;
         M = x.size(); 
         ele = new AT[M];
-      } else {
-#ifndef FMATVEC_NO_SIZE_CHECK
-        assert(M == x.size());
-#endif
       }
 
       deepCopy(x);
@@ -304,9 +302,7 @@ namespace fmatvec {
 
   template <class AT>
     inline const Vector<Var,AT> Vector<Var,AT>::operator()(const fmatvec::Range<Var,Var> &I) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<M);
-#endif
       Vector<Var,AT> x(I.end()-I.start()+1,NONINIT);
 
       for(int i=0; i<x.size(); i++)
@@ -317,10 +313,8 @@ namespace fmatvec {
 
   template <class AT> template <class Row>
     inline void Vector<Var,AT>::set(const fmatvec::Range<Var,Var> &I, const Vector<Row,AT> &x) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<size());
       assert(I.size()==x.size());
-#endif
 
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         e(i) = x.e(ii);
@@ -328,10 +322,8 @@ namespace fmatvec {
 
   template <class AT> template <class Row>
     inline void Vector<Var,AT>::add(const fmatvec::Range<Var,Var> &I, const Vector<Row,AT> &x) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<size());
       assert(I.size()==x.size());
-#endif
 
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         e(i) += x.e(ii);

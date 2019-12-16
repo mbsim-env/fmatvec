@@ -76,28 +76,32 @@ namespace fmatvec {
 
       /*! \brief Copy Constructor
        *
-       * Constructs a reference to the matrix \em A.
-       * \attention The physical memory of the matrix \em A will not be copied, only
-       * referenced.
-       * \param A The matrix that will be referenced.
+       * Constructs a copy to the matrix \em A.
+       * \param A The matrix that will be copied.
        * */
       Matrix(const Matrix<General,Var,Fixed<N>,AT> &A) : M(A.M), ele(new AT[M*N]) {
 	deepCopy(A);
       }
 
+      /*! \brief Copy Constructor
+       *
+       * Constructs a copy to the matrix \em A.
+       * \param A The matrix that will be copied.
+       * */
       template<class Row, class Col>
       Matrix(const Matrix<General,Row,Col,AT> &A) : M(A.rows()), ele(new AT[M*N]) {
-
+	assert(A.cols() == N); 
 	deepCopy(A);
       }
 
+      /*! \brief Copy Constructor
+       *
+       * Constructs a copy to the matrix \em A.
+       * \param A The matrix that will be copied.
+       * */
       template<class Type, class Row, class Col>
       explicit Matrix(const Matrix<Type,Row,Col,AT> &A) : M(A.rows()), ele(new AT[M*N]) {
-
-#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(A.cols() == N); 
-#endif
-
 	deepCopy(A);
       }
 
@@ -122,13 +126,6 @@ namespace fmatvec {
 	delete[] ele;
       }
 
-      Matrix<General,Var,Fixed<N>,AT>& resize() {
-	delete[] ele;
-	M = 0;
-	ele = 0;
-        return *this;
-      }
-
       Matrix<General,Var,Fixed<N>,AT>& resize(int m, Noinit) {
 	delete[] ele;
 	M = m;
@@ -151,10 +148,14 @@ namespace fmatvec {
       /*! \brief Assignment operator
        *
        * Copies the matrix given by \em A.
-       * \param A The matrix to be assigned. 
+       * \param A The matrix to be assigned.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<General,Var,Fixed<N>,AT>& operator=(const Matrix<General,Var,Fixed<N>,AT> &A);
+      inline Matrix<General,Var,Fixed<N>,AT>& operator=(const Matrix<General,Var,Fixed<N>,AT> &A) {
+        assert(M == A.rows());
+        deepCopy(A);
+        return *this;
+      }
 
       /*! \brief Assignment operator
        *
@@ -163,26 +164,36 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       template <class Type, class Row, class Col>
-      inline Matrix<General,Var,Fixed<N>,AT>& operator=(const Matrix<Type,Row,Col,AT> &A);
-      
+      inline Matrix<General,Var,Fixed<N>,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
+        assert(N == A.cols()); 
+        assert(M == A.rows());
+        deepCopy(A);
+        return *this;
+      }
+
+      /*! \brief Matrix replacement
+       *
+       * Copies the matrix given by \em A.
+       * \param A The matrix to be copied. 
+       * \return A reference to the calling matrix.
+       * */
+      template <class Type, class Row, class Col>
+      inline Matrix<General,Var,Fixed<N>,AT>& replace(const Matrix<Type,Row,Col,AT> &A); 
+
       /*! \brief Element operator
        *
        * Returns a reference to the element in the i-th row and the j-th column. 
        * \param i The i-th row of the matrix
        * \param j The j-th column of the matrix
        * \return A reference to the element A(i,j).
-       * \remark The bounds are checked by default. 
-       * To change this behavior, define
-       * FMATVEC_NO_BOUNDS_CHECK.
+       * \remark The bounds are checked in debug mode.
        * \sa operator()(int,int) const
        * */
       AT& operator()(int i, int j) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(j>=0);
 	assert(i<M);
 	assert(j<N);
-#endif
 
 	return e(i,j);
       };
@@ -192,12 +203,10 @@ namespace fmatvec {
        * See operator()(int,int) 
        * */
       const AT& operator()(int i, int j) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(j>=0);
 	assert(i<M);
 	assert(j<N);
-#endif
 
 	return e(i,j);
       };
@@ -343,37 +352,14 @@ namespace fmatvec {
     Matrix<General,Var,Fixed<N>,AT>::Matrix(std::string(strs)) {}
 
   template <int N, class AT> template< class Type, class Row, class Col>
-    inline Matrix<General,Var,Fixed<N>,AT>& Matrix<General,Var,Fixed<N>,AT>::operator=(const Matrix<Type,Row,Col,AT> &A) { 
+    inline Matrix<General,Var,Fixed<N>,AT>& Matrix<General,Var,Fixed<N>,AT>::replace(const Matrix<Type,Row,Col,AT> &A) { 
 
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(N == A.cols()); 
-#endif
-      if(!ele) {
+      assert(N == A.cols());
+
+      if(M!=A.rows()) {
         delete[] ele;
-        M = A.rows(); 
+        M = A.rows();
         ele = new AT[M*N];
-      } else {
-#ifndef FMATVEC_NO_SIZE_CHECK
-        assert(M == A.rows());
-#endif
-      }
-
-      deepCopy(A);
-
-      return *this;
-    }
-
-  template <int N, class AT>
-    inline Matrix<General,Var,Fixed<N>,AT>& Matrix<General,Var,Fixed<N>,AT>::operator=(const Matrix<General,Var,Fixed<N>,AT> &A) { 
-
-      if(!ele) {
-        delete[] ele;
-        M = A.rows(); 
-        ele = new AT[M*N];
-      } else {
-#ifndef FMATVEC_NO_SIZE_CHECK
-        assert(M == A.rows());
-#endif
       }
 
       deepCopy(A);
@@ -398,10 +384,8 @@ namespace fmatvec {
 
   template <int N, class AT>
     inline const Matrix<General,Var,Var,AT> Matrix<General,Var,Fixed<N>,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<M);
       assert(J.end()<N);
-#endif
       Matrix<General,Var,Var,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
@@ -414,10 +398,8 @@ namespace fmatvec {
   template <int N, class AT>
     inline const RowVector<Fixed<N>,AT> Matrix<General,Var,Fixed<N>,AT>::row(int i) const {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i>=0);
       assert(i<M);
-#endif
 
       RowVector<Fixed<N>,AT> x(NONINIT);
 
@@ -431,10 +413,8 @@ namespace fmatvec {
   template <int N, class AT>
     inline const Vector<Var,AT> Matrix<General,Var,Fixed<N>,AT>::col(int j) const {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(j>=0);
       assert(j<N);
-#endif
 
       Vector<Var,AT> x(M,NONINIT);
 
@@ -456,20 +436,16 @@ namespace fmatvec {
 
   template <int N, class AT> template <class Row>
     inline void Matrix<General,Var,Fixed<N>,AT>::set(int j, const Vector<Row,AT> &x) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(j<cols());
       assert(rows()==x.size());
-#endif
       for(int i=0; i<rows(); i++)
         e(i,j) = x.e(i);
     }
 
   template <int N, class AT> template <class Col>
     inline void Matrix<General,Var,Fixed<N>,AT>::set(int i, const RowVector<Col,AT> &x) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i<rows());
       assert(cols()==x.size());
-#endif
       for(int j=0; j<cols(); j++)
         e(i,j) = x.e(j);
     }
@@ -477,12 +453,10 @@ namespace fmatvec {
   template <int N, class AT> template<class Type, class Row, class Col>
     inline void Matrix<General,Var,Fixed<N>,AT>::set(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<rows());
       assert(J.end()<cols());
       assert(I.size()==A.rows());
       assert(J.size()==A.cols());
-#endif
 
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
@@ -491,20 +465,16 @@ namespace fmatvec {
 
   template <int N, class AT> template <class Row>
     inline void Matrix<General,Var,Fixed<N>,AT>::add(int j, const Vector<Row,AT> &x) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(j<cols());
       assert(rows()==x.size());
-#endif
       for(int i=0; i<rows(); i++)
         e(i,j) += x.e(i);
     }
 
   template <int N, class AT> template <class Col>
     inline void Matrix<General,Var,Fixed<N>,AT>::add(int i, const RowVector<Col,AT> &x) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i<rows());
       assert(cols()==x.size());
-#endif
       for(int j=0; j<cols(); j++)
         e(i,j) += x.e(j);
     }
@@ -512,12 +482,10 @@ namespace fmatvec {
   template <int N, class AT> template<class Type, class Row, class Col>
     inline void Matrix<General,Var,Fixed<N>,AT>::add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<rows());
       assert(J.end()<cols());
       assert(I.size()==A.rows());
       assert(J.size()==A.cols());
-#endif
 
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)

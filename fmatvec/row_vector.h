@@ -86,11 +86,25 @@ namespace fmatvec {
        * */
       explicit RowVector() : Matrix<General,Ref,Ref,AT>() { m=1; }
 
-//      template<class Ini=All<AT> >
-//        RowVector(int n, Ini ini=All<AT>()) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
-
       explicit RowVector(int n, Noinit ini) : Matrix<General,Ref,Ref,AT>(1,n,ini) { } 
       explicit RowVector(int n, Init ini=INIT, const AT &a=AT()) : Matrix<General,Ref,Ref,AT>(1,n,ini,a) { } 
+
+      /*! \brief Copy Constructor
+       *
+       * Constructs a copy of the vector \em x.
+       * \param x The vector that will be copied.
+       * */
+      RowVector(const RowVector<Ref,AT> &x) : Matrix<General,Ref,Ref,AT>(x) {
+      }
+
+      template<class Row>
+      RowVector(const RowVector<Row,AT> &x) : Matrix<General,Ref,Ref,AT>(x) {
+      }
+
+      template<class Type, class Row, class Col>
+      explicit RowVector(const Matrix<Type,Row,Col,AT> &x) : Matrix<General,Ref,Ref,AT>(x) {
+	assert(x.rows()==1);
+      }
 
       /*! \brief Regular Constructor
        *
@@ -114,22 +128,7 @@ namespace fmatvec {
        * \param str The string the vector will be initialized with. 
        * */
       RowVector(const char *str) : Matrix<General,Ref,Ref,AT>(str) {
-#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(m==1);
-#endif
-      }
-
-      /*! \brief Copy Constructor
-       *
-       * See RowVector(const RowVector<Ref,AT>&) 
-       * */
-      explicit RowVector(const Matrix<General,Ref,Ref,AT> &x) : Matrix<General,Ref,Ref,AT>(x) {
-	LogicAssert(x.rows()==1,"Number of cols() must be 1 in RowVector<Ref,AT>::RowVector(const Matrix<General,Ref,Ref,AT> &x)");
-      }
-
-      RowVector<Ref,AT>& resize() {
-        Matrix<General,Ref,Ref,AT>::resize();
-        return *this;
       }
 
       RowVector<Ref,AT>& resize(int n, Noinit) {
@@ -142,14 +141,29 @@ namespace fmatvec {
         return *this;
       }
 
-      /*! \brief Copy Constructor
+      /*! \brief Assignment operator
        *
-       * Constructs a reference to the rowvector \em x.
-       * \attention The physical memory of the rowvector
-       * \em x will not be copied, only referenced.
-       * \param x The rowvector that will be referenced.
+       * Copies the rowvector given by \em x.
+       * \param x The rowvector to be assigned. 
+       * \return A reference to the calling rowvector.
        * */
-      RowVector(const RowVector<Ref,AT> &x) : Matrix<General,Ref,Ref,AT>(x) {
+      inline RowVector<Ref,AT>& operator=(const RowVector<Ref,AT> &x) {
+        assert(n == x.size());
+        deepCopy(x);
+        return *this;
+      }
+
+      /*! \brief Assignment operator
+       *
+       * Copies the rowvector given by \em x.
+       * \param x The rowvector to be assigned. 
+       * \return A reference to the calling rowvector.
+       * */
+      template <class Row>
+      inline RowVector<Ref,AT>& operator=(const RowVector<Row,AT> &x) {
+        assert(n == x.size());
+        deepCopy(x);
+        return *this;
       }
 
       /*! \brief Reference operator
@@ -158,18 +172,41 @@ namespace fmatvec {
        * \param x The rowvector to be referenced. 
        * \return A reference to the calling rowvector.
        * */
-      inline RowVector<Ref,AT>& operator&=(const RowVector<Ref,AT> &x);
+      inline RowVector<Ref,AT>& operator&=(const RowVector<Ref,AT> &x) {
+        m = 1;
+        n = x.n;
+        memory = x.memory;
+        ele = x.ele;
+        lda = x.lda;
+        tp = x.tp; 
+        return *this;
+      }
 
-      /*! \brief Assignment operator
+      /*! \brief Reference operator
        *
-       * Copies the rowvector given by \em x.
-       * \param x The rowvector to be assigned. 
+       * References the rowvector given by \em x.
+       * \param x The rowvector to be referenced. 
        * \return A reference to the calling rowvector.
        * */
-      inline RowVector<Ref,AT>& operator=(const RowVector<Ref,AT> &x);
+      inline RowVector<Ref,AT>& operator&=(const Matrix<General,Ref,Ref,AT> &A) {
+        assert(A.rows() == 1);
+        m = 1;
+        n = A.cols();
+        memory = A.memory;
+        ele = A.ele;
+        lda = A.lda;
+        tp = A.tp; 
+        return *this;
+      }
 
+      /*! \brief Rowvector replacement
+       *
+       * Copies the rowvector given by \em x.
+       * \param x The rowvector to be copied. 
+       * \return A reference to the calling rowvector.
+       * */
       template <class Row>
-      inline RowVector<Ref,AT>& operator=(const RowVector<Row,AT> &x);
+      inline RowVector<Ref,AT>& replace(const RowVector<Row,AT> &x);
 
       template <class AT2>
       operator Vector<Ref,AT2>() const {
@@ -184,16 +221,12 @@ namespace fmatvec {
        * Returns a reference to the i-th element. 
        * \param i The i-th element.
        * \return A reference to the element x(i).
-       * \remark The bounds are checked by default. 
-       * To change this behavior, define
-       * FMATVEC_NO_BOUNDS_CHECK.
+       * \remark The bounds are checked in debug mode.
        * \sa operator()(int) const
        * */
       AT& operator()(int i) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(i<n);
-#endif
 	return e(i);
       };
 
@@ -202,10 +235,8 @@ namespace fmatvec {
        * See operator()(int) 
        * */
       const AT& operator()(int i) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(i<n);
-#endif
 	return e(i);
       };
 
@@ -264,13 +295,6 @@ namespace fmatvec {
        * \return The increment.
        * */
       int inc() const {return tp?1:lda;};
-
-      /*! \brief Rowvector duplicating.
-       *
-       * The calling rowvector returns a \em deep copy of itself.  
-       * \return The duplicate of the calling rowvector.
-       * */
-      inline RowVector<Ref,AT> copy() const;
 
       /*! \brief Subrowvector operator.
        *
@@ -334,68 +358,21 @@ namespace fmatvec {
       return *this;
     }
 
-  template <class AT>
-    inline RowVector<Ref,AT>& RowVector<Ref,AT>::operator=(const RowVector<Ref,AT> &x) { 
+  template <class AT> template <class Row>
+    inline RowVector<Ref,AT>& RowVector<Ref,AT>::replace(const RowVector<Row,AT> &x) { 
 
-      if(!ele) {
-        m = 1;
-        n = x.size();
-        lda = m;
-        tp = false;
-        memory.resize(m);
-        ele = (AT*)memory.get();
-      } else {
-#ifndef FMATVEC_NO_SIZE_CHECK
-        assert(n == x.size());
-#endif
-      }
+      if(n!=x.size()) {
+	m = 1; 
+	n = x.size();
+	lda = m;
+	tp = false;
+	memory.resize(n);
+	ele = (AT*)memory.get();
+      } 
 
       deepCopy(x);
 
       return *this;
-    }
-
-  template <class AT> template<class Row>
-    inline RowVector<Ref,AT>& RowVector<Ref,AT>::operator=(const RowVector<Row,AT> &x) { 
-
-      if(!ele) {
-        m = 1;
-        n = x.size();
-        lda = m;
-        tp = false;
-        memory.resize(m);
-        ele = (AT*)memory.get();
-      } else {
-#ifndef FMATVEC_NO_SIZE_CHECK
-        assert(n == x.size());
-#endif
-      }
-
-      deepCopy(x);
-
-      return *this;
-    }
-
-  template <class AT>
-    inline RowVector<Ref,AT>& RowVector<Ref,AT>::operator&=(const RowVector<Ref,AT> &x) {
-
-      m = 1;
-      n = x.n;
-      memory = x.memory;
-      ele = x.ele;
-      lda = x.lda;
-      tp = x.tp; 
-
-      return *this;
-    }
-
-  template <class AT>
-    inline RowVector<Ref,AT> RowVector<Ref,AT>::copy() const {
-
-      RowVector<Ref,AT> x(n,NONINIT);
-      x.deepCopy(*this);
-
-      return x;
     }
 
   template <class AT> 
@@ -411,9 +388,7 @@ namespace fmatvec {
   template <class AT>
     inline const RowVector<Ref,AT> RowVector<Ref,AT>::operator()(const Range<Var,Var> &I) const {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<n);
-#endif
 
       return RowVector<Ref,AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start()));
     }
@@ -421,9 +396,7 @@ namespace fmatvec {
   template <class AT>
     inline RowVector<Ref,AT> RowVector<Ref,AT>::operator()(const Range<Var,Var> &I) {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<n);
-#endif
 
       return RowVector<Ref,AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start()));
     }

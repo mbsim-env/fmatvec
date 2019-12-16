@@ -66,6 +66,29 @@ namespace fmatvec {
       explicit RowVector(int n, Noinit ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { assert(n==N); }
       explicit RowVector(int n, Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini,a) { assert(n==N); }
 
+      /*! \brief Copy Constructor
+       *
+       * See RowVector(const RowVector<Fixed<N>,AT> 
+       * */
+      RowVector(const RowVector<Fixed<N>,AT> &A) : Matrix<General,Fixed<1>,Fixed<N>,AT>(A) {
+      }
+
+      /*! \brief Copy Constructor
+       *
+       * See Vector(const Vector<General, AT>&) 
+       * */
+      template<class Row>
+      RowVector(const RowVector<Row,AT> &A) : Matrix<General,Fixed<1>,Fixed<N>,AT>(A) {
+      }
+
+      /*! \brief Copy Constructor
+       *
+       * See Vector(const Vector<General, AT>&) 
+       * */
+      template<class Type, class Row, class Col>
+      explicit RowVector(const Matrix<Type,Row,Col,AT> &A) : Matrix<General,Fixed<1>,Fixed<N>,AT>(A) {
+      }
+
       /*! \brief String Constructor. 
        *
        * Constructs and initializes a vector with a string in a matlab-like
@@ -81,37 +104,44 @@ namespace fmatvec {
       RowVector(const char *str) : Matrix<General,Fixed<1>,Fixed<N>,AT>(str) {
       }
 
-      /*! \brief Copy Constructor
+      /*! \brief Assignment operator
        *
-       * See RowVector(const RowVector<Fixed<N>,AT> 
+       * Copies the vector given by \em x.
+       * \param x The vector to be assigned.
+       * \return A reference to the calling vector.
        * */
-      template<class Col>
-      RowVector(const RowVector<Col,AT> &A) : Matrix<General,Fixed<1>,Fixed<N>,AT>(A) {
+      inline RowVector<Fixed<N>,AT>& operator=(const RowVector<Fixed<N>,AT> &x) {
+        deepCopy(x);
+        return *this;
       }
 
-      /*! \brief Copy Constructor
+      /*! \brief Assignment operator
        *
-       * See Vector(const Vector<General, AT>&) 
+       * Copies the vector given by \em x.
+       * \param x The vector to be assigned.
+       * \return A reference to the calling vector.
        * */
-      template<class Type, class Row, class Col>
-      explicit RowVector(const Matrix<Type,Row,Col,AT> &A) : Matrix<General,Fixed<1>,Fixed<N>,AT>(A) {
+      template <class Row>
+      inline RowVector<Fixed<N>,AT>& operator=(const RowVector<Row,AT> &x) {
+        assert(x.size() == N);
+        deepCopy(x);
+        return *this;
       }
+
+      template <class Row>
+      inline RowVector<Fixed<N>,AT>& replace(const RowVector<Row,AT> &x) { return operator=(x); }
 
       /*! \brief Element operator
        *
        * Returns a reference to the i-th element. 
        * \param i The i-th element.
        * \return A reference to the element x(i).
-       * \remark The bounds are checked by default. 
-       * To change this behavior, define
-       * FMATVEC_NO_BOUNDS_CHECK.
+       * \remark The bounds are checked in debug mode.
        * \sa operator()(int) const
        * */
       AT& operator()(int i) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(i<N);
-#endif
 	return e(i);
       };
 
@@ -120,10 +150,8 @@ namespace fmatvec {
        * See operator()(int) 
        * */
       const AT& operator()(int i) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(i<N);
-#endif
 	return e(i);
       };
 

@@ -85,12 +85,22 @@ namespace fmatvec {
 
       /*! \brief Copy Constructor
        *
-       * Constructs a reference to the band matrix \em A.
-       * \attention The physical memory of the matrix \em A will not be copied, only
-       * referenced.
-       * \param A The matrix that will be referenced.
+       * Constructs a copy of the band matrix \em A.
+       * \param A The matrix that will be copied.
        * */
-      Matrix(const Matrix<GeneralBand,Ref,Ref,AT> &A) : memory(A.memory), ele(A.ele) , n(A.n), kl(A.kl), ku(A.ku) {
+      Matrix(const Matrix<GeneralBand,Ref,Ref,AT> &A) : memory(A.n*(A.kl+A.ku+1)), ele((AT*)memory.get()), n(A.n), kl(A.kl), ku(A.ku) {
+        deepCopy(A);
+      }
+
+      /*! \brief Copy Constructor
+       *
+       * Constructs a copy of the matrix \em A.
+       * \param A The matrix that will be copied.
+       * */
+      template<class Type, class Row, class Col>
+      explicit Matrix(const Matrix<Type,Row,Col,AT> &A) : memory(A.rows()*(2*A.rows()-1)), ele((AT*)memory.get()), n(A.rows()), kl(n-1), ku(n-1) {
+        assert(A.rows() == A.cols());
+	deepCopy(A);
       }
 
       /*! \brief Regular Constructor
@@ -109,13 +119,6 @@ namespace fmatvec {
        * */
       ~Matrix() = default;
 
-      Matrix<GeneralBand,Ref,Ref,AT>& resize() { 
-          n = kl = ku = 0;
-          memory.resize(0);
-          ele = 0;
-          return *this;
-      }
-
       Matrix<GeneralBand,Ref,Ref,AT>& resize(int n_, int kl_, int ku_, Noinit) { 
           n = n_; kl = kl_; ku = ku_;
           memory.resize(n*(kl+ku+1));
@@ -133,7 +136,25 @@ namespace fmatvec {
        * \param A The matrix to be assigned. 
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<GeneralBand,Ref,Ref,AT>& operator=(const Matrix<GeneralBand,Ref,Ref,AT> &A);
+      inline Matrix<GeneralBand,Ref,Ref,AT>& operator=(const Matrix<GeneralBand,Ref,Ref,AT> &A) {
+        assert(n == A.n);
+        deepCopy(A);
+        return *this;
+      }
+
+      /*! \brief Assignment operator
+       *
+       * Copies the band matrix given by \em A.
+       * \param A The matrix to be assigned. 
+       * \return A reference to the calling matrix.
+       * */
+      template<class Type, class Row, class Col>
+      inline Matrix<GeneralBand,Ref,Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
+        assert(n == A.rows());
+        assert(n == A.cols());
+        deepCopy(A);
+        return *this;
+      }
 
       /*! \brief Reference operator
        *
@@ -141,7 +162,21 @@ namespace fmatvec {
        * \param A The matrix to be referenced. 
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<GeneralBand,Ref,Ref,AT>& operator&=(const Matrix<GeneralBand,Ref,Ref,AT> &A);
+      inline Matrix<GeneralBand,Ref,Ref,AT>& operator&=(const Matrix<GeneralBand,Ref,Ref,AT> &A) {
+        n=A.n;
+        memory = A.memory;
+        ele = A.ele;
+        return *this;
+      }
+
+      /*! \brief Matrix replacement
+       *
+       * Copies the band matrix given by \em A.
+       * \param A The matrix to be copied. 
+       * \return A reference to the calling matrix.
+       * */
+      template<class Type, class Row, class Col>
+      inline Matrix<GeneralBand,Ref,Ref,AT>& replace(const Matrix<Type,Row,Col,AT> &A);
 
       /*! \brief Element operator
        *
@@ -149,20 +184,16 @@ namespace fmatvec {
        * \param i The i-th row of the matrix
        * \param j The j-th column of the matrix
        * \return A reference to the element A(i,j).
-       * \remark The bounds are checked by default. 
-       * To change this behavior, define
-       * FMATVEC_NO_BOUNDS_CHECK.
+       * \remark The bounds are checked in debug mode. 
        * \sa operator()(int,int) const
        * */
       const AT& operator()(int i, int j) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(j>=0);
 	assert(i<n);
 	assert(j<n);
 	//     assert(i-j<=kl);
 	//      assert(i-j>=-ku);
-#endif
 	static AT zero=0;
 
 	return ((i-j>kl) || (i-j<-ku)) ? zero : ele[ku+i+j*(kl+ku)];
@@ -225,13 +256,6 @@ namespace fmatvec {
        * */
       inline Vector<Ref,AT> operator()(int i);
 
-      /*! \brief Matrix duplicating.
-       *
-       * The calling matrix returns a \em deep copy of itself.  
-       * \return The duplicate.
-       * */
-      inline Matrix<GeneralBand,Ref,Ref,AT> copy() const;
-
       /*! \brief Initialization.
        *
        * Initializes all elements of the calling matrix with 
@@ -251,29 +275,14 @@ namespace fmatvec {
       inline operator std::vector<std::vector<AT> >() const;
   };
 
-  template <class AT>
-    inline Matrix<GeneralBand,Ref,Ref,AT>& Matrix<GeneralBand,Ref,Ref,AT>::operator&=(const Matrix<GeneralBand,Ref,Ref,AT> &A) {
+  template <class AT> template< class Type, class Row, class Col>
+    inline Matrix<GeneralBand,Ref,Ref,AT>& Matrix<GeneralBand,Ref,Ref,AT>::replace(const Matrix<Type,Row,Col,AT> &A) {
 
-      n=A.n;
-      memory = A.memory;
-      ele = A.ele;
-
-      return *this;
-    }
-
-  template <class AT>
-    inline Matrix<GeneralBand,Ref,Ref,AT>& Matrix<GeneralBand,Ref,Ref,AT>::operator=(const Matrix<GeneralBand,Ref,Ref,AT> &A) {
-
-     if(!ele) {
-       n = A.n;
-       memory.resize(n*n);
-       ele = (AT*)memory.get();
-    } 
-     else {
-#ifndef FMATVEC_NO_SIZE_CHECK
-       assert(n == A.n);
-#endif
-     }
+      if(n!=A.n) {
+	n = A.n;
+	memory.resize(n*n);
+	ele = (AT*)memory.get();
+      } 
 
       deepCopy(A);
 
@@ -297,10 +306,8 @@ namespace fmatvec {
 
   template <class AT>
     inline Vector<Ref,AT> Matrix<GeneralBand,Ref,Ref,AT>::operator()(int i) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i<=ku);
       assert(i>=-kl);
-#endif
 
       //return Vector<Ref,AT>(n-i,ku+kl+1,memory,ele[ku-i + (i>0?i:0)*(kl+ku+1)]);
       return Vector<Ref,AT>(n-abs(i),ku+kl+1,true,memory,ele+ku-i + (i>0?i:0)*(kl+ku+1));
@@ -309,22 +316,11 @@ namespace fmatvec {
 
   template <class AT>
     inline const Vector<Ref,AT> Matrix<GeneralBand,Ref,Ref,AT>::operator()(int i) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i<=ku);
       assert(i>=-kl);
-#endif
 
       return Vector<Ref,AT>(n-abs(i),ku+kl+1,true,memory,ele+ku-i + (i>0?i:0)*(kl+ku+1));
       //(ku-i,i>0?i:0));
-    }
-
-  template <class AT>
-    inline Matrix<GeneralBand,Ref,Ref,AT> Matrix<GeneralBand,Ref,Ref,AT>::copy() const {
-
-      Matrix<GeneralBand,Ref,Ref,AT> A(n,kl,ku);
-      A.deepCopy(*this);
-
-      return A;
     }
 
   template <class AT>

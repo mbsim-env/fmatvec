@@ -72,24 +72,36 @@ namespace fmatvec {
       explicit Matrix(int m, int n, Init ini=INIT, const AT &a=AT()) { assert(m==M && n==N); init(a); }
       explicit Matrix(int m, int n, Eye ini, const AT &a=1) { assert(m==M && n==N); init(ini,a); }
 
-      template<class Row, class Col>
-      Matrix(const Matrix<General,Row,Col,AT> &A) {
-#ifndef FMATVEC_NO_SIZE_CHECK
-	assert(A.rows() == M); 
-	assert(A.cols() == N);
-#endif
-
+      /*! \brief Copy Constructor
+       *
+       * Constructs a copy of the matrix \em A.
+       * \param A The matrix that will be copied.
+       * */
+      Matrix(const Matrix<General,Fixed<M>,Fixed<N>,AT> &A) {
 	deepCopy(A);
       }
 
-      template<class Type, class Row, class Col>
-      explicit Matrix(const Matrix<Type,Row,Col,AT> &A) {
-
-#ifndef FMATVEC_NO_SIZE_CHECK
+      /*! \brief Copy Constructor
+       *
+       * Constructs a copy of the matrix \em A.
+       * \param A The matrix that will be copied.
+       * */
+      template<class Row, class Col>
+      Matrix(const Matrix<General,Row,Col,AT> &A) {
 	assert(A.rows() == M); 
 	assert(A.cols() == N);
-#endif
+	deepCopy(A);
+      }
 
+      /*! \brief Copy Constructor
+       *
+       * Constructs a copy of the matrix \em A.
+       * \param A The matrix that will be copied.
+       * */
+      template<class Type, class Row, class Col>
+      explicit Matrix(const Matrix<Type,Row,Col,AT> &A) {
+	assert(A.rows() == M); 
+	assert(A.cols() == N);
 	deepCopy(A);
       }
 
@@ -114,8 +126,33 @@ namespace fmatvec {
        * \param A The matrix to be assigned.
        * \return A reference to the calling matrix.
        * */
+      inline Matrix<General,Fixed<M>,Fixed<N>,AT>& operator=(const Matrix<General,Fixed<M>,Fixed<N>,AT> &A) {
+        deepCopy(A);
+        return *this;
+      }
+
+      /*! \brief Assignment operator
+       *
+       * Copies the matrix given by \em A.
+       * \param A The matrix to be assigned.
+       * \return A reference to the calling matrix.
+       * */
       template <class Type, class Row, class Col>
-      inline Matrix<General,Fixed<M>,Fixed<N>,AT>& operator=(const Matrix<Type,Row,Col,AT> &A);
+      inline Matrix<General,Fixed<M>,Fixed<N>,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
+        assert(A.rows() == M); 
+        assert(A.cols() == N);
+        deepCopy(A);
+        return *this;
+      }
+
+      /*! \brief Matrix replacement
+       *
+       * Copies the matrix given by \em A.
+       * \param A The matrix to be copied. 
+       * \return A reference to the calling matrix.
+       * */
+      template<class Type, class Row, class Col>
+      inline Matrix<General,Fixed<M>,Fixed<N>,AT>& replace(const Matrix<Type,Row,Col,AT> &A) { return operator=(A); }
 
       template <class AT2>
       operator Matrix<General,Fixed<M>,Fixed<N>,AT2>() const {
@@ -132,18 +169,14 @@ namespace fmatvec {
        * \param i The i-th row of the matrix
        * \param j The j-th column of the matrix
        * \return A reference to the element A(i,j).
-       * \remark The bounds are checked by default. 
-       * To change this behavior, define
-       * FMATVEC_NO_BOUNDS_CHECK.
+       * \remark The bounds are checked in debug mode.
        * \sa operator()(int,int) const
        * */
       AT& operator()(int i, int j) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(j>=0);
 	assert(i<M);
 	assert(j<N);
-#endif
 
 	return e(i,j);
       };
@@ -153,12 +186,10 @@ namespace fmatvec {
        * See operator()(int,int) 
        * */
       const AT& operator()(int i, int j) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(j>=0);
 	assert(i<M);
 	assert(j<N);
-#endif
 
 	return e(i,j);
       };
@@ -375,19 +406,6 @@ namespace fmatvec {
   template <int M, int N, class AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::Matrix(const char *strs) :
     Matrix<General,Fixed<M>,Fixed<N>,AT>::Matrix(std::string(strs)) {}
 
-  template <int M, int N, class AT> template<class Type, class Row, class Col>
-    inline Matrix<General,Fixed<M>,Fixed<N>,AT>& Matrix<General,Fixed<M>,Fixed<N>,AT>::operator=(const Matrix<Type,Row,Col,AT> &A) { 
-
-#ifndef FMATVEC_NO_SIZE_CHECK
-      assert(A.rows() == M); 
-      assert(A.cols() == N);
-#endif
-
-      deepCopy(A);
-
-      return *this;
-    }
-
   template <int M, int N, class AT>
     inline Matrix<General,Fixed<M>,Fixed<N>,AT>& Matrix<General,Fixed<M>,Fixed<N>,AT>::init(const AT &val) {
        for(int i=0; i<M; i++) 
@@ -406,10 +424,8 @@ namespace fmatvec {
 
   template <int M, int N, class AT> 
     inline const Matrix<General,Var,Var,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<M);
       assert(J.end()<N);
-#endif
       Matrix<General,Var,Var,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
@@ -421,10 +437,8 @@ namespace fmatvec {
 
  template <int M, int N, class AT> template <int M1, int M2, int N1, int N2>
     inline const Matrix<General,Fixed<M2-M1+1>,Fixed<N2-N1+1>,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::operator()(const Range<Fixed<M1>,Fixed<M2> > &I, const Range<Fixed<N1>,Fixed<N2> > &J) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(M2<M);
       assert(N2<N);
-#endif
       Matrix<General,Fixed<M2-M1+1>,Fixed<N2-N1+1>,AT> A(NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
@@ -436,10 +450,8 @@ namespace fmatvec {
 
  template <int M, int N, class AT> template <int M1, int M2>
     inline const Matrix<General,Fixed<M2-M1+1>,Var,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::operator()(const Range<Fixed<M1>,Fixed<M2> > &I, const Range<Var,Var> &J) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(M2<M);
       assert(J.end()<N);
-#endif
       Matrix<General,Fixed<M2-M1+1>,Var,AT> A(J.end()-J.start()+1,NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
@@ -451,10 +463,8 @@ namespace fmatvec {
 
   template <int M, int N, class AT> template <int N1, int N2>
     inline const Matrix<General,Var,Fixed<N2-N1+1>,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::operator()(const Range<Var,Var> &I, const Range<Fixed<N1>,Fixed<N2> > &J) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<M);
       assert(N2<N);
-#endif
       Matrix<General,Var,Fixed<N2-N1+1>,AT> A(I.end()-I.start()+1,NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
@@ -467,10 +477,8 @@ namespace fmatvec {
   template <int M, int N, class AT>
     inline const RowVector<Fixed<N>,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::row(int i) const {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i>=0);
       assert(i<M);
-#endif
 
       RowVector<Fixed<N>,AT> x(NONINIT);
 
@@ -478,16 +486,13 @@ namespace fmatvec {
         x.e(j) = e(i,j);
 
       return x;
-
     }
 
   template <int M, int N, class AT>
     inline const Vector<Fixed<M>,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::col(int j) const {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(j>=0);
       assert(j<N);
-#endif
 
       Vector<Fixed<M>,AT> x(NONINIT);
 
@@ -495,7 +500,6 @@ namespace fmatvec {
         x.e(i) = e(i,j);
 
       return x;
-
     }
 
   template <int M, int N, class AT>
@@ -509,20 +513,16 @@ namespace fmatvec {
 
   template <int M, int N, class AT> template <class Row>
     inline void Matrix<General,Fixed<M>,Fixed<N>,AT>::set(int j, const Vector<Row,AT> &x) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(j<cols());
       assert(rows()==x.size());
-#endif
       for(int i=0; i<rows(); i++)
         e(i,j) = x.e(i);
     }
 
   template <int M, int N, class AT> template <class Col>
     inline void Matrix<General,Fixed<M>,Fixed<N>,AT>::set(int i, const RowVector<Col,AT> &x) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i<rows());
       assert(cols()==x.size());
-#endif
       for(int j=0; j<cols(); j++)
         e(i,j) = x.e(j);
     }
@@ -530,12 +530,10 @@ namespace fmatvec {
   template <int M, int N, class AT> template<class Type, class Row, class Col>
     inline void Matrix<General,Fixed<M>,Fixed<N>,AT>::set(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<rows());
       assert(J.end()<cols());
       assert(I.size()==A.rows());
       assert(J.size()==A.cols());
-#endif
 
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
@@ -544,20 +542,16 @@ namespace fmatvec {
 
   template <int M, int N, class AT> template <class Row>
     inline void Matrix<General,Fixed<M>,Fixed<N>,AT>::add(int j, const Vector<Row,AT> &x) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(j<cols());
       assert(rows()==x.size());
-#endif
       for(int i=0; i<rows(); i++)
         e(i,j) += x.e(i);
     }
 
   template <int M, int N, class AT> template <class Col>
     inline void Matrix<General,Fixed<M>,Fixed<N>,AT>::add(int i, const RowVector<Col,AT> &x) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(i<rows());
       assert(cols()==x.size());
-#endif
       for(int j=0; j<cols(); j++)
         e(i,j) += x.e(j);
     }
@@ -565,12 +559,10 @@ namespace fmatvec {
   template <int M, int N, class AT> template<class Type, class Row, class Col>
     inline void Matrix<General,Fixed<M>,Fixed<N>,AT>::add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
       assert(I.end()<rows());
       assert(J.end()<cols());
       assert(I.size()==A.rows());
       assert(J.size()==A.cols());
-#endif
 
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
@@ -645,25 +637,20 @@ namespace fmatvec {
 
       template<class Row>
       Matrix(const Matrix<Symmetric,Row,Row,AT> &A) {
-#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(A.size() == M); 
-#endif
 	this->deepCopy(A);
       }
 
       template<class Type, class Row, class Col>
       explicit Matrix(const Matrix<Type,Row,Col,AT> &A) {
-#ifndef FMATVEC_NO_SIZE_CHECK
 	assert(A.rows() == M); 
 	assert(A.cols() == M);
-#endif
 	this->deepCopy(A);
       }
 
       // TODO: we should add some overloaded member functions here which capitalize the special
       // properties of rotation matrices, link "RotMat inv() { return trans(*this); }"
   };
-
 
 }
 

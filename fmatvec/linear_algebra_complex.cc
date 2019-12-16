@@ -30,9 +30,6 @@
 #include <stdexcept>
 #include <sstream>
 
-#define FMATVEC_NO_INITIALIZATION
-#define FMATVEC_NO_BOUNDS_CHECK
-
 #define CVT_TRANSPOSE(c) \
    (((c) == CblasNoTrans) ? 'N' : \
     ((c) == CblasTrans) ? 'T' : \
@@ -60,18 +57,14 @@ namespace fmatvec {
 
   Vector<Ref, std::complex<double> > slvLU(const SquareMatrix<Ref, std::complex<double> > &A, const Vector<Ref, std::complex<double> > &x) {
 
-#ifndef FMATVEC_NO_SIZE_CHECK
     assert(A.size() == x.size());
-#endif
 
-    Vector<Ref, std::complex<double> > y = x.copy();
+    Vector<Ref, std::complex<double> > y = x;
 
-#ifndef FMATVEC_NO_VOID_CHECK
     if (x.size() == 0)
       return y;
-#endif
 
-    SquareMatrix<Ref, std::complex<double> > B = A.copy();
+    SquareMatrix<Ref, std::complex<double> > B = A;
 
     auto *ipiv = new int[A.size()];
 

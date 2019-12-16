@@ -81,12 +81,10 @@ namespace fmatvec {
        * \sa operator()(int,int) const
        * */
       AT& operator()(int i, int j) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(j>=0);
 	assert(i<rows());
 	assert(j<cols());
-#endif
 
 	return e(i,j);
       }
@@ -96,12 +94,10 @@ namespace fmatvec {
        * See operator()(int,int) 
        * */
       const AT& operator()(int i, int j) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(j>=0);
 	assert(i<rows());
 	assert(j<cols());
-#endif
 
 	return e(i,j);
       }
@@ -128,8 +124,6 @@ namespace fmatvec {
        * */
       operator std::vector<std::vector<AT> >() const;
   };
-
-
 
   template <class Type, class Row, class Col, class AT> void Matrix<Type,Row,Col,AT>::deepCopy(const Matrix<Type,Row,Col,AT> &A) { 
     for(int i=0; i<rows(); i++) 
@@ -171,7 +165,7 @@ namespace fmatvec {
     if(c!='[') {
       // its a scalar (written without the [ ] )
       is>>e;
-      A = Matrix<Type,Row,Col,AT>(std::vector<std::vector<AT>>(1, std::vector<AT>(1, e)));
+      A.replace(Matrix<Type,Row,Col,AT>(std::vector<std::vector<AT>>(1, std::vector<AT>(1, e))));
       return is;
     }
     // its vector or matrix
@@ -186,7 +180,7 @@ namespace fmatvec {
       else if(c==';' || c=='\n') { is.get(); m.resize(++r + 1); }
       else if(c==']'           ) { is.get(); break; }
     }
-    A = Matrix<Type,Row,Col,AT>(m);
+    A.replace(Matrix<Type,Row,Col,AT>(m));
     return is;
   }
 
