@@ -49,7 +49,7 @@ namespace fmatvec {
       int kl{0};
       int ku{0};
 
-      inline void deepCopy(const Matrix<GeneralBand,Ref,Ref,AT> &A); 
+      inline Matrix<GeneralBand,Ref,Ref,AT>& copy(const Matrix<GeneralBand,Ref,Ref,AT> &A);
 
       explicit Matrix(int n_, int kl_, int ku_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_), kl(kl_), ku(ku_) {
       }
@@ -89,7 +89,7 @@ namespace fmatvec {
        * \param A The matrix that will be copied.
        * */
       Matrix(const Matrix<GeneralBand,Ref,Ref,AT> &A) : memory(A.n*(A.kl+A.ku+1)), ele((AT*)memory.get()), n(A.n), kl(A.kl), ku(A.ku) {
-        deepCopy(A);
+        copy(A);
       }
 
       /*! \brief Copy Constructor
@@ -100,7 +100,7 @@ namespace fmatvec {
       template<class Type, class Row, class Col>
       explicit Matrix(const Matrix<Type,Row,Col,AT> &A) : memory(A.rows()*(2*A.rows()-1)), ele((AT*)memory.get()), n(A.rows()), kl(n-1), ku(n-1) {
         assert(A.rows() == A.cols());
-	deepCopy(A);
+	copy(A);
       }
 
       /*! \brief Regular Constructor
@@ -138,8 +138,7 @@ namespace fmatvec {
        * */
       inline Matrix<GeneralBand,Ref,Ref,AT>& operator=(const Matrix<GeneralBand,Ref,Ref,AT> &A) {
         assert(n == A.n);
-        deepCopy(A);
-        return *this;
+        return copy(A);
       }
 
       /*! \brief Assignment operator
@@ -152,8 +151,7 @@ namespace fmatvec {
       inline Matrix<GeneralBand,Ref,Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
         assert(n == A.rows());
         assert(n == A.cols());
-        deepCopy(A);
-        return *this;
+        return copy(A);
       }
 
       /*! \brief Reference operator
@@ -163,20 +161,35 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       inline Matrix<GeneralBand,Ref,Ref,AT>& operator&=(const Matrix<GeneralBand,Ref,Ref,AT> &A) {
-        n=A.n;
+        n = A.n;
         memory = A.memory;
         ele = A.ele;
         return *this;
       }
 
-      /*! \brief Matrix replacement
+      /*! \brief Matrix assignment
        *
        * Copies the band matrix given by \em A.
        * \param A The matrix to be copied. 
        * \return A reference to the calling matrix.
        * */
       template<class Type, class Row, class Col>
-      inline Matrix<GeneralBand,Ref,Ref,AT>& replace(const Matrix<Type,Row,Col,AT> &A);
+      inline Matrix<GeneralBand,Ref,Ref,AT>& assign(const Matrix<Type,Row,Col,AT> &A) {
+        resize(A.rows(),NONINIT);
+        return copy(A);
+      }
+
+      /*! \brief Matrix reassignment
+       *
+       * Copies the band matrix given by \em A.
+       * \param A The matrix to be copied.
+       * \return A reference to the calling matrix.
+       * */
+      template<class Type, class Row, class Col>
+      inline Matrix<GeneralBand,Ref,Ref,AT>& reassign(const Matrix<Type,Row,Col,AT> &A) {
+        if(n!=A.n) resize(A.rows(),NONINIT);
+        return copy(A);
+      }
 
       /*! \brief Element operator
        *
@@ -275,20 +288,6 @@ namespace fmatvec {
       inline operator std::vector<std::vector<AT> >() const;
   };
 
-  template <class AT> template< class Type, class Row, class Col>
-    inline Matrix<GeneralBand,Ref,Ref,AT>& Matrix<GeneralBand,Ref,Ref,AT>::replace(const Matrix<Type,Row,Col,AT> &A) {
-
-      if(n!=A.n) {
-	n = A.n;
-	memory.resize(n*n);
-	ele = (AT*)memory.get();
-      } 
-
-      deepCopy(A);
-
-      return *this;
-    }
-
   template <class AT>
     inline Matrix<GeneralBand,Ref,Ref,AT>&  Matrix<GeneralBand,Ref,Ref,AT>::init(const AT& val) {
       for(int i=0; i<kl+ku+1; i++)
@@ -337,11 +336,11 @@ namespace fmatvec {
   /// @cond NO_SHOW
 
   template <class AT>
-    inline void Matrix<GeneralBand,Ref,Ref,AT>::deepCopy(const Matrix<GeneralBand,Ref,Ref,AT> &A) { 
-
+    inline Matrix<GeneralBand,Ref,Ref,AT>& Matrix<GeneralBand,Ref,Ref,AT>::copy(const Matrix<GeneralBand,Ref,Ref,AT> &A) {
       for(int i=0; i<kl+ku+1; i++)
 	for(int j=0; j<n; j++)
 	  ele[i+j*(kl+ku+1)] = A.ele[i+j*(kl+ku+1)];
+      return *this;
     }
 
   /// @endcond

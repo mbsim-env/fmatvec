@@ -49,23 +49,13 @@ namespace fmatvec {
 
       AT *ele;
 
-      template <class Type, class Row, class Col> inline void deepCopy(const Matrix<Type,Row,Col,AT> &A); 
-      //inline void deepCopy(const Matrix<General,Var,Fixed<N>,AT> &A); 
+      template <class Type, class Row, class Col> inline Matrix<General,Var,Fixed<N>,AT>& copy(const Matrix<Type,Row,Col,AT> &A);
 
  /// @endcond
  
     public:
 
       explicit Matrix() :  ele(nullptr) { }
-
-//      template<class Ini=All<AT> >
-//      Matrix(int m, Ini ini=All<AT>()) :  M(m), ele(new AT[M*N]) {
-//        init(ini);
-//      }
-//      template<class Ini=All<AT> >
-//      Matrix(int m, int n, Ini ini=All<AT>()) :  M(m), ele(new AT[M*N]) {
-//        init(ini);
-//      }
 
       explicit Matrix(int m, Noinit) : M(m), ele(new AT[M*N]) { }
       explicit Matrix(int m, Init ini=INIT, const AT &a=AT()) : M(m), ele(new AT[M*N]) { init(a); }
@@ -80,7 +70,7 @@ namespace fmatvec {
        * \param A The matrix that will be copied.
        * */
       Matrix(const Matrix<General,Var,Fixed<N>,AT> &A) : M(A.M), ele(new AT[M*N]) {
-	deepCopy(A);
+	copy(A);
       }
 
       /*! \brief Copy Constructor
@@ -91,7 +81,7 @@ namespace fmatvec {
       template<class Row, class Col>
       Matrix(const Matrix<General,Row,Col,AT> &A) : M(A.rows()), ele(new AT[M*N]) {
 	assert(A.cols() == N); 
-	deepCopy(A);
+	copy(A);
       }
 
       /*! \brief Copy Constructor
@@ -102,7 +92,7 @@ namespace fmatvec {
       template<class Type, class Row, class Col>
       explicit Matrix(const Matrix<Type,Row,Col,AT> &A) : M(A.rows()), ele(new AT[M*N]) {
 	assert(A.cols() == N); 
-	deepCopy(A);
+	copy(A);
       }
 
       /*! \brief String Constructor. 
@@ -153,8 +143,7 @@ namespace fmatvec {
        * */
       inline Matrix<General,Var,Fixed<N>,AT>& operator=(const Matrix<General,Var,Fixed<N>,AT> &A) {
         assert(M == A.rows());
-        deepCopy(A);
-        return *this;
+        return copy(A);
       }
 
       /*! \brief Assignment operator
@@ -167,18 +156,34 @@ namespace fmatvec {
       inline Matrix<General,Var,Fixed<N>,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
         assert(N == A.cols()); 
         assert(M == A.rows());
-        deepCopy(A);
-        return *this;
+        return copy(A);
       }
 
-      /*! \brief Matrix replacement
+      /*! \brief Matrix assignment
        *
        * Copies the matrix given by \em A.
-       * \param A The matrix to be copied. 
+       * \param A The matrix to be copied.
        * \return A reference to the calling matrix.
        * */
       template <class Type, class Row, class Col>
-      inline Matrix<General,Var,Fixed<N>,AT>& replace(const Matrix<Type,Row,Col,AT> &A); 
+      inline Matrix<General,Var,Fixed<N>,AT>& assign(const Matrix<Type,Row,Col,AT> &A) {
+        assert(N == A.cols());
+        resize(A.rows(),NONINIT);
+        return copy(A);
+      }
+
+      /*! \brief Matrix reassignment
+       *
+       * Copies the matrix given by \em A.
+       * \param A The matrix to be copied.
+       * \return A reference to the calling matrix.
+       * */
+      template <class Type, class Row, class Col>
+      inline Matrix<General,Var,Fixed<N>,AT>& reassign(const Matrix<Type,Row,Col,AT> &A) {
+        assert(N == A.cols());
+        if(M!=A.rows()) resize(A.rows(),NONINIT);
+        return copy(A);
+      }
 
       /*! \brief Element operator
        *
@@ -351,22 +356,6 @@ namespace fmatvec {
   template <int N, class AT> Matrix<General,Var,Fixed<N>,AT>::Matrix(const char * strs) :
     Matrix<General,Var,Fixed<N>,AT>::Matrix(std::string(strs)) {}
 
-  template <int N, class AT> template< class Type, class Row, class Col>
-    inline Matrix<General,Var,Fixed<N>,AT>& Matrix<General,Var,Fixed<N>,AT>::replace(const Matrix<Type,Row,Col,AT> &A) { 
-
-      assert(N == A.cols());
-
-      if(M!=A.rows()) {
-        delete[] ele;
-        M = A.rows();
-        ele = new AT[M*N];
-      }
-
-      deepCopy(A);
-
-      return *this;
-    }
-
   template <int N, class AT>
     inline Matrix<General,Var,Fixed<N>,AT>&  Matrix<General,Var,Fixed<N>,AT>::init(const AT &val) {
       for(int i=0; i<M*N; i++) 
@@ -520,17 +509,12 @@ namespace fmatvec {
   /// @cond NO_SHOW
 
   template <int N, class AT> template <class Type, class Row, class Col>
-    inline void Matrix<General,Var,Fixed<N>,AT>::deepCopy(const Matrix<Type,Row,Col,AT> &A) { 
+    inline Matrix<General,Var,Fixed<N>,AT>& Matrix<General,Var,Fixed<N>,AT>::copy(const Matrix<Type,Row,Col,AT> &A) {
       for(int i=0; i<M; i++) 
         for(int j=0; j<N; j++)
           e(i,j) = A.e(i,j);
+      return *this;
     }
-
-//  template<int N, class AT>
-//    inline void Matrix<General,Var,Fixed<N>,AT>::deepCopy(const Matrix<General,Var,Fixed<N>,AT> &A) {
-//      for(int i=0; i<M*N; i++) 
-//        e(i) = A.e(i);
-//    }
 
   /// @endcond
 

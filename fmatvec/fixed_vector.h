@@ -52,7 +52,7 @@ namespace fmatvec {
 
     protected:
 
-    template<class Row> inline void deepCopy(const Vector<Row,AT> &x);
+    template<class Row> inline Vector<Fixed<M>,AT>& copy(const Vector<Row,AT> &x);
 
     /// @endcond
     
@@ -111,8 +111,7 @@ namespace fmatvec {
        * \return A reference to the calling vector.
        * */
       inline Vector<Fixed<M>,AT>& operator=(const Vector<Fixed<M>,AT> &x) {
-        deepCopy(x);
-        return *this;
+        return copy(x);
       }
 
       /*! \brief Assignment operator
@@ -124,18 +123,26 @@ namespace fmatvec {
       template <class Row>
       inline Vector<Fixed<M>,AT>& operator=(const Vector<Row,AT> &x) {
         assert(x.size() == M);
-        deepCopy(x);
-        return *this;
+        return copy(x);
       }
 
-      /*! \brief Vector replacement
+      /*! \brief Vector assignment
        *
        * Copies the vector given by \em x.
-       * \param x The vector to be copied. 
+       * \param x The vector to be copied.
        * \return A reference to the calling vector.
        * */
       template <class Row>
-      inline Vector<Fixed<M>,AT>& replace(const Vector<Row,AT> &x) { return operator=(x); }
+      inline Vector<Fixed<M>,AT>& assign(const Vector<Row,AT> &x) { return operator=(x); }
+
+      /*! \brief Vector reassignment
+       *
+       * Copies the vector given by \em x.
+       * \param x The vector to be copied.
+       * \return A reference to the calling vector.
+       * */
+      template <class Row>
+      inline Vector<Fixed<M>,AT>& reassign(const Vector<Row,AT> &x) { return operator=(x); }
 
       template <class AT2>
       operator Vector<Fixed<M>,AT2>() const {
@@ -295,9 +302,10 @@ namespace fmatvec {
   /// @cond NO_SHOW
 
   template <int M, class AT> template<class Row>
-    inline void Vector<Fixed<M>,AT>::deepCopy(const Vector<Row,AT> &x) {
+    inline Vector<Fixed<M>,AT>& Vector<Fixed<M>,AT>::copy(const Vector<Row,AT> &x) {
       for(int i=0; i<M; i++)
 	e(i) = x.e(i);
+      return *this;
     }
 
   /// @endcond

@@ -46,7 +46,7 @@ namespace fmatvec {
 	AT *ele;
 	int n{0};
 
-	void deepCopy(const Matrix<Diagonal,Ref,Ref,AT> &A);
+	inline Matrix<Diagonal,Ref,Ref,AT>& copy(const Matrix<Diagonal,Ref,Ref,AT> &A);
 
 	explicit Matrix(int n_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_) {
 	}
@@ -87,7 +87,7 @@ namespace fmatvec {
 	 * \param A The matrix that will be copied.
 	 * */
 	Matrix(const Matrix<Diagonal,Ref,Ref,AT> &A) : memory(A.n), ele((AT*)memory.get()) ,n(A.n) {
-          deepCopy(A);
+          copy(A);
 	}
 
 	/*! \brief Copy Constructor
@@ -98,7 +98,7 @@ namespace fmatvec {
         template<class Type, class Row, class Col>
 	Matrix(const Matrix<Type,Row,Col,AT> &A) : memory(A.rows()), ele((AT*)memory.get()) ,n(A.rows()) {
           assert(A.rows() == A.cols());
-          deepCopy(A);
+          copy(A);
 	}
 
 	/*! \brief Destructor. 
@@ -123,8 +123,7 @@ namespace fmatvec {
 	 * */
         inline Matrix<Diagonal,Ref,Ref,AT>& operator=(const Matrix<Diagonal,Ref,Ref,AT> &A) {
           assert(n == A.n);
-          deepCopy(A);
-          return *this;
+          return copy(A);
         }
 
 	/*! \brief Assignment operator
@@ -137,8 +136,7 @@ namespace fmatvec {
 	inline Matrix<Diagonal,Ref,Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
           assert(n == A.rows());
           assert(n == A.cols());
-          deepCopy(A);
-          return *this;
+          return copy(A);
         }
 
 	/*! \brief Reference operator
@@ -154,14 +152,29 @@ namespace fmatvec {
           return *this;
         }
 
-        /*! \brief Matrix replacement
+        /*! \brief Matrix assignment
+	 *
+	 * Copies the diagonal matrix given by \em A.
+	 * \param A The matrix to be copied.
+	 * \return A reference to the calling matrix.
+	 * */
+        template<class Type, class Row, class Col>
+	inline Matrix<Diagonal,Ref,Ref,AT>& assign(const Matrix<Type,Row,Col,AT> &A) {
+          resize(A.rows(),NONINIT);
+          return copy(A);
+        }
+
+        /*! \brief Matrix reassignment
 	 *
 	 * Copies the diagonal matrix given by \em A.
 	 * \param A The matrix to be copied. 
 	 * \return A reference to the calling matrix.
 	 * */
         template<class Type, class Row, class Col>
-	inline Matrix<Diagonal,Ref,Ref,AT>& replace(const Matrix<Type,Row,Col,AT> &A);
+	inline Matrix<Diagonal,Ref,Ref,AT>& reassign(const Matrix<Type,Row,Col,AT> &A) {
+          if(n!=A.n) resize(A.rows(),NONINIT);
+          return copy(A);
+        }
 
 	Matrix<Diagonal,Ref,Ref,AT>(const std::vector<std::vector<AT>> &A);
 
@@ -290,20 +303,6 @@ namespace fmatvec {
         operator std::vector<std::vector<AT> >() const;
     };
 
-  template <class AT> template< class Type, class Row, class Col>
-    Matrix<Diagonal,Ref,Ref,AT>& Matrix<Diagonal,Ref,Ref,AT>::replace(const Matrix<Type,Row,Col,AT> &A) {
-
-      if(n!=A.n) {
-	n = A.n;
-	memory.resize(n);
-	ele = (AT*)memory.get();
-      } 
-
-      deepCopy(A);
-
-      return *this;
-    }
-
   template <class AT>
     Matrix<Diagonal,Ref,Ref,AT>::Matrix(const std::vector<std::vector<AT>> &A) : Matrix<Diagonal,Ref,Ref,AT>(A.size()) { 
       for(size_t r=0; r<A.size(); ++r) {
@@ -327,9 +326,10 @@ namespace fmatvec {
     }
 
   template <class AT>
-    void Matrix<Diagonal,Ref,Ref,AT>::deepCopy(const Matrix<Diagonal,Ref,Ref,AT> &A) { 
+    inline Matrix<Diagonal,Ref,Ref,AT>& Matrix<Diagonal,Ref,Ref,AT>::copy(const Matrix<Diagonal,Ref,Ref,AT> &A) {
       for(int i=0; i<n; i++)
         e(i) = A.e(i);
+      return *this;
     }
 
   template <class AT>

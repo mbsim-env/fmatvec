@@ -46,7 +46,7 @@ namespace {
 
   template<class Shape, class ATIndep>
   struct Helper<Vector<Shape, ATIndep>> {
-    static void initIndep(Vector<Shape, ATIndep> &x, int size) { x=Vector<Shape, ATIndep>(size, NONINIT); }
+    static void initIndep(Vector<Shape, ATIndep> &x, int size) { x.assign(Vector<Shape, ATIndep>(size, NONINIT)); }
     static int size1(const Vector<Shape, ATIndep> &x) { return x.size(); }
     static int size2(const Vector<Shape, ATIndep> &x) { return 1; }
   };

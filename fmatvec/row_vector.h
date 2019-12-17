@@ -62,8 +62,8 @@ namespace fmatvec {
 
     protected:
 
-    inline void deepCopy(const RowVector<Ref,AT> &x);
-    template<class Col> inline void deepCopy(const RowVector<Col,AT> &x);
+    inline RowVector<Ref,AT>& copy(const RowVector<Ref,AT> &x);
+    template<class Col> inline RowVector<Ref,AT>& copy(const RowVector<Col,AT> &x);
 
     const AT* elePtr(int i) const {
       return tp ? ele+i : ele+lda*i;
@@ -149,8 +149,7 @@ namespace fmatvec {
        * */
       inline RowVector<Ref,AT>& operator=(const RowVector<Ref,AT> &x) {
         assert(n == x.size());
-        deepCopy(x);
-        return *this;
+        return copy(x);
       }
 
       /*! \brief Assignment operator
@@ -162,8 +161,7 @@ namespace fmatvec {
       template <class Row>
       inline RowVector<Ref,AT>& operator=(const RowVector<Row,AT> &x) {
         assert(n == x.size());
-        deepCopy(x);
-        return *this;
+        return copy(x);
       }
 
       /*! \brief Reference operator
@@ -199,14 +197,29 @@ namespace fmatvec {
         return *this;
       }
 
-      /*! \brief Rowvector replacement
+      /*! \brief Rowvector assignment
        *
        * Copies the rowvector given by \em x.
-       * \param x The rowvector to be copied. 
+       * \param x The rowvector to be copied.
        * \return A reference to the calling rowvector.
        * */
       template <class Row>
-      inline RowVector<Ref,AT>& replace(const RowVector<Row,AT> &x);
+        inline RowVector<Ref,AT>& assign(const RowVector<Row,AT> &x) {
+          resize(x.size(),NONINIT);
+          return copy(x);
+        }
+
+      /*! \brief Rowvector reassignment
+       *
+       * Copies the rowvector given by \em x.
+       * \param x The rowvector to be copied.
+       * \return A reference to the calling rowvector.
+       * */
+      template <class Row>
+        inline RowVector<Ref,AT>& reassign(const RowVector<Row,AT> &x) {
+          if(n!=x.size()) resize(x.size(),NONINIT);
+          return copy(x);
+        }
 
       template <class AT2>
       operator Vector<Ref,AT2>() const {
@@ -358,23 +371,6 @@ namespace fmatvec {
       return *this;
     }
 
-  template <class AT> template <class Row>
-    inline RowVector<Ref,AT>& RowVector<Ref,AT>::replace(const RowVector<Row,AT> &x) { 
-
-      if(n!=x.size()) {
-	m = 1; 
-	n = x.size();
-	lda = m;
-	tp = false;
-	memory.resize(n);
-	ele = (AT*)memory.get();
-      } 
-
-      deepCopy(x);
-
-      return *this;
-    }
-
   template <class AT> 
     inline RowVector<Ref,AT> RowVector<Ref,AT>::operator()(int i1, int i2) {
       return operator()(Range<Var,Var>(i1,i2));
@@ -404,7 +400,7 @@ namespace fmatvec {
   /// @cond NO_SHOW
 
   template <class AT>
-    inline void RowVector<Ref,AT>::deepCopy(const RowVector<Ref,AT> &x) {
+    inline RowVector<Ref,AT>& RowVector<Ref,AT>::copy(const RowVector<Ref,AT> &x) {
       if(tp) {
         if(x.tp) 
           for(int i=0; i<size(); i++)
@@ -421,16 +417,18 @@ namespace fmatvec {
           for(int i=0; i<size(); i++)
             er(i) = x.er(i);
       }
+      return *this;
     }
 
   template <class AT> template <class Col>
-    inline void RowVector<Ref,AT>::deepCopy(const RowVector<Col,AT> &x) {
+    inline RowVector<Ref,AT>& RowVector<Ref,AT>::copy(const RowVector<Col,AT> &x) {
       if(tp) 
 	for(int i=0; i<size(); i++)
 	  et(i) = x.e(i);
       else 
 	for(int i=0; i<size(); i++)
 	  er(i) = x.e(i);
+      return *this;
     }
 
   /// @endcond

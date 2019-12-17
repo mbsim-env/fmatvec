@@ -429,6 +429,19 @@ double eval(const SymbolicExpression &x) {
   return x->eval();
 }
 
+inline void assign(SymbolicExpression &d, const SymbolicExpression &s) {
+  d=s;
+}
+
+inline void assign(IndependentVariable &d, const IndependentVariable &s) {
+  d=s;
+}
+
+template<typename Dst, typename Src>
+inline void assign(Dst &d, const Src &s) {
+  d.assign(s);
+}
+
 } // end namespace fmatvec
 
 #endif

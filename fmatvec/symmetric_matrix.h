@@ -47,8 +47,8 @@ namespace fmatvec {
       int n{0};
       int lda{0};
 
-      template <class Type, class Row, class Col> inline void deepCopy(const Matrix<Type,Row,Col,AT> &A); 
-      inline void deepCopy(const Matrix<Symmetric,Ref,Ref,AT> &A); 
+      template <class Type, class Row, class Col> inline Matrix<Symmetric,Ref,Ref,AT>& copy(const Matrix<Type,Row,Col,AT> &A);
+      inline Matrix<Symmetric,Ref,Ref,AT>& copy(const Matrix<Symmetric,Ref,Ref,AT> &A);
 
       const AT* elePtr(int i, int j) const {
 	return  j > i ? ele+i*lda+j : ele+i+j*lda; 
@@ -87,7 +87,7 @@ namespace fmatvec {
        * \param A The matrix that will be copied.
        * */
       Matrix(const Matrix<Symmetric,Ref,Ref,AT> &A) : memory(A.n*A.n), ele((AT*)memory.get()) , n(A.n), lda(n) {
-        deepCopy(A);
+        copy(A);
       }
 
       /*! \brief Copy Constructor
@@ -97,7 +97,7 @@ namespace fmatvec {
        * */
       template<class Row>
       Matrix(const Matrix<Symmetric,Row,Row,AT> &A) : memory(A.size()*A.size()), ele((AT*)memory.get()), n(A.size()), lda(n) {
-        deepCopy(A);
+        copy(A);
       }
 
       /*! \brief Copy Constructor
@@ -108,7 +108,7 @@ namespace fmatvec {
       template<class Type, class Row, class Col>
       explicit Matrix(const Matrix<Type,Row,Col,AT> &A) : memory(A.rows()*A.cols()), ele((AT*)memory.get()), n(A.cols()), lda(n) {
 	assert(A.rows() == A.cols());
-	deepCopy(A);
+	copy(A);
       }
 
       /*! \brief Regular Constructor
@@ -158,8 +158,7 @@ namespace fmatvec {
        * */
       inline Matrix<Symmetric,Ref,Ref,AT>& operator=(const Matrix<Symmetric,Ref,Ref,AT> &A) {
         assert(n == A.rows());
-        deepCopy(A);
-        return *this;
+        return copy(A);
       }
 
       /*! \brief Assignment operator
@@ -172,8 +171,7 @@ namespace fmatvec {
       inline Matrix<Symmetric,Ref,Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
         assert(A.rows() == A.cols());
         assert(n == A.rows());
-        deepCopy(A);
-        return *this;
+        return copy(A);
       }
 
       /*! \brief Reference operator
@@ -190,14 +188,31 @@ namespace fmatvec {
         return *this;
       }
 
-      /*! \brief Matrix replacement
+      /*! \brief Matrix assignment
        *
        * Copies the symmetric matrix given by \em A.
-       * \param A The matrix to be copied. 
+       * \param A The matrix to be copied.
        * \return A reference to the calling matrix.
        * */
       template<class Type, class Row, class Col>
-        inline Matrix<Symmetric,Ref,Ref,AT>& replace(const Matrix<Type,Row,Col,AT> &A);
+        inline Matrix<Symmetric,Ref,Ref,AT>& assign(const Matrix<Type,Row,Col,AT> &A) {
+          assert(A.rows() == A.cols());
+          resize(A.rows(),NONINIT);
+          return copy(A);
+        }
+
+      /*! \brief Matrix reassignment
+       *
+       * Copies the symmetric matrix given by \em A.
+       * \param A The matrix to be copied.
+       * \return A reference to the calling matrix.
+       * */
+      template<class Type, class Row, class Col>
+        inline Matrix<Symmetric,Ref,Ref,AT>& reassign(const Matrix<Type,Row,Col,AT> &A) {
+          assert(A.rows() == A.cols());
+          if(n!=A.rows()) resize(A.rows(),NONINIT);
+          return copy(A);
+        }
 
       /*! \brief Element operator
        *
@@ -403,23 +418,6 @@ namespace fmatvec {
       }
     }
 
-  template <class AT> template< class Type, class Row, class Col>
-    inline Matrix<Symmetric,Ref,Ref,AT>& Matrix<Symmetric,Ref,Ref,AT>::replace(const Matrix<Type,Row,Col,AT> &A) { 
-      
-      assert(A.rows() == A.cols());
-
-      if(n!=A.rows()) {
-	n = A.rows();
-	lda = n;
-	memory.resize(n*n);
-	ele = (AT*)memory.get();
-      } 
-
-      deepCopy(A);
-
-      return *this;
-    }
-
   template <class AT>
     inline Matrix<Symmetric,Ref,Ref,AT>&  Matrix<Symmetric,Ref,Ref,AT>::init(const AT &val) {
 
@@ -521,17 +519,19 @@ namespace fmatvec {
   /// @cond NO_SHOW
 
   template <class AT>
-    inline void Matrix<Symmetric,Ref,Ref,AT>::deepCopy(const Matrix<Symmetric,Ref,Ref,AT> &A) { 
+    inline Matrix<Symmetric,Ref,Ref,AT>& Matrix<Symmetric,Ref,Ref,AT>::copy(const Matrix<Symmetric,Ref,Ref,AT> &A) {
       for(int i=0; i<n; i++) 
         for(int j=i; j<n; j++) 
           ej(i,j) = A.ej(i,j);
+      return *this;
     }
 
   template <class AT> template <class Type, class Row, class Col>
-    inline void Matrix<Symmetric,Ref,Ref,AT>::deepCopy(const Matrix<Type,Row,Col,AT> &A) { 
+    inline Matrix<Symmetric,Ref,Ref,AT>& Matrix<Symmetric,Ref,Ref,AT>::copy(const Matrix<Type,Row,Col,AT> &A) {
       for(int i=0; i<n; i++) 
         for(int j=i; j<n; j++) 
           ej(i,j) = A.e(i,j);
+      return *this;
     }
 
   /// @endcond

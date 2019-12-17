@@ -124,17 +124,17 @@ SymbolicFunction<RET(ARG1, ARG2)>::SymbolicFunction(const Arg1S &arg1S_, const A
 
 template<TEMPLATE>
 void SymbolicFunction<RET(ARG1, ARG2)>::setIndependentVariable1(const Arg1S &arg1S_) {
-  arg1S=arg1S_;
+  assign(arg1S,arg1S_);
 }
 
 template<TEMPLATE>
 void SymbolicFunction<RET(ARG1, ARG2)>::setIndependentVariable2(const Arg2S &arg2S_) {
-  arg2S=arg2S_;
+  assign(arg2S,arg2S_);
 }
 
 template<TEMPLATE>
 void SymbolicFunction<RET(ARG1, ARG2)>::setDependentFunction(const RetS &retS_) {
-  retS=retS_;
+  assign(retS,retS_);
 }
 
 template<TEMPLATE>
@@ -146,36 +146,36 @@ void SymbolicFunction<RET(ARG1, ARG2)>::init() {
   Helper<Arg2S>::initIndep(argDir2S, Helper<Arg2S>::size1(arg2S));
   Helper<Arg2S>::initIndep(argDir2S_2, Helper<Arg2S>::size1(arg2S));
 #ifdef PARDER1
-  pd1=fmatvec::parDer(retS, arg1S);
+  assign(pd1,fmatvec::parDer(retS, arg1S));
 #endif
-  dd1=fmatvec::dirDer(retS, argDir1S, arg1S);
+  assign(dd1,fmatvec::dirDer(retS, argDir1S, arg1S));
 #ifdef PARDER2
-  pd2=fmatvec::parDer(retS, arg2S);
+  assign(pd2,fmatvec::parDer(retS, arg2S));
 #endif
-  dd2=fmatvec::dirDer(retS, argDir2S, arg2S);
+  assign(dd2,fmatvec::dirDer(retS, argDir2S, arg2S));
 #ifdef PARDER1PARDER1
-  pd1pd1=fmatvec::parDer(fmatvec::parDer(retS, arg1S), arg1S);
+  assign(pd1pd1,fmatvec::parDer(fmatvec::parDer(retS, arg1S), arg1S));
 #endif
 #ifdef PARDER1
-  pd1dd1=fmatvec::dirDer(fmatvec::parDer(retS, arg1S), argDir1S, arg1S);
+  assign(pd1dd1,fmatvec::dirDer(fmatvec::parDer(retS, arg1S), argDir1S, arg1S));
 #endif
-  dd1dd1=fmatvec::dirDer(fmatvec::dirDer(retS, argDir1S, arg1S), argDir1S_2, arg1S);
+  assign(dd1dd1,fmatvec::dirDer(fmatvec::dirDer(retS, argDir1S, arg1S), argDir1S_2, arg1S));
 #ifdef PARDER2PARDER2
-  pd2pd2=fmatvec::parDer(fmatvec::parDer(retS, arg2S), arg2S);
+  assign(pd2pd2,fmatvec::parDer(fmatvec::parDer(retS, arg2S), arg2S));
 #endif
 #ifdef PARDER2
-  pd2dd2=fmatvec::dirDer(fmatvec::parDer(retS, arg2S), argDir2S, arg2S);
+  assign(pd2dd2,fmatvec::dirDer(fmatvec::parDer(retS, arg2S), argDir2S, arg2S));
 #endif
-  dd2dd2=fmatvec::dirDer(fmatvec::dirDer(retS, argDir2S, arg2S), argDir2S_2, arg2S);
+  assign(dd2dd2,fmatvec::dirDer(fmatvec::dirDer(retS, argDir2S, arg2S), argDir2S_2, arg2S));
 #ifdef PARDER1PARDER2
-  pd1pd2=fmatvec::parDer(fmatvec::parDer(retS, arg1S), arg2S);
+  assign(pd1pd2,fmatvec::parDer(fmatvec::parDer(retS, arg1S), arg2S));
 #endif
 #ifdef PARDER1
-  pd1dd2=fmatvec::dirDer(fmatvec::parDer(retS, arg1S), argDir2S, arg2S);
+  assign(pd1dd2,fmatvec::dirDer(fmatvec::parDer(retS, arg1S), argDir2S, arg2S));
 #endif
-  dd2dd1=fmatvec::dirDer(fmatvec::dirDer(retS, argDir2S, arg2S), argDir1S, arg1S);
+  assign(dd2dd1,fmatvec::dirDer(fmatvec::dirDer(retS, argDir2S, arg2S), argDir1S, arg1S));
 #ifdef PARDER2
-  pd2dd1=fmatvec::dirDer(fmatvec::parDer(retS, arg2S), argDir1S, arg1S);
+  assign(pd2dd1,fmatvec::dirDer(fmatvec::parDer(retS, arg2S), argDir1S, arg1S));
 #endif
 }
 

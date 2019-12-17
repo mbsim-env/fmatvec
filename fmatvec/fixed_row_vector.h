@@ -50,7 +50,7 @@ namespace fmatvec {
     
     protected:
 
-    template<class Col> inline void deepCopy(const RowVector<Col,AT> &x);
+    template<class Col> inline RowVector<Fixed<N>,AT>& copy(const RowVector<Col,AT> &x);
 
     /// @endcond
 
@@ -111,8 +111,7 @@ namespace fmatvec {
        * \return A reference to the calling vector.
        * */
       inline RowVector<Fixed<N>,AT>& operator=(const RowVector<Fixed<N>,AT> &x) {
-        deepCopy(x);
-        return *this;
+        return copy(x);
       }
 
       /*! \brief Assignment operator
@@ -124,12 +123,26 @@ namespace fmatvec {
       template <class Row>
       inline RowVector<Fixed<N>,AT>& operator=(const RowVector<Row,AT> &x) {
         assert(x.size() == N);
-        deepCopy(x);
-        return *this;
+        return copy(x);
       }
 
+      /*! \brief Matrix assignment
+       *
+       * Copies the band matrix given by \em A.
+       * \param A The matrix to be copied.
+       * \return A reference to the calling matrix.
+       * */
       template <class Row>
-      inline RowVector<Fixed<N>,AT>& replace(const RowVector<Row,AT> &x) { return operator=(x); }
+      inline RowVector<Fixed<N>,AT>& assign(const RowVector<Row,AT> &x) { return operator=(x); }
+
+      /*! \brief Matrix reassignment
+       *
+       * Copies the band matrix given by \em A.
+       * \param A The matrix to be copied.
+       * \return A reference to the calling matrix.
+       * */
+      template <class Row>
+      inline RowVector<Fixed<N>,AT>& reassign(const RowVector<Row,AT> &x) { return operator=(x); }
 
       /*! \brief Element operator
        *
@@ -229,9 +242,10 @@ namespace fmatvec {
    /// @cond NO_SHOW
  
   template <int N, class AT> template <class Col>
-    inline void RowVector<Fixed<N>,AT>::deepCopy(const RowVector<Col,AT> &x) {
+    inline RowVector<Fixed<N>,AT>& RowVector<Fixed<N>,AT>::copy(const RowVector<Col,AT> &x) {
       for(int i=0; i<N; i++)
         e(i) = x.e(i);
+      return *this;
     }
 
   /// @endcond

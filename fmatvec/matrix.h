@@ -58,7 +58,7 @@ namespace fmatvec {
 
       //AT* ele;
 
-      void deepCopy(const Matrix<Type,Row,Col,AT> &A);
+      inline Matrix<Type,Row,Col,AT>& copy(const Matrix<Type,Row,Col,AT> &A);
 
       /// @endcond
 
@@ -125,10 +125,11 @@ namespace fmatvec {
       operator std::vector<std::vector<AT> >() const;
   };
 
-  template <class Type, class Row, class Col, class AT> void Matrix<Type,Row,Col,AT>::deepCopy(const Matrix<Type,Row,Col,AT> &A) { 
+  template <class Type, class Row, class Col, class AT> inline Matrix<Type,Row,Col,AT>& Matrix<Type,Row,Col,AT>::copy(const Matrix<Type,Row,Col,AT> &A) {
     for(int i=0; i<rows(); i++) 
       for(int j=0; j<cols(); j++) 
 	e(i,j) = A.e(i,j);
+    return *this;
   }
 
   /*! \brief Matrix output 
@@ -165,7 +166,7 @@ namespace fmatvec {
     if(c!='[') {
       // its a scalar (written without the [ ] )
       is>>e;
-      A.replace(Matrix<Type,Row,Col,AT>(std::vector<std::vector<AT>>(1, std::vector<AT>(1, e))));
+      A.assign(Matrix<Type,Row,Col,AT>(std::vector<std::vector<AT>>(1, std::vector<AT>(1, e))));
       return is;
     }
     // its vector or matrix
@@ -180,7 +181,7 @@ namespace fmatvec {
       else if(c==';' || c=='\n') { is.get(); m.resize(++r + 1); }
       else if(c==']'           ) { is.get(); break; }
     }
-    A.replace(Matrix<Type,Row,Col,AT>(m));
+    A.assign(Matrix<Type,Row,Col,AT>(m));
     return is;
   }
 
