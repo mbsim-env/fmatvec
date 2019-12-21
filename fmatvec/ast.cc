@@ -584,7 +584,7 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
       if(b->isConstantInt())
         return b * pow(a, static_cast<const Constant<int>*>(b.get())->getValue() - 1) * ad;
       else
-        return pow(a, b-1) * (abs(a) * bd * log(abs(a)) + b * abs(ad));
+        return v * (bd * log(a) + ad * b / a);
     case Log:
       return ad / a;
     case Sqrt:
@@ -602,7 +602,7 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
     case Cosh:
       return sinh(a) * ad;
     case Tanh:
-      return (1 - pow(tanh(a), 2)) * ad;
+      return (1 - pow(v, 2)) * ad;
     case ASin:
       return ad / sqrt(1 - pow(a, 2));
     case ACos:
@@ -620,7 +620,7 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
     case Sign:
       return 0;
     case Abs:
-      return sign(a);
+      return sign(a) * ad;
   }
   throw runtime_error("Unknown operation.");
 }
