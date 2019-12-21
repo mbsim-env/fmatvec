@@ -67,12 +67,12 @@ SymbolicFunction<RET(ARG)>::SymbolicFunction(const ArgS &argS_, const RetS &retS
 
 template<TEMPLATE>
 void SymbolicFunction<RET(ARG)>::setIndependentVariable(const ArgS &argS_) {
-  assign(argS,argS_);
+  argS.assign(argS_);
 }
 
 template<TEMPLATE>
 void SymbolicFunction<RET(ARG)>::setDependentFunction(const RetS &retS_) {
-  assign(retS,retS_);
+  retS.assign(retS_);
 }
 
 template<TEMPLATE>
@@ -81,16 +81,16 @@ void SymbolicFunction<RET(ARG)>::init() {
   Helper<ArgS>::initIndep(argDirS, Helper<ArgS>::size1(argS));
   Helper<ArgS>::initIndep(argDirS_2, Helper<ArgS>::size1(argS));
 #ifdef PARDER
-  assign(pd,fmatvec::parDer(retS, argS));
+  pd.assign(fmatvec::parDer(retS, argS));
 #endif
-  assign(dd,fmatvec::dirDer(retS, argDirS, argS));
+  dd.assign(fmatvec::dirDer(retS, argDirS, argS));
 #ifdef PARDERPARDER
-  assign(pdpd,fmatvec::parDer(fmatvec::parDer(retS, argS), argS));
+  pdpd.assign(fmatvec::parDer(fmatvec::parDer(retS, argS), argS));
 #endif
 #ifdef PARDER
-  assign(pddd,fmatvec::dirDer(fmatvec::parDer(retS, argS), argDirS, argS));
+  pddd.assign(fmatvec::dirDer(fmatvec::parDer(retS, argS), argDirS, argS));
 #endif
-  assign(dddd,fmatvec::dirDer(fmatvec::dirDer(retS, argDirS, argS), argDirS_2, argS));
+  dddd.assign(fmatvec::dirDer(fmatvec::dirDer(retS, argDirS, argS), argDirS_2, argS));
 }
 
 template<TEMPLATE>

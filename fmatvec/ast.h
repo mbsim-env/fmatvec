@@ -84,6 +84,13 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
     SymbolicExpression& operator*=(const SymbolicExpression &b);
     SymbolicExpression& operator/=(const SymbolicExpression &b);
 
+    // We implement an assign method to be able to use SymbolicExpression fully equivalent to the vector/matrix classes
+    // which have a assign method which redimension before assigning. Redimensioning is not required for a scalar
+    // type like assign
+    SymbolicExpression& assign(const SymbolicExpression &src);
+    // We implement an reassign method to be able to use SymbolicExpression fully equivalent to the vector/matrix classes...
+    SymbolicExpression& reassign(const SymbolicExpression &src);
+
 #if !defined(NDEBUG) && !defined(SWIG)
     static unsigned long evalOperationsCount;
 #endif
@@ -427,19 +434,6 @@ IndependentVariable& IndependentVariable::operator&=(double x) {
 
 double eval(const SymbolicExpression &x) {
   return x->eval();
-}
-
-inline void assign(SymbolicExpression &d, const SymbolicExpression &s) {
-  d=s;
-}
-
-inline void assign(IndependentVariable &d, const IndependentVariable &s) {
-  d=s;
-}
-
-template<typename Dst, typename Src>
-inline void assign(Dst &d, const Src &s) {
-  d.assign(s);
 }
 
 } // end namespace fmatvec

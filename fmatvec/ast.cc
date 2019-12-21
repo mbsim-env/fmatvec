@@ -77,6 +77,16 @@ SymbolicExpression& SymbolicExpression::operator/=(const SymbolicExpression &b) 
   return *this;
 }
 
+SymbolicExpression& SymbolicExpression::assign(const SymbolicExpression &src) {
+  *this=src;
+  return *this;
+}
+
+SymbolicExpression& SymbolicExpression::reassign(const SymbolicExpression &src) {
+  *this=src;
+  return *this;
+}
+
 SymbolicExpression pow(const SymbolicExpression &a, const SymbolicExpression &b) {
   return AST::Operation::create(AST::Operation::Pow, {a, b});
 }
