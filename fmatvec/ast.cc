@@ -584,7 +584,7 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
       if(b->isConstantInt())
         return b * pow(a, static_cast<const Constant<int>*>(b.get())->getValue() - 1) * ad;
       else
-        return v * (bd * log(a) + ad * b / a);
+        return pow(a, b-1) * (bd * log(a) * a + ad * b);
     case Log:
       return ad / a;
     case Sqrt:
