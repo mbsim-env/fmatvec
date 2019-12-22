@@ -166,20 +166,7 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       template <class Type, class Row, class Col>
-      inline Matrix<General,Var,Fixed<N>,AT>& assign(const Matrix<Type,Row,Col,AT> &A) {
-        assert(N == A.cols());
-        resize(A.rows(),NONINIT);
-        return copy(A);
-      }
-
-      /*! \brief Matrix reassignment
-       *
-       * Copies the matrix given by \em A.
-       * \param A The matrix to be copied.
-       * \return A reference to the calling matrix.
-       * */
-      template <class Type, class Row, class Col>
-      inline Matrix<General,Var,Fixed<N>,AT>& reassign(const Matrix<Type,Row,Col,AT> &A) {
+      inline Matrix<General,Var,Fixed<N>,AT>& operator<<=(const Matrix<Type,Row,Col,AT> &A) {
         assert(N == A.cols());
         if(M!=A.rows()) resize(A.rows(),NONINIT);
         return copy(A);

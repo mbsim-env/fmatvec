@@ -133,16 +133,7 @@ namespace fmatvec {
        * \return A reference to the calling vector.
        * */
       template <class Row>
-      inline Vector<Fixed<M>,AT>& assign(const Vector<Row,AT> &x) { return operator=(x); }
-
-      /*! \brief Vector reassignment
-       *
-       * Copies the vector given by \em x.
-       * \param x The vector to be copied.
-       * \return A reference to the calling vector.
-       * */
-      template <class Row>
-      inline Vector<Fixed<M>,AT>& reassign(const Vector<Row,AT> &x) { return operator=(x); }
+      inline Vector<Fixed<M>,AT>& operator<<=(const Vector<Row,AT> &x) { return operator=(x); }
 
       template <class AT2>
       operator Vector<Fixed<M>,AT2>() const {

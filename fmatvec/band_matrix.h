@@ -170,23 +170,11 @@ namespace fmatvec {
       /*! \brief Matrix assignment
        *
        * Copies the band matrix given by \em A.
-       * \param A The matrix to be copied. 
-       * \return A reference to the calling matrix.
-       * */
-      template<class Type, class Row, class Col>
-      inline Matrix<GeneralBand,Ref,Ref,AT>& assign(const Matrix<Type,Row,Col,AT> &A) {
-        resize(A.rows(),NONINIT);
-        return copy(A);
-      }
-
-      /*! \brief Matrix reassignment
-       *
-       * Copies the band matrix given by \em A.
        * \param A The matrix to be copied.
        * \return A reference to the calling matrix.
        * */
       template<class Type, class Row, class Col>
-      inline Matrix<GeneralBand,Ref,Ref,AT>& reassign(const Matrix<Type,Row,Col,AT> &A) {
+      inline Matrix<GeneralBand,Ref,Ref,AT>& operator<<=(const Matrix<Type,Row,Col,AT> &A) {
         if(n!=A.n) resize(A.rows(),NONINIT);
         return copy(A);
       }

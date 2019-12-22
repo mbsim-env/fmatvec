@@ -119,16 +119,7 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       template<class Type, class Row, class Col>
-      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& assign(const Matrix<Type,Row,Col,AT> &A) { return operator=(A); }
-
-      /*! \brief Matrix reassignment
-       *
-       * Copies the matrix given by \em A.
-       * \param A The matrix to be copied.
-       * \return A reference to the calling matrix.
-       * */
-      template<class Type, class Row, class Col>
-      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& reassign(const Matrix<Type,Row,Col,AT> &A) { return operator=(A); }
+      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& operator<<=(const Matrix<Type,Row,Col,AT> &A) { return operator=(A); }
 
       //! Resize a fixed matrix
       //! Do nothing for the fixed dimension and throw for any other dimension.

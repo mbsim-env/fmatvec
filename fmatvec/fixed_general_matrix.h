@@ -146,20 +146,11 @@ namespace fmatvec {
       /*! \brief Matrix assignment
        *
        * Copies the matrix given by \em A.
-       * \param A The matrix to be copied. 
-       * \return A reference to the calling matrix.
-       * */
-      template<class Type, class Row, class Col>
-      inline Matrix<General,Fixed<M>,Fixed<N>,AT>& assign(const Matrix<Type,Row,Col,AT> &A) { return operator=(A); }
-
-      /*! \brief Matrix reassignment
-       *
-       * Copies the matrix given by \em A.
        * \param A The matrix to be copied.
        * \return A reference to the calling matrix.
        * */
       template<class Type, class Row, class Col>
-      inline Matrix<General,Fixed<M>,Fixed<N>,AT>& reassign(const Matrix<Type,Row,Col,AT> &A) { return operator=(A); }
+      inline Matrix<General,Fixed<M>,Fixed<N>,AT>& operator<<=(const Matrix<Type,Row,Col,AT> &A) { return operator=(A); }
 
       template <class AT2>
       operator Matrix<General,Fixed<M>,Fixed<N>,AT2>() const {

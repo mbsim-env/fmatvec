@@ -181,24 +181,12 @@ namespace fmatvec {
       /*! \brief Matrix assignment
        *
        * Copies the matrix given by \em A.
-       * \param A The matrix to be copied. 
-       * \return A reference to the calling matrix.
-       * */
-      template<class Type, class Row, class Col> SquareMatrix<Ref,AT>& assign(const Matrix<Type,Row,Col,AT> &A) {
-        assert(A.rows() == A.cols());
-	Matrix<General,Ref,Ref,AT>::assign(A);
-	return *this;
-      }
-
-      /*! \brief Matrix reassignment
-       *
-       * Copies the matrix given by \em A.
        * \param A The matrix to be copied.
        * \return A reference to the calling matrix.
        * */
-      template<class Type, class Row, class Col> SquareMatrix<Ref,AT>& reassign(const Matrix<Type,Row,Col,AT> &A) {
+      template<class Type, class Row, class Col> SquareMatrix<Ref,AT>& operator<<=(const Matrix<Type,Row,Col,AT> &A) {
         assert(A.rows() == A.cols());
-	Matrix<General,Ref,Ref,AT>::reassign(A);
+	Matrix<General,Ref,Ref,AT>::operator<<=(A);
 	return *this;
       }
 

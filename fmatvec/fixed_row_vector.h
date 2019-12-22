@@ -133,16 +133,7 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       template <class Row>
-      inline RowVector<Fixed<N>,AT>& assign(const RowVector<Row,AT> &x) { return operator=(x); }
-
-      /*! \brief Matrix reassignment
-       *
-       * Copies the band matrix given by \em A.
-       * \param A The matrix to be copied.
-       * \return A reference to the calling matrix.
-       * */
-      template <class Row>
-      inline RowVector<Fixed<N>,AT>& reassign(const RowVector<Row,AT> &x) { return operator=(x); }
+      inline RowVector<Fixed<N>,AT>& operator<<=(const RowVector<Row,AT> &x) { return operator=(x); }
 
       /*! \brief Element operator
        *

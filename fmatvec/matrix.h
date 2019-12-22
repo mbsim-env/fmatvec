@@ -166,7 +166,7 @@ namespace fmatvec {
     if(c!='[') {
       // its a scalar (written without the [ ] )
       is>>e;
-      A.assign(Matrix<Type,Row,Col,AT>(std::vector<std::vector<AT>>(1, std::vector<AT>(1, e))));
+      A<<=Matrix<Type,Row,Col,AT>(std::vector<std::vector<AT>>(1, std::vector<AT>(1, e)));
       return is;
     }
     // its vector or matrix
@@ -181,7 +181,7 @@ namespace fmatvec {
       else if(c==';' || c=='\n') { is.get(); m.resize(++r + 1); }
       else if(c==']'           ) { is.get(); break; }
     }
-    A.assign(Matrix<Type,Row,Col,AT>(m));
+    A<<=Matrix<Type,Row,Col,AT>(m);
     return is;
   }
 

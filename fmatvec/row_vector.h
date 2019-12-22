@@ -204,19 +204,7 @@ namespace fmatvec {
        * \return A reference to the calling rowvector.
        * */
       template <class Row>
-        inline RowVector<Ref,AT>& assign(const RowVector<Row,AT> &x) {
-          resize(x.size(),NONINIT);
-          return copy(x);
-        }
-
-      /*! \brief Rowvector reassignment
-       *
-       * Copies the rowvector given by \em x.
-       * \param x The rowvector to be copied.
-       * \return A reference to the calling rowvector.
-       * */
-      template <class Row>
-        inline RowVector<Ref,AT>& reassign(const RowVector<Row,AT> &x) {
+        inline RowVector<Ref,AT>& operator<<=(const RowVector<Row,AT> &x) {
           if(n!=x.size()) resize(x.size(),NONINIT);
           return copy(x);
         }

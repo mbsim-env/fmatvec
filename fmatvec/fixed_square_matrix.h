@@ -104,16 +104,7 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       template<class Type, class Row, class Col>
-      inline SquareMatrix<Fixed<M>,AT>& assign(const Matrix<Type,Row,Col,AT> &A) { return operator=(A); }
-
-      /*! \brief Matrix reassignment
-       *
-       * Copies the matrix given by \em A.
-       * \param A The matrix to be copied.
-       * \return A reference to the calling matrix.
-       * */
-      template<class Type, class Row, class Col>
-      inline SquareMatrix<Fixed<M>,AT>& reassign(const Matrix<Type,Row,Col,AT> &A) { return operator=(A); }
+      inline SquareMatrix<Fixed<M>,AT>& operator<<=(const Matrix<Type,Row,Col,AT> &A) { return operator=(A); }
 
       /*! \brief Size.
        *
