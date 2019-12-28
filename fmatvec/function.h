@@ -43,61 +43,61 @@ struct StaticSize<double> {
 
 //! Defines the static size (dimension) of a vector.
 template<typename Shape, typename AT>
-struct StaticSize<Vector<Shape, AT> > {
+struct StaticSize<Vector<Shape, AT>> {
   enum { size1=0, size2=1 };
 };
 
 //! Defines the static size (dimension) of a row vector.
 template<typename Shape, typename AT>
-struct StaticSize<RowVector<Shape, AT> > {
+struct StaticSize<RowVector<Shape, AT>> {
   enum { size1=1, size2=0 };
 };
 
 //! Defines the static size (dimension) of a fixed vector.
 template<int N, typename AT>
-struct StaticSize<Vector<Fixed<N>, AT> > {
+struct StaticSize<Vector<Fixed<N>, AT>> {
   enum { size1=N, size2=1 };
 };
 
 //! Defines the static size (dimension) of a fixed rowvector.
 template<int N, typename AT>
-struct StaticSize<RowVector<Fixed<N>, AT> > {
+struct StaticSize<RowVector<Fixed<N>, AT>> {
   enum { size1=1, size2=N };
 };
 
 //! Defines the static size (dimension) of a variable matrix.
 template<typename Storage, typename RowShape, typename ColShape, typename AT>
-struct StaticSize<Matrix<Storage, RowShape, ColShape, AT> > {
+struct StaticSize<Matrix<Storage, RowShape, ColShape, AT>> {
   enum { size1=0, size2=0 };
 };
 
 //! Defines the static size (dimension) of a fixed matrix.
 template<typename Storage, int N, int M, typename AT>
-struct StaticSize<Matrix<Storage, Fixed<N>, Fixed<M>, AT> > {
+struct StaticSize<Matrix<Storage, Fixed<N>, Fixed<M>, AT>> {
   enum { size1=N, size2=M };
 };
 
 //! Defines the static size (dimension) of a partial fixed matrix.
 template<typename Storage, int N, typename ColShape, typename AT>
-struct StaticSize<Matrix<Storage, Fixed<N>, ColShape, AT> > {
+struct StaticSize<Matrix<Storage, Fixed<N>, ColShape, AT>> {
   enum { size1=N, size2=0 };
 };
 
 //! Defines the static size (dimension) of a partial fixed matrix.
 template<typename Storage, typename RowShape, int M, typename AT>
-struct StaticSize<Matrix<Storage, RowShape, Fixed<M>, AT> > {
+struct StaticSize<Matrix<Storage, RowShape, Fixed<M>, AT>> {
   enum { size1=0, size2=M };
 };
 
 //! Defines the static size (dimension) of a fixed square matrix.
 template<int N, typename AT>
-struct StaticSize<SquareMatrix<Fixed<N>, AT> > {
+struct StaticSize<SquareMatrix<Fixed<N>, AT>> {
   enum { size1=N, size2=N };
 };
 
 //! Defines the static size (dimension) of a variable square matrix.
 template<typename Shape, typename AT>
-struct StaticSize<SquareMatrix<Shape, AT> > {
+struct StaticSize<SquareMatrix<Shape, AT>> {
   enum { size1=0, size2=0 };
 };
 
@@ -123,7 +123,7 @@ struct Der<Dep, double> {
  * corresponding entry of the independent vector.
  */
 template<typename IndepVecShape>
-struct Der<double, Vector<IndepVecShape, double> > {
+struct Der<double, Vector<IndepVecShape, double>> {
   typedef RowVector<IndepVecShape, double> type;
 };
 
@@ -133,7 +133,7 @@ struct Der<double, Vector<IndepVecShape, double> > {
  * corresponding entry of the independent vector.
  */
 template<typename DepVecShape, typename IndepVecShape>
-struct Der<Vector<DepVecShape, double>, Vector<IndepVecShape, double> > {
+struct Der<Vector<DepVecShape, double>, Vector<IndepVecShape, double>> {
   typedef Matrix<General, DepVecShape, IndepVecShape, double> type;
 };
 
@@ -167,7 +167,7 @@ struct Der<Matrix<Rotation, Fixed<3>, Fixed<3>, double>, double> {
  * This class spezialization define the type of \f$ \texttt{parDer}_{\boldsymbol{x}} \f$.
  */
 template<typename IndepVecShape>
-struct Der<Matrix<Rotation, Fixed<3>, Fixed<3>, double>, Vector<IndepVecShape, double> > {
+struct Der<Matrix<Rotation, Fixed<3>, Fixed<3>, double>, Vector<IndepVecShape, double>> {
   typedef Matrix<General, Fixed<3>, IndepVecShape, double> type;
 };
 

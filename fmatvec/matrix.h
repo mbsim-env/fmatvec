@@ -118,11 +118,11 @@ namespace fmatvec {
        * */
       int cols() const;
 
-      /*! \brief Cast to std::vector<std::vector<AT> >.
+      /*! \brief Cast to std::vector<std::vector<AT>>.
        *
-       * \return The std::vector<std::vector<AT> > representation of the matrix
+       * \return The std::vector<std::vector<AT>> representation of the matrix
        * */
-      operator std::vector<std::vector<AT> >() const;
+      operator std::vector<std::vector<AT>>() const;
   };
 
   template <class Type, class Row, class Col, class AT> inline Matrix<Type,Row,Col,AT>& Matrix<Type,Row,Col,AT>::copy(const Matrix<Type,Row,Col,AT> &A) {
@@ -204,8 +204,8 @@ namespace fmatvec {
   }
 
   template <class Type, class Row, class Col, class AT>
-    Matrix<Type,Row,Col,AT>::operator std::vector<std::vector<AT> >() const {
-      std::vector<std::vector<AT> > ret(rows());
+    Matrix<Type,Row,Col,AT>::operator std::vector<std::vector<AT>>() const {
+      std::vector<std::vector<AT>> ret(rows());
       for(int r=0; r<rows(); r++) {
 	ret[r].resize(cols());
 	for(int c=0; c<cols(); c++)

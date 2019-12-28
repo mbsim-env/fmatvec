@@ -341,13 +341,28 @@ namespace fmatvec {
        *
        * \return The std::vector<AT> representation of the vector
        * */
-      inline operator std::vector<AT>() const;
+      explicit inline operator std::vector<AT>() const;
 
       /*! \brief std::vector<AT> Constructor.
        * Constructs and initializes a vector with a std::vector<AT> object.
        * \param v The std::vector<AT> the vector will be initialized with. 
        * */
-      inline Vector(std::vector<AT> v);
+      explicit inline Vector(const std::vector<AT> &v);
+
+//      /*! \brief Cast to AT.
+//       *
+//       * \return The AT representation of the vector
+//       * */
+//      explicit operator AT() const {
+//        assert(m==1);
+//        return e(0);
+//      }
+//
+//      /*! \brief AT Constructor.
+//       * Constructs and initializes a vector with a AT object.
+//       * \param x The AT the vector will be initialized with.
+//       * */
+//      explicit Vector(const AT &x) : Matrix<General,Ref,Ref,AT>(x) { }
 
       RowVector<Ref,AT> T() {
         return RowVector<Ref,AT>(m,lda,tp?false:true,memory,ele);
@@ -404,7 +419,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Vector<Ref,AT>::Vector(std::vector<AT> v) : Matrix<General,Ref,Ref,AT>(v.size(),1) {
+    inline Vector<Ref,AT>::Vector(const std::vector<AT> &v) : Matrix<General,Ref,Ref,AT>(v.size(),1) {
       if(size()>0) memcpy(&operator()(0), &v[0], sizeof(AT)*size());
     }
 

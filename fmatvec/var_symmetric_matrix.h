@@ -289,11 +289,11 @@ namespace fmatvec {
       inline Matrix<Symmetric,Var,Var,AT>& init(Eye eye, const AT &val=1);
       inline Matrix<Symmetric,Var,Var,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
-      /*! \brief Cast to std::vector<std::vector<AT> >.
+      /*! \brief Cast to std::vector<std::vector<AT>>.
        *
-       * \return The std::vector<std::vector<AT> > representation of the matrix
+       * \return The std::vector<std::vector<AT>> representation of the matrix
        * */
-      inline operator std::vector<std::vector<AT> >() const;
+      explicit inline operator std::vector<std::vector<AT>>() const;
 
       inline int countElements() const;
   };
@@ -321,8 +321,8 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<Symmetric,Var,Var,AT>::operator std::vector<std::vector<AT> >() const {
-      std::vector<std::vector<AT> > ret(rows());
+    inline Matrix<Symmetric,Var,Var,AT>::operator std::vector<std::vector<AT>>() const {
+      std::vector<std::vector<AT>> ret(rows());
       for(int r=0; r<rows(); r++) {
         ret[r].resize(cols());
         for(int c=0; c<cols(); c++)

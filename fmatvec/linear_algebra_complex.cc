@@ -55,16 +55,16 @@ std::string toStr(const T& val) {
 
 namespace fmatvec {
 
-  Vector<Ref, std::complex<double> > slvLU(const SquareMatrix<Ref, std::complex<double> > &A, const Vector<Ref, std::complex<double> > &x) {
+  Vector<Ref, std::complex<double>> slvLU(const SquareMatrix<Ref, std::complex<double>> &A, const Vector<Ref, std::complex<double>> &x) {
 
     assert(A.size() == x.size());
 
-    Vector<Ref, std::complex<double> > y = x;
+    Vector<Ref, std::complex<double>> y = x;
 
     if (x.size() == 0)
       return y;
 
-    SquareMatrix<Ref, std::complex<double> > B = A;
+    SquareMatrix<Ref, std::complex<double>> B = A;
 
     auto *ipiv = new int[A.size()];
 

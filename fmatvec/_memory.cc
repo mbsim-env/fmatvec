@@ -31,7 +31,7 @@ namespace fmatvec {
   template <> Memory<char>::allocator_type Memory<char>::ms = Memory<char>::allocator_type();
   template <> Memory<int>::allocator_type Memory<int>::ms = Memory<int>::allocator_type();
   template <> Memory<double>::allocator_type Memory<double>::ms = Memory<double>::allocator_type();
-  template <> Memory<complex<double> >::allocator_type Memory<complex<double> >::ms = Memory<complex<double> >::allocator_type();
+  template <> Memory<complex<double>>::allocator_type Memory<complex<double>>::ms = Memory<complex<double>>::allocator_type();
 #endif
 
 }

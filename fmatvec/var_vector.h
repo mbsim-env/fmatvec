@@ -63,7 +63,7 @@ namespace fmatvec {
        * */
       explicit Vector() : Matrix<General,Var,Fixed<1>,AT>() { }
 
-//      template<class Ini=All<AT> >
+//      template<class Ini=All<AT>>
 //        Vector(int m, Ini ini=All<AT>()) : Matrix<General,Var,Fixed<1>,AT>(m,ini) { } 
 
       explicit Vector(int m, Noinit ini) : Matrix<General,Var,Fixed<1>,AT>(m,ini) { } 
@@ -241,13 +241,28 @@ namespace fmatvec {
        *
        * \return The std::vector<AT> representation of the vector
        * */
-      inline operator std::vector<AT>() const;
+      explicit inline operator std::vector<AT>() const;
 
       /*! \brief std::vector<AT> Constructor.
        * Constructs and initializes a vector with a std::vector<AT> object.
        * \param v The std::vector<AT> the vector will be initialized with. 
        * */
-      inline Vector(std::vector<AT> v);
+      explicit inline Vector(const std::vector<AT> &v);
+
+//      /*! \brief Cast to AT.
+//       *
+//       * \return The AT representation of the vector
+//       * */
+//      explicit operator AT() const {
+//        assert(M==1);
+//        return ele[0];
+//      }
+//
+//      /*! \brief AT Constructor.
+//       * Constructs and initializes a vector with a AT object.
+//       * \param x The AT the vector will be initialized with.
+//       * */
+//      explicit Vector(const AT &x) : Matrix<General,Var,Fixed<1>,AT>(x) { }
 
       inline const RowVector<Var,AT> T() const;
 
@@ -283,7 +298,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Vector<Var,AT>::Vector(std::vector<AT> v) : Matrix<General,Var,Fixed<1>,AT>(v.size(),1) {
+    inline Vector<Var,AT>::Vector(const std::vector<AT> &v) : Matrix<General,Var,Fixed<1>,AT>(v.size(),1) {
       if(size()>0) memcpy(&operator()(0), &v[0], sizeof(AT)*size());
     }
 

@@ -40,9 +40,9 @@ namespace fmatvec {
     public:
       typedef AT value_type;
 
-//      template<class Ini=All<AT> >
+//      template<class Ini=All<AT>>
 //      SquareMatrix(Ini ini=All<AT>()) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
-//      template<class Ini=All<AT> >
+//      template<class Ini=All<AT>>
 //      SquareMatrix(int m, Ini ini=All<AT>()) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { } 
 
       explicit SquareMatrix(Noinit ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
@@ -56,7 +56,7 @@ namespace fmatvec {
        *
        * See SquareMatrix(const SquareMatrix<AT>&) 
        * */
-      SquareMatrix(const SquareMatrix<Fixed<M>,AT> &A) : Matrix<General,Fixed<M>,Fixed<M>,AT>(A) { }
+      SquareMatrix(const SquareMatrix<Fixed<M>,AT> &A) = default;
 
       /*! \brief Copy Constructor
        *
@@ -80,10 +80,7 @@ namespace fmatvec {
        * \param A The matrix to be assigned.
        * \return A reference to the calling matrix.
        * */
-      inline SquareMatrix<Fixed<M>,AT>& operator=(const SquareMatrix<Fixed<M>,AT> &A) {
-	Matrix<General,Fixed<M>,Fixed<M>,AT>::operator=(A);
-	return *this;
-      }
+      inline SquareMatrix<Fixed<M>,AT>& operator=(const SquareMatrix<Fixed<M>,AT> &A) = default;
 
       /*! \brief Assignment operator
        *
@@ -115,11 +112,11 @@ namespace fmatvec {
       using Matrix<General,Fixed<M>,Fixed<M>,AT>::operator();
       using Matrix<General,Fixed<M>,Fixed<M>,AT>::e;
 
-      /*! \brief Cast to std::vector<std::vector<AT> >.
+      /*! \brief Cast to std::vector<std::vector<AT>>.
        *
-       * \return The std::vector<std::vector<AT> > representation of the matrix
+       * \return The std::vector<std::vector<AT>> representation of the matrix
        * */
-      inline operator std::vector<std::vector<AT> >() const;
+      explicit inline operator std::vector<std::vector<AT>>() const;
 
       inline const SquareMatrix<Fixed<M>,AT> T() const;
 
@@ -135,8 +132,8 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline SquareMatrix<Fixed<M>,AT>::operator std::vector<std::vector<AT> >()  const{
-      std::vector<std::vector<AT> > ret(size());
+    inline SquareMatrix<Fixed<M>,AT>::operator std::vector<std::vector<AT>>() const {
+      std::vector<std::vector<AT>> ret(size());
       for(int r=0; r<size(); r++) {
         ret[r].resize(size());
         for(int c=0; c<size(); c++)

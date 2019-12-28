@@ -70,8 +70,7 @@ namespace fmatvec {
        * \em x will not be copied, only referenced.
        * \param x The vector that will be referenced.
        * */
-      Vector(const Vector<Fixed<M>,AT> &x) : Matrix<General,Fixed<M>,Fixed<1>,AT>(x) {
-      }
+      Vector(const Vector<Fixed<M>,AT> &x) = default;
 
       /*! \brief Copy Constructor
        *
@@ -110,9 +109,7 @@ namespace fmatvec {
        * \param x The vector to be assigned.
        * \return A reference to the calling vector.
        * */
-      inline Vector<Fixed<M>,AT>& operator=(const Vector<Fixed<M>,AT> &x) {
-        return copy(x);
-      }
+      inline Vector<Fixed<M>,AT>& operator=(const Vector<Fixed<M>,AT> &x) = default;
 
       /*! \brief Assignment operator
        *
@@ -223,7 +220,7 @@ namespace fmatvec {
       int inc() const {return 1;};
 
       template <int M1, int M2>
-      inline const Vector<Fixed<M2-M1+1>,AT> operator()(const Range<Fixed<M1>,Fixed<M2> > &I) const;
+      inline const Vector<Fixed<M2-M1+1>,AT> operator()(const Range<Fixed<M1>,Fixed<M2>> &I) const;
 
       using Matrix<General,Fixed<M>,Fixed<1>,AT>::operator();
 
@@ -231,13 +228,28 @@ namespace fmatvec {
        *
        * \return The std::vector<AT> representation of the vector
        * */
-      inline operator std::vector<AT>() const;
+      explicit inline operator std::vector<AT>() const;
 
       /*! \brief std::vector<AT> Constructor.
        * Constructs and initializes a vector with a std::vector<AT> object.
        * \param v The std::vector<AT> the vector will be initialized with. 
        * */
-      inline Vector(std::vector<AT> v);
+      explicit inline Vector(const std::vector<AT> &v);
+
+//      /*! \brief Cast to AT.
+//       *
+//       * \return The AT representation of the vector
+//       * */
+//      explicit operator AT() const {
+//        assert(M==1);
+//        return ele[0][0];
+//      }
+//
+//      /*! \brief AT Constructor.
+//       * Constructs and initializes a vector with a AT object.
+//       * \param x The AT the vector will be initialized with.
+//       * */
+//      explicit Vector(const AT &x) : Matrix<General,Fixed<M>,Fixed<1>,AT>(x) { }
 
       /*!
        * \brief return the transpose of the Vector, i.e. a RowVector
@@ -260,7 +272,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT> template <int M1, int M2>
-    inline const Vector<Fixed<M2-M1+1>,AT> Vector<Fixed<M>,AT>::operator()(const Range<Fixed<M1>,Fixed<M2> > &I) const {
+    inline const Vector<Fixed<M2-M1+1>,AT> Vector<Fixed<M>,AT>::operator()(const Range<Fixed<M1>,Fixed<M2>> &I) const {
       assert(M2<M);
       Vector<Fixed<M2-M1+1>,AT> x(NONINIT);
 
@@ -286,7 +298,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline Vector<Fixed<M>,AT>::Vector(std::vector<AT> v) : Matrix<General,Fixed<M>,Fixed<1>,AT>() {
+    inline Vector<Fixed<M>,AT>::Vector(const std::vector<AT> &v) : Matrix<General,Fixed<M>,Fixed<1>,AT>() {
       if(size()>0) memcpy(&operator()(0), &v[0], sizeof(AT)*size());
     }
 

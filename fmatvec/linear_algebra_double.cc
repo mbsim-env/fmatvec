@@ -645,7 +645,7 @@ namespace fmatvec {
     return Y;
   }
 
-  Vector<Ref, std::complex<double> > eigval(const SquareMatrix<Ref, double> &A) {
+  Vector<Ref, std::complex<double>> eigval(const SquareMatrix<Ref, double> &A) {
 
     double *vl = nullptr, *vr = nullptr;
     auto *wr = new double[A.size()];
@@ -655,7 +655,7 @@ namespace fmatvec {
 
     dgeev('N', 'N', A.size(), B(), B.ldim(), wr, wi, vl, B.size(), vr, B.size());
 
-    Vector<Ref, std::complex<double> > w(A.size());
+    Vector<Ref, std::complex<double>> w(A.size());
     for (int i = 0; i < A.size(); i++)
       w(i) = std::complex<double>(wr[i], wi[i]);
 
@@ -665,7 +665,7 @@ namespace fmatvec {
     return w;
   }
 
-  int eigvec(const SquareMatrix<Ref, double> &A, SquareMatrix<Ref, std::complex<double> > &V, Vector<Ref, std::complex<double> > &w) {
+  int eigvec(const SquareMatrix<Ref, double> &A, SquareMatrix<Ref, std::complex<double>> &V, Vector<Ref, std::complex<double>> &w) {
 
     SquareMatrix<Ref, double> B = A;
     w.resize(A.size(),NONINIT);
@@ -794,7 +794,7 @@ namespace fmatvec {
 
     if (A.rows() == 0 || A.cols() == 0)
       return 0.0;
-    Vector<Ref, std::complex<double> > v = eigval(A);
+    Vector<Ref, std::complex<double>> v = eigval(A);
     double buf = abs(v(0));
     for (int i = 0; i < v.size(); i++) {
       double absi = abs(v(i));

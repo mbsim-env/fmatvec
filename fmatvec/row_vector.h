@@ -332,6 +332,21 @@ namespace fmatvec {
 
       using Matrix<General,Ref,Ref,AT>::operator();
 
+//      /*! \brief Cast to AT.
+//       *
+//       * \return The AT representation of the vector
+//       * */
+//      explicit operator AT() const {
+//        assert(n==1);
+//        return e(0);
+//      }
+//
+//      /*! \brief AT Constructor.
+//       * Constructs and initializes a vector with a AT object.
+//       * \param x The AT the vector will be initialized with.
+//       * */
+//      explicit RowVector(const AT &x) : Matrix<General,Ref,Ref,AT>(x) { }
+
       Vector<Ref,AT> T() {
 	return Vector<Ref,AT>(n,lda,tp?false:true,memory,ele);
       }

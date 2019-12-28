@@ -62,9 +62,7 @@ namespace fmatvec {
        * Constructs a copy of the matrix \em A.
        * \param A The matrix that will be copied.
        * */
-      Matrix(const Matrix<Symmetric,Fixed<M>,Fixed<M>,AT> &A) {
-	copy(A);
-      }
+      Matrix(const Matrix<Symmetric,Fixed<M>,Fixed<M>,AT> &A) = default;
 
       /*! \brief Copy Constructor
        *
@@ -95,9 +93,7 @@ namespace fmatvec {
        * \param A The matrix to be assigned.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& operator=(const Matrix<Symmetric,Fixed<M>,Fixed<M>,AT> &A) {
-        return copy(A);
-      }
+      inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& operator=(const Matrix<Symmetric,Fixed<M>,Fixed<M>,AT> &A) = default;
 
       /*! \brief Assignment operator
        *
@@ -201,18 +197,6 @@ namespace fmatvec {
        * */
       const AT* operator()() const {return ele;};
 
-      Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>(const std::vector<std::vector<AT>> &A) {
-        for(int r=0; r<rows(); r++) {
-          if(static_cast<int>(A[r].size())!=cols())
-            throw std::runtime_error("The rows of the input have different length.");
-          for(int c=0; c<cols(); c++) {
-            e(r,c)=A[r][c];
-            if(r>c && fabs(A[r][c]-A[c][r])>fabs(A[r][c])*1e-13+1e-13)
-              throw std::runtime_error("The input is not symmetric.");
-          }
-        }
-      }
-
       /*! \brief Size.
        *
        * \return The number of rows and columns of the matrix
@@ -271,11 +255,36 @@ namespace fmatvec {
       inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& init(Eye, const AT &val=1);
       inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
-      /*! \brief Cast to std::vector<std::vector<AT> >.
+      /*! \brief Cast to std::vector<std::vector<AT>>.
        *
-       * \return The std::vector<std::vector<AT> > representation of the matrix
+       * \return The std::vector<std::vector<AT>> representation of the matrix
        * */
-      inline operator std::vector<std::vector<AT> >() const;
+      explicit inline operator std::vector<std::vector<AT>>() const;
+
+      /*! \brief std::vector<std::vector<AT>> Constructor.
+       * Constructs and initializes a matrix with a std::vector<std::vector<AT>> object.
+       * An assert checks for constant length of each row.
+       * \param m The std::vector<std::vector<AT>> the matrix will be initialized with.
+       * */
+      explicit inline Matrix(const std::vector<std::vector<AT>> &m);
+
+//      /*! \brief Cast to AT.
+//       *
+//       * \return The AT representation of the matrix
+//       * */
+//      explicit operator AT() const {
+//        assert(M==1);
+//        return ele[0][0];
+//      }
+//
+//      /*! \brief AT Constructor.
+//       * Constructs and initializes a matrix with a AT object.
+//       * \param x The AT the matrix will be initialized with.
+//       * */
+//      explicit Matrix(const AT &x) {
+//        assert(M==1);
+//        ele[0][0] = x;
+//      }
   };
 
   template <int M, class AT>
@@ -301,14 +310,27 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>::operator std::vector<std::vector<AT> >()  const{
-      std::vector<std::vector<AT> > ret(rows());
+    inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>::operator std::vector<std::vector<AT>>() const {
+      std::vector<std::vector<AT>> ret(rows());
       for(int r=0; r<rows(); r++) {
         ret[r].resize(cols());
         for(int c=0; c<cols(); c++)
           ret[r][c]=operator()(r,c);
       }
       return ret;
+    }
+
+  template <int M, class AT>
+    inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>::Matrix(const std::vector<std::vector<AT>> &m) {
+      for(int r=0; r<rows(); r++) {
+        if(static_cast<int>(m[r].size())!=cols())
+          throw std::runtime_error("The rows of the input have different length.");
+        for(int c=0; c<cols(); c++) {
+          e(r,c)=m[r][c];
+          if(r>c && fabs(m[r][c]-m[c][r])>fabs(m[r][c])*1e-13+1e-13)
+            throw std::runtime_error("The input is not symmetric.");
+        }
+      }
     }
 
   /// @cond NO_SHOW

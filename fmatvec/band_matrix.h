@@ -67,11 +67,11 @@ namespace fmatvec {
       explicit Matrix() : memory(), ele(0) {
       }
 
-//      template<class Ini=All<AT> >
+//      template<class Ini=All<AT>>
 //        Matrix(int n_, int kl_, int ku_, Ini ini=All<AT>()) : memory(n_*(kl_+ku_+1)), ele((AT*)memory.get()), n(n_), kl(kl_), ku(ku_) {  
 //          init(ini);
 //        }
-//      template<class Ini=All<AT> >
+//      template<class Ini=All<AT>>
 //        Matrix(int m_, int n_, Ini ini=All<AT>()) : memory(n_*(n_+n_+1)), ele((AT*)memory.get()), n(n_), kl(n_), ku(n_) {  
 //          init(ini);
 //        }
@@ -269,11 +269,11 @@ namespace fmatvec {
       inline Matrix<GeneralBand,Ref,Ref,AT>& init(Eye, const AT &val=1);
       inline Matrix<GeneralBand,Ref,Ref,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
-      /*! \brief Cast to std::vector<std::vector<AT> >.
+      /*! \brief Cast to std::vector<std::vector<AT>>.
        *
-       * \return The std::vector<std::vector<AT> > representation of the matrix
+       * \return The std::vector<std::vector<AT>> representation of the matrix
        * */
-      inline operator std::vector<std::vector<AT> >() const;
+      explicit inline operator std::vector<std::vector<AT>>() const;
   };
 
   template <class AT>
@@ -311,8 +311,8 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<GeneralBand,Ref,Ref,AT>::operator std::vector<std::vector<AT> >() const {
-      std::vector<std::vector<AT> > ret(rows());
+    inline Matrix<GeneralBand,Ref,Ref,AT>::operator std::vector<std::vector<AT>>() const {
+      std::vector<std::vector<AT>> ret(rows());
       for(int r=0; r<rows(); r++) {
         ret[r].resize(cols());
         for(int c=0; c<cols(); c++)

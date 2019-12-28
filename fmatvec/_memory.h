@@ -120,7 +120,7 @@ namespace fmatvec {
       // A pool of memory of allocation size 2^(MINEXP+0), 2^(MINEXP+1), 2^(MINEXP+2), ...
       // stored at index 0, 1, 2, ... in memoryPool.
       // The pointers stored here are already allocated but currently not used.
-      std::vector<std::vector<AT*> > memoryPool;
+      std::vector<std::vector<AT*>> memoryPool;
       // Just a dummy variable used for zero size allocations.
       AT sizeZero;
       FMATVEC_LOCKVAR(fmatvec_memoryPoolLock)
@@ -132,7 +132,7 @@ namespace fmatvec {
       // Destructor: delete all cached memory in the pool.
       ~PoolAllocator() {
         // loop over all pool sizes and free memory
-        for(typename std::vector<std::vector<AT*> >::iterator i=memoryPool.begin(); i!=memoryPool.end(); ++i)
+        for(typename std::vector<std::vector<AT*>>::iterator i=memoryPool.begin(); i!=memoryPool.end(); ++i)
           for(typename std::vector<AT*>::iterator j=i->begin(); j!=i->end(); ++j)
             delete[](*j);
       }

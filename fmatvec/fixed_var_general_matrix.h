@@ -63,11 +63,11 @@ namespace fmatvec {
        * */
       explicit Matrix() :  ele(nullptr) { }
 
-//      template<class Ini=All<AT> >
+//      template<class Ini=All<AT>>
 //      Matrix(int n, Ini ini=All<AT>()) :  N(n), ele(new AT[M*N]) {
 //        init(ini);
 //      }
-//      template<class Ini=All<AT> >
+//      template<class Ini=All<AT>>
 //      Matrix(int m, int n, Ini ini=All<AT>()) :  N(n), ele(new AT[M*N]) {
 //        init(ini);
 //      }
@@ -334,7 +334,7 @@ namespace fmatvec {
       inline const Matrix<General,Var,Var,AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const;
 
       template <int M1, int M2>
-      inline const Matrix<General,Fixed<M2-M1+1>,Var,AT> operator()(const Range<Fixed<M1>,Fixed<M2> > &I, const Range<Var,Var> &J) const;
+      inline const Matrix<General,Fixed<M2-M1+1>,Var,AT> operator()(const Range<Fixed<M1>,Fixed<M2>> &I, const Range<Var,Var> &J) const;
 
       inline const RowVector<Var,AT> row(int i) const;
       inline const Vector<Fixed<M>,AT> col(int j) const;
@@ -351,18 +351,37 @@ namespace fmatvec {
       inline Matrix<General,Fixed<M>,Var,AT>& init(Eye, const AT &val=1);
       inline Matrix<General,Fixed<M>,Var,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
-      /*! \brief Cast to std::vector<std::vector<AT> >.
+      /*! \brief Cast to std::vector<std::vector<AT>>.
        *
-       * \return The std::vector<std::vector<AT> > representation of the matrix
+       * \return The std::vector<std::vector<AT>> representation of the matrix
        * */
-      inline operator std::vector<std::vector<AT> >() const;
+      explicit inline operator std::vector<std::vector<AT>>() const;
 
-      /*! \brief std::vector<std::vector<AT> > Constructor.
-       * Constructs and initializes a matrix with a std::vector<std::vector<AT> > object.
+      /*! \brief std::vector<std::vector<AT>> Constructor.
+       * Constructs and initializes a matrix with a std::vector<std::vector<AT>> object.
        * An assert checks for constant length of each row.
-       * \param m The std::vector<std::vector<AT> > the matrix will be initialized with. 
+       * \param m The std::vector<std::vector<AT>> the matrix will be initialized with.
        * */
-      inline Matrix(std::vector<std::vector<AT> > m);
+      explicit inline Matrix(const std::vector<std::vector<AT>> &m);
+
+//      /*! \brief Cast to AT.
+//       *
+//       * \return The AT representation of the matrix
+//       * */
+//      explicit operator AT() const {
+//        assert(M==1);
+//        assert(N==1);
+//        return ele[0];
+//      }
+//
+//      /*! \brief AT Constructor.
+//       * Constructs and initializes a matrix with a AT object.
+//       * \param v The AT the matrix will be initialized with.
+//       * */
+//      explicit Matrix(const AT &x) : N(1), ele(new AT[1]) {
+//        assert(M==1);
+//        ele[0] = x;
+//      }
 
       inline const Matrix<General,Var,Fixed<M>,AT> T() const;
 
@@ -409,7 +428,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT> template <int M1, int M2>
-    inline const Matrix<General,Fixed<M2-M1+1>,Var,AT> Matrix<General,Fixed<M>,Var,AT>::operator()(const Range<Fixed<M1>,Fixed<M2> > &I, const Range<Var,Var> &J) const {
+    inline const Matrix<General,Fixed<M2-M1+1>,Var,AT> Matrix<General,Fixed<M>,Var,AT>::operator()(const Range<Fixed<M1>,Fixed<M2>> &I, const Range<Var,Var> &J) const {
       assert(M2<M);
       assert(J.end()<N);
       Matrix<General,Fixed<M2-M1+1>,Var,AT> A(J.end()-J.start()+1,NONINIT);
@@ -532,8 +551,8 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline Matrix<General,Fixed<M>,Var,AT>::operator std::vector<std::vector<AT> >()  const{
-      std::vector<std::vector<AT> > ret(rows());
+    inline Matrix<General,Fixed<M>,Var,AT>::operator std::vector<std::vector<AT>>() const {
+      std::vector<std::vector<AT>> ret(rows());
       for(int r=0; r<rows(); r++) {
         ret[r].resize(cols());
         for(int c=0; c<cols(); c++)
@@ -543,12 +562,9 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline Matrix<General,Fixed<M>,Var,AT>::Matrix(std::vector<std::vector<AT> > m) :
-      Matrix<General,Fixed<M>,Var,AT>(!m.empty() ? m[0].size() : 0) {
+    inline Matrix<General,Fixed<M>,Var,AT>::Matrix(const std::vector<std::vector<AT>> &m) : N(!m.empty()?m[0].size():0), ele(new AT[M*N]) {
       if(m.size() != M)
         throw std::runtime_error("The input has "+std::to_string(m.size())+" rows but "+std::to_string(M)+" rows are required.");
-      if(static_cast<int>(m[0].size()) != N)
-        throw std::runtime_error("The input has "+std::to_string(m[0].size())+" columns but "+std::to_string(N)+" columns are required.");
       for(int r=0; r<rows(); r++) {
         if(static_cast<int>(m[r].size())!=cols())
           throw std::runtime_error("The rows of the input have different length.");

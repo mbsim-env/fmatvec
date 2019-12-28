@@ -72,7 +72,7 @@ namespace fmatvec {
        * */
       explicit SquareMatrix() : Matrix<General,Ref,Ref,AT>() { }
 
-//      template<class Ini=All<AT> >
+//      template<class Ini=All<AT>>
 //      SquareMatrix(int m, Ini ini=All<AT>()) : Matrix<General,Ref,Ref,AT>(m,m,ini) { } 
 
       explicit SquareMatrix(int m, Noinit ini) : Matrix<General,Ref,Ref,AT>(m,m,ini) { } 
@@ -198,11 +198,11 @@ namespace fmatvec {
 
       using Matrix<General,Ref,Ref,AT>::operator();
 
-      /*! \brief Cast to std::vector<std::vector<AT> >.
+      /*! \brief Cast to std::vector<std::vector<AT>>.
        *
-       * \return The std::vector<std::vector<AT> > representation of the matrix
+       * \return The std::vector<std::vector<AT>> representation of the matrix
        * */
-      inline operator std::vector<std::vector<AT> >() const;
+      explicit inline operator std::vector<std::vector<AT>>() const;
 
       SquareMatrix<Ref,AT> T() {
 	return SquareMatrix<Ref,AT>(n, lda, tp?false:true, memory, ele);
@@ -214,8 +214,8 @@ namespace fmatvec {
   };
 
   template <class AT>
-    inline SquareMatrix<Ref,AT>::operator std::vector<std::vector<AT> >() const {
-      std::vector<std::vector<AT> > ret(size());
+    inline SquareMatrix<Ref,AT>::operator std::vector<std::vector<AT>>() const {
+      std::vector<std::vector<AT>> ret(size());
       if(tp) {
 	for(int r=0; r<size(); r++) {
 	  ret[r].resize(size());

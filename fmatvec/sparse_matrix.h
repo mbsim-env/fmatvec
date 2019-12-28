@@ -70,11 +70,11 @@ namespace fmatvec {
 	 * */
 	explicit Matrix() : memEle(),  ele(0) { }
 
-//        template<class Ini=All<AT> >
+//        template<class Ini=All<AT>>
 //          Matrix(int n_, Ini ini=All<AT>()) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) {
 //            init(ini);
 //          }
-//        template<class Ini=All<AT> >
+//        template<class Ini=All<AT>>
 //          Matrix(int m_, int n_, Ini ini) : memEle(n_*n_), memI(n_+1), memJ(n_*n_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(n_*n_) {  
 //            init(ini);
 //          }

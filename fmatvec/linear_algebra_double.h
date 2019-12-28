@@ -46,7 +46,7 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \param A A square matrix. 
    * \return A vector containig the eigenvalues.
    * */
-  Vector<Ref, std::complex<double> > eigval(const SquareMatrix<Ref, double> &A);
+  Vector<Ref, std::complex<double>> eigval(const SquareMatrix<Ref, double> &A);
 
   /*! \brief Eigenvectors and Eigenvalues
    *
@@ -56,7 +56,7 @@ int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, doubl
    * \param eigenvalues A vector in the size of A, containing the eigenvalues.
    * \return If 0, successful exit. If -i, the i-th argument had an illegal value. If i, the QR algorithm failed to compute all the eigenvalues, and no eigenvectors have been computed.
    * */
-  int eigvec(const SquareMatrix<Ref, double> &A, SquareMatrix<Ref, std::complex<double> > &V, Vector<Ref, std::complex<double> > &w);
+  int eigvec(const SquareMatrix<Ref, double> &A, SquareMatrix<Ref, std::complex<double>> &V, Vector<Ref, std::complex<double>> &w);
 
   /*! \brief Eigenvectors and Eigenvalues
    *

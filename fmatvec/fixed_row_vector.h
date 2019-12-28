@@ -56,9 +56,9 @@ namespace fmatvec {
 
     public:
 
-//      template<class Ini=All<AT> >
+//      template<class Ini=All<AT>>
 //        RowVector(Ini ini=All<AT>()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
-//      template<class Ini=All<AT> >
+//      template<class Ini=All<AT>>
 //        RowVector(int n, Ini ini=All<AT>()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
 
       explicit RowVector(Noinit ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
@@ -70,8 +70,7 @@ namespace fmatvec {
        *
        * See RowVector(const RowVector<Fixed<N>,AT> 
        * */
-      RowVector(const RowVector<Fixed<N>,AT> &A) : Matrix<General,Fixed<1>,Fixed<N>,AT>(A) {
-      }
+      RowVector(const RowVector<Fixed<N>,AT> &A) = default;
 
       /*! \brief Copy Constructor
        *
@@ -110,9 +109,7 @@ namespace fmatvec {
        * \param x The vector to be assigned.
        * \return A reference to the calling vector.
        * */
-      inline RowVector<Fixed<N>,AT>& operator=(const RowVector<Fixed<N>,AT> &x) {
-        return copy(x);
-      }
+      inline RowVector<Fixed<N>,AT>& operator=(const RowVector<Fixed<N>,AT> &x) = default;
 
       /*! \brief Assignment operator
        *
@@ -211,6 +208,21 @@ namespace fmatvec {
       int inc() const {return 1;};
 
       using Matrix<General,Fixed<1>,Fixed<N>,AT>::operator();
+
+//      /*! \brief Cast to AT.
+//       *
+//       * \return The AT representation of the vector
+//       * */
+//      explicit operator AT() const {
+//        assert(N==1);
+//        return ele[0];
+//      }
+//
+//      /*! \brief AT Constructor.
+//       * Constructs and initializes a vector with a AT object.
+//       * \param x The AT the vector will be initialized with.
+//       * */
+//      explicit RowVector(const AT &x) : Matrix<General,Fixed<1>,Fixed<N>,AT>(x) { }
 
       inline const Vector<Fixed<N>,AT> T() const;
   };

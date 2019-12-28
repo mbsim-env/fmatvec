@@ -103,7 +103,7 @@ namespace fmatvec {
    *
    * The index class contains indices defining the first and the last element.
    * */
-  template <int I1, int I2> class Range<Fixed<I1>, Fixed<I2> > {
+  template <int I1, int I2> class Range<Fixed<I1>, Fixed<I2>> {
     private:
       
     public:

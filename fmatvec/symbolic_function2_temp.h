@@ -185,7 +185,7 @@ std::pair<int, int> SymbolicFunction<RET(ARG1, ARG2)>::getRetSize() const {
 }
 
 template<TEMPLATE>
-int SymbolicFunction<RET(ARG1, ARG2)>::getArg1Size() const{
+int SymbolicFunction<RET(ARG1, ARG2)>::getArg1Size() const {
   return Helper<Arg1S>::size1(arg1S);
 }
 
