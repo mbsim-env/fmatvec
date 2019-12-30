@@ -196,10 +196,6 @@ namespace fmatvec {
           throw std::runtime_error("Matrix<Sparse, Ref, Ref, AT>::operator(int i, int j) is not implemented.");
         }
 
-        bool transposed() {
-          throw std::runtime_error("Matrix<Sparse, Ref, Ref, AT>::transposed() cannot be called.");
-        }
-
         int ldim() {
           throw std::runtime_error("Matrix<Sparse, Ref, Ref, AT>::ldim() cannot be called.");
         }

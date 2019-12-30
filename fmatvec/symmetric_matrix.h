@@ -143,11 +143,6 @@ namespace fmatvec {
         resize(n);
       }
 
-      //! The storage format of a symmetric matrix is fortran-storage order -> return always false
-      bool transposed() {
-        return false;
-      }
-
       /*! \brief Assignment operator
        *
        * Copies the symmetric matrix given by \em A.
@@ -448,28 +443,18 @@ namespace fmatvec {
     inline const Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
       assert(I.end()<n);
       assert(J.end()<n);
-
-      if(I.start() >= J.start()) {
-        assert(J.end() <= I.start());
-        return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,false,memory,elePtr(I.start(),J.start()));
-      } else {
-        assert(I.end() <= J.start());
-        return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,true,memory,elePtr(J.start(),I.start()));
-      }
+      assert(I.start()>=J.start());
+      assert(J.end()<=I.start());
+      return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,memory,elePtr(I.start(),J.start()));
     }
 
   template <class AT> 
     inline Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) {
       assert(I.end()<n);
       assert(J.end()<n);
-
-      if(I.start() >= J.start()) {
-        assert(J.end() <= I.start());
-        return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,false,memory,elePtr(I.start(),J.start()));
-      } else {
-        assert(I.end() <= J.start());
-        return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,true,memory,elePtr(J.start(),I.start()));
-      }
+      assert(I.start()>=J.start());
+      assert(J.end()<=I.start());
+      return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,memory,elePtr(I.start(),J.start()));
     }
 
   template <class AT> 

@@ -97,11 +97,6 @@ namespace fmatvec {
         return *this;
       }
 
-      //! The storage format of a var square matrix is c-storage order -> return always true
-      bool transposed() {
-        return true;
-      }
-
       //! Resize a var square matrix.
       //! Throw if the dimensions does not match or resize to this dimension.
       void resize(int m, int n) {

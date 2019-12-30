@@ -38,7 +38,6 @@ namespace fmatvec {
     using Matrix<General,Ref,Ref,AT>::n;
     using Matrix<General,Ref,Ref,AT>::lda;
     using Matrix<General,Ref,Ref,AT>::ele;
-    using Matrix<General,Ref,Ref,AT>::tp;
     using Matrix<General,Ref,Ref,AT>::memory;
     using Matrix<General,Ref,Ref,AT>::elePtr;
 
@@ -51,10 +50,6 @@ namespace fmatvec {
 
     /// @cond NO_SHOW
     
-    template <class T> friend Vector<Ref,T> trans(const RowVector<Ref,T> &x); 
-    template <class T> friend RowVector<Ref,T> trans(const Vector<Ref,T> &x);
-    //friend RowVector<Ref,double> trans(const Vector<Ref,double> &x);
-
     friend class Vector<Ref,AT>;
 
     friend RowVector<Ref,AT> Matrix<General,Ref,Ref,AT>::row(int i);
@@ -62,18 +57,17 @@ namespace fmatvec {
 
     protected:
 
-    inline RowVector<Ref,AT>& copy(const RowVector<Ref,AT> &x);
     template<class Col> inline RowVector<Ref,AT>& copy(const RowVector<Col,AT> &x);
 
     const AT* elePtr(int i) const {
-      return tp ? ele+i : ele+lda*i;
+      return ele+lda*i;
     };
 
     AT* elePtr(int i) {
-      return tp ? ele+i : ele+lda*i;
+      return ele+lda*i;
     };
 
-    explicit RowVector(int n_, int lda_, bool tp, Memory<AT> memory, const AT* ele_) : Matrix<General,Ref,Ref,AT>(1,n_, lda_, tp, memory, ele_) {
+    explicit RowVector(int n_, int lda_, Memory<AT> memory, const AT* ele_) : Matrix<General,Ref,Ref,AT>(1,n_,lda_,memory,ele_) {
     }
 
     /// @endcond
@@ -176,7 +170,6 @@ namespace fmatvec {
         memory = x.memory;
         ele = x.ele;
         lda = x.lda;
-        tp = x.tp; 
         return *this;
       }
 
@@ -193,7 +186,6 @@ namespace fmatvec {
         memory = A.memory;
         ele = A.ele;
         lda = A.lda;
-        tp = A.tp; 
         return *this;
       }
 
@@ -241,10 +233,6 @@ namespace fmatvec {
 	return e(i);
       };
 
-      AT& er(int i) {
-	return ele[i*lda];
-      };
-
       iterator begin() { assert(lda==1); return &ele[0]; }
       iterator end() { assert(lda==1); return &ele[n*lda]; }
       const_iterator begin() const { assert(lda==1); return &ele[0]; }
@@ -252,24 +240,12 @@ namespace fmatvec {
       const_iterator cbegin() const noexcept { assert(lda==1); return &ele[0]; }
       const_iterator cend() const noexcept { assert(lda==1); return &ele[n*lda]; }
 
-      const AT& er(int i) const {
+      AT& e(int i) {
 	return ele[i*lda];
       };
 
-      AT& et(int i) {
-	return ele[i];
-      };
-
-      const AT& et(int i) const {
-	return ele[i];
-      };
-
-       AT& e(int i) {
-	return tp ? et(i) : er(i);
-      };
-
       const AT& e(int i) const {
-	return tp ? et(i) : er(i);
+	return ele[i*lda];
       };
 
       /*! \brief Initialization.
@@ -295,7 +271,7 @@ namespace fmatvec {
        *
        * \return The increment.
        * */
-      int inc() const {return tp?1:lda;};
+      int inc() const {return lda;};
 
       /*! \brief Subrowvector operator.
        *
@@ -347,13 +323,7 @@ namespace fmatvec {
 //       * */
 //      explicit RowVector(const AT &x) : Matrix<General,Ref,Ref,AT>(x) { }
 
-      Vector<Ref,AT> T() {
-	return Vector<Ref,AT>(n,lda,tp?false:true,memory,ele);
-      }
-
-      const Vector<Ref,AT> T() const {
-	return Vector<Ref,AT>(n,lda,tp?false:true,memory,ele);
-      }
+      const Vector<Ref,AT> T() const;
   };
 
   /////////////////////////////////////////////////////////////////////
@@ -361,16 +331,8 @@ namespace fmatvec {
 
   template <class AT>
     inline RowVector<Ref,AT>& RowVector<Ref,AT>::init(const AT &val) {
-
-      if(tp) {
-	for(int i=0; i<n; i++) 
-	  ele[i] = val; 
-      }
-      else {
-	for(int i=0; i<n; i++) 
-	  ele[i*lda] = val;
-      }
-
+      for(int i=0; i<n; i++)
+        ele[i*lda] = val;
       return *this;
     }
 
@@ -389,7 +351,7 @@ namespace fmatvec {
 
       assert(I.end()<n);
 
-      return RowVector<Ref,AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start()));
+      return RowVector<Ref,AT>(I.end()-I.start()+1,lda,memory,elePtr(I.start()));
     }
 
   template <class AT>
@@ -397,41 +359,24 @@ namespace fmatvec {
 
       assert(I.end()<n);
 
-      return RowVector<Ref,AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start()));
+      return RowVector<Ref,AT>(I.end()-I.start()+1,lda,memory,elePtr(I.start()));
     }
 
   /// @cond NO_SHOW
 
-  template <class AT>
-    inline RowVector<Ref,AT>& RowVector<Ref,AT>::copy(const RowVector<Ref,AT> &x) {
-      if(tp) {
-        if(x.tp) 
-          for(int i=0; i<size(); i++)
-            et(i) = x.et(i); 
-        else 
-          for(int i=0; i<size(); i++)
-            et(i) = x.er(i);
-      }
-      else {
-        if(x.tp)
-          for(int i=0; i<size(); i++)
-            er(i) = x.et(i); 
-        else 
-          for(int i=0; i<size(); i++)
-            er(i) = x.er(i);
-      }
+  template <class AT> template <class Col>
+    inline RowVector<Ref,AT>& RowVector<Ref,AT>::copy(const RowVector<Col,AT> &x) {
+      for(int i=0; i<size(); i++)
+        e(i) = x.e(i);
       return *this;
     }
 
-  template <class AT> template <class Col>
-    inline RowVector<Ref,AT>& RowVector<Ref,AT>::copy(const RowVector<Col,AT> &x) {
-      if(tp) 
-	for(int i=0; i<size(); i++)
-	  et(i) = x.e(i);
-      else 
-	for(int i=0; i<size(); i++)
-	  er(i) = x.e(i);
-      return *this;
+  template <class AT>
+    inline const Vector<Ref,AT> RowVector<Ref,AT>::T() const {
+      Vector<Ref,AT> x(n,NONINIT);
+      for(int i=0; i<n; i++)
+        x.e(i) = e(i);
+      return x;
     }
 
   /// @endcond

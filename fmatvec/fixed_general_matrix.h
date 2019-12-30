@@ -231,11 +231,6 @@ namespace fmatvec {
        * */
       int ldim() const {return N;};
 
-      //! A fixed matrix is stored in c-storage order -> transposed is always true
-      bool transposed() const {
-	return true;
-      };
-
       //! Resize a fixed matrix.
       //! Do nothing for the fixed dimension and throw on any other dimension.
       void resize(int m, int n) {
@@ -663,9 +658,22 @@ namespace fmatvec {
 
       explicit Matrix(const std::vector<std::vector<AT>> &m) : Matrix<General,Fixed<M>,Fixed<M>,AT>(m) { }
 
+      inline const Matrix<Rotation,Fixed<M>,Fixed<M>,AT> T() const;
+
+      using Matrix<General,Fixed<M>,Fixed<M>,AT>::e;
+
       // TODO: we should add some overloaded member functions here which capitalize the special
       // properties of rotation matrices, link "RotMat inv() { return trans(*this); }"
   };
+
+  template <int M, class AT>
+    inline const Matrix<Rotation,Fixed<M>,Fixed<M>,AT> Matrix<Rotation,Fixed<M>,Fixed<M>,AT>::T() const {
+      Matrix<Rotation,Fixed<M>,Fixed<M>,AT> A(NONINIT);
+      for(int i=0; i<M; i++)
+        for(int j=0; j<M; j++)
+          A.e(i,j) = e(j,i);
+      return A;
+    }
 
 }
 

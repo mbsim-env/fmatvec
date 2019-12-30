@@ -42,7 +42,6 @@ namespace fmatvec {
     using Matrix<General,Ref,Ref,AT>::n;
     using Matrix<General,Ref,Ref,AT>::lda;
     using Matrix<General,Ref,Ref,AT>::ele;
-    using Matrix<General,Ref,Ref,AT>::tp;
     using Matrix<General,Ref,Ref,AT>::memory;
     using Matrix<General,Ref,Ref,AT>::elePtr;
 
@@ -52,14 +51,12 @@ namespace fmatvec {
 
     /// @cond NO_SHOW
 
-    template <class T> friend SquareMatrix<Ref,T> trans(const SquareMatrix<Ref,T> &A);
-
     friend const SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) const;
     friend SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I);
 
     protected:
 
-    explicit SquareMatrix(int n, int lda, int tp, Memory<AT> memory, const AT* ele) : Matrix<General,Ref,Ref,AT>(n, n, lda, tp, memory, ele) {
+    explicit SquareMatrix(int n, int lda, Memory<AT> memory, const AT* ele) : Matrix<General,Ref,Ref,AT>(n,n,lda,memory,ele) {
     }
 
     /// @endcond
@@ -197,6 +194,7 @@ namespace fmatvec {
       int size() const {return m;};
 
       using Matrix<General,Ref,Ref,AT>::operator();
+      using Matrix<General,Ref,Ref,AT>::e;
 
       /*! \brief Cast to std::vector<std::vector<AT>>.
        *
@@ -204,33 +202,27 @@ namespace fmatvec {
        * */
       explicit inline operator std::vector<std::vector<AT>>() const;
 
-      SquareMatrix<Ref,AT> T() {
-	return SquareMatrix<Ref,AT>(n, lda, tp?false:true, memory, ele);
-      }
-
-      const SquareMatrix<Ref,AT> T() const {
-	return SquareMatrix<Ref,AT>(n, lda, tp?false:true, memory, ele);
-      }
+      const SquareMatrix<Ref,AT> T() const;
   };
 
   template <class AT>
     inline SquareMatrix<Ref,AT>::operator std::vector<std::vector<AT>>() const {
       std::vector<std::vector<AT>> ret(size());
-      if(tp) {
-	for(int r=0; r<size(); r++) {
-	  ret[r].resize(size());
-	  for(int c=0; c<size(); c++)
-	    ret[r][c]= this->et(r,c); 
-	}
-      }
-      else {
-	for(int r=0; r<size(); r++) {
-	  ret[r].resize(size());
-	  for(int c=0; c<size(); c++)
-	    ret[r][c]= this->er(r,c); 
-	}
+      for(int r=0; r<size(); r++) {
+        ret[r].resize(size());
+        for(int c=0; c<size(); c++)
+          ret[r][c]= this->er(r,c);
       }
       return ret;
+    }
+
+  template <class AT>
+    inline const SquareMatrix<Ref,AT> SquareMatrix<Ref,AT>::T() const {
+      SquareMatrix<Ref,AT> A(size(),NONINIT);
+      for(int i=0; i<m; i++)
+        for(int j=0; j<m; j++)
+          A.e(i,j) = e(j,i);
+      return A;
     }
 
 }

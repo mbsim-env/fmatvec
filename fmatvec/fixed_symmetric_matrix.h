@@ -124,11 +124,6 @@ namespace fmatvec {
           throw std::runtime_error("A fixed symmetric matrix cannot be resized.");
       }
 
-      // A fixed matrix is stored in c-storage order -> transposed is always true
-      bool transposed() {
-        return true;
-      }
-
       /*! \brief Element operator
        *
        * Returns a reference to the element in the i-th row and the j-th column. 

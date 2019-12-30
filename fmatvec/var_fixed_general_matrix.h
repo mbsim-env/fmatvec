@@ -258,11 +258,6 @@ namespace fmatvec {
        * */
       int ldim() const {return M;};
 
-      //! A var-fixed matrix is stored in fortran-storage order -> return always false
-      bool transposed() const {
-	return false;
-      };
-
       /*! \brief Transposed status.
        *
        * Returns the blas-conform transposed status.

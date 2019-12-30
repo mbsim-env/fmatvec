@@ -158,11 +158,6 @@ namespace fmatvec {
         resize(n);
       }
 
-      //! The storage format of a var symmetric matrix is fortran-storge order -> return always false
-      bool transposed() {
-        return false;
-      }
-
       /*! \brief Element operator
        *
        * Returns a reference to the element in the i-th row and the j-th column. 

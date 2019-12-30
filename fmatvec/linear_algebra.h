@@ -43,38 +43,6 @@ namespace fmatvec {
 
 /////////////////////////////////// vecvecadd //////////////////////////////
 
-  /*! \brief Vector-vector addition.
-   *
-   * This function computes the sum of two vectors
-   * \return The sum.
-   * */
-  template <class AT1, class AT2>
-  inline Vector<Ref, typename OperatorResult<AT1, AT2>::Type> operator+(const Vector<Ref, AT1> &x, const Vector<Ref, AT2> &y) {
-
-    assert(y.size() == x.size());
-
-    Vector<Ref, typename OperatorResult<AT1, AT2>::Type> z(x.size(), NONINIT);
-
-    if (y.transposed()) {
-      if (x.transposed())
-        for (int i = 0; i < x.size(); i++)
-          z.er(i) = x.et(i) + y.et(i);
-      else
-        for (int i = 0; i < x.size(); i++)
-          z.er(i) = x.er(i) + y.et(i);
-    }
-    else {
-      if (x.transposed())
-        for (int i = 0; i < x.size(); i++)
-          z.er(i) = x.et(i) + y.er(i);
-      else
-        for (int i = 0; i < x.size(); i++)
-          z.er(i) = x.er(i) + y.er(i);
-    }
-
-    return z;
-  }
-
   // Vector-Vector
   template <class Row1, class Row2, class Row3, class AT1, class AT2, class AT3>
   inline void add(const Vector<Row1, AT1> &a1, const Vector<Row2, AT2> &a2, Vector<Row3, AT3> &a3) {
@@ -1406,11 +1374,8 @@ namespace fmatvec {
    * This function computes the transpose of a vector. The result is a rowvector.
    * \return The transpose.
    * */
-  template <class AT>
-  RowVector<Ref, AT> trans(const Vector<Ref, AT> &x) {
-
-    return RowVector<Ref, AT>(x.m, x.lda, x.tp ? false : true, x.memory, x.ele);
-  }
+  template <class Row, class AT>
+  RowVector<Row,AT> trans(const Vector<Row,AT> &x) { return x.T(); }
 
   /*! \brief Transpose of a rowvector.
    *
@@ -1419,11 +1384,8 @@ namespace fmatvec {
    * \param x A vector.
    * \return The transpose.
    * */
-  template <class AT>
-  Vector<Ref, AT> trans(const RowVector<Ref, AT> &x) {
-
-    return Vector<Ref, AT>(x.n, x.lda, x.tp ? false : true, x.memory, x.ele);
-  }
+  template <class Col, class AT>
+  Vector<Col,AT> trans(const RowVector<Col,AT> &x) { return x.T(); }
 
   /*! \brief Transpose of a matrix.
    *
@@ -1433,11 +1395,8 @@ namespace fmatvec {
    * \param A A general matrix.
    * \return The transpose.
    * */
-  template <class AT>
-  Matrix<General, Ref, Ref, AT> trans(const Matrix<General, Ref, Ref, AT> &A) {
-
-    return Matrix<General, Ref, Ref, AT>(A.n, A.m, A.lda, A.tp ? false : true, A.memory, A.ele);
-  }
+  template <class Type, class Row, class Col, class AT>
+  Matrix<Type,Col,Row,AT> trans(const Matrix<Type,Row,Col,AT> &A) { return A.T(); }
 
   /*! \brief Transpose of a matrix.
    *
@@ -1447,45 +1406,42 @@ namespace fmatvec {
    * \param A A square matrix.
    * \return The transpose.
    * */
-  template <class AT>
-  SquareMatrix<Ref, AT> trans(const SquareMatrix<Ref, AT> &A) {
-
-    return SquareMatrix<Ref, AT>(A.n, A.lda, A.tp ? false : true, A.memory, A.ele);
-  }
-
-  template <class Type, class Row, class Col, class AT>
-  inline Matrix<Type, Col, Row, AT> trans(const Matrix<Type, Row, Col, AT> &A) {
-    Matrix<Type, Col, Row, AT> B(A.cols(), A.rows(), NONINIT);
-    for (int i = 0; i < B.rows(); i++)
-      for (int j = 0; j < B.cols(); j++)
-        B.e(i, j) = A.e(j, i);
-    return B;
-  }
-
   template <class Row, class AT>
-  inline SquareMatrix<Row, AT> trans(const SquareMatrix<Row, AT> &A) {
-    SquareMatrix<Row, AT> B(A.size(), NONINIT);
-    for (int i = 0; i < B.size(); i++)
-      for (int j = 0; j < B.size(); j++)
-        B.e(i, j) = A.e(j, i);
-    return B;
-  }
+  SquareMatrix<Row,AT> trans(const SquareMatrix<Row,AT> &A) { return A.T(); }
 
-  template <class Row, class AT>
-  inline RowVector<Row, AT> trans(const Vector<Row, AT> &x) {
-    RowVector<Row, AT> y(x.size(), NONINIT);
-    for (int i = 0; i < y.size(); i++)
-      y.e(i) = x.e(i);
-    return y;
-  }
-
-  template <class Row, class AT>
-  inline Vector<Row, AT> trans(const RowVector<Row, AT> &x) {
-    Vector<Row, AT> y(x.size(), NONINIT);
-    for (int i = 0; i < y.size(); i++)
-      y.e(i) = x.e(i);
-    return y;
-  }
+//  template <class Type, class Row, class Col, class AT>
+//  inline Matrix<Type, Col, Row, AT> trans(const Matrix<Type, Row, Col, AT> &A) {
+//    Matrix<Type, Col, Row, AT> B(A.cols(), A.rows(), NONINIT);
+//    for (int i = 0; i < B.rows(); i++)
+//      for (int j = 0; j < B.cols(); j++)
+//        B.e(i, j) = A.e(j, i);
+//    return B;
+//  }
+//
+//  template <class Row, class AT>
+//  inline SquareMatrix<Row, AT> trans(const SquareMatrix<Row, AT> &A) {
+//    SquareMatrix<Row, AT> B(A.size(), NONINIT);
+//    for (int i = 0; i < B.size(); i++)
+//      for (int j = 0; j < B.size(); j++)
+//        B.e(i, j) = A.e(j, i);
+//    return B;
+//  }
+//
+//  template <class Row, class AT>
+//  inline RowVector<Row, AT> trans(const Vector<Row, AT> &x) {
+//    RowVector<Row, AT> y(x.size(), NONINIT);
+//    for (int i = 0; i < y.size(); i++)
+//      y.e(i) = x.e(i);
+//    return y;
+//  }
+//
+//  template <class Row, class AT>
+//  inline Vector<Row, AT> trans(const RowVector<Row, AT> &x) {
+//    Vector<Row, AT> y(x.size(), NONINIT);
+//    for (int i = 0; i < y.size(); i++)
+//      y.e(i) = x.e(i);
+//    return y;
+//  }
 
   /////////////////////////////////// end transpose //////////////////////////////
 

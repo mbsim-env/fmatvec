@@ -51,8 +51,6 @@ namespace fmatvec {
       friend class SquareMatrix<Ref,AT>;
       friend class Matrix<Symmetric,Ref,Ref,AT>;
       
-      template <class T> friend Matrix<General,Ref,Ref,T> trans(const Matrix<General,Ref,Ref,T> &A);
-
     protected:
 
       Memory<AT> memory;
@@ -60,21 +58,18 @@ namespace fmatvec {
       int m{0};
       int n{0};
       int lda{0};
-      bool tp{false};
 
       template <class Type, class Row, class Col> inline Matrix<General,Ref,Ref,AT>& copy(const Matrix<Type,Row,Col,AT> &A);
-      inline Matrix<General,Ref,Ref,AT>& copy(const Matrix<General,Ref,Ref,AT> &A);
-      inline Matrix<General,Ref,Ref,AT>& copy(const Matrix<Symmetric,Ref,Ref,AT> &A);
 
       const AT* elePtr(int i, int j) const {
-	return tp ? ele+i*lda+j : ele+i+j*lda; 
+	return ele+i+j*lda;
       };
 
       AT* elePtr(int i, int j) {
-	return tp ? ele+i*lda+j : ele+i+j*lda; 
+	return ele+i+j*lda;
       };
 
-      explicit Matrix(int m_, int n_, int lda_, bool tp_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), m(m_), n(n_), lda(lda_), tp(tp_) {
+      explicit Matrix(int m_, int n_, int lda_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), m(m_), n(n_), lda(lda_) {
       }
 
  /// @endcond
@@ -89,7 +84,7 @@ namespace fmatvec {
 
 // Works with -std=gnu++0x only
 //      template<class Ini=All<AT>>
-//      Matrix(int m_, int n_, Ini ini=All<AT>()) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_), tp(false) {
+//      Matrix(int m_, int n_, Ini ini=All<AT>()) : memory(m_*n_), ele((AT*)memory.get()), m(m_), n(n_), lda(m_) {
 //        init(ini);
 //      }
 
@@ -157,7 +152,6 @@ namespace fmatvec {
 
       Matrix<General,Ref,Ref,AT>& resize(int m_, int n_, Noinit) {
 	m = m_; n = n_; lda = m;
-	tp = false;
 	memory.resize(m*n);
 	ele = (AT*)memory.get();
         return *this;
@@ -204,7 +198,6 @@ namespace fmatvec {
         memory = A.memory;
         ele = A.ele;
         lda = A.lda;
-        tp = A.tp; 
         return *this;
       }
 
@@ -260,28 +253,12 @@ namespace fmatvec {
 	return e(i,j);
       };
 
-      AT& er(int i, int j) {
+      AT& e(int i, int j) {
         return ele[i+j*lda];
       };
 
-      const AT& er(int i, int j) const {
-	return ele[i+j*lda];
-      };
-
-      AT& et(int i, int j) {
-        return ele[i*lda+j];
-      };
-
-      const AT& et(int i, int j) const {
-	return ele[i*lda+j];
-      };
-
-      AT& e(int i, int j) {
-	return tp ? et(i,j) : er(i,j);
-      };
-
       const AT& e(int i, int j) const {
-	return tp ? et(i,j) : er(i,j);
+	return ele[i+j*lda];
       };
 
       /*! \brief Pointer operator.
@@ -317,19 +294,12 @@ namespace fmatvec {
 
       /*! \brief Transposed status.
        *
-       * Returns boolean transposed status.
-       * \return True, if the matrix is in transposed form, false otherwise.
-       * */
-      bool transposed() const {return tp;};
-
-      /*! \brief Transposed status.
-       *
        * Returns the blas-conform transposed status.
        * \return CblasTrans if the matrix is in transposed form, CblasNoTrans
        * otherwise. 
        * */
       const CBLAS_TRANSPOSE blasTrans() const {
-  return (tp)? CblasTrans : CblasNoTrans;
+        return CblasNoTrans;
       };
 
       /*! \brief Storage convention.
@@ -340,7 +310,7 @@ namespace fmatvec {
        * \return CblasColMajor.
        * */
       const CBLAS_ORDER blasOrder() const {
-	return  CblasColMajor;
+	return CblasColMajor;
       };
 
       /*! \brief Submatrix operator.
@@ -485,13 +455,7 @@ namespace fmatvec {
 //       * */
 //      explicit Matrix(const AT &x) : memory(1), ele((AT*)memory.get()), m(1), n(1), lda(1) { ele[0] = x; }
 
-      Matrix<General,Ref,Ref,AT> T() {
-	return Matrix<General,Ref,Ref,AT>(n,m,lda,tp?false:true,memory,ele);
-      };
-
-      const Matrix<General,Ref,Ref,AT> T() const {
-	return Matrix<General,Ref,Ref,AT>(n,m,lda,tp?false:true,memory,ele);
-      }
+      const Matrix<General,Ref,Ref,AT> T() const;
 
       /*! \brief Count nonzero elements.
        *
@@ -522,31 +486,17 @@ namespace fmatvec {
 
   template <class AT>
     inline Matrix<General,Ref,Ref,AT>&  Matrix<General,Ref,Ref,AT>::init(const AT &val) {
-
-      if(tp) {
-        for(int i=0; i<rows(); i++) 
-          for(int j=0; j<cols(); j++) 
-            et(i,j) = val; 
-      }
-      else {
-        for(int i=0; i<rows(); i++) 
-          for(int j=0; j<cols(); j++) 
-            er(i,j) = val; 
-      }
-
+      for(int i=0; i<rows(); i++)
+        for(int j=0; j<cols(); j++)
+          e(i,j) = val;
       return *this;
     }
 
   template <class AT>
     inline Matrix<General,Ref,Ref,AT>&  Matrix<General,Ref,Ref,AT>::init(Eye, const AT &val) {
-      if(tp)
-        for(int i=0; i<m; i++)
-          for(int j=0; j<n; j++)
-            et(i,j) = (i==j) ? val : 0;
-      else 
-        for(int i=0; i<m; i++)
-          for(int j=0; j<n; j++)
-            er(i,j) = (i==j) ? val : 0;
+      for(int i=0; i<m; i++)
+        for(int j=0; j<n; j++)
+          e(i,j) = (i==j) ? val : 0;
       return *this;
     }
 
@@ -564,26 +514,26 @@ namespace fmatvec {
     inline Matrix<General,Ref,Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) {
       assert(I.end()<m);
       assert(J.end()<n);
-      return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,tp,memory,elePtr(I.start(),J.start()));
+      return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,memory,elePtr(I.start(),J.start()));
     }
 
   template <class AT> 
     inline const Matrix<General,Ref,Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
       assert(I.end()<m);
       assert(J.end()<n);
-      return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,tp,memory,elePtr(I.start(),J.start()));
+      return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,memory,elePtr(I.start(),J.start()));
     }
 
   template <class AT> 
     inline const SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) const {
       assert(I.end()<m);
-      return SquareMatrix<Ref,AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start(),I.start()));
+      return SquareMatrix<Ref,AT>(I.end()-I.start()+1,lda,memory,elePtr(I.start(),I.start()));
     }
 
   template <class AT>
     inline SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) {
       assert(I.end()<m);
-      return SquareMatrix<Ref,AT>(I.end()-I.start()+1,lda,tp,memory,elePtr(I.start(),I.start()));
+      return SquareMatrix<Ref,AT>(I.end()-I.start()+1,lda,memory,elePtr(I.start(),I.start()));
     }
 
   template <class AT>
@@ -592,7 +542,7 @@ namespace fmatvec {
       assert(i>=0);
       assert(i<n);
 
-      return Vector<Ref,AT>(m,lda,tp,memory,elePtr(0,i));
+      return Vector<Ref,AT>(m,lda,memory,elePtr(0,i));
     }
 
   template <class AT>
@@ -601,7 +551,7 @@ namespace fmatvec {
       assert(i>=0);
       assert(i<n);
 
-      return Vector<Ref,AT>(m,lda,tp,memory,elePtr(0,i));
+      return Vector<Ref,AT>(m,lda,memory,elePtr(0,i));
     }
 
   template <class AT>
@@ -610,7 +560,7 @@ namespace fmatvec {
       assert(i>=0);
       assert(i<m);
 
-      return RowVector<Ref,AT>(n,lda,tp,memory,elePtr(i,0));
+      return RowVector<Ref,AT>(n,lda,memory,elePtr(i,0));
     }
 
   template <class AT>
@@ -619,25 +569,16 @@ namespace fmatvec {
       assert(i>=0);
       assert(i<m);
 
-      return RowVector<Ref,AT>(n,lda,tp,memory,elePtr(i,0));
+      return RowVector<Ref,AT>(n,lda,memory,elePtr(i,0));
     }
 
   template <class AT>
     inline Matrix<General,Ref,Ref,AT>::operator std::vector<std::vector<AT>>() const {
       std::vector<std::vector<AT>> ret(rows());
-      if(tp) {
-        for(int r=0; r<rows(); r++) {
-          ret[r].resize(cols());
-          for(int c=0; c<cols(); c++)
-            ret[r][c]= et(r,c);
-        }
-      }
-      else {
-        for(int r=0; r<rows(); r++) {
-          ret[r].resize(cols());
-          for(int c=0; c<cols(); c++)
-            ret[r][c]= er(r,c);
-        }
+      for(int r=0; r<rows(); r++) {
+        ret[r].resize(cols());
+        for(int c=0; c<cols(); c++)
+          ret[r][c]= e(r,c);
       }
       return ret;
     }
@@ -648,7 +589,7 @@ namespace fmatvec {
         if(static_cast<int>(m[r].size())!=cols())
           throw std::runtime_error("The rows of the input have different length.");
         for(int c=0; c<cols(); c++)
-          er(r,c)=m[r][c];
+          e(r,c)=m[r][c];
       }
     }
 
@@ -656,55 +597,19 @@ namespace fmatvec {
 
   template <class AT> template <class Type, class Row, class Col>
     inline Matrix<General,Ref,Ref,AT>& Matrix<General,Ref,Ref,AT>::copy(const Matrix<Type,Row,Col,AT> &A) {
-      if(tp) {
-        for(int i=0; i<m; i++) 
-          for(int j=0; j<n; j++)
-            et(i,j) = A.e(i,j); 
-      }
-      else {
-        for(int i=0; i<m; i++) 
-          for(int j=0; j<n; j++)
-            er(i,j) = A.e(i,j); 
-      }
+      for(int i=0; i<m; i++)
+        for(int j=0; j<n; j++)
+          e(i,j) = A.e(i,j);
       return *this;
     }
 
   template <class AT>
-    inline Matrix<General,Ref,Ref,AT>& Matrix<General,Ref,Ref,AT>::copy(const Matrix<General,Ref,Ref,AT> &A) {
-      if(A.tp) {
-        if(tp) {
-          for(int i=0; i<m; i++) 
-            for(int j=0; j<n; j++)
-              et(i,j) = A.et(i,j); 
-        }
-        else {
-          for(int i=0; i<m; i++) 
-            for(int j=0; j<n; j++)
-              er(i,j) = A.et(i,j); 
-        }
-      } else {
-        if(tp) {
-          for(int i=0; i<m; i++) 
-            for(int j=0; j<n; j++)
-              et(i,j) = A.er(i,j); 
-        }
-        else {
-          for(int i=0; i<m; i++) 
-            for(int j=0; j<n; j++)
-              er(i,j) = A.er(i,j); 
-        }
-      }
-      return *this;
-    }
-
-  template<class AT>
-    inline Matrix<General,Ref,Ref,AT>& Matrix<General,Ref,Ref,AT>::copy(const Matrix<Symmetric,Ref,Ref,AT> &A) {
-      for(int i=0; i<A.size(); i++) {
-        er(i,i) = A.ej(i,i);
-        for(int j=i+1; j<A.size(); j++)
-          er(i,j) = et(i,j) = A.ej(i,j);
-      }
-      return *this;
+    inline const Matrix<General,Ref,Ref,AT> Matrix<General,Ref,Ref,AT>::T() const {
+      Matrix<General,Ref,Ref,AT> A(n,m,NONINIT);
+      for(int i=0; i<n; i++)
+        for(int j=0; j<m; j++)
+          A.e(i,j) = e(j,i);
+      return A;
     }
 
   template <class AT>
