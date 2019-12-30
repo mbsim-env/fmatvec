@@ -267,7 +267,7 @@ namespace fmatvec {
        * \return CblasColMajor.
        * */
       const CBLAS_ORDER blasOrder() const {
-        return  CblasColMajor;
+        return CblasColMajor;
       };
 
       /*! \brief Initialization.

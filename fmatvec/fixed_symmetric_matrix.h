@@ -226,10 +226,10 @@ namespace fmatvec {
        * Returns the blas-conform storage convention. 
        * The elements are stored in columnmajor form,
        * i.e. the elements are stored columnwise. 
-       * \return CblasColMajor.
+       * \return CblasRowMajor.
        * */
       const CBLAS_ORDER blasOrder() const {
-	return  CblasColMajor;
+	return CblasRowMajor;
       };
 
       /*! \brief Symmetry convention.
