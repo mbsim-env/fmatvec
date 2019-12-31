@@ -323,7 +323,7 @@ namespace fmatvec {
        *
        * Returns a submatrix of the calling matrix. To preserve the
        * symmetry of the calling matrix, the submatrix is limited to the
-       * lower and the upper triangular part of the matrix.
+       * lower triangular part of the matrix.
        * \attention The submatrix and the
        * calling matrix will share the same physical memory.
        * \param I Range containing the starting and the ending row.
@@ -375,6 +375,10 @@ namespace fmatvec {
        * See operator()(int,int,int,int);
        * */
       inline const Matrix<General,Ref,Ref,AT> operator()(int i1, int j1, int i2, int j2) const;
+
+      inline const Matrix<General,Ref,Ref,AT> get(const Range<Var,Var> &I, const Range<Var,Var> &J) const;
+      template<class Type, class Row, class Col> inline void set(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+      template<class Type, class Row, class Col> inline void add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
 
       /*! \brief Cast to std::vector<std::vector<AT>>.
        *
@@ -469,6 +473,45 @@ namespace fmatvec {
       assert(I.end()<n);
 
       return Matrix<Symmetric,Ref,Ref,AT>(I.end()-I.start()+1,lda,memory,elePtr(I.start(),I.start()));
+    }
+
+  template <class AT>
+    inline const Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::get(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
+      assert(I.end()<n);
+      assert(J.end()<n);
+      Matrix<General,Ref,Ref,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+        for(int j=0; j<A.cols(); j++)
+          A.e(i,j) = e(I.start()+i,J.start()+j);
+
+      return A;
+    }
+
+  template <class AT> template<class Type, class Row, class Col>
+    inline void Matrix<Symmetric,Ref,Ref,AT>::set(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
+
+      assert(I.end()<rows());
+      assert(J.end()<cols());
+      assert(I.size()==A.rows());
+      assert(J.size()==A.cols());
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
+          e(i,j) = A.e(ii,jj);
+    }
+
+  template <class AT> template<class Type, class Row, class Col>
+    inline void Matrix<Symmetric,Ref,Ref,AT>::add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
+
+      assert(I.end()<rows());
+      assert(J.end()<cols());
+      assert(I.size()==A.rows());
+      assert(J.size()==A.cols());
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
+          e(i,j) += A.e(ii,jj);
     }
 
   template <class AT>
