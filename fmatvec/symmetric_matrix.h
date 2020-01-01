@@ -357,25 +357,6 @@ namespace fmatvec {
        * */
       inline const Matrix<Symmetric,Ref,Ref,AT> operator()(const Range<Var,Var> &I) const;
 
-      /*! \brief Submatrix operator.
-       *
-       * Returns a submatrix of the calling matrix. 
-       * \attention The submatrix and the
-       * calling matrix will share the same physical memory.
-       * \param i1 The starting row. 
-       * \param j1 The starting column.
-       * \param i2 The ending row.
-       * \param j2 The ending column.
-       * \return A submatrix of the calling matrix.
-       * */
-      inline Matrix<General,Ref,Ref,AT> operator()(int i1, int j1, int i2, int j2);
-
-      /*! \brief Submatrix operator.
-       *
-       * See operator()(int,int,int,int);
-       * */
-      inline const Matrix<General,Ref,Ref,AT> operator()(int i1, int j1, int i2, int j2) const;
-
       inline const Matrix<General,Ref,Ref,AT> get(const Range<Var,Var> &I, const Range<Var,Var> &J) const;
       template<class Type, class Row, class Col> inline void set(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
       template<class Type, class Row, class Col> inline void add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
@@ -431,16 +412,6 @@ namespace fmatvec {
         }
       }
       return *this;
-    }
-
-  template <class AT> 
-    inline const Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(int i1, int j1, int i2, int j2) const {
-      return operator()(Range<Var,Var>(i1,i2),Range<Var,Var>(j1,j2));
-    }
-
-  template <class AT> 
-    inline Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(int i1, int j1, int i2, int j2) {
-      return operator()(Range<Var,Var>(i1,i2),Range<Var,Var>(j1,j2));
     }
 
   template <class AT> 

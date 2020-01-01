@@ -284,23 +284,6 @@ namespace fmatvec {
        * Returns a subvector of the calling vector. 
        * \attention The subvector and the
        * calling vector will share the same physical memory.
-       * \param i1 The starting element. 
-       * \param i2 The ending element.
-       * \return A subvector of the calling vector.
-       * */
-      inline Vector<Ref,AT> operator()(int i1, int i2);
-
-      /*! \brief Subvector operator.
-       *
-       * See operator()(int,int);
-       * */
-      inline const Vector<Ref,AT> operator()(int i1, int i2) const;
-
-      /*! \brief Subvector operator.
-       *
-       * Returns a subvector of the calling vector. 
-       * \attention The subvector and the
-       * calling vector will share the same physical memory.
        * \param I Range containing the starting and the ending element.
        * \return A subvector of the calling vector.
        * */
@@ -351,16 +334,6 @@ namespace fmatvec {
         e(i) = val;
       return *this;
     }
-
-  template <class AT>
-    inline Vector<Ref,AT> Vector<Ref,AT>::operator()(int i1, int i2) {
-    return operator()(Range<Var,Var>(i1,i2));
-  }
-
-  template <class AT> 
-    inline const Vector<Ref,AT> Vector<Ref,AT>::operator()(int i1, int i2) const {
-    return operator()(Range<Var,Var>(i1,i2));
-  }
 
   template <class AT>
     inline const Vector<Ref,AT> Vector<Ref,AT>::operator()(const Range<Var,Var> &I) const {

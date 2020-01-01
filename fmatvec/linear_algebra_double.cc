@@ -786,7 +786,7 @@ namespace fmatvec {
 
     dsyevx('N', 'I', B.blasUplo(), B.size(), B(), B.ldim(), vl, vu, il, iu, abstol, &m, w(), z, ldz);
 
-    return w(0, m - 1);
+    return w(Range<Var,Var>(0, m - 1));
 
   }
 
@@ -888,14 +888,14 @@ namespace fmatvec {
     Matrix<General, Ref, Ref, double> A_ = A;
 
     Vector<Ref, double> b_(A.rows() > A.cols() ? A.rows() : A.cols(), NONINIT);
-    b_(0, b.size() - 1) = b;
+    b_(Range<Var,Var>(0, b.size() - 1)) = b;
 
     int info = dgelss(A.rows(), A.cols(), 1, A_(), A_.ldim(), b_(), b_.size(), rcond);
 
     if(info != 0)
       throw std::runtime_error("Exception in slvLS: dgelss exited with info="+toStr(info));
 
-    return b_(0, A.cols() - 1);
+    return b_(Range<Var,Var>(0, A.cols() - 1));
   }
 
 //  Matrix<General,Ref,Ref,double> swap(const Matrix<General,Ref,Ref,double> &X, const Vector<Ref,int> &ipiv ) {

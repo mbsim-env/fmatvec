@@ -278,23 +278,6 @@ namespace fmatvec {
        * Returns a subrowvector of the calling rowvector. 
        * \attention The subrowvector and the
        * calling rowvector will share the same physical memory.
-       * \param i1 The starting element. 
-       * \param i2 The ending element.
-       * \return A subrowvector of the calling rowvector.
-       * */
-      inline RowVector<Ref,AT> operator()(int i1, int i2);
-
-      /*! \brief Subvector operator.
-       *
-       * See operator()(int,int);
-       * */
-      inline const RowVector<Ref,AT> operator()(int i1, int i2) const;
-
-      /*! \brief Subrowvector operator.
-       *
-       * Returns a subrowvector of the calling rowvector. 
-       * \attention The subrowvector and the
-       * calling rowvector will share the same physical memory.
        * \param I Range containing the starting and the ending element.
        * \return A subrowvector of the calling rowvector.
        * */
@@ -334,16 +317,6 @@ namespace fmatvec {
       for(int i=0; i<n; i++)
         ele[i*lda] = val;
       return *this;
-    }
-
-  template <class AT> 
-    inline RowVector<Ref,AT> RowVector<Ref,AT>::operator()(int i1, int i2) {
-      return operator()(Range<Var,Var>(i1,i2));
-    }
-
-  template <class AT> 
-    inline const RowVector<Ref,AT> RowVector<Ref,AT>::operator()(int i1, int i2) const {
-      return operator()(Range<Var,Var>(i1,i2));
     }
 
   template <class AT>

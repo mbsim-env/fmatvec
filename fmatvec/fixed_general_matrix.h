@@ -259,53 +259,6 @@ namespace fmatvec {
 	return CblasRowMajor;
       };
 
-//      /*! \brief Submatrix operator.
-//       *
-//       * Returns a submatrix of the calling matrix. 
-//       * \attention The submatrix and the
-//       * calling matrix will share the same physical memory.
-//       * \param i1 The starting row. 
-//       * \param j1 The starting column.
-//       * \param i2 The ending row.
-//       * \param j2 The ending column.
-//       * \return A submatrix of the calling matrix.
-//       * */
-//      inline Matrix<General, AT> operator()(int i1, int j1, int i2, int j2);
-//
-//      /*! \brief Submatrix operator.
-//       *
-//       * See operator()(int,int,int,int);
-//       * */
-//      inline const Matrix<General, AT> operator()(int i1, int j1, int i2, int j2) const;
-
-      /*! \brief Submatrix operator.
-       *
-       * Returns a submatrix of the calling matrix. 
-       * For example
-       * \code 
-       * B = A(Range<Var,Var>(1,2),Range<Var,Var>(2,4));
-       * \endcode
-       * yields
-       * \f[ 
-       * A=\begin{pmatrix}
-       * 	a_{00} & a_{01} & a_{02} & a_{03} & a_{04}\\
-       * 	a_{10} & a_{11} & a_{12} & a_{13} & a_{14}\\
-       * 	a_{20} & a_{21} & a_{22} & a_{23} & a_{24}\\
-       * 	a_{30} & a_{31} & a_{32} & a_{33} & a_{34}
-       * \end{pmatrix}\quad \Rightarrow \quad
-       * B=\begin{pmatrix}
-       * 	 a_{12} & a_{13} & a_{14}\\
-       * 	 a_{22} & a_{23} & a_{24}
-       * \end{pmatrix}
-       * \f]
-       * \attention The submatrix and the
-       * calling matrix will share the same physical memory.
-       * \param I Range<Var,Var> containing the starting and the ending row. 
-       * \param J Range<Var,Var> containing the starting and the ending column. 
-       * \return A submatrix of the calling matrix.
-       * */
-//      inline Matrix<General, Var, AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J);
-
       /*! \brief Submatrix operator.
        *
        * See operator()(const Range<Var,Var>&, const Range<Var,Var>&)
