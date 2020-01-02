@@ -191,7 +191,7 @@ namespace fmatvec {
        *
        * \return The number of rows and columns of the matrix.
        * */
-      int size() const {return m;};
+      int size() const {return m;}
 
       using Matrix<General,Ref,Ref,AT>::operator();
       using Matrix<General,Ref,Ref,AT>::e;

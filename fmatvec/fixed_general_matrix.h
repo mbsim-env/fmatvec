@@ -173,7 +173,7 @@ namespace fmatvec {
 	assert(j<N);
 
 	return e(i,j);
-      };
+      }
 
       /*! \brief Element operator
        *
@@ -186,11 +186,11 @@ namespace fmatvec {
 	assert(j<N);
 
 	return e(i,j);
-      };
+      }
 
       AT& e(int i, int j) {
 	return ele[i][j];
-      };
+      }
 
       /*! \brief Element operator
        *
@@ -198,38 +198,38 @@ namespace fmatvec {
        * */
       const AT& e(int i, int j) const {
 	return ele[i][j];
-      };
+      }
 
       /*! \brief Pointer operator.
        *
        * Returns the pointer to the first element.
        * \return The pointer to the first element.
        * */
-      AT* operator()() {return &(ele[0][0]);};
+      AT* operator()() {return &(ele[0][0]);}
 
       /*! \brief Pointer operator
        *
        * See operator()() 
        * */
-      const AT* operator()() const {return &(ele[0][0]);};
+      const AT* operator()() const {return &(ele[0][0]);}
 
       /*! \brief Number of rows.
        *
        * \return The number of rows of the matrix.
        * */
-      int rows() const {return M;};
+      int rows() const {return M;}
 
       /*! \brief Number of columns.
        *
        * \return The number of columns of the matrix.
        * */
-      int cols() const {return N;};
+      int cols() const {return N;}
 
       /*! \brief Leading dimension.
        *
        * \return The leading dimension of the matrix
        * */
-      int ldim() const {return N;};
+      int ldim() const {return N;}
 
       //! Resize a fixed matrix.
       //! Do nothing for the fixed dimension and throw on any other dimension.
@@ -246,7 +246,7 @@ namespace fmatvec {
        * */
       const CBLAS_TRANSPOSE blasTrans() const {
 	return CblasNoTrans;
-      };
+      }
 
       /*! \brief Storage convention.
        *
@@ -257,7 +257,7 @@ namespace fmatvec {
        * */
       const CBLAS_ORDER blasOrder() const {
 	return CblasRowMajor;
-      };
+      }
 
       /*! \brief Submatrix operator.
        *
@@ -284,7 +284,7 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       inline Matrix<General,Fixed<M>,Fixed<N>,AT>& init(const AT &val=AT()); 
-      inline Matrix<General,Fixed<M>,Fixed<N>,AT>& init(Init, const AT &a=AT()) { return init(a); };
+      inline Matrix<General,Fixed<M>,Fixed<N>,AT>& init(Init, const AT &a=AT()) { return init(a); }
       inline Matrix<General,Fixed<M>,Fixed<N>,AT>& init(Eye, const AT &val=1);
       inline Matrix<General,Fixed<M>,Fixed<N>,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
@@ -352,7 +352,6 @@ namespace fmatvec {
       template<class Col> inline void add(int i, const RowVector<Col,AT> &x);
 
       template<class Type, class Row, class Col> inline void add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
-
   };
 
   template <int M, int N, class AT> 

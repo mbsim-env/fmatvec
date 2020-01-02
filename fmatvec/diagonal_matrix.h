@@ -181,7 +181,7 @@ namespace fmatvec {
         assert(j<n);
 
         return e(i,j);
-      };
+      }
 
       /*! \brief Element operator
        *
@@ -193,7 +193,7 @@ namespace fmatvec {
         assert(i<n);
 
         return e(i);
-      };
+      }
 
       /*! \brief Element operator
        *
@@ -209,20 +209,20 @@ namespace fmatvec {
         assert(i<n);
 
         return e(i);
-      };
+      }
 
       const AT& e(int i, int j) const {
         static AT zero=0;
         return i==j ? ele[i] : zero;
-      };
+      }
 
       const AT& e(int i) const {
         return ele[i];
-      };
+      }
 
       AT& e(int i) {
         return ele[i];
-      };
+      }
 
       /*! \brief Pointer operator
        *
@@ -230,7 +230,7 @@ namespace fmatvec {
        * */
       const AT* operator()() const {
         return ele;
-      };
+      }
 
       /*! \brief Pointer operator.
        *
@@ -239,25 +239,25 @@ namespace fmatvec {
        * */
       AT* operator()() {
         return ele;
-      };
+      }
 
       /*! \brief Number of rows.
        *
        * \return The number of rows of the matrix
        * */
-      int rows() const {return n;};
+      int rows() const {return n;}
 
       /*! \brief Number of columns.
        *
        * \return The number of columns of the matrix
        * */
-      int cols() const {return n;};
+      int cols() const {return n;}
 
       /*! \brief Number of rows and columns.
        *
        * \return The number of rows and columns of the matrix
        * */
-      int size() const {return n;};
+      int size() const {return n;}
 
       /*! \brief Storage convention.
        *
@@ -268,7 +268,7 @@ namespace fmatvec {
        * */
       const CBLAS_ORDER blasOrder() const {
         return CblasColMajor;
-      };
+      }
 
       /*! \brief Initialization.
        *

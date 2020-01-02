@@ -63,11 +63,11 @@ namespace fmatvec {
 
       const AT* elePtr(int i, int j) const {
 	return ele+i+j*lda;
-      };
+      }
 
       AT* elePtr(int i, int j) {
 	return ele+i+j*lda;
-      };
+      }
 
       explicit Matrix(int m_, int n_, int lda_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), m(m_), n(n_), lda(lda_) {
       }
@@ -238,7 +238,7 @@ namespace fmatvec {
 	assert(j<n);
 
 	return e(i,j);
-      };
+      }
 
       /*! \brief Element operator
        *
@@ -251,46 +251,46 @@ namespace fmatvec {
 	assert(j<n);
 
 	return e(i,j);
-      };
+      }
 
       AT& e(int i, int j) {
         return ele[i+j*lda];
-      };
+      }
 
       const AT& e(int i, int j) const {
 	return ele[i+j*lda];
-      };
+      }
 
       /*! \brief Pointer operator.
        *
        * Returns the pointer to the first element.
        * \return The pointer to the first element.
        * */
-      AT* operator()() {return ele;};
+      AT* operator()() {return ele;}
 
       /*! \brief Pointer operator
        *
        * See operator()() 
        * */
-      const AT* operator()() const {return ele;};
+      const AT* operator()() const {return ele;}
 
       /*! \brief Number of rows.
        *
        * \return The number of rows of the matrix.
        * */
-      int rows() const {return m;};
+      int rows() const {return m;}
 
       /*! \brief Number of columns.
        *
        * \return The number of columns of the matrix.
        * */
-      int cols() const {return n;};
+      int cols() const {return n;}
 
       /*! \brief Leading dimension.
        *
        * \return The leading dimension of the matrix.
        * */
-      int ldim() const {return lda;};
+      int ldim() const {return lda;}
 
       /*! \brief Transposed status.
        *
@@ -300,7 +300,7 @@ namespace fmatvec {
        * */
       const CBLAS_TRANSPOSE blasTrans() const {
         return CblasNoTrans;
-      };
+      }
 
       /*! \brief Storage convention.
        *
@@ -311,7 +311,7 @@ namespace fmatvec {
        * */
       const CBLAS_ORDER blasOrder() const {
 	return CblasColMajor;
-      };
+      }
 
       /*! \brief Submatrix operator.
        *

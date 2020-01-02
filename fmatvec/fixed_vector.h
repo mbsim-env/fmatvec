@@ -154,7 +154,7 @@ namespace fmatvec {
 	assert(i<M);
 
 	return e(i);
-      };
+      }
 
       /*! \brief Element operator
        *
@@ -166,7 +166,7 @@ namespace fmatvec {
 	assert(i<M);
 
 	return e(i);
-      };
+      }
 
       iterator begin() { return &ele[0][0]; }
       iterator end() { return &ele[M][0]; }
@@ -177,7 +177,7 @@ namespace fmatvec {
 
       AT& e(int i) {
 	return ele[i][0];
-      };
+      }
 
       /*! \brief Element operator
        *
@@ -185,7 +185,7 @@ namespace fmatvec {
        * */
       const AT& e(int i) const {
 	return ele[i][0];
-      };
+      }
 
       /*! \brief Initialization.
        *
@@ -202,7 +202,7 @@ namespace fmatvec {
        *
        * \return The size of the vector.
        * */
-      int size() const {return M;};
+      int size() const {return M;}
 
       //! Resize a fixed vector
       //! Do nothing for the fixed dimension and throw for any other dimension.
@@ -217,7 +217,7 @@ namespace fmatvec {
        *
        * \return The increment.
        * */
-      int inc() const {return 1;};
+      int inc() const {return 1;}
 
       template <int M1, int M2>
       inline const Vector<Fixed<M2-M1+1>,AT> operator()(const Range<Fixed<M1>,Fixed<M2>> &I) const;
@@ -261,7 +261,6 @@ namespace fmatvec {
        */
       template<class Type, class Row, class Col>
       inline void set(const Range<Var,Var> &I, const Matrix<Type,Row,Col,AT> &A);
-
   };
 
   template <int M, class AT>

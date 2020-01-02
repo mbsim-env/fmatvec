@@ -198,38 +198,38 @@ namespace fmatvec {
 	static AT zero=0;
 
 	return ((i-j>kl) || (i-j<-ku)) ? zero : ele[ku+i+j*(kl+ku)];
-      };
+      }
 
       /*! \brief Pointer operator.
        *
        * Returns the pointer to the first element.
        * \return The pointer to the first element.
        * */
-      AT* operator()() {return ele;};
+      AT* operator()() {return ele;}
 
       /*! \brief Pointer operator.
        *
        * see operator()()
        * */
-      const AT* operator()() const {return ele;};
+      const AT* operator()() const {return ele;}
 
       /*! \brief Size.
        *
        * \return The size of the matrix
        * */
-      int size() const {return n;};
+      int size() const {return n;}
 
       /*! \brief Number of rows.
        *
        * \return The number of rows of the matrix
        * */
-      int rows() const {return n;};
+      int rows() const {return n;}
 
       /*! \brief Number of columns.
        *
        * \return The number of columns of the matrix
        * */
-      int cols() const {return n;};
+      int cols() const {return n;}
 
       /*! \brief Storage convention.
        *
@@ -240,7 +240,7 @@ namespace fmatvec {
        * */
       const CBLAS_ORDER blasOrder() const {
         return CblasColMajor;
-      };
+      }
 
       /*! \brief Diagonal operator
        *

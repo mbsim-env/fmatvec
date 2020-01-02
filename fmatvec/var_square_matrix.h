@@ -143,7 +143,7 @@ namespace fmatvec {
        *
        * \return The number of rows and columns of the matrix.
        * */
-      int size() const {return M;};
+      int size() const {return M;}
 
       using Matrix<General,Var,Var,AT>::operator();
       using Matrix<General,Var,Var,AT>::e;
@@ -155,7 +155,6 @@ namespace fmatvec {
       explicit inline operator std::vector<std::vector<AT>>() const;
 
       inline const SquareMatrix<Var,AT> T() const;
-
   };
 
   template <class AT>

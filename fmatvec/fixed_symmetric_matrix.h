@@ -140,7 +140,7 @@ namespace fmatvec {
 	assert(j<M);
 
 	return e(i,j);
-      };
+      }
 
       /*! \brief Element operator
        *
@@ -153,68 +153,68 @@ namespace fmatvec {
 	assert(j<M);
 
 	return e(i,j);
-      };
+      }
 
       AT& ei(int i, int j) {
 	return ele[i][j];
-      };
+      }
 
       const AT& ei(int i, int j) const {
 	return ele[i][j];
-      };
+      }
 
       AT& ej(int i, int j) {
 	return ele[j][i];
-      };
+      }
 
       const AT& ej(int i, int j) const {
 	return ele[j][i];
-      };
+      }
 
        AT& e(int i, int j) {
 	return j > i ? ej(i,j) : ei(i,j);
-      };
+      }
 
       const AT& e(int i, int j) const {
 	return j > i ? ej(i,j) : ei(i,j);
-      };
+      }
 
      /*! \brief Pointer operator.
        *
        * Returns the pointer to the first element.
        * \return The pointer to the first element.
        * */
-      AT* operator()() {return ele;};
+      AT* operator()() {return ele;}
 
       /*! \brief Pointer operator
        *
        * See operator()() 
        * */
-      const AT* operator()() const {return ele;};
+      const AT* operator()() const {return ele;}
 
       /*! \brief Size.
        *
        * \return The number of rows and columns of the matrix
        * */
-      int size() const {return M;};
+      int size() const {return M;}
 
       /*! \brief Number of rows.
        *
        * \return The number of rows of the matrix
        * */
-      int rows() const {return M;};
+      int rows() const {return M;}
 
       /*! \brief Number of columns.
        *
        * \return The number of columns of the matrix
        * */
-      int cols() const {return M;};
+      int cols() const {return M;}
 
       /*! \brief Leading dimension.
        *
        * \return The leading dimension of the matrix
        * */
-      int ldim() const {return M;};
+      int ldim() const {return M;}
 
       /*! \brief Storage convention.
        *
@@ -225,7 +225,7 @@ namespace fmatvec {
        * */
       const CBLAS_ORDER blasOrder() const {
 	return CblasRowMajor;
-      };
+      }
 
       /*! \brief Symmetry convention.
        *
@@ -236,7 +236,7 @@ namespace fmatvec {
        * */
       const CBLAS_UPLO blasUplo() const {
 	return  CblasLower;
-      };
+      }
 
       /*! \brief Initialization.
        *

@@ -144,7 +144,7 @@ namespace fmatvec {
 	assert(i>=0);
 	assert(i<N);
 	return e(i);
-      };
+      }
 
      /*! \brief Element operator
        *
@@ -154,7 +154,7 @@ namespace fmatvec {
 	assert(i>=0);
 	assert(i<N);
 	return e(i);
-      };
+      }
 
       iterator begin() { return &ele[0][0]; }
       iterator end() { return &ele[0][N]; }
@@ -165,7 +165,7 @@ namespace fmatvec {
 
       AT& e(int i) {
 	return ele[0][i];
-      };
+      }
 
       /*! \brief Element operator
        *
@@ -173,7 +173,7 @@ namespace fmatvec {
        * */
       const AT& e(int i) const {
 	return ele[0][i];
-      };
+      }
 
       /*! \brief Initialization.
        *
@@ -190,7 +190,7 @@ namespace fmatvec {
        *
        * \return The size of the rowvector.
        * */
-      int size() const {return N;};
+      int size() const {return N;}
 
       //! Resize a fixed vector
       //! Do nothing for the fixed dimension and throw on any other dimension.
@@ -205,7 +205,7 @@ namespace fmatvec {
        *
        * \return The increment.
        * */
-      int inc() const {return 1;};
+      int inc() const {return 1;}
 
       using Matrix<General,Fixed<1>,Fixed<N>,AT>::operator();
 

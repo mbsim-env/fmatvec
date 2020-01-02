@@ -52,11 +52,11 @@ namespace fmatvec {
 
       const AT* elePtr(int i, int j) const {
 	return  j > i ? ele+i*lda+j : ele+i+j*lda; 
-      };
+      }
 
       AT* elePtr(int i, int j) {
 	return  j > i ? ele+i*lda+j : ele+i+j*lda; 
-      };
+      }
 
       explicit Matrix(int n_, int lda_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_), lda(lda_) {
       }
@@ -209,7 +209,7 @@ namespace fmatvec {
 	assert(i<n);
 	assert(j<n);
 	return e(i,j);
-      };
+      }
 
       /*! \brief Element operator
        *
@@ -222,68 +222,68 @@ namespace fmatvec {
 	assert(j<n);
 
 	return e(i,j);
-      };
+      }
 
       AT& ei(int i, int j) {
 	return ele[i+j*lda];
-      };
+      }
 
       const AT& ei(int i, int j) const {
 	return ele[i+j*lda];
-      };
+      }
 
       AT& ej(int i, int j) {
 	return ele[i*lda+j];
-      };
+      }
 
       const AT& ej(int i, int j) const {
 	return ele[i*lda+j];
-      };
+      }
 
       AT& e(int i, int j) {
 	return j > i ? ej(i,j) : ei(i,j);
-      };
+      }
 
       const AT& e(int i, int j) const {
 	return j > i ? ej(i,j) : ei(i,j);
-      };
+      }
 
       /*! \brief Pointer operator.
        *
        * Returns the pointer to the first element.
        * \return The pointer to the first element.
        * */
-      AT* operator()() {return ele;};
+      AT* operator()() {return ele;}
 
       /*! \brief Pointer operator
        *
        * See operator()() 
        * */
-      const AT* operator()() const {return ele;};
+      const AT* operator()() const {return ele;}
 
       /*! \brief Size.
        *
        * \return The number of rows and columns of the matrix
        * */
-      int size() const {return n;};
+      int size() const {return n;}
 
       /*! \brief Number of rows.
        *
        * \return The number of rows of the matrix
        * */
-      int rows() const {return n;};
+      int rows() const {return n;}
 
       /*! \brief Number of columns.
        *
        * \return The number of columns of the matrix
        * */
-      int cols() const {return n;};
+      int cols() const {return n;}
 
       /*! \brief Leading dimension.
        *
        * \return The leading dimension of the matrix
        * */
-      int ldim() const {return lda;};
+      int ldim() const {return lda;}
 
       /*! \brief Storage convention.
        *
@@ -294,7 +294,7 @@ namespace fmatvec {
        * */
       const CBLAS_ORDER blasOrder() const {
 	return CblasColMajor;
-      };
+      }
 
       /*! \brief Symmetry convention.
        *
@@ -305,7 +305,7 @@ namespace fmatvec {
        * */
       const CBLAS_UPLO blasUplo() const {
 	return  CblasLower;
-      };
+      }
 
       /*! \brief Initialization.
        *
@@ -315,7 +315,7 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       inline Matrix<Symmetric,Ref,Ref,AT>& init(const AT &val); 
-      inline Matrix<Symmetric,Ref,Ref,AT>& init(Init, const AT &a=AT()) { return init(a); };
+      inline Matrix<Symmetric,Ref,Ref,AT>& init(Init, const AT &a=AT()) { return init(a); }
       inline Matrix<Symmetric,Ref,Ref,AT>& init(Eye, const AT &val=1);
       inline Matrix<Symmetric,Ref,Ref,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 

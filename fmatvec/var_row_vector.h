@@ -170,7 +170,7 @@ namespace fmatvec {
 	assert(i<N);
 
 	return e(i);
-      };
+      }
 
       /*! \brief Element operator
        *
@@ -182,7 +182,7 @@ namespace fmatvec {
 	assert(i<N);
 
 	return e(i);
-      };
+      }
 
       iterator begin() { return &ele[0]; }
       iterator end() { return &ele[N]; }
@@ -193,7 +193,7 @@ namespace fmatvec {
 
       AT& e(int i) {
 	return ele[i];
-      };
+      }
 
       /*! \brief Element operator
        *
@@ -201,7 +201,7 @@ namespace fmatvec {
        * */
       const AT& e(int i) const {
 	return ele[i];
-      };
+      }
 
       /*! \brief Initialization.
        *
@@ -218,7 +218,7 @@ namespace fmatvec {
        *
        * \return The size of the vector.
        * */
-      int size() const {return N;};
+      int size() const {return N;}
 
       /*! \brief Increment.
        *
@@ -226,7 +226,7 @@ namespace fmatvec {
        *
        * \return The increment.
        * */
-      int inc() const {return 1;};
+      int inc() const {return 1;}
 
       using Matrix<General,Fixed<1>,Var,AT>::operator();
 

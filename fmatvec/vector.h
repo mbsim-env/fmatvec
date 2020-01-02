@@ -64,11 +64,11 @@ namespace fmatvec {
 
     AT* elePtr(int i) {
       return ele+i;
-    };
+    }
 
     const AT* elePtr(int i) const {
       return ele+i;
-    };
+    }
 
     explicit Vector(int n_, int lda_, Memory<AT> memory, const AT* ele_) : Matrix<General,Ref,Ref,AT>(n_,1,lda_,memory,ele_) { }
 
@@ -225,7 +225,7 @@ namespace fmatvec {
 	assert(i<m);
 
 	return e(i);
-      };
+      }
 
       /*! \brief Element operator
        *
@@ -237,7 +237,7 @@ namespace fmatvec {
 	assert(i<m);
 
 	return e(i);
-      };
+      }
 
       iterator begin() { return &ele[0]; }
       iterator end() { return &ele[m]; }
@@ -248,11 +248,11 @@ namespace fmatvec {
 
       AT& e(int i) {
 	return ele[i];
-      };
+      }
 
       const AT& e(int i) const {
 	return ele[i];
-      };
+      }
 
       /*! \brief Initialization.
        *
@@ -269,7 +269,7 @@ namespace fmatvec {
        *
        * \return The size of the vector.
        * */
-      int size() const {return m;};
+      int size() const {return m;}
 
       /*! \brief Increment.
        *
@@ -277,7 +277,7 @@ namespace fmatvec {
        *
        * \return The increment.
        * */
-      int inc() const {return 1;};
+      int inc() const {return 1;}
 
       /*! \brief Subvector operator.
        *
@@ -325,7 +325,6 @@ namespace fmatvec {
 //      explicit Vector(const AT &x) : Matrix<General,Ref,Ref,AT>(x) { }
 
       const RowVector<Ref,AT> T() const;
-
   };
 
   template <class AT>

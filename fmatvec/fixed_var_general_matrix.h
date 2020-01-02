@@ -203,7 +203,7 @@ namespace fmatvec {
 	assert(j<N);
 
 	return e(i,j);
-      };
+      }
 
       /*! \brief Element operator
        *
@@ -216,11 +216,11 @@ namespace fmatvec {
 	assert(j<N);
 
 	return e(i,j);
-      };
+      }
 
       AT& e(int i, int j) {
 	return ele[i*N+j];
-      };
+      }
 
       /*! \brief Element operator
        *
@@ -228,11 +228,11 @@ namespace fmatvec {
        * */
       const AT& e(int i, int j) const {
 	return ele[i*N+j];
-      };
+      }
 
       AT& e(int i) {
 	return ele[i];
-      };
+      }
 
       /*! \brief Element operator
        *
@@ -240,38 +240,38 @@ namespace fmatvec {
        * */
       const AT& e(int i) const {
 	return ele[i];
-      };
+      }
 
       /*! \brief Pointer operator.
        *
        * Returns the pointer to the first element.
        * \return The pointer to the first element.
        * */
-      AT* operator()() {return ele;};
+      AT* operator()() {return ele;}
 
       /*! \brief Pointer operator
        *
        * See operator()() 
        * */
-      const AT* operator()() const {return ele;};
+      const AT* operator()() const {return ele;}
 
       /*! \brief Number of rows.
        *
        * \return The number of rows of the matrix.
        * */
-      int rows() const {return M;};
+      int rows() const {return M;}
 
       /*! \brief Number of columns.
        *
        * \return The number of columns of the matrix.
        * */
-      int cols() const {return N;};
+      int cols() const {return N;}
 
       /*! \brief Leading dimension.
        *
        * \return The leading dimension of the matrix
        * */
-      int ldim() const {return M;};
+      int ldim() const {return N;}
 
       /*! \brief Transposed status.
        *
@@ -281,7 +281,7 @@ namespace fmatvec {
        * */
       const CBLAS_TRANSPOSE blasTrans() const {
 	return CblasNoTrans;
-      };
+      }
 
       /*! \brief Storage convention.
        *
@@ -292,7 +292,7 @@ namespace fmatvec {
        * */
       const CBLAS_ORDER blasOrder() const {
 	return CblasRowMajor;
-      };
+      }
 
       /*! \brief Submatrix operator.
        *
@@ -391,7 +391,6 @@ namespace fmatvec {
       template<class Col> inline void add(int i, const RowVector<Col,AT> &x);
 
       template<class Type, class Row, class Col> inline void add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
-
   };
 
   template <int M, class AT> 

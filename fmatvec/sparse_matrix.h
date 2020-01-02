@@ -181,7 +181,7 @@ namespace fmatvec {
 	 * */
 	const AT* operator()() const {
 	  return ele;
-	};
+	}
 
 	/*! \brief Pointer operator.
 	 *
@@ -190,7 +190,7 @@ namespace fmatvec {
 	 * */
 	AT* operator()() {
 	  return ele;
-	};
+	}
 
         AT& operator()(int i, int j) {
           throw std::runtime_error("Matrix<Sparse, Ref, Ref, AT>::operator(int i, int j) is not implemented.");
@@ -206,7 +206,7 @@ namespace fmatvec {
 	 * */
 	const int* Ip() const {
 	  return I;
-	};
+	}
 
 	/*! \brief Pointer operator.
 	 *
@@ -214,7 +214,7 @@ namespace fmatvec {
 	 * */
 	int* Ip() {
 	  return I;
-	};
+	}
 
 	/*! \brief Pointer operator.
 	 *
@@ -222,7 +222,7 @@ namespace fmatvec {
 	 * */
 	const int* Jp() const {
 	  return J;
-	};
+	}
 
 	/*! \brief Pointer operator.
 	 *
@@ -230,19 +230,25 @@ namespace fmatvec {
 	 * */
 	int* Jp() {
 	  return J;
-	};
+	}
 
 	/*! \brief Number of rows.
 	 *
 	 * \return The number of rows of the matrix
 	 * */
-	int rows() const {return m;};
+	int rows() const {return m;}
 
 	/*! \brief Number of columns.
 	 *
 	 * \return The number of columns of the matrix
 	 * */
-	int cols() const {return n;};
+	int cols() const {return n;}
+
+        /*! \brief Storage convention.
+         * */
+        const CBLAS_ORDER blasOrder() const {
+          throw std::runtime_error("Matrix<Sparse, Ref, Ref, AT>::blasOrder() cannot be called.");
+        }
 
 	/*! \brief Initialization.
 	 *

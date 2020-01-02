@@ -61,11 +61,11 @@ namespace fmatvec {
 
     const AT* elePtr(int i) const {
       return ele+lda*i;
-    };
+    }
 
     AT* elePtr(int i) {
       return ele+lda*i;
-    };
+    }
 
     explicit RowVector(int n_, int lda_, Memory<AT> memory, const AT* ele_) : Matrix<General,Ref,Ref,AT>(1,n_,lda_,memory,ele_) {
     }
@@ -221,7 +221,7 @@ namespace fmatvec {
 	assert(i>=0);
 	assert(i<n);
 	return e(i);
-      };
+      }
 
      /*! \brief Element operator
        *
@@ -231,7 +231,7 @@ namespace fmatvec {
 	assert(i>=0);
 	assert(i<n);
 	return e(i);
-      };
+      }
 
       iterator begin() { assert(lda==1); return &ele[0]; }
       iterator end() { assert(lda==1); return &ele[n*lda]; }
@@ -242,11 +242,11 @@ namespace fmatvec {
 
       AT& e(int i) {
 	return ele[i*lda];
-      };
+      }
 
       const AT& e(int i) const {
 	return ele[i*lda];
-      };
+      }
 
       /*! \brief Initialization.
        *
@@ -263,7 +263,7 @@ namespace fmatvec {
        *
        * \return The size of the rowvector.
        * */
-      int size() const {return n;};
+      int size() const {return n;}
 
       /*! \brief Increment.
        *
@@ -271,7 +271,7 @@ namespace fmatvec {
        *
        * \return The increment.
        * */
-      int inc() const {return lda;};
+      int inc() const {return lda;}
 
       /*! \brief Subrowvector operator.
        *
@@ -310,7 +310,6 @@ namespace fmatvec {
   };
 
   /////////////////////////////////////////////////////////////////////
-
 
   template <class AT>
     inline RowVector<Ref,AT>& RowVector<Ref,AT>::init(const AT &val) {
