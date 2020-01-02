@@ -190,19 +190,19 @@ namespace fmatvec {
       }
 
       AT& ei(int i, int j) {
-	return ele[i+j*M];
+	return ele[i*M+j];
       }
 
       const AT& ei(int i, int j) const {
-	return ele[i+j*M];
+	return ele[i*M+j];
       }
 
       AT& ej(int i, int j) {
-	return ele[i*M+j];
+	return ele[i+j*M];
       }
 
       const AT& ej(int i, int j) const {
-	return ele[i*M+j];
+	return ele[i+j*M];
       }
 
        AT& e(int i, int j) {
