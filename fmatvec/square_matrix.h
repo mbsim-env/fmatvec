@@ -49,18 +49,6 @@ namespace fmatvec {
 
     typedef AT value_type;
 
-    /// @cond NO_SHOW
-
-    friend const SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) const;
-    friend SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I);
-
-    protected:
-
-    explicit SquareMatrix(int n, int lda, Memory<AT> memory, const AT* ele) : Matrix<General,Ref,Ref,AT>(n,n,lda,memory,ele) {
-    }
-
-    /// @endcond
-
     public:
 
       /*! \brief Standard constructor

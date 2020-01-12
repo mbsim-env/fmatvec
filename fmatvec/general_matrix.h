@@ -69,9 +69,6 @@ namespace fmatvec {
 	return ele+i+j*lda;
       }
 
-      explicit Matrix(int m_, int n_, int lda_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), m(m_), n(n_), lda(lda_) {
-      }
-
  /// @endcond
  
     public:
@@ -192,7 +189,7 @@ namespace fmatvec {
        * \param A The matrix to be referenced. 
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<General,Ref,Ref,AT>& operator&=(const Matrix<General,Ref,Ref,AT> &A) {
+      inline Matrix<General,Ref,Ref,AT>& operator&=(Matrix<General,Ref,Ref,AT> &A) {
         m=A.m; 
         n=A.n;
         memory = A.memory;
@@ -339,7 +336,6 @@ namespace fmatvec {
        * \param J Range containing the starting and the ending column.
        * \return A submatrix of the calling matrix.
        * */
-      inline Matrix<General,Ref,Ref,AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J);
 
       /*! \brief Submatrix operator.
        *
@@ -349,43 +345,15 @@ namespace fmatvec {
 
       /*! \brief Submatrix operator.
        *
-       * Returns a square submatrix of the calling matrix. 
-       * \attention The submatrix and the
-       * calling matrix will share the same physical memory.
-       * \param I Range containing the starting and the ending row.
-       * \return A submatrix of the calling matrix.
-       * */
-      inline SquareMatrix<Ref,AT> operator() (const Range<Var,Var> &I);
-
-      /*! \brief Submatrix operator.
-       *
        * See operator()(const Range<Var,Var>&)
        * */
       inline const SquareMatrix<Ref,AT> operator()(const Range<Var,Var> &I) const;
 
       /*! \brief Column operator.
        *
-       * Returns a vector containing the i-th column of the calling matrix. 
-       * \attention The vector and the calling matrix will share the same physical memory.
-       * \param i The column, that will be returned.  
-       * \return A vector containing the i-th column of the calling matrix.
-       * */
-      inline Vector<Ref,AT> col(int i);
-
-      /*! \brief Column operator.
-       *
        * see col(int)
        * */
       inline const Vector<Ref,AT> col(int i) const;
-
-      /*! \brief Row operator.
-       *
-       * Returns a RowVector containing the i-th row of the calling matrix. 
-       * \attention The rowvector and the calling matrix will share the same physical memory.
-       * \param i The row, that will be returned. 
-       * \return A rowvector containing the i-th row of the calling matrix.
-       * */
-      inline RowVector<Ref,AT> row(int i); 
 
       /*! \brief Row operator.
        *
@@ -438,6 +406,14 @@ namespace fmatvec {
 
       const Matrix<General,Ref,Ref,AT> T() const;
 
+      template<class Row> inline void set(int j, const Vector<Row,AT> &x);
+
+      template<class Type, class Row, class Col> inline void set(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+
+      template<class Type, class Row, class Col> inline void add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+
+      inline void ref(Matrix<General,Ref,Ref,AT> &A, const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J);
+
       /*! \brief Count nonzero elements.
        *
        * This function counts the nonzero elements of a matrix. ALL diagonal
@@ -482,38 +458,22 @@ namespace fmatvec {
     }
 
   template <class AT> 
-    inline Matrix<General,Ref,Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) {
-      assert(I.end()<m);
-      assert(J.end()<n);
-      return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,memory,elePtr(I.start(),J.start()));
-    }
-
-  template <class AT> 
     inline const Matrix<General,Ref,Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
       assert(I.end()<m);
       assert(J.end()<n);
-      return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,memory,elePtr(I.start(),J.start()));
+      Matrix<General,Ref,Ref,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+        for(int j=0; j<A.cols(); j++)
+          A.e(i,j) = e(I.start()+i,J.start()+j);
+
+      return A;
     }
 
   template <class AT> 
     inline const SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) const {
       assert(I.end()<m);
-      return SquareMatrix<Ref,AT>(I.end()-I.start()+1,lda,memory,elePtr(I.start(),I.start()));
-    }
-
-  template <class AT>
-    inline SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) {
-      assert(I.end()<m);
-      return SquareMatrix<Ref,AT>(I.end()-I.start()+1,lda,memory,elePtr(I.start(),I.start()));
-    }
-
-  template <class AT>
-    inline Vector<Ref,AT>  Matrix<General,Ref,Ref,AT>::col(int i) {
-
-      assert(i>=0);
-      assert(i<n);
-
-      return Vector<Ref,AT>(m,lda,memory,elePtr(0,i));
+      throw 1;
     }
 
   template <class AT>
@@ -521,17 +481,7 @@ namespace fmatvec {
 
       assert(i>=0);
       assert(i<n);
-
-      return Vector<Ref,AT>(m,lda,memory,elePtr(0,i));
-    }
-
-  template <class AT>
-    inline RowVector<Ref,AT>  Matrix<General,Ref,Ref,AT>::row(int i) {
-
-      assert(i>=0);
-      assert(i<m);
-
-      return RowVector<Ref,AT>(n,lda,memory,elePtr(i,0));
+      throw 1;
     }
 
   template <class AT>
@@ -539,8 +489,7 @@ namespace fmatvec {
 
       assert(i>=0);
       assert(i<m);
-
-      return RowVector<Ref,AT>(n,lda,memory,elePtr(i,0));
+      throw 1;
     }
 
   template <class AT>
@@ -581,6 +530,51 @@ namespace fmatvec {
         for(int j=0; j<m; j++)
           A.e(i,j) = e(j,i);
       return A;
+    }
+
+  template <class AT> template <class Row>
+    inline void Matrix<General,Ref,Ref,AT>::set(int j, const Vector<Row,AT> &x) {
+      assert(j<cols());
+      assert(rows()==x.size());
+      for(int i=0; i<rows(); i++)
+        e(i,j) = x.e(i);
+    }
+
+  template <class AT> template<class Type, class Row, class Col>
+    inline void Matrix<General,Ref,Ref,AT>::set(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
+
+      assert(I.end()<rows());
+      assert(J.end()<cols());
+      assert(I.size()==A.rows());
+      assert(J.size()==A.cols());
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
+          e(i,j) = A.e(ii,jj);
+    }
+
+  template <class AT> template<class Type, class Row, class Col>
+    inline void Matrix<General,Ref,Ref,AT>::add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
+
+      assert(I.end()<rows());
+      assert(J.end()<cols());
+      assert(I.size()==A.rows());
+      assert(J.size()==A.cols());
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
+          e(i,j) += A.e(ii,jj);
+    }
+
+  template <class AT>
+    inline void Matrix<General,Ref,Ref,AT>::ref(Matrix<General,Ref,Ref,AT> &A, const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J) {
+      assert(I.end()<A.rows());
+      assert(J.end()<A.cols());
+      m=I.size();
+      n=J.size();
+      memory = A.memory;
+      ele = A.elePtr(I.start(),J.start());
+      lda = A.lda;
     }
 
   template <class AT>

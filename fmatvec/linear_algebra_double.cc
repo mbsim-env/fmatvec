@@ -720,7 +720,7 @@ namespace fmatvec {
     for (int i = 0; i < dim; i++) {
       Vector<Ref, double> evTmp = eigenvectors.col(i);
       if (nrm2(evTmp) > 0)
-        eigenvectors.col(i) = evTmp / nrm2(evTmp);
+        eigenvectors.set(i, evTmp / nrm2(evTmp));
       eigenvalues(i) = w[i];
     }
 
@@ -868,7 +868,7 @@ namespace fmatvec {
     Matrix<General, Ref, Ref, double> A_ = A;
 
     Matrix<General, Ref, Ref, double> B_(A.rows() > A.cols() ? A.rows() : A.cols(), B.cols(), NONINIT);
-    B_(Range<Var,Var>(0, B.rows() - 1), Range<Var,Var>(0, B.cols() - 1)) = B;
+    B_.set(Range<Var,Var>(0, B.rows() - 1), Range<Var,Var>(0, B.cols() - 1), B);
 
     int info = dgelss(A.rows(), A.cols(), B_.cols(), A_(), A_.ldim(), B_(), B_.ldim(), rcond);
 
@@ -888,7 +888,7 @@ namespace fmatvec {
     Matrix<General, Ref, Ref, double> A_ = A;
 
     Vector<Ref, double> b_(A.rows() > A.cols() ? A.rows() : A.cols(), NONINIT);
-    b_(Range<Var,Var>(0, b.size() - 1)) = b;
+    b_.set(Range<Var,Var>(0, b.size() - 1), b);
 
     int info = dgelss(A.rows(), A.cols(), 1, A_(), A_.ldim(), b_(), b_.size(), rcond);
 

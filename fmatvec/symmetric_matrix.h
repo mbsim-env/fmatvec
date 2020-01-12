@@ -58,9 +58,6 @@ namespace fmatvec {
 	return  j > i ? ele+i*lda+j : ele+i+j*lda; 
       }
 
-      explicit Matrix(int n_, int lda_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_), lda(lda_) {
-      }
-
     /// @endcond
 
     public:
@@ -320,44 +317,13 @@ namespace fmatvec {
       inline Matrix<Symmetric,Ref,Ref,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
       /*! \brief Submatrix operator.
-       *
-       * Returns a submatrix of the calling matrix. To preserve the
-       * symmetry of the calling matrix, the submatrix is limited to the
-       * lower triangular part of the matrix.
-       * \attention The submatrix and the
-       * calling matrix will share the same physical memory.
-       * \param I Range containing the starting and the ending row.
-       * \param J Range containing the starting and the ending column.
-       * \return A submatrix of the calling matrix.
-       * */
-      inline Matrix<General,Ref,Ref,AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J);
-
-      /*! \brief Submatrix operator.
-       *
-       * See operator()(const Range<Var,Var>&, const Range<Var,Var>&)
        * */
       inline const Matrix<General,Ref,Ref,AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const;
 
       /*! \brief Submatrix operator.
-       *
-       * Returns a submatrix of the calling matrix. To preserve the
-       * symmetry of the calling matrix, the submatrix is limited to the
-       * lower and the upper triangular part of the matrix.
-       * \attention The submatrix and the
-       * calling matrix will share the same physical memory.
-       * \param I Range containing the starting and the
-       * ending row and column. 
-       * \return A submatrix of the calling matrix.
-       * */
-      inline Matrix<Symmetric,Ref,Ref,AT> operator()(const Range<Var,Var> &I);
-
-      /*! \brief Submatrix operator.
-       *
-       * See operator()(const Range<Var,Var>&)
        * */
       inline const Matrix<Symmetric,Ref,Ref,AT> operator()(const Range<Var,Var> &I) const;
 
-      inline const Matrix<General,Ref,Ref,AT> get(const Range<Var,Var> &I, const Range<Var,Var> &J) const;
       template<class Type, class Row, class Col> inline void set(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
       template<class Type, class Row, class Col> inline void add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
 
@@ -414,40 +380,8 @@ namespace fmatvec {
       return *this;
     }
 
-  template <class AT> 
-    inline const Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
-      assert(I.end()<n);
-      assert(J.end()<n);
-      assert(I.start()>=J.start());
-      assert(J.end()<=I.start());
-      return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,memory,elePtr(I.start(),J.start()));
-    }
-
-  template <class AT> 
-    inline Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) {
-      assert(I.end()<n);
-      assert(J.end()<n);
-      assert(I.start()>=J.start());
-      assert(J.end()<=I.start());
-      return Matrix<General,Ref,Ref,AT>(I.end()-I.start()+1,J.end()-J.start()+1,lda,memory,elePtr(I.start(),J.start()));
-    }
-
-  template <class AT> 
-    inline Matrix<Symmetric,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) {
-      assert(I.end()<n);
-
-      return Matrix<Symmetric,Ref,Ref,AT>(I.end()-I.start()+1,lda,memory,elePtr(I.start(),I.start()));
-    }
-
-  template <class AT> 
-    inline const Matrix<Symmetric,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) const {
-      assert(I.end()<n);
-
-      return Matrix<Symmetric,Ref,Ref,AT>(I.end()-I.start()+1,lda,memory,elePtr(I.start(),I.start()));
-    }
-
   template <class AT>
-    inline const Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::get(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
+    inline const Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
       assert(I.end()<n);
       assert(J.end()<n);
       Matrix<General,Ref,Ref,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
@@ -457,6 +391,13 @@ namespace fmatvec {
           A.e(i,j) = e(I.start()+i,J.start()+j);
 
       return A;
+    }
+
+  template <class AT> 
+    inline const Matrix<Symmetric,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) const {
+      assert(I.end()<n);
+
+      throw 1;
     }
 
   template <class AT> template<class Type, class Row, class Col>

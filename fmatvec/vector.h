@@ -55,9 +55,6 @@ namespace fmatvec {
 
     friend class RowVector<Ref,AT>;
 
-    friend Vector<Ref,AT> Matrix<General,Ref,Ref,AT>::col(int i);
-    friend const Vector<Ref,AT> Matrix<General,Ref,Ref,AT>::col(int i) const;
-
     protected:
 
     template<class Row> inline Vector<Ref,AT>& copy(const Vector<Row,AT> &x);
@@ -69,8 +66,6 @@ namespace fmatvec {
     const AT* elePtr(int i) const {
       return ele+i;
     }
-
-    explicit Vector(int n_, int lda_, Memory<AT> memory, const AT* ele_) : Matrix<General,Ref,Ref,AT>(n_,1,lda_,memory,ele_) { }
 
     /// @endcond
     
@@ -281,16 +276,6 @@ namespace fmatvec {
 
       /*! \brief Subvector operator.
        *
-       * Returns a subvector of the calling vector. 
-       * \attention The subvector and the
-       * calling vector will share the same physical memory.
-       * \param I Range containing the starting and the ending element.
-       * \return A subvector of the calling vector.
-       * */
-      inline Vector<Ref,AT> operator()(const Range<Var,Var> &I);
-
-      /*! \brief Subvector operator.
-       *
        * See operator()(const Range<Var,Var>&)
        * */
       inline const Vector<Ref,AT> operator()(const Range<Var,Var> &I) const;
@@ -324,6 +309,8 @@ namespace fmatvec {
 //       * */
 //      explicit Vector(const AT &x) : Matrix<General,Ref,Ref,AT>(x) { }
 
+      template<class Row> inline void set(const fmatvec::Range<Var,Var> &I, const Vector<Row,AT> &x);
+
       const RowVector<Ref,AT> T() const;
   };
 
@@ -339,15 +326,7 @@ namespace fmatvec {
 
       assert(I.end()<m);
 
-      return Vector<Ref,AT>(I.end()-I.start()+1,lda,memory,elePtr(I.start()));
-    }
-
-  template <class AT>
-    inline Vector<Ref,AT> Vector<Ref,AT>::operator()(const Range<Var,Var> &I) {
-
-      assert(I.end()<m);
-
-      return Vector<Ref,AT>(I.end()-I.start()+1,lda,memory,elePtr(I.start()));
+      throw 1;
     }
 
   template <class AT>
@@ -369,6 +348,16 @@ namespace fmatvec {
       for(int i=0; i<size(); i++)
         e(i) = x.e(i);
       return *this;
+    }
+
+  template <class AT> template<class Row>
+    inline void Vector<Ref,AT>::set(const fmatvec::Range<Var,Var> &I, const Vector<Row,AT> &x) {
+
+      assert(I.end()<size());
+      assert(I.size()==x.size());
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+          e(i) = x.e(ii);
     }
 
   template <class AT>

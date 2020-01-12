@@ -67,9 +67,6 @@ namespace fmatvec {
       return ele+lda*i;
     }
 
-    explicit RowVector(int n_, int lda_, Memory<AT> memory, const AT* ele_) : Matrix<General,Ref,Ref,AT>(1,n_,lda_,memory,ele_) {
-    }
-
     /// @endcond
 
     public:
