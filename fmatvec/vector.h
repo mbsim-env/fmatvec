@@ -311,6 +311,14 @@ namespace fmatvec {
 
       template<class Row> inline void set(const fmatvec::Range<Var,Var> &I, const Vector<Row,AT> &x);
 
+      template<class Row> inline void add(const fmatvec::Range<Var,Var> &I, const Vector<Row,AT> &x);
+
+      inline void ref(Vector<Ref,AT> &x, const fmatvec::Range<Var,Var> &I);
+
+      inline void ref(Matrix<General,Ref,Ref,AT> &A, int j);
+
+      inline void ref(Matrix<General,Ref,Ref,AT> &A, const fmatvec::Range<Var,Var> &I, int j);
+
       const RowVector<Ref,AT> T() const;
   };
 
@@ -326,7 +334,12 @@ namespace fmatvec {
 
       assert(I.end()<m);
 
-      throw 1;
+      Vector<Ref,AT> x(I.end()-I.start()+1,NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+        x.e(i) = e(I.start()+i);
+
+      return x;
     }
 
   template <class AT>
@@ -358,6 +371,53 @@ namespace fmatvec {
 
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
           e(i) = x.e(ii);
+    }
+
+  template <class AT> template<class Row>
+    inline void Vector<Ref,AT>::add(const fmatvec::Range<Var,Var> &I, const Vector<Row,AT> &x) {
+
+      assert(I.end()<size());
+      assert(I.size()==x.size());
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+          e(i) += x.e(ii);
+    }
+
+  template <class AT>
+    inline void Vector<Ref,AT>::ref(Vector<Ref,AT> &x, const fmatvec::Range<Var,Var> &I) {
+
+      assert(I.end()<x.size());
+
+      m=I.size();
+      n=1;
+      memory = x.memory;
+      ele = x.elePtr(I.start());
+      lda = x.lda;
+    }
+
+  template <class AT>
+    inline void Vector<Ref,AT>::ref(Matrix<General,Ref,Ref,AT> &A, int j) {
+
+      assert(j<A.cols());
+
+      m=A.rows();
+      n=1;
+      memory = A.memory;
+      ele = A.elePtr(0,j);
+      lda = A.lda;
+    }
+
+  template <class AT>
+    inline void Vector<Ref,AT>::ref(Matrix<General,Ref,Ref,AT> &A, const fmatvec::Range<Var,Var> &I, int j) {
+
+      assert(I.end()<A.rows());
+      assert(j<A.cols());
+
+      m=I.size();
+      n=1;
+      memory = A.memory;
+      ele = A.elePtr(I.start(),j);
+      lda = A.lda;
     }
 
   template <class AT>

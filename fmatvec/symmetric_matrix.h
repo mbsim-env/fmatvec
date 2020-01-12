@@ -47,6 +47,8 @@ namespace fmatvec {
       int n{0};
       int lda{0};
 
+      friend class Matrix<General,Ref,Ref,AT>;
+
       template <class Type, class Row, class Col> inline Matrix<Symmetric,Ref,Ref,AT>& copy(const Matrix<Type,Row,Col,AT> &A);
       inline Matrix<Symmetric,Ref,Ref,AT>& copy(const Matrix<Symmetric,Ref,Ref,AT> &A);
 
@@ -326,6 +328,7 @@ namespace fmatvec {
 
       template<class Type, class Row, class Col> inline void set(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
       template<class Type, class Row, class Col> inline void add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+      inline void ref(Matrix<Symmetric,Ref,Ref,AT> &A, const fmatvec::Range<Var,Var> &I);
 
       /*! \brief Cast to std::vector<std::vector<AT>>.
        *
@@ -397,7 +400,13 @@ namespace fmatvec {
     inline const Matrix<Symmetric,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) const {
       assert(I.end()<n);
 
-      throw 1;
+      Matrix<Symmetric,Ref,Ref,AT> A(I.end()-I.start()+1,NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+        for(int j=i; j<A.cols(); j++)
+          A.e(i,j) = e(I.start()+i,I.start()+j);
+
+      return A;
     }
 
   template <class AT> template<class Type, class Row, class Col>
@@ -424,6 +433,15 @@ namespace fmatvec {
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
           e(i,j) += A.e(ii,jj);
+    }
+
+  template <class AT>
+    inline void Matrix<Symmetric,Ref,Ref,AT>::ref(Matrix<Symmetric,Ref,Ref,AT> &A, const fmatvec::Range<Var,Var> &I) {
+      assert(I.end()<A.size());
+      n=I.size();
+      memory = A.memory;
+      ele = A.elePtr(I.start(),I.start());
+      lda = A.lda;
     }
 
   template <class AT>

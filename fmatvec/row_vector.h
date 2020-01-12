@@ -52,9 +52,6 @@ namespace fmatvec {
     
     friend class Vector<Ref,AT>;
 
-    friend RowVector<Ref,AT> Matrix<General,Ref,Ref,AT>::row(int i);
-    friend const RowVector<Ref,AT> Matrix<General,Ref,Ref,AT>::row(int i) const;
-
     protected:
 
     template<class Col> inline RowVector<Ref,AT>& copy(const RowVector<Col,AT> &x);
@@ -271,18 +268,6 @@ namespace fmatvec {
       int inc() const {return lda;}
 
       /*! \brief Subrowvector operator.
-       *
-       * Returns a subrowvector of the calling rowvector. 
-       * \attention The subrowvector and the
-       * calling rowvector will share the same physical memory.
-       * \param I Range containing the starting and the ending element.
-       * \return A subrowvector of the calling rowvector.
-       * */
-      inline RowVector<Ref,AT> operator()(const Range<Var,Var> &I);
-
-      /*! \brief Subrowvector operator.
-       *
-       * See operator()(const Range<Var,Var>&)
        * */
       inline const RowVector<Ref,AT> operator()(const Range<Var,Var> &I) const;
 
@@ -303,6 +288,16 @@ namespace fmatvec {
 //       * */
 //      explicit RowVector(const AT &x) : Matrix<General,Ref,Ref,AT>(x) { }
 
+      template<class Row> inline void set(const fmatvec::Range<Var,Var> &I, const RowVector<Row,AT> &x);
+
+      template<class Row> inline void add(const fmatvec::Range<Var,Var> &I, const RowVector<Row,AT> &x);
+
+      inline void ref(RowVector<Ref,AT> &x, const fmatvec::Range<Var,Var> &I);
+
+      inline void ref(Matrix<General,Ref,Ref,AT> &A, int i);
+
+      inline void ref(Matrix<General,Ref,Ref,AT> &A, int i, const fmatvec::Range<Var,Var> &J);
+
       const Vector<Ref,AT> T() const;
   };
 
@@ -319,16 +314,12 @@ namespace fmatvec {
     inline const RowVector<Ref,AT> RowVector<Ref,AT>::operator()(const Range<Var,Var> &I) const {
 
       assert(I.end()<n);
+      RowVector<Ref,AT> x(I.end()-I.start()+1,NONINIT);
 
-      return RowVector<Ref,AT>(I.end()-I.start()+1,lda,memory,elePtr(I.start()));
-    }
+      for(int i=0; i<x.size(); i++)
+        x.e(i) = e(I.start()+i);
 
-  template <class AT>
-    inline RowVector<Ref,AT> RowVector<Ref,AT>::operator()(const Range<Var,Var> &I) {
-
-      assert(I.end()<n);
-
-      return RowVector<Ref,AT>(I.end()-I.start()+1,lda,memory,elePtr(I.start()));
+      return x;
     }
 
   /// @cond NO_SHOW
@@ -338,6 +329,63 @@ namespace fmatvec {
       for(int i=0; i<size(); i++)
         e(i) = x.e(i);
       return *this;
+    }
+
+  template <class AT> template <class Row>
+    inline void RowVector<Ref,AT>::set(const Range<Var,Var> &I, const RowVector<Row,AT> &x) {
+
+      assert(I.end()<size());
+      assert(I.size()==x.size());
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        e(i) = x.e(ii);
+    }
+
+  template <class AT> template <class Row>
+
+    inline void RowVector<Ref,AT>::add(const Range<Var,Var> &I, const RowVector<Row,AT> &x) {
+      assert(I.end()<size());
+      assert(I.size()==x.size());
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        e(i) += x.e(ii);
+    }
+
+  template <class AT>
+    inline void RowVector<Ref,AT>::ref(RowVector<Ref,AT> &x, const fmatvec::Range<Var,Var> &I) {
+
+      assert(I.end()<x.size());
+
+      m=1;
+      n=I.size();
+      memory = x.memory;
+      ele = x.elePtr(I.start());
+      lda = x.lda;
+    }
+
+  template <class AT>
+    inline void RowVector<Ref,AT>::ref(Matrix<General,Ref,Ref,AT> &A, int i) {
+
+      assert(i<A.rows());
+
+      m=1;
+      n=A.cols();
+      memory = A.memory;
+      ele = A.elePtr(i,0);
+      lda = A.lda;
+    }
+
+  template <class AT>
+    inline void RowVector<Ref,AT>::ref(Matrix<General,Ref,Ref,AT> &A, int i, const fmatvec::Range<Var,Var> &J) {
+
+      assert(i<A.rows());
+      assert(J.end()<A.cols());
+
+      m=1;
+      n=J.size();
+      memory = A.memory;
+      ele = A.elePtr(i,J.start());
+      lda = A.lda;
     }
 
   template <class AT>
