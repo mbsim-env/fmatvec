@@ -147,7 +147,7 @@ namespace fmatvec {
 	 * \param A The matrix to be referenced. 
 	 * \return A reference to the calling matrix.
 	 * */
-        inline Matrix<Sparse,Ref,Ref,AT>& operator&=(const Matrix<Sparse,Ref,Ref,AT> &A) {
+        inline Matrix<Sparse,Ref,Ref,AT>& operator&=(Matrix<Sparse,Ref,Ref,AT> &A) {
           m=A.m;
           n=A.n;
           k=A.k;

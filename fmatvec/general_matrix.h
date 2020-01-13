@@ -412,6 +412,8 @@ namespace fmatvec {
 
       template<class Type, class Row, class Col> inline void add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
 
+      template<class Type, class Row, class Col> inline void sub(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+
       inline void ref(Matrix<General,Ref,Ref,AT> &A, const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J);
 
       inline void ref(Matrix<Symmetric,Ref,Ref,AT> &A, const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J);
@@ -608,6 +610,19 @@ namespace fmatvec {
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
           e(i,j) += A.e(ii,jj);
+    }
+
+  template <class AT> template<class Type, class Row, class Col>
+    inline void Matrix<General,Ref,Ref,AT>::sub(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
+
+      assert(I.end()<rows());
+      assert(J.end()<cols());
+      assert(I.size()==A.rows());
+      assert(J.size()==A.cols());
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
+          e(i,j) -= A.e(ii,jj);
     }
 
   template <class AT>

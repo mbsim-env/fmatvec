@@ -172,7 +172,7 @@ namespace fmatvec {
        * \param A The matrix to be referenced. 
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<Symmetric,Ref,Ref,AT>& operator&=(const Matrix<Symmetric,Ref,Ref,AT> &A) {
+      inline Matrix<Symmetric,Ref,Ref,AT>& operator&=(Matrix<Symmetric,Ref,Ref,AT> &A) {
         n=A.n;
         memory = A.memory;
         ele = A.ele;

@@ -161,7 +161,7 @@ namespace fmatvec {
        * \param x The vector to be referenced.
        * \return A reference to the calling vector.
        * */
-      inline Vector<Ref,AT>& operator&=(const Vector<Ref,AT> &x) {
+      inline Vector<Ref,AT>& operator&=(Vector<Ref,AT> &x) {
         m = x.m; 
         n = 1;
         memory = x.memory;
@@ -176,7 +176,7 @@ namespace fmatvec {
        * \param x The matrix to be referenced.
        * \return A reference to the calling vector.
        * */
-      inline Vector<Ref,AT>& operator&=(const Matrix<General,Ref,Ref,AT> &A) {
+      inline Vector<Ref,AT>& operator&=(Matrix<General,Ref,Ref,AT> &A) {
         assert(A.cols() == 1);
         m = A.rows(); 
         n = 1;

@@ -51,9 +51,6 @@ namespace fmatvec {
 
       inline Matrix<GeneralBand,Ref,Ref,AT>& copy(const Matrix<GeneralBand,Ref,Ref,AT> &A);
 
-      explicit Matrix(int n_, int kl_, int ku_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_), kl(kl_), ku(ku_) {
-      }
-
       /// @endcond
 
     public:
@@ -160,7 +157,7 @@ namespace fmatvec {
        * \param A The matrix to be referenced. 
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<GeneralBand,Ref,Ref,AT>& operator&=(const Matrix<GeneralBand,Ref,Ref,AT> &A) {
+      inline Matrix<GeneralBand,Ref,Ref,AT>& operator&=(Matrix<GeneralBand,Ref,Ref,AT> &A) {
         n = A.n;
         memory = A.memory;
         ele = A.ele;
@@ -242,20 +239,20 @@ namespace fmatvec {
         return CblasColMajor;
       }
 
-      /*! \brief Diagonal operator
-       *
-       * See operator()(int) 
-       * */
-      inline const Vector<Ref,AT> operator()(int i) const;
-
-      /*! \brief Diagonal operator
-       *
-       * If i<0, the i-th subdiagonal is returned. Otherwise the i-th
-       * superdiagonal is returned.  
-       * \param i The i-th super- and subdiagonal,
-       * respectively.
-       * */
-      inline Vector<Ref,AT> operator()(int i);
+//      /*! \brief Diagonal operator
+//       *
+//       * See operator()(int)
+//       * */
+//      inline const Vector<Ref,AT> operator()(int i) const;
+//
+//      /*! \brief Diagonal operator
+//       *
+//       * If i<0, the i-th subdiagonal is returned. Otherwise the i-th
+//       * superdiagonal is returned.
+//       * \param i The i-th super- and subdiagonal,
+//       * respectively.
+//       * */
+//      inline Vector<Ref,AT> operator()(int i);
 
       /*! \brief Initialization.
        *
@@ -291,24 +288,24 @@ namespace fmatvec {
       return *this;
     }
 
-  template <class AT>
-    inline Vector<Ref,AT> Matrix<GeneralBand,Ref,Ref,AT>::operator()(int i) {
-      assert(i<=ku);
-      assert(i>=-kl);
-
-      //return Vector<Ref,AT>(n-i,ku+kl+1,memory,ele[ku-i + (i>0?i:0)*(kl+ku+1)]);
-      return Vector<Ref,AT>(n-abs(i),ku+kl+1,true,memory,ele+ku-i + (i>0?i:0)*(kl+ku+1));
-      //(ku-i,i>0?i:0));
-    }
-
-  template <class AT>
-    inline const Vector<Ref,AT> Matrix<GeneralBand,Ref,Ref,AT>::operator()(int i) const {
-      assert(i<=ku);
-      assert(i>=-kl);
-
-      return Vector<Ref,AT>(n-abs(i),ku+kl+1,true,memory,ele+ku-i + (i>0?i:0)*(kl+ku+1));
-      //(ku-i,i>0?i:0));
-    }
+//  template <class AT>
+//    inline Vector<Ref,AT> Matrix<GeneralBand,Ref,Ref,AT>::operator()(int i) {
+//      assert(i<=ku);
+//      assert(i>=-kl);
+//
+//      //return Vector<Ref,AT>(n-i,ku+kl+1,memory,ele[ku-i + (i>0?i:0)*(kl+ku+1)]);
+//      return Vector<Ref,AT>(n-abs(i),ku+kl+1,true,memory,ele+ku-i + (i>0?i:0)*(kl+ku+1));
+//      //(ku-i,i>0?i:0));
+//    }
+//
+//  template <class AT>
+//    inline const Vector<Ref,AT> Matrix<GeneralBand,Ref,Ref,AT>::operator()(int i) const {
+//      assert(i<=ku);
+//      assert(i>=-kl);
+//
+//      return Vector<Ref,AT>(n-abs(i),ku+kl+1,true,memory,ele+ku-i + (i>0?i:0)*(kl+ku+1));
+//      //(ku-i,i>0?i:0));
+//    }
 
   template <class AT>
     inline Matrix<GeneralBand,Ref,Ref,AT>::operator std::vector<std::vector<AT>>() const {

@@ -152,12 +152,12 @@ namespace fmatvec {
        * \param A The matrix to be referenced. 
        * \return A reference to the calling matrix.
        * */
-      SquareMatrix<Ref,AT>& operator&=(const SquareMatrix<Ref,AT>&  A) {
+      SquareMatrix<Ref,AT>& operator&=(SquareMatrix<Ref,AT>&  A) {
 	Matrix<General,Ref,Ref,AT>::operator&=(A);
 	return *this;
       }
 
-      SquareMatrix<Ref,AT>& operator&=(const Matrix<General,Ref,Ref,AT>&  A) {
+      SquareMatrix<Ref,AT>& operator&=(Matrix<General,Ref,Ref,AT>&  A) {
         assert(A.rows() == A.cols());
 	Matrix<General,Ref,Ref,AT>::operator&=(A);
 	return *this;

@@ -158,7 +158,7 @@ namespace fmatvec {
        * \param x The rowvector to be referenced. 
        * \return A reference to the calling rowvector.
        * */
-      inline RowVector<Ref,AT>& operator&=(const RowVector<Ref,AT> &x) {
+      inline RowVector<Ref,AT>& operator&=(RowVector<Ref,AT> &x) {
         m = 1;
         n = x.n;
         memory = x.memory;
@@ -173,7 +173,7 @@ namespace fmatvec {
        * \param x The rowvector to be referenced. 
        * \return A reference to the calling rowvector.
        * */
-      inline RowVector<Ref,AT>& operator&=(const Matrix<General,Ref,Ref,AT> &A) {
+      inline RowVector<Ref,AT>& operator&=(Matrix<General,Ref,Ref,AT> &A) {
         assert(A.rows() == 1);
         m = 1;
         n = A.cols();

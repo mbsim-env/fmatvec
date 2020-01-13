@@ -48,9 +48,6 @@ namespace fmatvec {
 
       inline Matrix<Diagonal,Ref,Ref,AT>& copy(const Matrix<Diagonal,Ref,Ref,AT> &A);
 
-      explicit Matrix(int n_, Memory<AT> memory_, const AT* ele_) : memory(memory_), ele((AT*)ele_), n(n_) {
-      }
-
       const AT* elePtr(int i) const {
         return ele+i;
       }
@@ -145,7 +142,7 @@ namespace fmatvec {
        * \param A The matrix to be referenced.
        * \return A reference to the calling matrix.
        * */
-      inline Matrix<Diagonal,Ref,Ref,AT>& operator&=(const Matrix<Diagonal,Ref,Ref,AT> &A) {
+      inline Matrix<Diagonal,Ref,Ref,AT>& operator&=(Matrix<Diagonal,Ref,Ref,AT> &A) {
         n=A.n;
         memory = A.memory;
         ele = A.ele;
