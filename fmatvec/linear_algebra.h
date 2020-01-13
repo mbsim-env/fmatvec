@@ -1631,8 +1631,8 @@ namespace fmatvec {
       for (j = 0; j < N - 1; j++) {
         if (A(j, PivotCol) > A(j + 1, PivotCol)) {
           tmp = A.row(j);
-          A.row(j) = A.row(j + 1);
-          A.row(j + 1) = tmp;
+          A.set(j, A.row(j + 1));
+          A.set(j + 1, tmp);
         }
       }
     }
@@ -1651,18 +1651,18 @@ namespace fmatvec {
         int m = l + (r - l) / 2;
         if (A(l, PivotCol) > A(m, PivotCol)) {
           tmp = A.row(l);
-          A.row(l) = A.row(m);
-          A.row(m) = tmp;
+          A.set(l, A.row(m));
+          A.set(m, tmp);
         }
         if (A(l, PivotCol) > A(r, PivotCol)) {
           tmp = A.row(l);
-          A.row(l) = A.row(r);
-          A.row(r) = tmp;
+          A.set(l, A.row(r));
+          A.set(r, tmp);
         }
         else if (A(r, PivotCol) > A(m, PivotCol)) {
           tmp = A.row(r);
-          A.row(r) = A.row(m);
-          A.row(m) = tmp;
+          A.set(r, A.row(m));
+          A.set(m, tmp);
         }
       }
 
@@ -1671,12 +1671,12 @@ namespace fmatvec {
           while(A(--j,PivotCol) > A(r,PivotCol) && j>i);
           if(i>=j) break;
         tmp = A.row(i);
-        A.row(i) = A.row(j);
-        A.row(j) = tmp;
+        A.set(i, A.row(j));
+        A.set(j, tmp);
       }
       tmp = A.row(i);
-      A.row(i) = A.row(r);
-      A.row(r) = tmp;
+      A.set(i, A.row(r));
+      A.set(r, tmp);
       quicksortmedian_intern(A, PivotCol, tmp, l, i - 1);
       quicksortmedian_intern(A, PivotCol, tmp, i + 1, r);
     }
