@@ -186,8 +186,6 @@ class Vertex {
   friend Operation;
   public:
 
-    //! Create a AST from a by deserialization a stream.
-    static SymbolicExpression createFromStream(std::istream &s);
     //! Evaluate the AST.
     //! The returned value depends on the AST and on the current values of all independent variables this AST depends on.
     //! Also see Symbol ant Vertex::getDependsOn().
@@ -232,7 +230,6 @@ class Constant : public Vertex, public std::enable_shared_from_this<Constant<T>>
   public:
 
     static SymbolicExpression create(const T& c_);
-    static SymbolicExpression createFromStream(std::istream &s);
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
     void serializeToStream(std::ostream &s) const override;
@@ -243,7 +240,7 @@ class Constant : public Vertex, public std::enable_shared_from_this<Constant<T>>
   private:
 
     Constant(const T& c_);
-    T c;
+    const T c;
     bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
     typedef T CacheKey;
     static std::map<CacheKey, std::weak_ptr<const Constant>> cache;
@@ -277,7 +274,6 @@ class Symbol : public Vertex, public std::enable_shared_from_this<Symbol> {
   public:
 
     static IndependentVariable create(const boost::uuids::uuid& uuid_=boost::uuids::random_generator()());
-    static IndependentVariable createFromStream(std::istream &s);
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
     void serializeToStream(std::ostream &s) const override;
@@ -323,7 +319,6 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
     //! Defined operations.
     enum Operator { Plus, Minus, Mult, Div, Pow, Log, Sqrt, Neg, Sin, Cos, Tan, Sinh, Cosh, Tanh, ASin, ACos, ATan, ASinh, ACosh, ATanh, Exp, Sign, Abs };
     static SymbolicExpression create(Operator op_, const std::vector<SymbolicExpression> &child_);
-    static SymbolicExpression createFromStream(std::istream &s);
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
     void serializeToStream(std::ostream &s) const override;
@@ -342,6 +337,7 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
     };
     static std::map<CacheKey, std::weak_ptr<const Operation>, CacheKeyComp> cache;
     mutable double cacheValue;
+  public://mfmf
     static boost::bimap<Operator, std::string> opMap;
 };
 
