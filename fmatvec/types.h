@@ -23,8 +23,7 @@
 #define types_h
 
 #include <complex>
-#include <boost/spirit/include/support_istream_iterator.hpp>
-#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/home/qi/nonterminal/nonterminal_fwd.hpp>
 
 #ifndef HAVE_LIBMKL_INTEL_LP64
 #ifndef CBLAS_ENUM_DEFINED_H
@@ -60,6 +59,13 @@
 #else
 #include "mkl_cblas.h"
 #endif
+
+namespace boost {
+  namespace spirit {
+    template <typename Elem, typename Traits> class basic_istream_iterator;
+    typedef basic_istream_iterator<char, std::char_traits<char>> istream_iterator;
+  }
+}
 
 namespace fmatvec {
 

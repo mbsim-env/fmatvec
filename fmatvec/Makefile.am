@@ -24,6 +24,7 @@ fmatvecinclude_HEADERS = diagonal_matrix.h \
 			 square_matrix.h \
 			 symmetric_matrix.h \
 			 types.h \
+			 stream.h \
 			 vector.h \
 			 band_matrix.h\
 			 sparse_matrix.h\

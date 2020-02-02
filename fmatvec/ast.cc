@@ -8,8 +8,6 @@
 #include <string>
 #include <iostream>
 #include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/phoenix/object/construct.hpp>
-#include <boost/phoenix/object/new.hpp>
 #include <boost/spirit/include/qi_repeat.hpp>
 #include <boost/spirit/include/support_istream_iterator.hpp>
 #include <boost/phoenix/bind/bind_function.hpp>
@@ -26,7 +24,7 @@ unsigned long SymbolicExpression::evalOperationsCount = 0;
 
 namespace {
   SymbolicExpression stringCTorHelper(const string &str) {
-    istringstream s(str);//mfmf can be done without istringstream using boost::spirit
+    istringstream s(str);
     SymbolicExpression ret;
     s>>ret;
     return ret;
@@ -184,6 +182,7 @@ static map<boost::uuids::uuid, int> mapUUIDInt;
 #endif
 
 namespace {
+#ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
   IndependentVariable createSymbolByInt(int id) {
     auto itm=find_if(mapUUIDInt.begin(), mapUUIDInt.end(), [id](const pair<boost::uuids::uuid, int> &x){
       return id==x.second;
@@ -193,6 +192,7 @@ namespace {
     else
       return AST::Symbol::create(boost::uuids::random_generator()());
   }
+#endif
 
   IndependentVariable createSymbolByVec(const vector<char> &uuidStrVec) {
     return AST::Symbol::create(boost::lexical_cast<boost::uuids::uuid>(std::string(uuidStrVec.begin(), uuidStrVec.end())));
@@ -409,8 +409,7 @@ Symbol::Symbol(const boost::uuids::uuid& uuid_) : version(0), uuid(uuid_) {}
 
 map<Operation::CacheKey, weak_ptr<const Operation>, Operation::CacheKeyComp> Operation::cache;
 
-boost::bimap<Operation::Operator, string> Operation::opMap =
-  boost::assign::list_of<boost::bimap<Operation::Operator, string>::relation>
+std::map<Operation::Operator, string> Operation::opMap = boost::assign::map_list_of
   ( Plus,  "+")
   ( Minus, "-")
   ( Mult,  "*")
@@ -592,7 +591,7 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
 }
 
 void Operation::serializeToStream(ostream &s) const {
-  s<<"{o "<<opMap.left.at(op);
+  s<<"{o "<<opMap.at(op);
   for(auto &c : child) {
     s<<" ";
     c->serializeToStream(s);
@@ -652,7 +651,7 @@ boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& 
     static qi::rule<It, SymbolicExpression()>  operation;
 
     static qi::symbols<char, AST::Operation::Operator> opSym;
-    for(auto &x : AST::Operation::opMap.left)
+    for(auto &x : AST::Operation::opMap)
       opSym.add(x.second, x.first);
 
     constInt    = *qi::blank >> "{i " >> qi::int_[qi::_val=bind(&AST::Constant<int>::create, qi::_1)] >> '}';

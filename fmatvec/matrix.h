@@ -33,20 +33,6 @@
 #include "range.h"
 #include "toString.h"
 #include "types.h"
-#include <boost/spirit/include/qi.hpp>
-#include <boost/phoenix/object/construct.hpp>
-#include <boost/phoenix/bind/bind_function.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <boost/scope_exit.hpp>
-#include <boost/assign/list_of.hpp>
-#include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/phoenix/object/construct.hpp>
-#include <boost/phoenix/object/new.hpp>
-#include <boost/spirit/include/qi_repeat.hpp>
-#include <boost/spirit/include/support_istream_iterator.hpp>
-#include <boost/phoenix/bind/bind_function.hpp>
 
 /*! 
  * \brief Namespace fmatvec.
@@ -156,71 +142,6 @@ namespace fmatvec {
   template <class Type, class Row, class Col, class AT> std::ostream& operator<<(std::ostream &os, const Matrix<Type,Row,Col,AT> &A) {
     os << toString(static_cast<std::vector<std::vector<AT>>>(A), os.precision());
     return os;
-  }
-
-  namespace {
-    template<class AT>
-    std::vector<std::vector<AT>> scalarToVecVec(const AT& x) {
-      return std::vector<std::vector<AT>>(1, std::vector<AT>(1, x));
-    }
-  }
-
-  template<>
-  inline boost::spirit::qi::rule<boost::spirit::istream_iterator, double()>& getBoostSpiritRule<double>() {
-    static boost::spirit::qi::rule<boost::spirit::istream_iterator, double()> ret;
-    static bool init=false;
-    if(!init)
-      ret=boost::spirit::qi::double_;
-    return ret;
-  }
-
-  template<>
-  inline boost::spirit::qi::rule<boost::spirit::istream_iterator, int()>& getBoostSpiritRule<int>() {
-    static boost::spirit::qi::rule<boost::spirit::istream_iterator, int()> ret;
-    static bool init=false;
-    if(!init)
-      ret=boost::spirit::qi::int_;
-    return ret;
-  }
-
-  /*! \brief Matrix input
-   *
-   * This function loads a matrix from a stream.
-   * \param is An input stream.
-   * \param A A matrix of any shape and type.
-   * \return A reference to the input stream.
-   * */
-  template <class Type, class Row, class Col, class AT> std::istream& operator>>(std::istream &s, Matrix<Type,Row,Col,AT> &A) {
-    namespace qi = boost::spirit::qi;
-    using It = boost::spirit::istream_iterator;
-    using boost::phoenix::construct;
-    using boost::phoenix::bind;
-
-    qi::rule<It, std::vector<std::vector<AT>>()> scalar;
-    qi::rule<It, std::vector<AT>()> row;
-    qi::rule<It, std::vector<std::vector<AT>>()> matrix;
-    qi::rule<It, std::vector<std::vector<AT>>()> scalarOrMatrix;
-
-    qi::rule<It, AT()> &atomicType = getBoostSpiritRule<AT>();
-    scalar = *qi::blank >> atomicType[qi::_val=bind(&scalarToVecVec<AT>, qi::_1)];
-    row = atomicType % (+qi::blank | (*qi::blank >> ',' >> *qi::blank));
-    matrix = *qi::blank >> '[' >> *qi::blank >>
-               (row % (*qi::blank >> (';' | qi::eol) >> *qi::blank))[qi::_val=qi::_1] >>
-             *qi::blank >> ']';
-    scalarOrMatrix = scalar | matrix;
-
-    auto savedFlags=s.flags();
-    s.unsetf(std::ios::skipws);
-    BOOST_SCOPE_EXIT_TPL(&s, &savedFlags) {
-      s.flags(savedFlags);
-    } BOOST_SCOPE_EXIT_END
-
-    std::vector<std::vector<AT>> Avecvec;
-    if(!qi::parse(It(s), It(), scalarOrMatrix, Avecvec))
-      throw std::runtime_error("The stream does not contain a valid scalar, vector or matrix expression. Not parsed content of stream:\n"+
-                               std::string(std::istreambuf_iterator<char>(s), std::istreambuf_iterator<char>()));
-    A<<=Matrix<Type,Row,Col,AT>(Avecvec);
-    return s;
   }
 
   /*! \brief Matrix dump
