@@ -430,6 +430,9 @@ double eval(const SymbolicExpression &x) {
   return x->eval();
 }
 
+template<> boost::spirit::qi::rule<boost::spirit::istream_iterator, IndependentVariable()>& getBoostSpiritRule<IndependentVariable>();
+template<> boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& getBoostSpiritRule<SymbolicExpression>();
+
 } // end namespace fmatvec
 
 #endif

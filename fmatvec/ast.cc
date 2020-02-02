@@ -201,34 +201,8 @@ namespace {
 istream& operator>>(istream& s, SymbolicExpression &se) {
   namespace qi = boost::spirit::qi;
   using It = boost::spirit::istream_iterator;
-  using boost::phoenix::bind;
 
-  qi::rule<It, SymbolicExpression()>  constInt;
-  qi::rule<It, SymbolicExpression()>  constDouble;
-  qi::rule<It, IndependentVariable()> symbol;
-  qi::rule<It, SymbolicExpression()>  operation;
-  qi::rule<It, SymbolicExpression()>  vertex;
-
-  static qi::symbols<char, AST::Operation::Operator> opSym;
-  static bool symInit=false;
-  if(!symInit) {
-    for(auto &x : AST::Operation::opMap.left)
-      opSym.add(x.second, x.first);
-    symInit=true;
-  }
-
-  constInt    = *qi::space >> "{i " >> qi::int_[qi::_val=bind(&AST::Constant<int>::create, qi::_1)] >> '}';
-  constDouble = *qi::space >> "{d " >> qi::double_[qi::_val=bind(&AST::Constant<double>::create, qi::_1)] >> '}';
-#ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
-  if(getenv("FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID"))
-    symbol      = *qi::space >> "{s " >> qi::int_[qi::_val=bind(&createSymbolByInt, qi::_1)] >> '}';
-  else
-    symbol      = *qi::space >> "{s " >> (qi::repeat(36)[qi::char_("a-z0-9-")])[qi::_val=bind(&createSymbolByVec, qi::_1)] >> '}';
-#else
-  symbol      = *qi::space >> "{s " >> (qi::repeat(36)[qi::char_("a-f0-9-")])[qi::_val=bind(&createSymbolByVec, qi::_1)] >> '}';
-#endif
-  operation   = *qi::space >> ("{o " >> opSym >> +(' ' >> vertex) >> '}')[qi::_val=bind(&AST::Operation::create, qi::_1, qi::_2)];
-  vertex      = constInt | constDouble | symbol | operation;
+  qi::rule<It, SymbolicExpression()>& vertex = getBoostSpiritRule<SymbolicExpression>();
 
   auto savedFlags=s.flags();
   s.unsetf(std::ios::skipws);
@@ -236,7 +210,7 @@ istream& operator>>(istream& s, SymbolicExpression &se) {
     s.flags(savedFlags);
   } BOOST_SCOPE_EXIT_END
 
-  if(!qi::parse(boost::spirit::istream_iterator(s), boost::spirit::istream_iterator(), vertex, se))
+  if(!qi::parse(It(s), It(), vertex, se))
     throw runtime_error("The stream does not contain a valid SymbolicExpression. Not parsed content of stream:\n"+
                         string(istreambuf_iterator<char>(s), istreambuf_iterator<char>()));
   return s;
@@ -643,4 +617,51 @@ bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) {
 }
 
 } // end namespace AST
+
+template<>
+boost::spirit::qi::rule<boost::spirit::istream_iterator, IndependentVariable()>& getBoostSpiritRule<IndependentVariable>() {
+  namespace qi = boost::spirit::qi;
+  using boost::phoenix::bind;
+
+  static boost::spirit::qi::rule<boost::spirit::istream_iterator, IndependentVariable()> ret;
+  static bool init=false;
+  if(!init) {
+#ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
+    if(getenv("FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID"))
+      ret = *qi::blank >> "{s " >> qi::int_[qi::_val=bind(&createSymbolByInt, qi::_1)] >> '}';
+    else
+      ret = *qi::blank >> "{s " >> (qi::repeat(36)[qi::char_("a-z0-9-")])[qi::_val=bind(&createSymbolByVec, qi::_1)] >> '}';
+#else
+    ret = *qi::blank >> "{s " >> (qi::repeat(36)[qi::char_("a-f0-9-")])[qi::_val=bind(&createSymbolByVec, qi::_1)] >> '}';
+#endif
+  }
+  return ret;
+}
+
+template<>
+boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& getBoostSpiritRule<SymbolicExpression>() {
+  namespace qi = boost::spirit::qi;
+  using It = boost::spirit::istream_iterator;
+  using boost::phoenix::bind;
+
+  static boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()> vertex;
+  static bool init=false;
+  if(!init) {
+    static qi::rule<It, SymbolicExpression()>  constInt;
+    static qi::rule<It, SymbolicExpression()>  constDouble;
+    static qi::rule<It, SymbolicExpression()>  operation;
+
+    static qi::symbols<char, AST::Operation::Operator> opSym;
+    for(auto &x : AST::Operation::opMap.left)
+      opSym.add(x.second, x.first);
+
+    constInt    = *qi::blank >> "{i " >> qi::int_[qi::_val=bind(&AST::Constant<int>::create, qi::_1)] >> '}';
+    constDouble = *qi::blank >> "{d " >> qi::double_[qi::_val=bind(&AST::Constant<double>::create, qi::_1)] >> '}';
+    qi::rule<It, IndependentVariable()> &symbol = getBoostSpiritRule<IndependentVariable>();
+    operation   = *qi::blank >> ("{o " >> opSym >> +(' ' >> vertex) >> '}')[qi::_val=bind(&AST::Operation::create, qi::_1, qi::_2)];
+    vertex      = constInt | constDouble | symbol | operation;
+  }
+  return vertex;
+}
+
 } // end namespace fmatvec

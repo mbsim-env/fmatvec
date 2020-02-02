@@ -46,13 +46,6 @@
     ((c) == CblasRight) ? 'R' : \
     -1)
 
-template <class T>
-std::string toStr(const T& val) {
-  std::ostringstream oss;
-  oss << val;
-  return oss.str();
-}
-
 namespace fmatvec {
 
   Vector<Ref, std::complex<double>> slvLU(const SquareMatrix<Ref, std::complex<double>> &A, const Vector<Ref, std::complex<double>> &x) {
@@ -73,7 +66,7 @@ namespace fmatvec {
     delete[] ipiv;
 
     if(info != 0)
-      throw std::runtime_error("Exception in slvLU: dgesv exited with info="+toStr(info));
+      throw std::runtime_error("Exception in slvLU: dgesv exited with info="+std::to_string(info));
 
     return y;
   }

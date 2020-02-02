@@ -46,13 +46,6 @@
     ((c) == CblasRight) ? 'R' : \
     -1)
 
-template <class T>
-std::string toStr(const T& val) {
-  std::ostringstream oss;
-  oss << val;
-  return oss.str();
-}
-
 //-------------------------------------
 // Matrix operations
 //-------------------------------------
@@ -80,7 +73,7 @@ namespace fmatvec {
     delete[] ipiv;
 
     if(info != 0)
-      throw std::runtime_error("Exception in slvLU: dgesv exited with info="+toStr(info));
+      throw std::runtime_error("Exception in slvLU: dgesv exited with info="+std::to_string(info));
 
     return Y;
   }
@@ -123,7 +116,7 @@ namespace fmatvec {
 #endif
 
     if(info != 0)
-      throw std::runtime_error("Exception in slvLUFac: dgetrs exited with info="+toStr(info));
+      throw std::runtime_error("Exception in slvLUFac: dgetrs exited with info="+std::to_string(info));
 
     return Y;
   }
@@ -146,7 +139,7 @@ namespace fmatvec {
 #endif
 
     if(info != 0)
-      throw std::runtime_error("Exception in slvLUFac: dgetrs exited with info="+toStr(info));
+      throw std::runtime_error("Exception in slvLUFac: dgetrs exited with info="+std::to_string(info));
 
     return Y;
   }
@@ -165,7 +158,7 @@ namespace fmatvec {
     int info = dgels(B.blasTrans(), B.rows(), B.cols(), Y.cols(), B(), B.ldim(), Y(), Y.ldim());
 
     if(info != 0)
-      throw std::runtime_error("Exception in slvQR: dgels exited with info="+toStr(info));
+      throw std::runtime_error("Exception in slvQR: dgels exited with info="+std::to_string(info));
 
     return Y;
   }
@@ -226,7 +219,7 @@ namespace fmatvec {
     delete[] ipiv;
 
     if(info != 0)
-      throw std::runtime_error("Exception in slvLU: dgesv exited with info="+toStr(info));
+      throw std::runtime_error("Exception in slvLU: dgesv exited with info="+std::to_string(info));
 
     return y;
   }
@@ -289,7 +282,7 @@ namespace fmatvec {
 #endif
 
     if(info != 0)
-      throw std::runtime_error("Exception in slvLUFac: dgetrs exited with info="+toStr(info));
+      throw std::runtime_error("Exception in slvLUFac: dgetrs exited with info="+std::to_string(info));
 
     return y;
   }
@@ -312,7 +305,7 @@ namespace fmatvec {
 #endif
 
     if(info != 0)
-      throw std::runtime_error("Exception in slvLUFac: dgetrs exited with info="+toStr(info));
+      throw std::runtime_error("Exception in slvLUFac: dgetrs exited with info="+std::to_string(info));
 
     return y;
   }
@@ -331,7 +324,7 @@ namespace fmatvec {
     int info = dgels(B.blasTrans(), B.rows(), B.cols(), y.cols(), B(), B.ldim(), y(), y.size());
 
     if(info != 0)
-      throw std::runtime_error("Exception in slvQR: dgels exited with info="+toStr(info));
+      throw std::runtime_error("Exception in slvQR: dgels exited with info="+std::to_string(info));
 
     return y;
   }
@@ -348,7 +341,7 @@ namespace fmatvec {
     int info = dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv);
 
     if(info != 0)
-      throw std::runtime_error("Exception in inv: dgetrf exited with info="+toStr(info));
+      throw std::runtime_error("Exception in inv: dgetrf exited with info="+std::to_string(info));
 
     dgetri(B.blasOrder(), B.size(), B(), B.ldim(), ipiv);
 
@@ -371,7 +364,7 @@ namespace fmatvec {
 #endif
 
     if(info != 0)
-      throw std::runtime_error("Exception in inv: dpotrf exited with info="+toStr(info));
+      throw std::runtime_error("Exception in inv: dpotrf exited with info="+std::to_string(info));
 
 #ifndef HAVE_LIBMKL_INTEL_LP64
     dpotri(B.blasOrder(), B.blasUplo(), B.rows(), B(), B.ldim());
@@ -410,7 +403,7 @@ namespace fmatvec {
     int info = dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv());
 
     if(info != 0)
-      throw std::runtime_error("Exception in facLU: dgetrf exited with info="+toStr(info));
+      throw std::runtime_error("Exception in facLU: dgetrf exited with info="+std::to_string(info));
 
     return B;
   }
@@ -430,7 +423,7 @@ namespace fmatvec {
     int info = dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv());
 
     if(info != 0)
-      throw std::runtime_error("Exception in facLU: dgetrf exited with info="+toStr(info));
+      throw std::runtime_error("Exception in facLU: dgetrf exited with info="+std::to_string(info));
 
     return B;
   }
@@ -450,7 +443,7 @@ namespace fmatvec {
     int info = dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv());
 
     if(info != 0)
-      throw std::runtime_error("Exception in facLU: dgetrf exited with info="+toStr(info));
+      throw std::runtime_error("Exception in facLU: dgetrf exited with info="+std::to_string(info));
 
     return B;
   }
@@ -523,7 +516,7 @@ namespace fmatvec {
 #endif
 
     if(info != 0)
-      throw std::runtime_error("Exception in facLL: dpotrf exited with info="+toStr(info));
+      throw std::runtime_error("Exception in facLL: dpotrf exited with info="+std::to_string(info));
 
     return B;
   }
@@ -571,7 +564,7 @@ namespace fmatvec {
 #endif
 
     if(info != 0)
-      throw std::runtime_error("Exception in slvLL: dposv exited with info="+toStr(info));
+      throw std::runtime_error("Exception in slvLL: dposv exited with info="+std::to_string(info));
 
     return y;
   }
@@ -594,7 +587,7 @@ namespace fmatvec {
 #endif
 
     if(info != 0)
-      throw std::runtime_error("Exception in slvLL: dposv exited with info="+toStr(info));
+      throw std::runtime_error("Exception in slvLL: dposv exited with info="+std::to_string(info));
 
     return Y;
   }
@@ -617,7 +610,7 @@ namespace fmatvec {
 #endif
 
     if(info != 0)
-      throw std::runtime_error("Exception in slvLLFac: dpotrs exited with info="+toStr(info));
+      throw std::runtime_error("Exception in slvLLFac: dpotrs exited with info="+std::to_string(info));
 
     return y;
   }
@@ -640,7 +633,7 @@ namespace fmatvec {
 #endif
 
     if(info != 0)
-      throw std::runtime_error("Exception in slvLLFac: dpotrs exited with info="+toStr(info));
+      throw std::runtime_error("Exception in slvLLFac: dpotrs exited with info="+std::to_string(info));
 
     return Y;
   }
@@ -873,7 +866,7 @@ namespace fmatvec {
     int info = dgelss(A.rows(), A.cols(), B_.cols(), A_(), A_.ldim(), B_(), B_.ldim(), rcond);
 
     if(info != 0)
-      throw std::runtime_error("Exception in slvLS: dgelss exited with info="+toStr(info));
+      throw std::runtime_error("Exception in slvLS: dgelss exited with info="+std::to_string(info));
 
     return B_(Range<Var,Var>(0, A.cols() - 1), Range<Var,Var>(0, B.cols() - 1));
   }
@@ -893,7 +886,7 @@ namespace fmatvec {
     int info = dgelss(A.rows(), A.cols(), 1, A_(), A_.ldim(), b_(), b_.size(), rcond);
 
     if(info != 0)
-      throw std::runtime_error("Exception in slvLS: dgelss exited with info="+toStr(info));
+      throw std::runtime_error("Exception in slvLS: dgelss exited with info="+std::to_string(info));
 
     return b_(Range<Var,Var>(0, A.cols() - 1));
   }

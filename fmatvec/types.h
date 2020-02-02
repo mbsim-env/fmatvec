@@ -23,6 +23,8 @@
 #define types_h
 
 #include <complex>
+#include <boost/spirit/include/support_istream_iterator.hpp>
+#include <boost/spirit/include/qi.hpp>
 
 #ifndef HAVE_LIBMKL_INTEL_LP64
 #ifndef CBLAS_ENUM_DEFINED_H
@@ -192,6 +194,9 @@ namespace fmatvec {
   FMATVEC_OPERATORRESULT2(double, std::complex<double>, std::complex<double>)
   FMATVEC_OPERATORRESULT2(int, std::complex<double>, std::complex<double>)
   FMATVEC_OPERATORRESULT2(int, double, double)
+
+  template<class AT>
+  boost::spirit::qi::rule<boost::spirit::istream_iterator, AT()>& getBoostSpiritRule();
 
 }
 
