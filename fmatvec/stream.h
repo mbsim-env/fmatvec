@@ -48,6 +48,8 @@
 #include <boost/spirit/include/qi_repeat.hpp>
 #include <boost/spirit/include/support_istream_iterator.hpp>
 #include <boost/phoenix/bind/bind_function.hpp>
+#include <boost/spirit/include/karma_real.hpp>
+#include <boost/spirit/include/karma.hpp>
 
 namespace fmatvec {
 
@@ -59,21 +61,32 @@ namespace fmatvec {
   }
 
   template<>
-  inline boost::spirit::qi::rule<boost::spirit::istream_iterator, double()>& getBoostSpiritRule<double>() {
-    static boost::spirit::qi::rule<boost::spirit::istream_iterator, double()> ret;
-    static bool init=false;
-    if(!init)
-      ret=boost::spirit::qi::double_;
+  inline boost::spirit::qi::rule<boost::spirit::istream_iterator, double()>& getBoostSpiritQiRule<double>() {
+    static boost::spirit::qi::rule<boost::spirit::istream_iterator, double()> ret=boost::spirit::qi::double_;
     return ret;
   }
 
   template<>
-  inline boost::spirit::qi::rule<boost::spirit::istream_iterator, int()>& getBoostSpiritRule<int>() {
-    static boost::spirit::qi::rule<boost::spirit::istream_iterator, int()> ret;
-    static bool init=false;
-    if(!init)
-      ret=boost::spirit::qi::int_;
+  inline boost::spirit::qi::rule<boost::spirit::istream_iterator, int()>& getBoostSpiritQiRule<int>() {
+    static boost::spirit::qi::rule<boost::spirit::istream_iterator, int()> ret=boost::spirit::qi::int_;
     return ret;
+  }
+
+  template<>
+  inline boost::spirit::karma::rule<std::ostream_iterator<char>, double()>& getBoostSpiritKarmaRule<double>() {
+    struct DoublePolicy : boost::spirit::karma::real_policies<double> {
+      static constexpr int floatfield(double n) { return fmtflags::scientific; }
+      static constexpr unsigned precision(double n) { return std::numeric_limits<double>::digits10+1; }
+    };
+    static const boost::spirit::karma::real_generator<double, DoublePolicy> doubleBitIdentical;
+    static boost::spirit::karma::rule<std::ostream_iterator<char>, double()> mydouble=doubleBitIdentical;
+    return mydouble;
+  }
+
+  template<>
+  inline boost::spirit::karma::rule<std::ostream_iterator<char>, int()>& getBoostSpiritKarmaRule<int>() {
+    static boost::spirit::karma::rule<std::ostream_iterator<char>, int()> myint=boost::spirit::karma::int_;
+    return myint;
   }
 
   /*! \brief Matrix input
@@ -94,7 +107,7 @@ namespace fmatvec {
     qi::rule<It, std::vector<std::vector<AT>>()> matrix;
     qi::rule<It, std::vector<std::vector<AT>>()> scalarOrMatrix;
 
-    qi::rule<It, AT()> &atomicType = getBoostSpiritRule<AT>();
+    qi::rule<It, AT()> &atomicType = getBoostSpiritQiRule<AT>();
     scalar = *qi::blank >> atomicType[qi::_val=bind(&scalarToVecVec<AT>, qi::_1)];
     row = atomicType % (+qi::blank | (*qi::blank >> ',' >> *qi::blank));
     matrix = *qi::blank >> '[' >> *qi::blank >>
@@ -114,6 +127,18 @@ namespace fmatvec {
                                std::string(std::istreambuf_iterator<char>(s), std::istreambuf_iterator<char>()));
     A<<=Matrix<Type,Row,Col,AT>(Avecvec);
     return s;
+  }
+
+  /*! \brief Matrix output 
+   *
+   * This function writes a matrix into a stream.
+   * \param os An output stream.
+   * \param A A matrix of any shape and type.
+   * \return A reference to the output stream.
+   * */
+  template <class Type, class Row, class Col, class AT> std::ostream& operator<<(std::ostream &os, const Matrix<Type,Row,Col,AT> &A) {
+    os << toString(static_cast<std::vector<std::vector<AT>>>(A), os.precision());
+    return os;
   }
 
 }

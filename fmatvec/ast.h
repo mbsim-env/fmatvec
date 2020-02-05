@@ -192,8 +192,6 @@ class Vertex {
     virtual double eval() const=0;
     //! Generate a new AST being the partial derivate of this AST with respect to the variable x.
     virtual SymbolicExpression parDer(const IndependentVariable &x) const=0;
-    //! Write/serailize a AST to a stream.
-    virtual void serializeToStream(std::ostream &s) const=0;
     //! Rreturn true if this Vertex is a constant integer.
     inline virtual bool isConstantInt() const;
     //! Returns true if this Vertex is a constant with value 0.
@@ -232,7 +230,6 @@ class Constant : public Vertex, public std::enable_shared_from_this<Constant<T>>
     static SymbolicExpression create(const T& c_);
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
-    void serializeToStream(std::ostream &s) const override;
     inline bool isConstantInt() const override;
     //! Get the constant value of the vertex.
     inline const T& getValue() const;
@@ -271,12 +268,13 @@ const T& Constant<T>::getValue() const {
 //! A vertex of the AST representing a independent variable.
 class Symbol : public Vertex, public std::enable_shared_from_this<Symbol> {
   friend SymbolicExpression;
+  friend boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>&
+    getBoostSpiritKarmaRule<SymbolicExpression>();
   public:
 
     static IndependentVariable create(const boost::uuids::uuid& uuid_=boost::uuids::random_generator()());
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
-    void serializeToStream(std::ostream &s) const override;
     //! Set the value of this independent variable.
     //! This has an influence on the evaluation of all ASTs which depend on this independent variable.
     inline void setValue(double x_) const;
@@ -293,6 +291,7 @@ class Symbol : public Vertex, public std::enable_shared_from_this<Symbol> {
     boost::uuids::uuid uuid; // each variable has a uuid (this is only used when the AST is serialized and for caching)
     typedef boost::uuids::uuid CacheKey;
     static std::map<CacheKey, std::weak_ptr<const Symbol>> cache;
+    std::string getUUIDStr() const;
 };
 
 void Symbol::setValue(double x_) const {
@@ -314,7 +313,10 @@ unsigned long Symbol::getVersion() const {
 class Operation : public Vertex, public std::enable_shared_from_this<Operation> {
   friend SymbolicExpression;
   friend SymbolicExpression fmatvec::subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
-  friend boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& getBoostSpiritRule<SymbolicExpression>();
+  friend boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>&
+    getBoostSpiritQiRule<SymbolicExpression>();
+  friend boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>&
+    getBoostSpiritKarmaRule<SymbolicExpression>();
   public:
 
     //! Defined operations.
@@ -322,7 +324,6 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
     static SymbolicExpression create(Operator op_, const std::vector<SymbolicExpression> &child_);
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
-    void serializeToStream(std::ostream &s) const override;
 
   private:
 
@@ -339,6 +340,8 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
     static std::map<CacheKey, std::weak_ptr<const Operation>, CacheKeyComp> cache;
     mutable double cacheValue;
     static std::map<Operator, std::string> opMap;
+    Operator getOp() const { return op; }
+    const std::vector<SymbolicExpression>& getChilds() const { return child; }
 };
 
 double Operation::eval() const {
@@ -430,8 +433,10 @@ double eval(const SymbolicExpression &x) {
   return x->eval();
 }
 
-template<> boost::spirit::qi::rule<boost::spirit::istream_iterator, IndependentVariable()>& getBoostSpiritRule<IndependentVariable>();
-template<> boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& getBoostSpiritRule<SymbolicExpression>();
+template<> boost::spirit::qi::rule<boost::spirit::istream_iterator, IndependentVariable()>& getBoostSpiritQiRule<IndependentVariable>();
+template<> boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& getBoostSpiritQiRule<SymbolicExpression>();
+
+template<> boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& getBoostSpiritKarmaRule<SymbolicExpression>();
 
 } // end namespace fmatvec
 

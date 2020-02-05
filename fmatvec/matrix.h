@@ -132,18 +132,6 @@ namespace fmatvec {
     return *this;
   }
 
-  /*! \brief Matrix output 
-   *
-   * This function writes a matrix into a stream.
-   * \param os An output stream.
-   * \param A A matrix of any shape and type.
-   * \return A reference to the output stream.
-   * */
-  template <class Type, class Row, class Col, class AT> std::ostream& operator<<(std::ostream &os, const Matrix<Type,Row,Col,AT> &A) {
-    os << toString(static_cast<std::vector<std::vector<AT>>>(A), os.precision());
-    return os;
-  }
-
   /*! \brief Matrix dump
    *
    * This function dumps a matrix to a file in ASCII-format.

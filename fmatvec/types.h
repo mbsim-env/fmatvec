@@ -23,7 +23,9 @@
 #define types_h
 
 #include <complex>
+#include <iterator>
 #include <boost/spirit/home/qi/nonterminal/nonterminal_fwd.hpp>
+#include <boost/spirit/home/karma/nonterminal/nonterminal_fwd.hpp>
 
 #ifndef HAVE_LIBMKL_INTEL_LP64
 #ifndef CBLAS_ENUM_DEFINED_H
@@ -62,7 +64,7 @@
 
 namespace boost {
   namespace spirit {
-    template <typename Elem, typename Traits> class basic_istream_iterator;
+    template<typename Elem, typename Traits> class basic_istream_iterator;
     typedef basic_istream_iterator<char, std::char_traits<char>> istream_iterator;
   }
 }
@@ -202,7 +204,10 @@ namespace fmatvec {
   FMATVEC_OPERATORRESULT2(int, double, double)
 
   template<class AT>
-  boost::spirit::qi::rule<boost::spirit::istream_iterator, AT()>& getBoostSpiritRule();
+  boost::spirit::qi::rule<boost::spirit::istream_iterator, AT()>& getBoostSpiritQiRule();
+
+  template<class AT>
+  boost::spirit::karma::rule<std::ostream_iterator<char>, AT()>& getBoostSpiritKarmaRule();
 
 }
 

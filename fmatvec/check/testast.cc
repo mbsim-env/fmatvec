@@ -124,8 +124,8 @@ void checkSym(double &pdn0Value,
   MatSymExpr m(3,3);
   IndependentVariable a_=IndependentVariable();
   m(0,1)=a_;
-  m(0,0)=2.0;
-  m(0,2)=3.0;
+  m(0,0)=1.0/3.0;
+  m(0,2)=2.0/3.0-0.66;
   m(1,0)=4.0;
   m(1,1)=5.0;
   m(1,2)=6.0;
