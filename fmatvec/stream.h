@@ -32,7 +32,6 @@
 #include <boost/scope_exit.hpp>
 #include "range.h"
 #include "matrix.h"
-#include "toString.h"
 #include "types.h"
 #include <boost/spirit/include/qi.hpp>
 #include <boost/phoenix/object/construct.hpp>
@@ -137,7 +136,25 @@ namespace fmatvec {
    * \return A reference to the output stream.
    * */
   template <class Type, class Row, class Col, class AT> std::ostream& operator<<(std::ostream &os, const Matrix<Type,Row,Col,AT> &A) {
-    os << toString(static_cast<std::vector<std::vector<AT>>>(A), os.precision());
+    namespace karma = boost::spirit::karma;
+    using It = std::ostream_iterator<char>;
+
+    using boost::phoenix::bind;
+
+    static boost::spirit::karma::rule<It, std::vector<std::vector<AT>>()> matrix;
+    static bool init=false;
+    if(!init) {
+      static karma::rule<It, std::vector<AT>()> row;
+
+      auto &atomicType=getBoostSpiritKarmaRule<AT>();
+
+      row = (atomicType % ", ")[karma::_1=karma::_val];
+      matrix = '[' << (row % "; ")[karma::_1=karma::_val] << ']';
+    }
+
+    auto Avecvec=static_cast<std::vector<std::vector<AT>>>(A);
+    if(!karma::generate(It(os), matrix, Avecvec))
+      throw std::runtime_error("Failed to write matrix to stream");
     return os;
   }
 

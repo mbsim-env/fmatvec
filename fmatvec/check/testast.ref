@@ -23,13 +23,13 @@ norm_indepVar 0 = {o / {o * {o + {o + {o * {o * {i 2} {o + {o + {o * {d 3.333333
 norm_indepVar 1 = {o / {o * {o + {o + {o * {o * {i 2} {o + {o + {o * {d 3.3333333333333331e-01} {s 1}} {o * {s 4} {s 2}}} {o * {d 6.6666666666665986e-03} {s 3}}}} {s 4}} {o * {o * {i 2} {o + {o + {o * {d 4.0e00} {s 1}} {o * {d 5.0e00} {s 2}}} {o * {d 6.0e00} {s 3}}}} {d 5.0e00}}} {o * {o * {i 2} {o + {o + {o * {o log {o + {o pow {s 1} {i 3}} {s 1}}} {s 1}} {o * {d 8.0e00} {s 2}}} {o * {o + {s 5} {s 6}} {s 3}}}} {d 8.0e00}}} {d 5.0e-01}} {o sqrt {o + {o + {o pow {o + {o + {o * {d 3.3333333333333331e-01} {s 1}} {o * {s 4} {s 2}}} {o * {d 6.6666666666665986e-03} {s 3}}} {i 2}} {o pow {o + {o + {o * {d 4.0e00} {s 1}} {o * {d 5.0e00} {s 2}}} {o * {d 6.0e00} {s 3}}} {i 2}}} {o pow {o + {o + {o * {o log {o + {o pow {s 1} {i 3}} {s 1}}} {s 1}} {o * {d 8.0e00} {s 2}}} {o * {o + {s 5} {s 6}} {s 3}}} {i 2}}}}}
 norm_indepVar 2 = {o / {o * {o + {o + {o * {o * {i 2} {o + {o + {o * {d 3.3333333333333331e-01} {s 1}} {o * {s 4} {s 2}}} {o * {d 6.6666666666665986e-03} {s 3}}}} {d 6.6666666666665986e-03}} {o * {o * {i 2} {o + {o + {o * {d 4.0e00} {s 1}} {o * {d 5.0e00} {s 2}}} {o * {d 6.0e00} {s 3}}}} {d 6.0e00}}} {o * {o * {i 2} {o + {o + {o * {o log {o + {o pow {s 1} {i 3}} {s 1}}} {s 1}} {o * {d 8.0e00} {s 2}}} {o * {o + {s 5} {s 6}} {s 3}}}} {o + {s 5} {s 6}}}} {d 5.0e-01}} {o sqrt {o + {o + {o pow {o + {o + {o * {d 3.3333333333333331e-01} {s 1}} {o * {s 4} {s 2}}} {o * {d 6.6666666666665986e-03} {s 3}}} {i 2}} {o pow {o + {o + {o * {d 4.0e00} {s 1}} {o * {d 5.0e00} {s 2}}} {o * {d 6.0e00} {s 3}}} {i 2}}} {o pow {o + {o + {o * {o log {o + {o pow {s 1} {i 3}} {s 1}}} {s 1}} {o * {d 8.0e00} {s 2}}} {o * {o + {s 5} {s 6}} {s 3}}} {i 2}}}}}
 frist eval
-pdn.eval = [4.617656555, 9.973599242, 13.31828892]
+pdn.eval = [4.6176565551686802e00, 9.9735992420090244e00, 1.3318288918147023e01]
 number of operations evaluated = 55
 second eval with same values for independent variables
-pdn.eval = [4.617656555, 9.973599242, 13.31828892]
+pdn.eval = [4.6176565551686802e00, 9.9735992420090244e00, 1.3318288918147023e01]
 number of operations evaluated = 0
 third eval with different values for independent variables
-pdn.eval = [7.358539592, 10.4334985, 16.7733658]
+pdn.eval = [7.3585395916345489e00, 1.0433498501365477e01, 1.6773365799233294e01]
 number of operations evaluated = 55
 number of operations evaluated = 0
 reread 7.358539592 == 7.358539592

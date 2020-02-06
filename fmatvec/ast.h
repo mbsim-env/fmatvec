@@ -29,15 +29,12 @@ namespace AST {
 //! or an arbitary expression consisting of a hierarchiy
 //! of operations consisting itself of expressions, symbols or constants.
 class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
-  friend class AST::Symbol;
   friend class AST::Operation;
   friend class AST::Constant<int>;
   friend class AST::Constant<double>;
   friend SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
   friend double eval(const SymbolicExpression &x);
   friend SymbolicExpression subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
-  friend std::ostream& operator<<(std::ostream& s, const SymbolicExpression& se);
-  friend std::istream& operator>>(std::istream& s, SymbolicExpression &se);
   protected:
     template<class T> SymbolicExpression(const shared_ptr<T> &x);
 #ifndef SWIG
@@ -100,6 +97,8 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
 class IndependentVariable : public SymbolicExpression {
   friend class AST::Symbol;
   friend std::istream& operator>>(std::istream& s, IndependentVariable &v);
+  friend boost::spirit::karma::rule<std::ostream_iterator<char>, IndependentVariable()>& 
+    getBoostSpiritKarmaRule<IndependentVariable>();
   public:
     //! Creates a IndependentVariable variable (each call to this ctor creates a new independent variable)
     IndependentVariable();
@@ -111,6 +110,7 @@ class IndependentVariable : public SymbolicExpression {
 
   private:
     IndependentVariable(const shared_ptr<const AST::Symbol> &x);
+    std::string getUUIDStr() const;
 };
 
 // define the operator results of SymbolicExpression and IndependentVariable with other AT types.
@@ -268,8 +268,7 @@ const T& Constant<T>::getValue() const {
 //! A vertex of the AST representing a independent variable.
 class Symbol : public Vertex, public std::enable_shared_from_this<Symbol> {
   friend SymbolicExpression;
-  friend boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>&
-    getBoostSpiritKarmaRule<SymbolicExpression>();
+  friend IndependentVariable;
   public:
 
     static IndependentVariable create(const boost::uuids::uuid& uuid_=boost::uuids::random_generator()());
@@ -291,7 +290,6 @@ class Symbol : public Vertex, public std::enable_shared_from_this<Symbol> {
     boost::uuids::uuid uuid; // each variable has a uuid (this is only used when the AST is serialized and for caching)
     typedef boost::uuids::uuid CacheKey;
     static std::map<CacheKey, std::weak_ptr<const Symbol>> cache;
-    std::string getUUIDStr() const;
 };
 
 void Symbol::setValue(double x_) const {
@@ -436,6 +434,7 @@ double eval(const SymbolicExpression &x) {
 template<> boost::spirit::qi::rule<boost::spirit::istream_iterator, IndependentVariable()>& getBoostSpiritQiRule<IndependentVariable>();
 template<> boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& getBoostSpiritQiRule<SymbolicExpression>();
 
+template<> boost::spirit::karma::rule<std::ostream_iterator<char>, IndependentVariable()>& getBoostSpiritKarmaRule<IndependentVariable>();
 template<> boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& getBoostSpiritKarmaRule<SymbolicExpression>();
 
 } // end namespace fmatvec
