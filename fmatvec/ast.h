@@ -6,7 +6,6 @@
 #include <memory>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
-#include <boost/bimap.hpp>
 #include <boost/math/special_functions/sign.hpp>
 #include <fmatvec/types.h>
 
@@ -97,8 +96,6 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
 class IndependentVariable : public SymbolicExpression {
   friend class AST::Symbol;
   friend std::istream& operator>>(std::istream& s, IndependentVariable &v);
-  friend boost::spirit::karma::rule<std::ostream_iterator<char>, IndependentVariable()>& 
-    getBoostSpiritKarmaRule<IndependentVariable>();
   public:
     //! Creates a IndependentVariable variable (each call to this ctor creates a new independent variable)
     IndependentVariable();
@@ -110,7 +107,6 @@ class IndependentVariable : public SymbolicExpression {
 
   private:
     IndependentVariable(const shared_ptr<const AST::Symbol> &x);
-    std::string getUUIDStr() const;
 };
 
 // define the operator results of SymbolicExpression and IndependentVariable with other AT types.
@@ -281,6 +277,8 @@ class Symbol : public Vertex, public std::enable_shared_from_this<Symbol> {
     //! Each call to Symbol::set increased this "version count". This is used for caching evaluations.
     inline unsigned long getVersion() const;
 
+    std::string getUUIDStr() const;
+
   private:
 
     Symbol(const boost::uuids::uuid& uuid_);
@@ -323,6 +321,9 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
 
+    Operator getOp() const { return op; }
+    const std::vector<SymbolicExpression>& getChilds() const { return child; }
+
   private:
 
     Operation(Operator op_, const std::vector<SymbolicExpression> &child_);
@@ -338,8 +339,6 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
     static std::map<CacheKey, std::weak_ptr<const Operation>, CacheKeyComp> cache;
     mutable double cacheValue;
     static std::map<Operator, std::string> opMap;
-    Operator getOp() const { return op; }
-    const std::vector<SymbolicExpression>& getChilds() const { return child; }
 };
 
 double Operation::eval() const {

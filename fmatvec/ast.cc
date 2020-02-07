@@ -8,16 +8,7 @@
 #include <boost/spirit/include/qi.hpp>
 #include <string>
 #include <iostream>
-#include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/spirit/include/qi_repeat.hpp>
-#include <boost/spirit/include/support_istream_iterator.hpp>
-#include <boost/phoenix/bind/bind_function.hpp>
-#include <boost/spirit/include/karma_generate.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/phoenix/bind/bind_member_function.hpp>
-#include <boost/phoenix/object/construct.hpp>
-#include <boost/spirit/include/karma.hpp>
-#include <boost/spirit/include/karma_string.hpp>
 
 using namespace std;
 
@@ -299,19 +290,6 @@ IndependentVariable::IndependentVariable(const string &str) : SymbolicExpression
 
 IndependentVariable::IndependentVariable(const shared_ptr<const AST::Symbol> &x) : SymbolicExpression(x) {}
 
-string IndependentVariable::getUUIDStr() const {
-  auto &uuid=static_pointer_cast<const AST::Symbol>(*static_cast<const shared_ptr<const AST::Vertex>*>(this))->uuid;
-#ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
-  if(getenv("FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID")) {
-    auto res=mapUUIDInt.insert(make_pair(uuid, mapUUIDInt.size()+1));
-    return to_string(res.first->second);
-  }
-  return to_string(uuid);
-#else
-  return to_string(uuid);
-#endif
-}
-
 namespace AST { // internal namespace
 
 // ***** Vertex *****
@@ -405,6 +383,18 @@ SymbolicExpression Symbol::parDer(const IndependentVariable &x) const {
 }
 
 Symbol::Symbol(const boost::uuids::uuid& uuid_) : version(0), uuid(uuid_) {}
+
+string Symbol::getUUIDStr() const {
+#ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
+  if(getenv("FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID")) {
+    auto res=mapUUIDInt.insert(make_pair(uuid, mapUUIDInt.size()+1));
+    return to_string(res.first->second);
+  }
+  return to_string(uuid);
+#else
+  return to_string(uuid);
+#endif
+}
 
 // ***** Operation *****
 
@@ -612,18 +602,18 @@ bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) {
 template<>
 boost::spirit::qi::rule<boost::spirit::istream_iterator, IndependentVariable()>& getBoostSpiritQiRule<IndependentVariable>() {
   namespace qi = boost::spirit::qi;
-  using boost::phoenix::bind;
+  namespace phx = boost::phoenix;
 
   static boost::spirit::qi::rule<boost::spirit::istream_iterator, IndependentVariable()> ret;
   static bool init=false;
   if(!init) {
 #ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
     if(getenv("FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID"))
-      ret = *qi::blank >> "{s " >> qi::int_[qi::_val=bind(&createSymbolByInt, qi::_1)] >> '}';
+      ret = *qi::blank >> "{s " >> qi::int_[qi::_val=phx::bind(&createSymbolByInt, qi::_1)] >> '}';
     else
-      ret = *qi::blank >> "{s " >> (qi::repeat(36)[qi::char_("a-z0-9-")])[qi::_val=bind(&createSymbolByVec, qi::_1)] >> '}';
+      ret = *qi::blank >> "{s " >> (qi::repeat(36)[qi::char_("a-z0-9-")])[qi::_val=phx::bind(&createSymbolByVec, qi::_1)] >> '}';
 #else
-    ret = *qi::blank >> "{s " >> (qi::repeat(36)[qi::char_("a-f0-9-")])[qi::_val=bind(&createSymbolByVec, qi::_1)] >> '}';
+    ret = *qi::blank >> "{s " >> (qi::repeat(36)[qi::char_("a-f0-9-")])[qi::_val=phx::bind(&createSymbolByVec, qi::_1)] >> '}';
 #endif
   }
   return ret;
@@ -632,8 +622,8 @@ boost::spirit::qi::rule<boost::spirit::istream_iterator, IndependentVariable()>&
 template<>
 boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& getBoostSpiritQiRule<SymbolicExpression>() {
   namespace qi = boost::spirit::qi;
+  namespace phx = boost::phoenix;
   using It = boost::spirit::istream_iterator;
-  using boost::phoenix::bind;
 
   static boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()> vertex;
   static bool init=false;
@@ -646,56 +636,80 @@ boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& 
     for(auto &x : AST::Operation::opMap)
       opSym.add(x.second, x.first);
 
-    constInt    = *qi::blank >> "{i " >> qi::int_[qi::_val=bind(&AST::Constant<int>::create, qi::_1)] >> '}';
-    constDouble = *qi::blank >> "{d " >> qi::double_[qi::_val=bind(&AST::Constant<double>::create, qi::_1)] >> '}';
+    constInt    = *qi::blank >> "{i " >> qi::int_[qi::_val=phx::bind(&AST::Constant<int>::create, qi::_1)] >> '}';
+    constDouble = *qi::blank >> "{d " >> qi::double_[qi::_val=phx::bind(&AST::Constant<double>::create, qi::_1)] >> '}';
     qi::rule<It, IndependentVariable()> &symbol = getBoostSpiritQiRule<IndependentVariable>();
-    operation   = *qi::blank >> ("{o " >> opSym >> +(' ' >> vertex) >> '}')[qi::_val=bind(&AST::Operation::create, qi::_1, qi::_2)];
+    operation   = *qi::blank >> ("{o " >> opSym >> +(' ' >> vertex) >> '}')[qi::_val=phx::bind(&AST::Operation::create, qi::_1, qi::_2)];
     vertex      = constInt | constDouble | symbol | operation;
   }
   return vertex;
 }
 
 namespace {
-  struct CreateVariant
-  {
-    typedef boost::variant<shared_ptr<const AST::Constant<int>>, shared_ptr<const AST::Constant<double>>, IndependentVariable, shared_ptr<const AST::Operation>> result_type;
-  
-    boost::variant<shared_ptr<const AST::Constant<int>>, shared_ptr<const AST::Constant<double>>, IndependentVariable, shared_ptr<const AST::Operation>> operator()(const SymbolicExpression& v) const
-    {
-      auto i=dynamic_pointer_cast<const AST::Constant<int>>(v); if(i) return i;
-      auto d=dynamic_pointer_cast<const AST::Constant<double>>(v); if(d) return d;
-      auto o=dynamic_pointer_cast<const AST::Operation>(v); if(o) return o;
-      return static_cast<const IndependentVariable&>(v);
-    }
-  };
-  boost::phoenix::function<CreateVariant> createVariant;
+  int getConstInt(const SymbolicExpression &se, bool &pass) {
+    pass=true;
+    auto c=dynamic_pointer_cast<const AST::Constant<int>>(se);
+    if(c) return c->getValue();
+    pass=false;
+    return 0;
+  }
+  double getConstDouble(const SymbolicExpression &se, bool &pass) {
+    pass=true;
+    auto c=dynamic_pointer_cast<const AST::Constant<double>>(se);
+    if(c) return c->getValue();
+    pass=false;
+    return 0;
+  }
+  AST::Operation::Operator getOperationOp(const SymbolicExpression &se, bool &pass) {
+    pass=true;
+    auto o=dynamic_pointer_cast<const AST::Operation>(se);
+    if(o) return o->getOp();
+    pass=false;
+    return AST::Operation::Plus;
+  }
+  const vector<SymbolicExpression>& getOperationChilds(const SymbolicExpression &se, bool &pass) {
+    pass=true;
+    auto o=dynamic_pointer_cast<const AST::Operation>(se);
+    if(o) return o->getChilds();
+    pass=false;
+    static vector<SymbolicExpression> empty;
+    return empty;
+  }
+  string getSymbol(const SymbolicExpression &se, bool &pass) {
+    pass=true;
+    auto s=dynamic_pointer_cast<const AST::Symbol>(se);
+    if(s) return s->getUUIDStr();
+    pass=false;
+    return string();
+  }
 }
 
 template<>
 boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& getBoostSpiritKarmaRule<SymbolicExpression>() {
   namespace karma = boost::spirit::karma;
+  namespace phx = boost::phoenix;
   using It = std::ostream_iterator<char>;
-  using boost::phoenix::bind;
 
   static boost::spirit::karma::rule<It, SymbolicExpression()> vertex;
   static bool init=false;
   if(!init) {
-    static karma::rule<It, shared_ptr<const AST::Constant<int>>()> constInt;
-    static karma::rule<It, shared_ptr<const AST::Constant<double>>()> constDouble;
-    static karma::rule<It, shared_ptr<const AST::Operation>()> operation;
+    static karma::rule<It, SymbolicExpression()> constInt;
+    static karma::rule<It, SymbolicExpression()> constDouble;
+    static karma::rule<It, SymbolicExpression()> symbol;
+    static karma::rule<It, SymbolicExpression()> operation;
 
     auto &doubleBitIdentical=getBoostSpiritKarmaRule<double>();
-    auto &symbol=getBoostSpiritKarmaRule<IndependentVariable>();
 
     static karma::symbols<AST::Operation::Operator, string> opSym;
     for(auto &x : AST::Operation::opMap)
       opSym.add(x.first, x.second);
 
-    constInt    = "{i " << karma::int_[karma::_1=bind(&AST::Constant<int>::getValue, karma::_val)] << '}';
-    constDouble = "{d " << doubleBitIdentical[karma::_1=bind(&AST::Constant<double>::getValue, karma::_val)] << '}';
-    operation   = "{o " << opSym[karma::_1=bind(&AST::Operation::getOp, karma::_val)] <<
-                  (+(' ' << vertex))[karma::_1=bind(&AST::Operation::getChilds, karma::_val)] << '}';
-    vertex      = (constInt | constDouble | symbol | operation)[karma::_1=createVariant(karma::_val)];
+    constInt    = "{i " << karma::int_[karma::_1=phx::bind(&getConstInt, karma::_val, karma::_pass)] << '}';
+    constDouble = "{d " << doubleBitIdentical[karma::_1=phx::bind(&getConstDouble, karma::_val, karma::_pass)] << '}';
+    operation   = "{o " << opSym[karma::_1=phx::bind(&getOperationOp, karma::_val, karma::_pass)] <<
+                  (+(' ' << vertex))[karma::_1=phx::bind(&getOperationChilds, karma::_val, karma::_pass)] << '}';
+    symbol      = "{s " << karma::string[karma::_1=phx::bind(&getSymbol, karma::_val, karma::_pass)] << '}';
+    vertex      = constInt | constDouble | symbol | operation;
   }
   return vertex;
 }
@@ -703,13 +717,13 @@ boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& g
 template<>
 boost::spirit::karma::rule<std::ostream_iterator<char>, IndependentVariable()>& getBoostSpiritKarmaRule<IndependentVariable>() {
   namespace karma = boost::spirit::karma;
+  namespace phx = boost::phoenix;
   using It = std::ostream_iterator<char>;
-  using boost::phoenix::bind;
 
   static karma::rule<It, IndependentVariable()> symbol;
   static bool init=false;
   if(!init)
-    symbol = "{s " << karma::string[karma::_1=bind(&IndependentVariable::getUUIDStr, karma::_val)] << '}';
+    symbol = "{s " << karma::string[karma::_1=phx::bind(&getSymbol, karma::_val, karma::_pass)] << '}';
   return symbol;
 }
 

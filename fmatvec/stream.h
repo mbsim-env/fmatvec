@@ -34,19 +34,9 @@
 #include "matrix.h"
 #include "types.h"
 #include <boost/spirit/include/qi.hpp>
-#include <boost/phoenix/object/construct.hpp>
 #include <boost/phoenix/bind/bind_function.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <boost/scope_exit.hpp>
-#include <boost/assign/list_of.hpp>
-#include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/phoenix/object/construct.hpp>
-#include <boost/phoenix/object/new.hpp>
-#include <boost/spirit/include/qi_repeat.hpp>
 #include <boost/spirit/include/support_istream_iterator.hpp>
-#include <boost/phoenix/bind/bind_function.hpp>
 #include <boost/spirit/include/karma_real.hpp>
 #include <boost/spirit/include/karma.hpp>
 
@@ -97,9 +87,8 @@ namespace fmatvec {
    * */
   template <class Type, class Row, class Col, class AT> std::istream& operator>>(std::istream &s, Matrix<Type,Row,Col,AT> &A) {
     namespace qi = boost::spirit::qi;
+    namespace phx = boost::phoenix;
     using It = boost::spirit::istream_iterator;
-    using boost::phoenix::construct;
-    using boost::phoenix::bind;
 
     qi::rule<It, std::vector<std::vector<AT>>()> scalar;
     qi::rule<It, std::vector<AT>()> row;
@@ -107,7 +96,7 @@ namespace fmatvec {
     qi::rule<It, std::vector<std::vector<AT>>()> scalarOrMatrix;
 
     qi::rule<It, AT()> &atomicType = getBoostSpiritQiRule<AT>();
-    scalar = *qi::blank >> atomicType[qi::_val=bind(&scalarToVecVec<AT>, qi::_1)];
+    scalar = *qi::blank >> atomicType[qi::_val=phx::bind(&scalarToVecVec<AT>, qi::_1)];
     row = atomicType % (+qi::blank | (*qi::blank >> ',' >> *qi::blank));
     matrix = *qi::blank >> '[' >> *qi::blank >>
                (row % (*qi::blank >> (';' | qi::eol) >> *qi::blank))[qi::_val=qi::_1] >>
@@ -138,8 +127,6 @@ namespace fmatvec {
   template <class Type, class Row, class Col, class AT> std::ostream& operator<<(std::ostream &os, const Matrix<Type,Row,Col,AT> &A) {
     namespace karma = boost::spirit::karma;
     using It = std::ostream_iterator<char>;
-
-    using boost::phoenix::bind;
 
     static boost::spirit::karma::rule<It, std::vector<std::vector<AT>>()> matrix;
     static bool init=false;
