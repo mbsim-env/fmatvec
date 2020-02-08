@@ -22,61 +22,36 @@
 #ifndef stream_h
 #define stream_h
 
-#include <cassert>
-#include <fstream>
-#include <sstream>
-#include <iomanip>
-#include <stdexcept>
-#include <limits>
 #include <vector>
-#include <boost/scope_exit.hpp>
-#include "range.h"
 #include "matrix.h"
-#include "types.h"
-#include <boost/spirit/include/qi.hpp>
-#include <boost/phoenix/bind/bind_function.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/spirit/include/support_istream_iterator.hpp>
-#include <boost/spirit/include/karma_real.hpp>
-#include <boost/spirit/include/karma.hpp>
+#include <iterator>
+#include <boost/spirit/home/qi/nonterminal/nonterminal_fwd.hpp>
+#include <boost/spirit/home/karma/nonterminal/nonterminal_fwd.hpp>
+
+namespace boost {
+  namespace spirit {
+    template<typename Elem, typename Traits> class basic_istream_iterator;
+    typedef basic_istream_iterator<char, std::char_traits<char>> istream_iterator;
+  }
+}
 
 namespace fmatvec {
 
-  namespace {
-    template<class AT>
-    std::vector<std::vector<AT>> scalarToVecVec(const AT& x) {
-      return std::vector<std::vector<AT>>(1, std::vector<AT>(1, x));
-    }
-  }
+  class SymbolicExpression;
+  class IndependentVariable;
 
-  template<>
-  inline boost::spirit::qi::rule<boost::spirit::istream_iterator, double()>& getBoostSpiritQiRule<double>() {
-    static boost::spirit::qi::rule<boost::spirit::istream_iterator, double()> ret=boost::spirit::qi::double_;
-    return ret;
-  }
+  template<class AT>
+  boost::spirit::qi::rule<boost::spirit::istream_iterator, AT()>& getBoostSpiritQiRule();
 
-  template<>
-  inline boost::spirit::qi::rule<boost::spirit::istream_iterator, int()>& getBoostSpiritQiRule<int>() {
-    static boost::spirit::qi::rule<boost::spirit::istream_iterator, int()> ret=boost::spirit::qi::int_;
-    return ret;
-  }
+  template<class AT>
+  boost::spirit::karma::rule<std::ostream_iterator<char>, AT()>& getBoostSpiritKarmaRule();
 
-  template<>
-  inline boost::spirit::karma::rule<std::ostream_iterator<char>, double()>& getBoostSpiritKarmaRule<double>() {
-    struct DoublePolicy : boost::spirit::karma::real_policies<double> {
-      static constexpr int floatfield(double n) { return fmtflags::scientific; }
-      static constexpr unsigned precision(double n) { return std::numeric_limits<double>::digits10+1; }
-    };
-    static const boost::spirit::karma::real_generator<double, DoublePolicy> doubleBitIdentical;
-    static boost::spirit::karma::rule<std::ostream_iterator<char>, double()> mydouble=doubleBitIdentical;
-    return mydouble;
-  }
-
-  template<>
-  inline boost::spirit::karma::rule<std::ostream_iterator<char>, int()>& getBoostSpiritKarmaRule<int>() {
-    static boost::spirit::karma::rule<std::ostream_iterator<char>, int()> myint=boost::spirit::karma::int_;
-    return myint;
-  }
+  template<> boost::spirit::qi::rule<boost::spirit::istream_iterator, double()>& getBoostSpiritQiRule<double>();
+  template<> boost::spirit::qi::rule<boost::spirit::istream_iterator, int()>& getBoostSpiritQiRule<int>();
+  template<> boost::spirit::qi::rule<boost::spirit::istream_iterator, std::complex<double>()>& getBoostSpiritQiRule<std::complex<double>>();
+  template<> boost::spirit::karma::rule<std::ostream_iterator<char>, double()>& getBoostSpiritKarmaRule<double>();
+  template<> boost::spirit::karma::rule<std::ostream_iterator<char>, int()>& getBoostSpiritKarmaRule<int>();
+  template<> boost::spirit::karma::rule<std::ostream_iterator<char>, std::complex<double>()>& getBoostSpiritKarmaRule<std::complex<double>>();
 
   /*! \brief Matrix input
    *
@@ -85,37 +60,7 @@ namespace fmatvec {
    * \param A A matrix of any shape and type.
    * \return A reference to the input stream.
    * */
-  template <class Type, class Row, class Col, class AT> std::istream& operator>>(std::istream &s, Matrix<Type,Row,Col,AT> &A) {
-    namespace qi = boost::spirit::qi;
-    namespace phx = boost::phoenix;
-    using It = boost::spirit::istream_iterator;
-
-    qi::rule<It, std::vector<std::vector<AT>>()> scalar;
-    qi::rule<It, std::vector<AT>()> row;
-    qi::rule<It, std::vector<std::vector<AT>>()> matrix;
-    qi::rule<It, std::vector<std::vector<AT>>()> scalarOrMatrix;
-
-    qi::rule<It, AT()> &atomicType = getBoostSpiritQiRule<AT>();
-    scalar = *qi::blank >> atomicType[qi::_val=phx::bind(&scalarToVecVec<AT>, qi::_1)];
-    row = atomicType % (+qi::blank | (*qi::blank >> ',' >> *qi::blank));
-    matrix = *qi::blank >> '[' >> *qi::blank >>
-               (row % (*qi::blank >> (';' | qi::eol) >> *qi::blank))[qi::_val=qi::_1] >>
-             *qi::blank >> ']';
-    scalarOrMatrix = scalar | matrix;
-
-    auto savedFlags=s.flags();
-    s.unsetf(std::ios::skipws);
-    BOOST_SCOPE_EXIT_TPL(&s, &savedFlags) {
-      s.flags(savedFlags);
-    } BOOST_SCOPE_EXIT_END
-
-    std::vector<std::vector<AT>> Avecvec;
-    if(!qi::parse(It(s), It(), scalarOrMatrix, Avecvec))
-      throw std::runtime_error("The stream does not contain a valid scalar, vector or matrix expression. Not parsed content of stream:\n"+
-                               std::string(std::istreambuf_iterator<char>(s), std::istreambuf_iterator<char>()));
-    A<<=Matrix<Type,Row,Col,AT>(Avecvec);
-    return s;
-  }
+  template<class Type, class Row, class Col, class AT> std::istream& operator>>(std::istream &s, Matrix<Type,Row,Col,AT> &A);
 
   /*! \brief Matrix output 
    *
@@ -124,28 +69,152 @@ namespace fmatvec {
    * \param A A matrix of any shape and type.
    * \return A reference to the output stream.
    * */
-  template <class Type, class Row, class Col, class AT> std::ostream& operator<<(std::ostream &os, const Matrix<Type,Row,Col,AT> &A) {
-    namespace karma = boost::spirit::karma;
-    using It = std::ostream_iterator<char>;
+  template<class Type, class Row, class Col, class AT> std::ostream& operator<<(std::ostream &s, const Matrix<Type,Row,Col,AT> &A);
 
-    static boost::spirit::karma::rule<It, std::vector<std::vector<AT>>()> matrix;
-    static bool init=false;
-    if(!init) {
-      static karma::rule<It, std::vector<AT>()> row;
-
-      auto &atomicType=getBoostSpiritKarmaRule<AT>();
-
-      row = (atomicType % ", ")[karma::_1=karma::_val];
-      matrix = '[' << (row % "; ")[karma::_1=karma::_val] << ']';
-    }
-
-    auto Avecvec=static_cast<std::vector<std::vector<AT>>>(A);
-    if(!karma::generate(It(os), matrix, Avecvec))
-      throw std::runtime_error("Failed to write matrix to stream");
-    return os;
-  }
+  //!!! we explicitly instantiate a lot of mat/vec stream operators to avoid compiling in each included file boost::spirit !!!
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Ref     ,Ref     ,std::complex<double>> &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Ref     ,Ref     ,std::complex<double>> &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Ref     ,Ref     ,int                 > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Ref     ,Ref     ,int                 > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Var     ,Var     ,int                 > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Var     ,Var     ,int                 > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Var     ,Fixed<1>,int                 > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Var     ,Fixed<1>,int                 > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<Rotation ,Fixed<3>,Fixed<3>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<Rotation ,Fixed<3>,Fixed<3>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<Symmetric,Ref     ,Ref     ,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<Symmetric,Ref     ,Ref     ,double              > &A);
+//extern template std::istream& operator>>(std::istream &s,       Matrix<Symmetric,Var     ,Var     ,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<Symmetric,Var     ,Var     ,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<Symmetric,Fixed<2>,Fixed<2>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<Symmetric,Fixed<2>,Fixed<2>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<Symmetric,Fixed<3>,Fixed<3>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<Symmetric,Fixed<3>,Fixed<3>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Ref     ,Ref     ,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Ref     ,Ref     ,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Var     ,Var     ,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Var     ,Var     ,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Var     ,Fixed<1>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Var     ,Fixed<1>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Var     ,Fixed<2>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Var     ,Fixed<2>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Var     ,Fixed<3>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Var     ,Fixed<3>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Var     ,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Var     ,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<2>,Var     ,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<2>,Var     ,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<3>,Var     ,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<3>,Var     ,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<6>,Var     ,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<6>,Var     ,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<2>,Fixed<1>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<2>,Fixed<1>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<3>,Fixed<1>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<3>,Fixed<1>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<4>,Fixed<1>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<4>,Fixed<1>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<5>,Fixed<1>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<5>,Fixed<1>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<6>,Fixed<1>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<6>,Fixed<1>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<2>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<2>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<3>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<3>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<4>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<4>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<5>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<5>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<6>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<6>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<2>,Fixed<2>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<2>,Fixed<2>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<3>,Fixed<3>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<3>,Fixed<3>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<6>,Fixed<6>,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<6>,Fixed<6>,double              > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<Rotation ,Fixed<3>,Fixed<3>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<Rotation ,Fixed<3>,Fixed<3>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<Symmetric,Ref     ,Ref     ,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<Symmetric,Ref     ,Ref     ,SymbolicExpression  > &A);
+//extern template std::istream& operator>>(std::istream &s,       Matrix<Symmetric,Var     ,Var     ,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<Symmetric,Var     ,Var     ,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<Symmetric,Fixed<2>,Fixed<2>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<Symmetric,Fixed<2>,Fixed<2>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<Symmetric,Fixed<3>,Fixed<3>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<Symmetric,Fixed<3>,Fixed<3>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Ref     ,Ref     ,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Ref     ,Ref     ,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Var     ,Var     ,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Var     ,Var     ,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Var     ,Fixed<1>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Var     ,Fixed<1>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Var     ,Fixed<2>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Var     ,Fixed<2>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Var     ,Fixed<3>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Var     ,Fixed<3>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Var     ,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Var     ,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<2>,Var     ,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<2>,Var     ,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<3>,Var     ,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<3>,Var     ,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<2>,Fixed<1>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<2>,Fixed<1>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<3>,Fixed<1>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<3>,Fixed<1>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<4>,Fixed<1>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<4>,Fixed<1>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<5>,Fixed<1>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<5>,Fixed<1>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<6>,Fixed<1>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<6>,Fixed<1>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<2>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<2>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<3>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<3>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<4>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<4>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<5>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<5>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<6>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<6>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<2>,Fixed<2>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<2>,Fixed<2>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<3>,Fixed<3>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<3>,Fixed<3>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<6>,Fixed<6>,SymbolicExpression  > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<6>,Fixed<6>,SymbolicExpression  > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<Rotation ,Fixed<3>,Fixed<3>,IndependentVariable > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<Rotation ,Fixed<3>,Fixed<3>,IndependentVariable > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Ref     ,Ref     ,IndependentVariable > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Ref     ,Ref     ,IndependentVariable > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Var     ,Fixed<1>,IndependentVariable > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Var     ,Fixed<1>,IndependentVariable > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Var     ,IndependentVariable > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Var     ,IndependentVariable > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<2>,Fixed<1>,IndependentVariable > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<2>,Fixed<1>,IndependentVariable > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<3>,Fixed<1>,IndependentVariable > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<3>,Fixed<1>,IndependentVariable > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<4>,Fixed<1>,IndependentVariable > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<4>,Fixed<1>,IndependentVariable > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<5>,Fixed<1>,IndependentVariable > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<5>,Fixed<1>,IndependentVariable > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<6>,Fixed<1>,IndependentVariable > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<6>,Fixed<1>,IndependentVariable > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<2>,IndependentVariable > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<2>,IndependentVariable > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<3>,IndependentVariable > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<3>,IndependentVariable > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<4>,IndependentVariable > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<4>,IndependentVariable > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<5>,IndependentVariable > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<5>,IndependentVariable > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<6>,IndependentVariable > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<6>,IndependentVariable > &A);
 
 }
 
 #endif
-

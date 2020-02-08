@@ -8,6 +8,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/math/special_functions/sign.hpp>
 #include <fmatvec/types.h>
+#include <fmatvec/stream.h>
 
 namespace fmatvec {
 
@@ -211,7 +212,7 @@ class Vertex {
     mutable std::map<std::weak_ptr<const Symbol>, unsigned long, std::owner_less<std::weak_ptr<const Symbol>>> dependsOn;
 };
 
-bool Vertex::isConstantInt() const {
+inline bool Vertex::isConstantInt() const {
   return false;
 }
 
@@ -240,12 +241,12 @@ class Constant : public Vertex, public std::enable_shared_from_this<Constant<T>>
 };
 
 template<>
-bool Constant<double>::isConstantInt() const {
+inline bool Constant<double>::isConstantInt() const {
   return false;
 }
 
 template<>
-bool Constant<int>::isConstantInt() const {
+inline bool Constant<int>::isConstantInt() const {
   return true;
 }
 

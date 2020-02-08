@@ -6,6 +6,7 @@ libfmatvec_la_SOURCES = linear_algebra_double.cc \
 			atom.cc \
 			_memory.cc \
 			wrapper.cc \
+			stream.cc \
 			ast.cc
 
 libfmatvec_la_CPPFLAGS = -I$(top_srcdir)
@@ -25,6 +26,7 @@ fmatvecinclude_HEADERS = diagonal_matrix.h \
 			 symmetric_matrix.h \
 			 types.h \
 			 stream.h \
+			 stream_impl.h \
 			 vector.h \
 			 band_matrix.h\
 			 sparse_matrix.h\

@@ -1,5 +1,5 @@
 #include "ast.h"
-#include "stream.h"
+#include "stream_impl.h"
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/scope_exit.hpp>
@@ -9,6 +9,8 @@
 #include <string>
 #include <iostream>
 #include <boost/phoenix/bind/bind_member_function.hpp>
+#include <boost/phoenix/bind/bind_function.hpp>
+#include <boost/spirit/include/karma.hpp>
 
 using namespace std;
 
