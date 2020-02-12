@@ -5,6 +5,11 @@
 #include <map>
 #include <memory>
 #include <boost/uuid/uuid.hpp>
+
+// the following two lines are a workaround for a bug in boost 1.69
+#define BOOST_PENDING_INTEGER_LOG2_HPP
+#include <boost/integer/integer_log2.hpp>
+
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/math/special_functions/sign.hpp>
 #include <fmatvec/types.h>
