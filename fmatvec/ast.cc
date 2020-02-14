@@ -609,6 +609,7 @@ boost::spirit::qi::rule<boost::spirit::istream_iterator, IndependentVariable()>&
   static boost::spirit::qi::rule<boost::spirit::istream_iterator, IndependentVariable()> ret;
   static bool init=false;
   if(!init) {
+    init=true;
 #ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
     if(getenv("FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID"))
       ret = *qi::blank >> "{s " >> qi::int_[qi::_val=phx::bind(&createSymbolByInt, qi::_1)] >> '}';
@@ -630,6 +631,7 @@ boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& 
   static boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()> vertex;
   static bool init=false;
   if(!init) {
+    init=true;
     static qi::rule<It, SymbolicExpression()>  constInt;
     static qi::rule<It, SymbolicExpression()>  constDouble;
     static qi::rule<It, SymbolicExpression()>  operation;
@@ -695,6 +697,7 @@ boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& g
   static boost::spirit::karma::rule<It, SymbolicExpression()> vertex;
   static bool init=false;
   if(!init) {
+    init=true;
     static karma::rule<It, SymbolicExpression()> constInt;
     static karma::rule<It, SymbolicExpression()> constDouble;
     static karma::rule<It, SymbolicExpression()> symbol;
@@ -724,8 +727,10 @@ boost::spirit::karma::rule<std::ostream_iterator<char>, IndependentVariable()>& 
 
   static karma::rule<It, IndependentVariable()> symbol;
   static bool init=false;
-  if(!init)
+  if(!init) {
+    init=true;
     symbol = "{s " << karma::string[karma::_1=phx::bind(&getSymbol, karma::_val, karma::_pass)] << '}';
+  }
   return symbol;
 }
 
