@@ -337,7 +337,7 @@ void checkSymReread(double pdn0Value,
     SymbolicExpression b=2/x;
     stringstream ostr;
     ostr.precision(std::numeric_limits<double>::digits10+1);
-    ostr<<a<<b;
+    ostr<<a<<" "<<b;
     stringstream istr(ostr.str());
     SymbolicExpression ar;
     SymbolicExpression br;

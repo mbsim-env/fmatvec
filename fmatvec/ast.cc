@@ -390,7 +390,7 @@ string Symbol::getUUIDStr() const {
 #ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
   if(getenv("FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID")) {
     auto res=mapUUIDInt.insert(make_pair(uuid, mapUUIDInt.size()+1));
-    return to_string(res.first->second);
+    return "s"+to_string(res.first->second);
   }
   return to_string(uuid);
 #else
@@ -403,10 +403,10 @@ string Symbol::getUUIDStr() const {
 map<Operation::CacheKey, weak_ptr<const Operation>, Operation::CacheKeyComp> Operation::cache;
 
 std::map<Operation::Operator, string> Operation::opMap = boost::assign::map_list_of
-  ( Plus,  "+")
-  ( Minus, "-")
-  ( Mult,  "*")
-  ( Div,   "/")
+  ( Plus,  "plus")
+  ( Minus, "minus")
+  ( Mult,  "mult")
+  ( Div,   "div")
   ( Pow,   "pow")
   ( Log,   "log")
   ( Sqrt,  "sqrt")
@@ -612,11 +612,11 @@ boost::spirit::qi::rule<boost::spirit::istream_iterator, IndependentVariable()>&
     init=true;
 #ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
     if(getenv("FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID"))
-      ret = *qi::blank >> "{s " >> qi::int_[qi::_val=phx::bind(&createSymbolByInt, qi::_1)] >> '}';
+      ret = *qi::blank >> 's' >> qi::int_[qi::_val=phx::bind(&createSymbolByInt, qi::_1)];
     else
-      ret = *qi::blank >> "{s " >> (qi::repeat(36)[qi::char_("a-z0-9-")])[qi::_val=phx::bind(&createSymbolByVec, qi::_1)] >> '}';
+      ret = *qi::blank >> (qi::repeat(36)[qi::char_("a-z0-9-")])[qi::_val=phx::bind(&createSymbolByVec, qi::_1)];
 #else
-    ret = *qi::blank >> "{s " >> (qi::repeat(36)[qi::char_("a-f0-9-")])[qi::_val=phx::bind(&createSymbolByVec, qi::_1)] >> '}';
+    ret = *qi::blank >> (qi::repeat(36)[qi::char_("a-f0-9-")])[qi::_val=phx::bind(&createSymbolByVec, qi::_1)];
 #endif
   }
   return ret;
@@ -633,6 +633,7 @@ boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& 
   if(!init) {
     init=true;
     static qi::rule<It, SymbolicExpression()>  constInt;
+    static qi::real_parser<double, qi::strict_real_policies<double>> strict_double;
     static qi::rule<It, SymbolicExpression()>  constDouble;
     static qi::rule<It, SymbolicExpression()>  operation;
 
@@ -640,11 +641,11 @@ boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& 
     for(auto &x : AST::Operation::opMap)
       opSym.add(x.second, x.first);
 
-    constInt    = *qi::blank >> "{i " >> qi::int_[qi::_val=phx::bind(&AST::Constant<int>::create, qi::_1)] >> '}';
-    constDouble = *qi::blank >> "{d " >> qi::double_[qi::_val=phx::bind(&AST::Constant<double>::create, qi::_1)] >> '}';
+    constInt    = *qi::blank >> qi::int_[qi::_val=phx::bind(&AST::Constant<int>::create, qi::_1)];
+    constDouble = *qi::blank >> strict_double[qi::_val=phx::bind(&AST::Constant<double>::create, qi::_1)];
     qi::rule<It, IndependentVariable()> &symbol = getBoostSpiritQiRule<IndependentVariable>();
-    operation   = *qi::blank >> ("{o " >> opSym >> +(' ' >> vertex) >> '}')[qi::_val=phx::bind(&AST::Operation::create, qi::_1, qi::_2)];
-    vertex      = constInt | constDouble | symbol | operation;
+    operation   = *qi::blank >> (opSym >> '(' >> (vertex % ',') >> ')')[qi::_val=phx::bind(&AST::Operation::create, qi::_1, qi::_2)];
+    vertex      = symbol | operation | constDouble | constInt;
   }
   return vertex;
 }
@@ -709,11 +710,11 @@ boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& g
     for(auto &x : AST::Operation::opMap)
       opSym.add(x.first, x.second);
 
-    constInt    = "{i " << karma::int_[karma::_1=phx::bind(&getConstInt, karma::_val, karma::_pass)] << '}';
-    constDouble = "{d " << doubleBitIdentical[karma::_1=phx::bind(&getConstDouble, karma::_val, karma::_pass)] << '}';
-    operation   = "{o " << opSym[karma::_1=phx::bind(&getOperationOp, karma::_val, karma::_pass)] <<
-                  (+(' ' << vertex))[karma::_1=phx::bind(&getOperationChilds, karma::_val, karma::_pass)] << '}';
-    symbol      = "{s " << karma::string[karma::_1=phx::bind(&getSymbol, karma::_val, karma::_pass)] << '}';
+    constInt    = karma::int_[karma::_1=phx::bind(&getConstInt, karma::_val, karma::_pass)];
+    constDouble = doubleBitIdentical[karma::_1=phx::bind(&getConstDouble, karma::_val, karma::_pass)];
+    operation   = opSym[karma::_1=phx::bind(&getOperationOp, karma::_val, karma::_pass)] << '(' <<
+                  (vertex % ',')[karma::_1=phx::bind(&getOperationChilds, karma::_val, karma::_pass)] << ')';
+    symbol      = karma::string[karma::_1=phx::bind(&getSymbol, karma::_val, karma::_pass)];
     vertex      = constInt | constDouble | symbol | operation;
   }
   return vertex;
@@ -729,7 +730,7 @@ boost::spirit::karma::rule<std::ostream_iterator<char>, IndependentVariable()>& 
   static bool init=false;
   if(!init) {
     init=true;
-    symbol = "{s " << karma::string[karma::_1=phx::bind(&getSymbol, karma::_val, karma::_pass)] << '}';
+    symbol = karma::string[karma::_1=phx::bind(&getSymbol, karma::_val, karma::_pass)];
   }
   return symbol;
 }
