@@ -32,7 +32,7 @@ third eval with different values for independent variables
 pdn.eval = [7.3585395916345489e00, 1.0433498501365477e01, 1.6773365799233294e01]
 number of operations evaluated = 55
 number of operations evaluated = 0
-reread 7.358539592 == 7.358539592
+reread 7.35854 == 7.35854
 indepvar ser [s7; s8; s9]
 depvar ser [1, plus(2,s7), 3; plus(4,log(s8)), 5, 6; 7, 8, mult(9,s9)]
 depvar ser [plus(plus(s7,mult(plus(2,s7),s8)),mult(3,s9)); plus(plus(mult(plus(4,log(s8)),s7),mult(5,s8)),mult(6,s9)); plus(plus(mult(7,s7),mult(8,s8)),mult(mult(9,s9),s9))]
@@ -40,4 +40,4 @@ reread [s7; s8; s9]
 reread [plus(plus(s7,mult(plus(2,s7),s8)),mult(3,s9)); plus(plus(mult(plus(4,log(s8)),s7),mult(5,s8)),mult(6,s9)); plus(plus(mult(7,s7),mult(8,s8)),mult(mult(9,s9),s9))]
 reread-precision 1 1
 reread-precision 1 1
-reread 7.358539592 == 7.358539592
+reread 7.35854 == 7.35854

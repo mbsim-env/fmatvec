@@ -277,11 +277,11 @@ void checkSym(double &pdn0Value,
 
   // write to stream for later reread
   {
-    { stringstream ostr; ostr.precision(std::numeric_limits<double>::digits10+1); ostr<<v; vSer=ostr.str(); }
-    { stringstream ostr; ostr.precision(std::numeric_limits<double>::digits10+1); ostr<<a_; a_Ser=ostr.str(); }
-    { stringstream ostr; ostr.precision(std::numeric_limits<double>::digits10+1); ostr<<a5; a5Ser=ostr.str(); }
-    { stringstream ostr; ostr.precision(std::numeric_limits<double>::digits10+1); ostr<<a6; a6Ser=ostr.str(); }
-    { stringstream ostr; ostr.precision(std::numeric_limits<double>::digits10+1); ostr<<pdn(0); pdn0Ser=ostr.str(); }
+    { stringstream ostr; ostr<<v; vSer=ostr.str(); }
+    { stringstream ostr; ostr<<a_; a_Ser=ostr.str(); }
+    { stringstream ostr; ostr<<a5; a5Ser=ostr.str(); }
+    { stringstream ostr; ostr<<a6; a6Ser=ostr.str(); }
+    { stringstream ostr; ostr<<pdn(0); pdn0Ser=ostr.str(); }
     pdn0Value=eval(pdn(0));
   }
 }
@@ -326,8 +326,8 @@ void checkSymReread(double pdn0Value,
     cout<<"indepvar ser "<<v<<endl;
     cout<<"depvar ser "<<M<<endl;
     cout<<"depvar ser "<<y<<endl;
-    { stringstream str; str.precision(std::numeric_limits<double>::digits10+1); str<<v; Vector<Fixed<3>, IndependentVariable> vrr; str>>vrr; cout<<"reread "<<vrr<<endl; }
-    { stringstream str; str.precision(std::numeric_limits<double>::digits10+1); str<<y; Vector<Fixed<3>, SymbolicExpression>  yrr; str>>yrr; cout<<"reread "<<yrr<<endl; }
+    { stringstream str; str<<v; Vector<Fixed<3>, IndependentVariable> vrr; str>>vrr; cout<<"reread "<<vrr<<endl; }
+    { stringstream str; str<<y; Vector<Fixed<3>, SymbolicExpression>  yrr; str>>yrr; cout<<"reread "<<yrr<<endl; }
   }
 
   // check for bit-identical write/read to/from stream
@@ -336,7 +336,6 @@ void checkSymReread(double pdn0Value,
     SymbolicExpression a=1/x;
     SymbolicExpression b=2/x;
     stringstream ostr;
-    ostr.precision(std::numeric_limits<double>::digits10+1);
     ostr<<a<<" "<<b;
     stringstream istr(ostr.str());
     SymbolicExpression ar;
@@ -387,8 +386,6 @@ int main() {
 #ifndef _WIN32
   assert(feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)!=-1);
 #endif
-
-  cout.precision(10);
 
   checkDoubleComplex();
   checkComplex();

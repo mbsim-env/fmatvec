@@ -12,8 +12,6 @@ int main() {
   assert(feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)!=-1);
 #endif
 
-  cout.precision(10);
-
   {
     IndependentVariable x;
     Vector<Fixed<3>, SymbolicExpression> v; v(0)=x*x; v(1)=x*x; v(2)=x*x;
