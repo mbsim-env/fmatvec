@@ -30,9 +30,9 @@ SET(PACKAGE_VERSION ${VERSION})
 # Define to 1 if you have the ANSI C header files. 
 SET(STDC_HEADERS 1)
 
-#############################################
-### Options #################################
-#############################################
+################################################################################
+### Options ####################################################################
+################################################################################
 
 SET(INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig")
 SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
@@ -42,6 +42,16 @@ add_compile_options(-std=c++11)
 add_compile_options(-Wno-unused-function)
 add_compile_options(-Werror)
 
+################################################################################
+### Search for dependencies ####################################################
+################################################################################
+# Checking for the blas and lapack dependency
+FIND_PACKAGE(LAPACK REQUIRED) # checks for blas and lapack!
+
+# Check for the boost dependency
+find_package(Boost REQUIRED) 
+
+################################################################################
 SET(HAVE_BOOST_PREPROCESSOR_ITERATION_LOCAL_HPP ${Boost_preprocessor_FOUND})
 FIND_FILE(HAVE_BOOST_PREPROCESSOR_ITERATION_LOCAL_HPP "boost/preprocessor/iteration/local.hpp" DOC "Does the boost/preprocessor/iteration/local.hpp exist?")
 FIND_FILE(HAVE_DLFCN_H     "dlfcn.h"     DOC "Does the dlfcn.h exist?")
@@ -62,29 +72,17 @@ SET(HAVE_LIBLAPACK ${LAPACK_FOUND})
 check_symbol_exists(sqrt "math.h" HAVE_SQRT)
 check_symbol_exists(pow "math.h" HAVE_POW)
 
-
-CONFIGURE_FILE("config.h.in-cmake" "config.h")
+SET(prefix "${CMAKE_INSTALL_PREFIX}")
+CONFIGURE_FILE("config.h.in" "config.h" @ONLY)
 
 INCLUDE_DIRECTORIES("${CMAKE_CURRENT_BINARY_DIR}")
 INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}")
+
 ################################################################################
-
-#############################################
-### Search for dependencies #################
-#############################################
-# Checking for the blas and lapack dependency
-FIND_PACKAGE(LAPACK REQUIRED) # checks for blas and lapack!
-
-# Check for the boost dependency
-find_package(Boost REQUIRED) 
-
-#############################################
-### Include the subdirectories ##############
-#############################################
+### Include the subdirectories #################################################
+################################################################################
 add_subdirectory(fmatvec)
 #add_subdirectory(doc)
-
-
 
 ################################################################################
 ## Config.cmake generation and installation
@@ -113,9 +111,9 @@ install(FILES
         DESTINATION ${ConfigPackageLocation})
 
 
-#############################################
-###  Installing #############################
-#############################################
+################################################################################
+###  Installing ################################################################
+################################################################################
 ###  Install the pkg-config file
 configure_file("fmatvec.pc.in" "fmatvec.pc" @ONLY)
 install(FILES       "${CMAKE_CURRENT_BINARY_DIR}/fmatvec.pc"

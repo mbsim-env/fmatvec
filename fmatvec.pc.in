@@ -1,12 +1,12 @@
-prefix=@CMAKE_INSTALL_PREFIX@
+prefix=@prefix@
 exec_prefix=${prefix}
-libdir=${exec_prefix}/lib
+libdir=${prefix}/lib
 includedir=${prefix}/include
 
 Name: fmatvec
 Description: fmatvec is a library for fast matrix-vector computations.
 Requires: 
-Version: @fmatvec_VERSION@
+Version: @VERSION@
 Libs: -L${libdir} @LIBDIRS@ -lfmatvec @LIBS@
 Cflags: @INCDIRS@ -I${includedir} @DEFINES@
 
