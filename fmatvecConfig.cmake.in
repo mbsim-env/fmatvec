@@ -1,0 +1,38 @@
+# ===================================================================================
+#  The fmatvec CMake configuration file // copied from dlib project
+#
+#             ** File generated automatically, do not modify **
+#
+#  Usage from an external project:
+#    In your CMakeLists.txt, add these lines:
+#
+#    FIND_PACKAGE(fmatvec REQUIRED)
+#    TARGET_LINK_LIBRARIES(MY_TARGET_NAME ${fmatvec_LIBRARIES})
+#
+#    This file will define the following variables:
+#      - fmatvec_LIBRARIES                : The list of all imported targets for fmatvec modules.
+#      - fmatvec_INCLUDE_DIRS             : The fmatvec include directories.
+#      - fmatvec_VERSION                  : The version of this fmatvec build.
+#      - fmatvec_VERSION_MAJOR            : Major version part of this fmatvec revision.
+#      - fmatvec_VERSION_MINOR            : Minor version part of this fmatvec revision.
+#
+# ===================================================================================
+
+
+
+ 
+# Our library dependencies (contains definitions for IMPORTED targets)
+if(NOT TARGET fmatvec-shared AND NOT fmatvec_BINARY_DIR)
+   # Compute paths
+   get_filename_component(fmatvec_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+   include("${fmatvec_CMAKE_DIR}/fmatvec.cmake")
+endif()
+
+find_library(fmatvec_LIBRARIES fmatvec HINTS "@CMAKE_INSTALL_FULL_LIBDIR@")
+set(fmatvec_LIBRARY   ${fmatvec_LIBRARIES})
+set(fmatvec_LIBRARIES ${fmatvec_LIBRARIES} "@fmatvec_needed_libraries@")
+set(fmatvec_LIBS      ${fmatvec_LIBRARIES} "@fmatvec_needed_libraries@")
+set(fmatvec_INCLUDE_DIRS "@CMAKE_INSTALL_FULL_INCLUDEDIR@" "@fmatvec_needed_includes@")
+
+# currently skip that but (try to) remember it for later integration
+# include(@CMAKE_INSTALL_FULL_INCLUDEDIR@/fmatvec/cmake_utils/use_cpp_11.cmake)
