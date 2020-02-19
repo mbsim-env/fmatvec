@@ -3,37 +3,31 @@
 #include <boost/preprocessor/iteration/local.hpp>
 
 using namespace std;
-using namespace boost;
-
-namespace {
-  bool msgTypeActive(bool defaultValue, const string &envVarPostfix) {
-    char *env=getenv((string("FMATVEC_MSG_")+envVarPostfix).c_str());
-    if(env) {
-      if(string(env)=="0") return false;
-      if(string(env)=="1") return true;
-    }
-    return defaultValue;
-  }
-}
 
 namespace fmatvec {
 
 // a shared null stream object
-shared_ptr<ostream> Atom::_nullStream = make_shared<ostream>(static_cast<streambuf*>(NULL));
+shared_ptr<ostream> Atom::_nullStream = make_shared<ostream>(static_cast<streambuf*>(nullptr));
 
 // initialize the static streams with cout/cerr and corresponding active flags
 array<shared_ptr<bool>   , Atom::SIZE> Atom::_msgActStatic = {{
   // initial active flag of the message stream and/or envvar postfix being used as initial value
-  make_shared<bool>(msgTypeActive(true , "Info" )), // Info
-  make_shared<bool>(msgTypeActive(true , "Warn" )), // Warn
-  make_shared<bool>(msgTypeActive(false, "Debug"))  // Debug
+  make_shared<bool>(true ), // Info
+  make_shared<bool>(true ), // Warn
+  make_shared<bool>(false), // Debug
+  make_shared<bool>(true ), // Error
+  make_shared<bool>(true ), // Deprecated
+  make_shared<bool>(true )  // Status
   // NEW TYPES HERE: initial active flag
 }};
 array<shared_ptr<ostream>, Atom::SIZE> Atom::_msgSavedStatic = {{
   // stream to use for the message stream
-  make_shared<ostream>(cout.rdbuf()), // Info
-  make_shared<ostream>(cerr.rdbuf()), // Warn
-  make_shared<ostream>(cout.rdbuf())  // Debug
+  make_shared<PrePostfixedStream>("Info: ", ""  , cout), // Info
+  make_shared<PrePostfixedStream>("Warn: ", ""  , cerr), // Warn
+  make_shared<PrePostfixedStream>("Debug:", ""  , cout), // Debug
+  make_shared<PrePostfixedStream>(""      , ""  , cerr), // Error
+  make_shared<PrePostfixedStream>("Depr: ", ""  , cerr), // Deprecated
+  make_shared<PrePostfixedStream>(""      , "\r", cout)  // Status
   // NEW TYPES HERE: stream
 }};
 
@@ -55,27 +49,28 @@ Atom::Atom(const Atom &) :
   _msg(_msgStatic) {
 }
 
-Atom::~Atom() {
-}
+Atom::~Atom() = default;
 
 Atom& Atom::operator=(const Atom &) {
   return *this;
 }
 
-void Atom::setCurrentMessageStream(MsgType type, const boost::shared_ptr<std::ostream> &s) {
-  _msgActStatic[type]=boost::make_shared<bool>(true);
+void Atom::setCurrentMessageStream(MsgType type, const shared_ptr<bool> &a, const shared_ptr<ostream> &s) {
+  _msgActStatic[type]=a;
   _msgSavedStatic[type]=s;
-  _msgStatic[type] = _msgSavedStatic[type];
-}
-
-void Atom::setCurrentMessageStreamActive(MsgType type, bool activeFlag) {
-  *_msgActStatic[type] = activeFlag;
   _msgStatic[type] = *_msgActStatic[type] ? _msgSavedStatic[type] : _nullStream;
 }
 
 void Atom::setMessageStreamActive(MsgType type, bool activeFlag) {
   *_msgAct[type] = activeFlag;
   _msg[type] = *_msgAct[type] ? _msgSaved[type] : _nullStream;
+}
+
+void Atom::getMessageStream(MsgType type,
+       shared_ptr<bool> &a,
+       shared_ptr<ostream> &s) const {
+  a=_msgAct[type];
+  s=_msgSaved[type];
 }
 
 void Atom::adoptMessageStreams(const Atom *src) {
@@ -89,6 +84,25 @@ void Atom::adoptMessageStreams(const Atom *src) {
     _msgSaved=_msgSavedStatic;
     _msg     =_msgStatic;
   }
+}
+
+PrePostfixedStream::PrePostfixedStream(const string &prefix, const string &postfix, const function<void(const string&)> &f) :
+  ostream(nullptr), buffer(prefix, postfix, f) {
+  rdbuf(&buffer);
+}
+
+PrePostfixedStream::PrePostfixedStream(const string &prefix, const string &postfix, ostream &outstr) :
+  ostream(nullptr), buffer(prefix, postfix, [&outstr](const string &s){ outstr<<s<<std::flush; }) {
+  rdbuf(&buffer);
+}
+
+PrePostfixedStream::StringBuf::StringBuf(const string &prefix_, const string &postfix_, const function<void(const string&)> &f_) :
+  stringbuf(ios_base::out), prefix(prefix_), postfix(postfix_), f(f_) {}
+
+int PrePostfixedStream::StringBuf::sync() {
+  f(prefix+str()+postfix);
+  str("");
+  return 0;
 }
 
 }

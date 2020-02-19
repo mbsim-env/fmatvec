@@ -27,6 +27,28 @@
 
 namespace fmatvec {
 
+  class General;
+  class Ref;
+  class Diagonal;
+  class Symmetric;
+  class GeneralBand;
+  class Sparse;
+  class Rotation;
+  class Var;
+  template<int N> class Fixed;
+
+  template<class Type, class Row, class Col, class AT>
+  class Matrix;
+
+  template<class Type, class AT>
+  class SquareMatrix;
+
+  template<class Row, class AT>
+  class Vector;
+
+  template<class Col, class AT>
+  class RowVector;
+
   /*! 
    *  \brief General matrix
    *  
@@ -148,13 +170,11 @@ namespace fmatvec {
   typedef Matrix<General, Fixed<3>, Var, int> Mat3xVI;
 
   typedef Matrix<General, Var, Fixed<2>, double> MatVx2;
-  typedef Matrix<General, Var, Fixed<2>, int> MatVx2I;
   typedef Matrix<General, Var, Fixed<3>, double> MatVx3;
   typedef Matrix<General, Var, Fixed<3>, int> MatVx3I;
 
-
+  typedef Range<Var,Var> RangeV;
 
 }
 
 #endif
-

@@ -1,4 +1,6 @@
 #include <config.h>
+#include <cassert>
+#include <cfenv>
 #include <iostream>
 #include <fmatvec/fmatvec.h>
 #include <fmatvec/function.h>
@@ -55,17 +57,9 @@ class KinematicSpiral : public Function<Vec3(VecV, double)> {
       Jt(2,0)=0;              Jt(2,1)=0;
       return Jt;
     }
-    // only this function OR the next is required (see fPdjT later)
-    Mat3xV parDer2ParDer1(const VecV &q, const double &t) {
-      Mat3xV jq(2);
-      jq(0,0)=-sin(q(0))*v0; jq(0,1)=0            ;
-      jq(1,0)=0;             jq(1,1)=+cos(q(1))*v0;
-      jq(2,0)=0;             jq(2,1)=0            ;
-      return jq;
-    }
     // only this function OR the previous is required (see fPdjT later)
     Vec3 parDer2DirDer1(const VecV &qd, const VecV &q, const double &t) {
-      // this code equals "return parDer2ParDer1(q, t)*qd;"
+      // this code equals "return parDer1ParDer2(q, t)*qd;"
       Vec3 jq;
       jq(0)=-sin(q(0))*v0*qd(0) + 0            *qd(1);
       jq(1)=0            *qd(0) + +cos(q(1))*v0*qd(1);
@@ -124,11 +118,6 @@ class KinematicRotAboutAxis : public Function<RotMat3(VecV, double)> {
       // MISSING
       return jt;
     }
-    Mat3xV parDer2ParDer1(const VecV &q, const double &t) {
-      Mat3xV jq(2);
-      // MISSING
-      return jq;
-    }
   private:
     Vec3 a;
 };
@@ -136,6 +125,10 @@ class KinematicRotAboutAxis : public Function<RotMat3(VecV, double)> {
 
 
 int main() {
+#ifndef _WIN32
+  assert(feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)!=-1);
+#endif
+
   // define some arbitary argument for the following function calles
   VecV q(2);
   q(0)=3.5;
@@ -161,9 +154,9 @@ int main() {
   cout<<"fPjT     = "<<T->parDer2(q, t)<<endl;
 
   cout<<"fPdJT    = "<<T->parDer1DirDer1(qd, q, t)+T->parDer1ParDer2(q, t)<<endl;
-  // fPdjT can be calculate using parDer2DirDer1 OR parDer2ParDer1 in this special case (see KinematicSpiral above)
+  // fPdjT can be calculate using parDer2DirDer1 OR parDer1ParDer2 in this special case (see KinematicSpiral above)
   cout<<"fPdjT    = "<<T->parDer2DirDer1(qd, q, t)+T->parDer2ParDer2(q, t)<<endl;
-  cout<<"fPdjT    = "<<T->parDer2ParDer1(q, t)*qd+T->parDer2ParDer2(q, t)<<endl;
+  cout<<"fPdjT    = "<<T->parDer1ParDer2(q, t)*qd+T->parDer2ParDer2(q, t)<<endl;
 
 
 
@@ -181,9 +174,34 @@ int main() {
   cout<<"fPjR     = "<<R->parDer2(q, t)<<endl;
 
   cout<<"fPdJT    = "<<R->parDer1DirDer1(qd, q, t)+R->parDer1ParDer2(q, t)<<endl;
-  cout<<"fPdjR    = "<<R->parDer2ParDer1(q, t)*qd+R->parDer2ParDer2(q, t)<<endl;
+  cout<<"fPdjR    = "<<R->parDer1ParDer2(q, t)*qd+R->parDer2ParDer2(q, t)<<endl;
 
 
 
-  return 0;
+  string inputv("[1; 2\n 3 ]");
+  { istringstream str(inputv); Vec     v; str>>v; cout<<v<<endl; }
+  { istringstream str(inputv); RowVec  v; str>>v; cout<<v<<endl; }
+  { istringstream str(inputv); Vec3    v; str>>v; cout<<v<<endl; }
+  { istringstream str(inputv); VecV    v; str>>v; cout<<v<<endl; }
+
+  string inputm("[1 2 3; 4, 5 6\n7 8,  9 ]");
+  string inputs("[1 2 3; 2, 5 6\n3 6,  9 ]");
+  string inputd("[1 0 0; 0, 5 0\n0 0,  9 ]");
+  { istringstream str(inputm); Mat       m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputm); SqrMat    m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputd); DiagMat   m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputs); SymMat    m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputm); Mat3x3    m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputm); SqrMat3   m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputs); SymMat3   m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputm); MatV      m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputm); SqrMatV   m; str>>m; cout<<m<<endl; }
+  { istringstream str(inputm); Mat3xV    m; str>>m; cout<<m<<endl; }
+
+  { istringstream str("[3]"); Mat m; str>>m; cout<<m<<endl; }
+  { istringstream str("3"  ); Mat m; str>>m; cout<<m<<endl; }
+  { istringstream str("[3]"); VecV v; str>>v; cout<<v<<endl; }
+  { istringstream str("3"  ); VecV v; str>>v; cout<<v<<endl; }
+
+  return 0;  
 }

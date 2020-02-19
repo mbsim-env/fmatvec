@@ -11,23 +11,12 @@ AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_LANG([C++])
 
-dnl versioning (see http://www.gnu.org/software/libtool/manual.html)
-dnl current: 	The most recent interface number that this library implements. 
-dnl revision: 	The implementation number of the current interface. 
-dnl age: 	The difference between the newest and oldest interfaces that
-dnl		this library implements. In other words, the library implements all the
-dnl 		interface numbers in the range from number current (age<=current).
-LIBFMATVEC_CURRENT=1
-LIBFMATVEC_REVISION=0
-LIBFMATVEC_AGE=0
-AC_SUBST([LIBFMATVEC_CURRENT])
-AC_SUBST([LIBFMATVEC_REVISION])
-AC_SUBST([LIBFMATVEC_AGE])
-LIBFMATVEC_VERSION_INFO=$LIBFMATVEC_CURRENT:$LIBFMATVEC_REVISION:$LIBFMATVEC_AGE
-AC_SUBST([LIBFMATVEC_VERSION_INFO])
+# enable C++11
+CXXFLAGS="$CXXFLAGS -std=c++11"
 
 dnl By autoscan
 AC_CHECK_FUNCS([sqrt])
+AC_CHECK_FUNCS([pow])
 AC_C_CONST
 AC_C_INLINE
 AC_HEADER_STDBOOL
@@ -71,8 +60,10 @@ AC_ARG_WITH([boost-inc],
   [  --with-boost-inc=PATH  The path Boost include directory.],
   [CPPFLAGS="$CPPFLAGS -I$withval"; DEFINES="$DEFINES -I$withval"])
 
+AC_CHECK_HEADERS([boost/preprocessor/iteration/local.hpp],[],[AC_MSG_ERROR([Can not find boost headers (boost/preprocessor/iteration/local.hpp)])])
+
 dnl Define the Memory class
-AC_ARG_WITH([memory-class],[  --with-memory-class=<class>  Use the defined memory management: (INTRUSIVECOUNT (default); BOOST; FMATVEC); BOOST uses boost::smart_array using new operator; INTRUSIVECOUNT uses a fmatvec builtin intrusive reference counting using new operator],[memory_class="$withval"],[memory_class="INTRUSIVECOUNT"])
+AC_ARG_WITH([memory-class],[  --with-memory-class=<class>  Use the defined memory management: (INTRUSIVECOUNT (default); BOOST; FMATVEC); BOOST uses boost::shared_array using new operator; INTRUSIVECOUNT uses a fmatvec builtin intrusive reference counting using new operator],[memory_class="$withval"],[memory_class="INTRUSIVECOUNT"])
 if test "_$memory_class" == "_BOOST"; then
   CXXFLAGS="$CXXFLAGS -DMEMORYCLASS_BOOST"
   DEFINES="$DEFINES -DMEMORYCLASS_BOOST"
@@ -236,13 +227,37 @@ else
 fi
 
 # from now on only libtool is used for linking
-LDFLAGS="$LDFLAGS -no-undefined -Wl,--no-undefined"
+LDFLAGS="$LDFLAGS $LDFLAGS_LIBTOOL -no-undefined -Wl,--no-undefined"
 test "_$host_os" != "_mingw32" && LDFLAGS="$LDFLAGS -Wl,--disable-new-dtags,-rpath,\\\$\$ORIGIN/../lib"
+
+if test "$cross_compiling" == "yes"; then
+  AC_SUBST([XC_EXEC_PREFIX],[wine])
+fi
+
+dnl Check for MinGW
+AC_CANONICAL_HOST
+if test "_$host_os" = "_mingw32" ; then
+  WIN32=yes
+fi
+AM_CONDITIONAL([COND_WIN32], [test "_$WIN32" = "_yes"])
+
+# check for debug build
+DEBUGBUILD=1
+echo $CFLAGS $CXXFLAGS $CPPFLAGS | grep "\-DNDEBUG" > /dev/null && DEBUGBUILD=0
+AC_SUBST([DEBUGBUILD])
 
 AC_SUBST(LIBS)
 AC_SUBST([INCDIRS])
 AC_SUBST([LIBDIRS])
-AC_CONFIG_FILES([Makefile fmatvec/Makefile fmatvec/check/Makefile doc/doxyfile doc/Makefile fmatvec.pc])
+AC_CONFIG_FILES([Makefile fmatvec/Makefile fmatvec/check/Makefile doc/checkHtml/Makefile doc/doxy_template/Makefile doc/doxy_template/doxyfile_common doc/doxyfile doc/Makefile fmatvec.pc])
+AC_CONFIG_COMMANDS([doc/doxy_template/doxyfile_common_fmatvec],
+  [sed -re "s|$prefix/share/fmatvec/doxy_template/|$abs_srcdir/doc/doxy_template/|g" doc/doxy_template/doxyfile_common > doc/doxy_template/doxyfile_common_fmatvec],
+  [prefix=$prefix; abs_srcdir=$(realpath $srcdir)]
+  )
+AC_CONFIG_FILES([fmatvec/check/testfunction.sh], [chmod +x fmatvec/check/testfunction.sh])
+AC_CONFIG_FILES([fmatvec/check/testast.sh], [chmod +x fmatvec/check/testast.sh])
+AC_CONFIG_FILES([fmatvec/check/testsymfunction.sh], [chmod +x fmatvec/check/testsymfunction.sh])
+AC_CONFIG_FILES([fmatvec/check/valgrindtestast.sh], [chmod +x fmatvec/check/valgrindtestast.sh])
 AC_OUTPUT
 
 echo "

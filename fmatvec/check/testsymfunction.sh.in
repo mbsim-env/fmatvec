@@ -1,0 +1,12 @@
+#!/bin/bash
+
+@XC_EXEC_PREFIX@ ./testsymfunction@EXEEXT@ > testsymfunction.out
+RET=$?
+
+cat testsymfunction.out
+
+diff @abs_srcdir@/testsymfunction.ref testsymfunction.out
+RETDIFF=$?
+
+test $RET -ne 0 && exit $RET
+exit $RETDIFF

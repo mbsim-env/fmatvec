@@ -1,4 +1,6 @@
 #include <config.h>
+#include <cassert>
+#include <cfenv>
 #include "fmatvec.h"
 #include "fmatvecTestbench/randomgenerator.h"
 #include <iostream>
@@ -8,6 +10,9 @@ using namespace fmatvec;
 
 int main (int argc, char* argv[])
 {
+#ifndef _WIN32
+  assert(feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)!=-1);
+#endif
 
   // Creating Randomgenerator
   Randomgenerator *generator = new Randomgenerator();

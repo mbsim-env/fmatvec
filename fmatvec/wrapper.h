@@ -63,57 +63,57 @@ typedef std::complex<double> doublecomplex;
 
 #if defined(HAVE_LIBBLAS)
 namespace fmatvec {
-  void dscal(const int N, const double alpha, double *X, const int incX) ;
-  void dgemm(const CBLAS_ORDER Order, const CBLAS_TRANSPOSE TransA,
-                 const CBLAS_TRANSPOSE TransB, const int M, const int N,
-                 const int K, const double alpha, const double *A,
-                 const int lda, const double *B, const int ldb,
-                 const double beta, double *C, const int ldc);
-  void dsymm(const CBLAS_ORDER Order, const CBLAS_SIDE Side,
-                 const CBLAS_UPLO Uplo, const int M, const int N,
-                 const double alpha, const double *A, const int lda,
-                 const double *B, const int ldb, const double beta,
-                 double *C, const int ldc);
-  void daxpy(const int N, const double alpha, const double *X,
-                 const int incX, double *Y, const int incY);
-  void dcopy(const int N, const double *X, const int incX,
-                 double *Y, const int incY);
-  void dgemv(const CBLAS_ORDER Order,
-                 const CBLAS_TRANSPOSE TransA, const int M, const int N,
-                 const double alpha, const double *A, const int lda,
-                 const double *X, const int incX, const double beta,
-                 double *Y, const int incY);
-  void dsymv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
-                 const int N, const double alpha, const double *A,
-                 const int lda, const double *X, const int incX,
-                 const double beta, double *Y, const int incY);
-  double ddot(const int N, const double *X, const int incX,
-                  const double *Y, const int incY);
-  double dasum(const int N, const double *X, const int incX);
-  CBLAS_INDEX idamax(const int N, const double *X, const int incX);
-  double dnrm2(const int N, const double *X, const int incX);
-  int dgesv(const CBLAS_ORDER Order, const int N, const int NRHS,
-                  double *A, const int lda, int *ipiv,
-                  double *B, const int ldb);
-  int zgesv(const CBLAS_ORDER Order, const int N, const int NRHS,
-                  doublecomplex *A, const int lda, int *ipiv,
-                  doublecomplex *B, const int ldb);
-  int dgetrs(const CBLAS_ORDER Order, const CBLAS_TRANSPOSE Trans,
-    const int N, const int NRHS, const double *A, const int lda,
-    const int *ipiv, double *B, const int ldb);
-  int dgetrf(const CBLAS_ORDER Order, const int M, const int N,
-                   double *A, const int lda, int *ipiv);
-  int dgetri(const CBLAS_ORDER Order, const int N, double *A,
-                   const int lda, const int *ipiv);
-  int dpotrf(const ATLAS_ORDER Order, const ATLAS_UPLO Uplo, const int N, double *A, const int lda);
-  int dpotri(const ATLAS_ORDER Order, const ATLAS_UPLO Uplo,
-                   const int N, double *A, const int lda);
-  int dposv(const ATLAS_ORDER Order, const ATLAS_UPLO Uplo,
-                  const int N, const int NRHS, double *A, const int lda,
-                  double *B, const int ldb);
-  int dpotrs(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
-                   const int N, const int NRHS, const double *A, const int lda,
-                   double *B, const int ldb);
+  void dscal(int N, double alpha, double *X, int incX) ;
+  void dgemm(CBLAS_ORDER Order, CBLAS_TRANSPOSE TransA,
+                 CBLAS_TRANSPOSE TransB, int M, int N,
+                 int K, double alpha, const double *A,
+                 int lda, const double *B, int ldb,
+                 double beta, double *C, int ldc);
+  void dsymm(CBLAS_ORDER Order, CBLAS_SIDE Side,
+                 CBLAS_UPLO Uplo, int M, int N,
+                 double alpha, const double *A, int lda,
+                 const double *B, int ldb, double beta,
+                 double *C, int ldc);
+  void daxpy(int N, double alpha, const double *X,
+                 int incX, double *Y, int incY);
+  void dcopy(int N, const double *X, int incX,
+                 double *Y, int incY);
+  void dgemv(CBLAS_ORDER Order,
+                 CBLAS_TRANSPOSE TransA, int M, int N,
+                 double alpha, const double *A, int lda,
+                 const double *X, int incX, double beta,
+                 double *Y, int incY);
+  void dsymv(CBLAS_ORDER Order, CBLAS_UPLO Uplo,
+                 int N, double alpha, const double *A,
+                 int lda, const double *X, int incX,
+                 double beta, double *Y, int incY);
+  double ddot(int N, const double *X, int incX,
+                  const double *Y, int incY);
+  double dasum(int N, const double *X, int incX);
+  CBLAS_INDEX idamax(int N, const double *X, int incX);
+  double dnrm2(int N, const double *X, int incX);
+  int dgesv(CBLAS_ORDER Order, int N, int NRHS,
+                  double *A, int lda, int *ipiv,
+                  double *B, int ldb);
+  int zgesv(CBLAS_ORDER Order, int N, int NRHS,
+                  doublecomplex *A, int lda, int *ipiv,
+                  doublecomplex *B, int ldb);
+  int dgetrs(CBLAS_ORDER Order, CBLAS_TRANSPOSE Trans,
+    int N, int NRHS, const double *A, int lda,
+    const int *ipiv, double *B, int ldb);
+  int dgetrf(CBLAS_ORDER Order, int M, int N,
+                   double *A, int lda, int *ipiv);
+  int dgetri(CBLAS_ORDER Order, int N, double *A,
+                   int lda, const int *ipiv);
+  int dpotrf(ATLAS_ORDER Order, ATLAS_UPLO Uplo, int N, double *A, int lda);
+  int dpotri(ATLAS_ORDER Order, ATLAS_UPLO Uplo,
+                   int N, double *A, int lda);
+  int dposv(ATLAS_ORDER Order, ATLAS_UPLO Uplo,
+                  int N, int NRHS, double *A, int lda,
+                  double *B, int ldb);
+  int dpotrs(CBLAS_ORDER Order, CBLAS_UPLO Uplo,
+                   int N, int NRHS, const double *A, int lda,
+                   double *B, int ldb);
 }
 #endif
 
@@ -154,7 +154,7 @@ extern "C" {
 extern "C" {
 #include "mkl_cblas.h"
 #include "mkl_lapacke.h"
-#include "mkl_lapack.h"  
+#include "mkl_lapack.h"
 }
 
 #define dscal  cblas_dscal
@@ -184,25 +184,25 @@ extern "C" {
 namespace fmatvec {
 
 #ifndef HAVE_LIBMKL_INTEL_LP64
-  int dsyevx(const char jobz, const char range, const CBLAS_UPLO cuplo, const int n, double *a, const int lda, const double vl, const double vu, const int il, const int iu, const double abstol, const int *m, double *w, double *z, const int ldz);
+  int dsyevx(char jobz, char range, CBLAS_UPLO cuplo, int n, double *a, int lda, double vl, double vu, int il, int iu, double abstol, int *m, double *w, double *z, int ldz);
 #else
    int dsyevx(const char jobz, const char range, const CBLAS_UPLO cuplo, const int n, double *a, const int lda, const double vl, const double vu, const int il, const int iu, const double abstol, int *m, double *w, double *z, const int ldz); 
 #endif
 
-  int dgels( const CBLAS_TRANSPOSE ctr, const int m, const int n, const int nhrs, double* a, const int lda, double* b, const int ldb);
+  int dgels( CBLAS_TRANSPOSE ctr, int m, int n, int nrhs, double* a, int lda, double* b, int ldb);
 
-  int dgelss(const int m, const int n, const int nrhs, double *a, const int lda, double *b, const int ldb, const double rcond);
+  int dgelss(int m, int n, int nrhs, double *a, int lda, double *b, int ldb, double rcond);
 
-  int dgeev(const char jobvl, const char jobvr, const int n, double *a, const int lda, double *wr, double *wi, double *vl, const int ldvl, double *vr, const int ldvr);
+  int dgeev(char jobvl, char jobvr, int n, double *a, int lda, double *wr, double *wi, double *vl, int ldvl, double *vr, int ldvr);
 
-  int dsygv(const int itype, const char jobz, const char uplo, const int n, double *a, const int lda, double *b, const int ldb, double *w);
+  int dsygv(int itype, char jobz, char uplo, int n, double *a, int lda, double *b, int ldb, double *w);
   
-  int dgesvd(const char jobu, const char jobvt, const int m, const int n, double *a, const int lda, double *s, double *u, const int ldu, double *vt, const int ldvt);
+  int dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt);
 
-  int dsyev(const char jobz, const char ul, const int n, double *a, const int lda, double *w);
+  int dsyev(char jobz, char ul, int n, double *a, int lda, double *w);
 
-  double dlange(const char norm, const int m, const int n, const double* a, const int lda);
+  double dlange(char norm, int m, int n, const double* a, int lda);
   
-  double dlansy(const char norm, const char uplo, const int n, const double* a, const int lda);
+  double dlansy(char norm, char uplo, int n, const double* a, int lda);
 }
 #endif

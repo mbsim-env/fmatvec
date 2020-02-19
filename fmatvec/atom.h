@@ -3,10 +3,10 @@
 
 #include <ostream>
 #include <iostream>
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/array.hpp>
-#include <boost/static_assert.hpp>
+#include <functional>
+#include <memory>
+#include <array>
+#include <sstream>
 
 namespace fmatvec {
 
@@ -23,14 +23,17 @@ class Atom {
     //! Messages can be printed to different message types named here.
     // When adding new message type a stream and a initial active flag must be provided in atom.cc (see NEW TYPES HERE)
     enum MsgType {
-      Info,  // Informational messages
-      Warn,  // Warning messages
-      Debug, // Debugging messages
-      SIZE   // Must be the last enum in this list
+      Info,       // Informational messages
+      Warn,       // Warning messages
+      Debug,      // Debugging messages
+      Error,      // Error messages
+      Deprecated, // Error messages
+      Status,     // Status messages (only the last message is relevant)
+      SIZE        // Must be the last enum in this list
     };
-    #define FMATVEC_ATOM_MSGTYPE_SIZE 3
+    #define FMATVEC_ATOM_MSGTYPE_SIZE 6
 #ifndef SWIG // swig can not parse this however it is not needed for swig
-    BOOST_STATIC_ASSERT_MSG(SIZE==FMATVEC_ATOM_MSGTYPE_SIZE, "The proprocessor define FMATVEC_ATOM_MSGTYPE_SIZE must be equal Atom::SIZE.");
+    static_assert(SIZE==FMATVEC_ATOM_MSGTYPE_SIZE, "The proprocessor define FMATVEC_ATOM_MSGTYPE_SIZE must be equal Atom::SIZE.");
 #endif
 
   protected:
@@ -49,32 +52,35 @@ class Atom {
     //! Set the current message stream used by all subsequent created objects.
     //! type defines the message type which should be set using this call.
     //! If s is not defined, the message of type type prints to cout.
-    //! The default active flag is true this can be changed by a call to setCurrentMessageStreamActive(type, false)
+    //! If a is not defined, a new shared bool flag set to true is used.
     //! Be aware of data races in streams if objects of type Atom print messages in threads.
     static void setCurrentMessageStream(MsgType type,
-                  const boost::shared_ptr<std::ostream> &s=boost::make_shared<std::ostream>(std::cout.rdbuf()));
-
-    //! Set the active flag used by all objects which were or will be created using the current message stream.
-    static void setCurrentMessageStreamActive(MsgType type, bool active);
+                  const std::shared_ptr<bool> &a=std::make_shared<bool>(true),
+                  const std::shared_ptr<std::ostream> &s=std::make_shared<std::ostream>(std::cout.rdbuf()));
 
     //! Set the active flag of this object and all objects which were created using the same message stream as this object.
-    void setMessageStreamActive(MsgType type, bool active);
+    void setMessageStreamActive(MsgType type, bool activeFlag);
+
+    //! Get the shared message stream active flag and the shared message stream of this object
+    void getMessageStream(MsgType type,
+           std::shared_ptr<bool> &a,
+           std::shared_ptr<std::ostream> &s) const;
 
     //! Adopt the message streams from src to this object.
     //! If src is NULL adopt the current (static) message streams.
     //! Normally always the streams at ctor time are used. But in some special cassed this function is usefull.
-    void adoptMessageStreams(const Atom *src=NULL);
+    void adoptMessageStreams(const Atom *src=nullptr);
 
     //! Return the message stream of type type.
     //! Node: If the code is performance critical you should check first whether this stream is really
     //! printed using msgAct(type). If this return false just skip the complete message.
-    std::ostream &msg(MsgType type) {
+    std::ostream &msg(MsgType type) const {
       return *_msg[type];
     }
     //! Return true if the the message of type type is currently active.
     //! Note: If the code is not performance critical their is no need to check this flag. You can
     //! just print using msg(type)<<"Hello world"<<endl; and it is not really printed.
-    bool msgAct(MsgType type) {
+    bool msgAct(MsgType type) const {
       return *_msgAct[type];
     }
 
@@ -92,20 +98,42 @@ class Atom {
   private:
 
     // A stream which prints to null.
-    static boost::shared_ptr<std::ostream> _nullStream;
+    static std::shared_ptr<std::ostream> _nullStream;
 
     // Static pointer arrays of streams and active flags which were used for newly created objects.
     // These can be changed using setCurrentMessageStream(...)
-    static boost::array<boost::shared_ptr<bool        >, SIZE> _msgActStatic;
-    static boost::array<boost::shared_ptr<std::ostream>, SIZE> _msgSavedStatic;
-    static boost::array<boost::shared_ptr<std::ostream>, SIZE> _msgStatic;
+    static std::array<std::shared_ptr<bool        >, SIZE> _msgActStatic;
+    static std::array<std::shared_ptr<std::ostream>, SIZE> _msgSavedStatic;
+    static std::array<std::shared_ptr<std::ostream>, SIZE> _msgStatic;
 
     // Pointer arrays to streams and active flags this object uses.
     // (these have a life-time at least as long as the object itself, ensured by reference counting)
-    boost::array<boost::shared_ptr<bool        >, SIZE> _msgAct;
-    boost::array<boost::shared_ptr<std::ostream>, SIZE> _msgSaved;
-    boost::array<boost::shared_ptr<std::ostream>, SIZE> _msg;
+    std::array<std::shared_ptr<bool        >, SIZE> _msgAct;
+    std::array<std::shared_ptr<std::ostream>, SIZE> _msgSaved;
+    std::array<std::shared_ptr<std::ostream>, SIZE> _msg;
 };
+
+#ifndef SWIG
+//! A ostream object which prefix/postfix every meassage and calls the given function.
+class PrePostfixedStream : public std::ostream {
+  public:
+    //! Call f with every message of the stream, prefixed/postfixed.
+    PrePostfixedStream(const std::string &prefix_, const std::string &postfix_, const std::function<void(const std::string &)> &f);
+    //! Convinence function to print to outstr_.
+    PrePostfixedStream(const std::string &prefix_, const std::string &postfix_, std::ostream &outstr_);
+  private:
+    class StringBuf : public std::stringbuf {
+      public:
+        StringBuf(const std::string &prefix_, const std::string &postfix_, const std::function<void(const std::string &)> &f_);
+      protected:
+        int sync() override;
+        std::string prefix;
+        std::string postfix;
+        const std::function<void(const std::string &)> f;
+    };
+    StringBuf buffer;
+};
+#endif
 
 }
 

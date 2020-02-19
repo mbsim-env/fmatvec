@@ -1,4 +1,6 @@
 #include <config.h>
+#include <cassert>
+#include <cfenv>
 #include "fmatvec.h"
 #include "fmatvecTestbench/testbench.h"
 #include <iostream>
@@ -15,6 +17,9 @@ using namespace MBSim;
 
 int main (int argc, char* argv[])
 {
+#ifndef _WIN32
+  assert(feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)!=-1);
+#endif
 
   // global parameter
   int NumRuns = 1;

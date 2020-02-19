@@ -237,7 +237,7 @@ namespace fmatvec {
                    const int lda, const int *ipiv) {
     int info;
     int lwork = 2*N;
-    double *work = new double[lwork];
+    auto *work = new double[lwork];
     dgetri_(&N, A, &lda, ipiv, work, &lwork, &info);
     delete [] work;
     return info;
@@ -285,7 +285,7 @@ namespace fmatvec {
 
     const char tr=CVT_TRANSPOSE(ctr);
     const int lwork =  m*10;
-    double *work = new double[lwork];
+    auto *work = new double[lwork];
     int info;
     dgels_( &tr, &m, &n, &nrhs, a, &lda, b, &ldb, work, &lwork, &info );
 
@@ -297,9 +297,9 @@ namespace fmatvec {
   int dgelss(const int m, const int n, const int nrhs, double *a, const int lda, double *b, const int ldb, const double rcond) {
 
     int minmn = m<n?m:n;
-    double *s = new double[minmn]; 
+    auto *s = new double[minmn]; 
     int lwork = 2*(3*minmn + m+n);
-    double *work = new double[lwork];
+    auto *work = new double[lwork];
     int rank;
     int info;
 
@@ -313,7 +313,7 @@ namespace fmatvec {
 
     int info;
     const int lwork = 10*n;
-    double *work = new double[lwork];
+    auto *work = new double[lwork];
 
     dgeev_(&jobvl, &jobvr, &n, a, &lda, wr, wi, vl, &n, vr, &n, work, &lwork, &info);
 
@@ -326,7 +326,7 @@ namespace fmatvec {
   int dsygv(const int itype, const char jobz, const char uplo, const int n, double *a, const int lda, double *b, const int ldb, double *w) {
 
     int lwork = 10*n;
-    double *work = new double[lwork];
+    auto *work = new double[lwork];
     int info;
 
     dsygv_(&itype, &jobz, &uplo, &n, a, &lda, b, &ldb, w, work, &lwork, &info);
@@ -346,7 +346,7 @@ namespace fmatvec {
 	  lwork = (int)workopt;
 
 	  info = 1;
-	  double *work = new double[lwork];
+	  auto *work = new double[lwork];
 	  dgesvd_(&jobu, &jobvt, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, work, &lwork, &info);
 
 	  delete [] work;
@@ -356,7 +356,7 @@ namespace fmatvec {
   int dsyev(const char jobz, const char ul, const int n, double *a, const int lda, double *w) {
 
     int lwork = 10*n;
-    double *work = new double[lwork];
+    auto *work = new double[lwork];
     int info;
 
     dsyev_(&jobz, &ul, &n, a, &lda, w, work, &lwork, &info);
@@ -368,16 +368,16 @@ namespace fmatvec {
   }
 
 #ifndef HAVE_LIBMKL_INTEL_LP64
-  int dsyevx(const char jobz, const char range, const enum CBLAS_UPLO cuplo, const int n, double *a, const int lda, const double vl, const double vu, const int il, const int iu, const double abstol, const int *m, double *w, double *z, const int ldz) {
+  int dsyevx(const char jobz, const char range, const enum CBLAS_UPLO cuplo, const int n, double *a, const int lda, const double vl, const double vu, const int il, const int iu, const double abstol, int *m, double *w, double *z, const int ldz) {
 #else
   int dsyevx(const char jobz, const char range, const CBLAS_UPLO cuplo, const int n, double *a, const int lda, const double vl, const double vu, const int il, const int iu, const double abstol, int *m, double *w, double *z, const int ldz) {
 #endif
 
     int lwork = 8*n;  // opt(NB+3)*N
-    double *work = new double[lwork];
-    int *iwork = new int[5*n];
+    auto *work = new double[lwork];
+    auto *iwork = new int[5*n];
     int info;
-    int *ifail = new int[n];
+    auto *ifail = new int[n];
     char uplo = CVT_UPLO(cuplo);
 
     dsyevx_(&jobz, &range, &uplo, &n, a, &lda, &vl, &vu, &il, &iu, &abstol, m, w, z, &ldz, work, &lwork, iwork, ifail, &info );
@@ -392,7 +392,7 @@ namespace fmatvec {
   
   double dlange(const char norm, const int m, const int n, const double* a, const int lda) {
 
-    double *work = new double[2*m];
+    auto *work = new double[2*m];
     double res = dlange_(&norm, &m, &n, a, &lda, work);
     delete [] work;
     return res;
@@ -401,7 +401,7 @@ namespace fmatvec {
   
   double dlansy(const char norm, const char uplo, const int n, const double* a, const int lda) {
 
-    double *work = new double[n];
+    auto *work = new double[n];
     double res = dlansy_(&norm, &uplo, &n, a, &lda, work);
     delete [] work;
     return res;

@@ -26,22 +26,19 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <stdexcept>
+#include <limits>
 #include <vector>
+#include <boost/scope_exit.hpp>
 #include "range.h"
+#include "toString.h"
+#include "types.h"
 
 /*! 
  * \brief Namespace fmatvec.
  *
  * */
 namespace fmatvec {
-
-  class Noinit { };
-  class Init { };
-  class Eye { };
-
-  static Noinit NONINIT = Noinit();
-  static Init INIT = Init();
-  static Eye EYE = Eye();
 
   /*! Enumerate for initialization of matrices
   */
@@ -61,18 +58,19 @@ namespace fmatvec {
 
       //AT* ele;
 
-      void deepCopy(const Matrix<Type,Row,Col,AT> &A);
+      inline Matrix<Type,Row,Col,AT>& copy(const Matrix<Type,Row,Col,AT> &A);
 
       /// @endcond
 
     public:
+      typedef AT value_type;
 //      /*! \brief Standard constructor
 //       * 
 //       * The standard constructor.
 //       * \param m The number of rows
 //       * \param n The number of columns
 //       * */
-//      Matrix(int m, int n) {};
+//      Matrix(int m, int n) {}
 
       /*! \brief Element operator
        *
@@ -83,12 +81,10 @@ namespace fmatvec {
        * \sa operator()(int,int) const
        * */
       AT& operator()(int i, int j) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(j>=0);
 	assert(i<rows());
 	assert(j<cols());
-#endif
 
 	return e(i,j);
       }
@@ -98,12 +94,10 @@ namespace fmatvec {
        * See operator()(int,int) 
        * */
       const AT& operator()(int i, int j) const {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i>=0);
 	assert(j>=0);
 	assert(i<rows());
 	assert(j<cols());
-#endif
 
 	return e(i,j);
       }
@@ -124,19 +118,18 @@ namespace fmatvec {
        * */
       int cols() const;
 
-      /*! \brief Cast to std::vector<std::vector<AT> >.
+      /*! \brief Cast to std::vector<std::vector<AT>>.
        *
-       * \return The std::vector<std::vector<AT> > representation of the matrix
+       * \return The std::vector<std::vector<AT>> representation of the matrix
        * */
-      operator std::vector<std::vector<AT> >();
+      operator std::vector<std::vector<AT>>() const;
   };
 
-
-
-  template <class Type, class Row, class Col, class AT> void Matrix<Type,Row,Col,AT>::deepCopy(const Matrix<Type,Row,Col,AT> &A) { 
+  template <class Type, class Row, class Col, class AT> inline Matrix<Type,Row,Col,AT>& Matrix<Type,Row,Col,AT>::copy(const Matrix<Type,Row,Col,AT> &A) {
     for(int i=0; i<rows(); i++) 
       for(int j=0; j<cols(); j++) 
 	e(i,j) = A.e(i,j);
+    return *this;
   }
 
   /*! \brief Matrix output 
@@ -147,16 +140,7 @@ namespace fmatvec {
    * \return A reference to the output stream.
    * */
   template <class Type, class Row, class Col, class AT> std::ostream& operator<<(std::ostream &os, const Matrix<Type,Row,Col,AT> &A) {
-    os << A.rows() << " x " << A.cols() << std::endl;
-    os << "[ ";
-    for (int i=0; i < A.rows(); ++i) {
-      for (int j=0; j < A.cols(); ++j) 
-	os << std::setw(14) << A.e(i,j);
-
-      if (i != A.rows() - 1)
-	os << std::endl  << "  ";
-    }
-    os << " ]";
+    os << toString(static_cast<std::vector<std::vector<AT>>>(A), os.precision());
     return os;
   }
 
@@ -168,15 +152,36 @@ namespace fmatvec {
    * \return A reference to the input stream.
    * */
   template <class Type, class Row, class Col, class AT> std::istream& operator>>(std::istream &is, Matrix<Type,Row,Col,AT> &A) {
-    int m, n;
+    std::ios_base::iostate oldEx=is.exceptions();
+    std::ios_base::fmtflags oldFlags=is.flags();
+    BOOST_SCOPE_EXIT_TPL(&is, oldEx, oldFlags) {
+      is.exceptions(oldEx);
+      is.flags(oldFlags);
+    } BOOST_SCOPE_EXIT_END
+    is.exceptions(std::ios::failbit | std::ios::badbit);
+    is.flags(std::ios_base::skipws);
     char c;
-    is >> m >> c >> n >> c;
-    Matrix<General,Var,Var,AT> B(m,n,NONINIT);
-    for (int i=0; i < B.rows(); ++i) 
-      for (int j=0; j < B.cols(); ++j) 
-	is >> B.e(i,j);
-    is >> c;
-    A = B;
+    AT e;
+    while((c=is.peek())==' ' || c=='\n') is.get();
+    if(c!='[') {
+      // its a scalar (written without the [ ] )
+      is>>e;
+      A<<=Matrix<Type,Row,Col,AT>(std::vector<std::vector<AT>>(1, std::vector<AT>(1, e)));
+      return is;
+    }
+    // its vector or matrix
+    is.get();
+    std::vector<std::vector<AT>> m(1);
+    int r=0;
+    while(true) {
+      is>>e;
+      m[r].push_back(e);
+      while((c=is.peek())==' ') is.get();
+      if     (c==','           ) { is.get(); }
+      else if(c==';' || c=='\n') { is.get(); m.resize(++r + 1); }
+      else if(c==']'           ) { is.get(); break; }
+    }
+    A<<=Matrix<Type,Row,Col,AT>(m);
     return is;
   }
 
@@ -199,8 +204,8 @@ namespace fmatvec {
   }
 
   template <class Type, class Row, class Col, class AT>
-    Matrix<Type,Row,Col,AT>::operator std::vector<std::vector<AT> >() {
-      std::vector<std::vector<AT> > ret(rows());
+    Matrix<Type,Row,Col,AT>::operator std::vector<std::vector<AT>>() const {
+      std::vector<std::vector<AT>> ret(rows());
       for(int r=0; r<rows(); r++) {
 	ret[r].resize(cols());
 	for(int c=0; c<cols(); c++)

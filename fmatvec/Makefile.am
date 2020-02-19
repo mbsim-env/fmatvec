@@ -1,17 +1,18 @@
 SUBDIRS = . check
 
 lib_LTLIBRARIES = libfmatvec.la
-libfmatvec_la_LDFLAGS = -version-info @LIBFMATVEC_VERSION_INFO@
 libfmatvec_la_SOURCES = linear_algebra_double.cc \
 			linear_algebra_complex.cc \
 			atom.cc \
 			_memory.cc \
-			wrapper.cc
+			wrapper.cc \
+			ast.cc
 
 libfmatvec_la_CPPFLAGS = -I$(top_srcdir)
 fmatvecincludedir=$(includedir)/fmatvec
 fmatvecinclude_HEADERS = diagonal_matrix.h \
 			 atom.h \
+			 toString.h \
 			 fmatvec.h \
 			 general_matrix.h \
 			 linear_algebra_double.h \
@@ -40,4 +41,9 @@ fmatvecinclude_HEADERS = diagonal_matrix.h \
 			 fixed_var_general_matrix.h\
 			 var_fixed_general_matrix.h\
 			 wrapper.h\
-			 function.h
+			 ast.h\
+			 symbolic.h\
+			 function.h\
+			 symbolic_function.h\
+			 symbolic_function1_temp.h\
+			 symbolic_function2_temp.h

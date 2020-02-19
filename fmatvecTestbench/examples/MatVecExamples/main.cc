@@ -1,4 +1,6 @@
 #include <config.h>
+#include <cassert>
+#include <cfenv>
 #include "fmatvec.h"
 #include <iostream>
 
@@ -6,6 +8,9 @@ using namespace std;
 using namespace fmatvec;
 
 int main() {
+#ifndef _WIN32
+  assert(feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)!=-1);
+#endif
 
   cout << "----------------------------------------"<< endl;
   cout << "create an empty 3x2 matrix" << endl<<endl;
@@ -47,7 +52,7 @@ int main() {
 
   cout << "----------------------------------------"<< endl;
   cout << "create a 2x2 submatrix of A2" << endl<<endl;
-  Mat A6 = A2(Index(1,2), Index(0,1));
+  Mat A6 = A2(Range<Var,Var>(1,2), Range<Var,Var>(0,1));
   cout << "A6 = " << A6 << endl<<endl;
 
   cout << "----------------------------------------"<< endl;

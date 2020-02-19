@@ -1,0 +1,12 @@
+HTML_HEADER            = @prefix@/share/fmatvec/doxy_template/header.html
+HTML_FOOTER            = @prefix@/share/fmatvec/doxy_template/footer.html
+HTML_EXTRA_STYLESHEET  = @prefix@/share/fmatvec/doxy_template/customdoxygen.css
+GENERATE_LATEX         = NO
+EXTRACT_PRIVATE        = YES
+USE_MATHJAX            = YES
+HAVE_DOT               = YES
+COLLABORATION_GRAPH    = NO
+DOT_IMAGE_FORMAT       = svg
+MAX_DOT_GRAPH_DEPTH    = 2
+DOT_MULTI_TARGETS      = YES
+DOT_TRANSPARENT        = YES

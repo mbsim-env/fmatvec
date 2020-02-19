@@ -1,4 +1,4 @@
-SUBDIRS = fmatvec
+SUBDIRS = fmatvec doc/doxy_template doc/checkHtml
 
 DIST_SUBDIRS = fmatvec doc
 

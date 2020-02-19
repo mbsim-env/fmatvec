@@ -22,6 +22,8 @@
 #ifndef types_h
 #define types_h
 
+#include <complex>
+
 #ifndef HAVE_LIBMKL_INTEL_LP64
 #ifndef CBLAS_ENUM_DEFINED_H
    #define CBLAS_ENUM_DEFINED_H
@@ -58,6 +60,18 @@
 #endif
 
 namespace fmatvec {
+
+  /***** initialization types *****/
+
+  class Noinit { };
+  class Init { };
+  class Eye { };
+
+  static Noinit NONINIT = Noinit();
+  static Init INIT = Init();
+  static Eye EYE = Eye();
+
+  /***** matrix/vector (sub) types *****/
 
   class Ref {
   };
@@ -161,6 +175,23 @@ namespace fmatvec {
 //  template<int N>
 //  class GeneralVarFixed: public BasicType {
 //  };
+
+  template<class AT1, class AT2> struct OperatorResult;
+  
+  #define FMATVEC_OPERATORRESULT1(AT, ATRes) \
+  template<> struct OperatorResult<AT, AT> { typedef ATRes Type; };
+
+  #define FMATVEC_OPERATORRESULT2(AT1, AT2, ATRes) \
+  template<> struct OperatorResult<AT1, AT2> { typedef ATRes Type; }; \
+  template<> struct OperatorResult<AT2, AT1> { typedef ATRes Type; };
+  
+  FMATVEC_OPERATORRESULT1(double, double)
+  FMATVEC_OPERATORRESULT1(int, int)
+  FMATVEC_OPERATORRESULT1(std::complex<double>, std::complex<double>)
+
+  FMATVEC_OPERATORRESULT2(double, std::complex<double>, std::complex<double>)
+  FMATVEC_OPERATORRESULT2(int, std::complex<double>, std::complex<double>)
+  FMATVEC_OPERATORRESULT2(int, double, double)
 
 }
 

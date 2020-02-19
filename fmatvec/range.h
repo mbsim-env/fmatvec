@@ -64,9 +64,7 @@ namespace fmatvec {
        * \param i1_ First and last element. 
        */
       inline Range(int i1_) : i1(i1_), i2(i1_) { 
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i1>=0);
-#endif
       }
 
       /*! \brief Regular constructor
@@ -76,10 +74,8 @@ namespace fmatvec {
        * \param i2_ Last index. 
        */
       inline Range(int i1_, int i2_) : i1(i1_), i2(i2_) {
-#ifndef FMATVEC_NO_BOUNDS_CHECK
 	assert(i1>=0);
-	assert(i2>=i1-1);
-#endif
+	//assert(i2>=i1-1);
       }
 
       /*! \brief First element 
@@ -107,7 +103,7 @@ namespace fmatvec {
    *
    * The index class contains indices defining the first and the last element.
    * */
-  template <int I1, int I2> class Range<Fixed<I1>, Fixed<I2> > {
+  template <int I1, int I2> class Range<Fixed<I1>, Fixed<I2>> {
     private:
       
     public:
@@ -136,8 +132,6 @@ namespace fmatvec {
     else
       return false;
   }
-
-  typedef Range<Var,Var> Index;
 
 }
 

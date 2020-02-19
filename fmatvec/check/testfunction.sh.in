@@ -1,0 +1,3 @@
+#!/bin/bash
+
+@XC_EXEC_PREFIX@ ./testfunction@EXEEXT@ || exit
