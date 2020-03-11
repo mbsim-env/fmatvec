@@ -73,7 +73,7 @@ check_symbol_exists(sqrt "math.h" HAVE_SQRT)
 check_symbol_exists(pow "math.h" HAVE_POW)
 
 SET(prefix "${CMAKE_INSTALL_PREFIX}")
-CONFIGURE_FILE("config.h.in" "config.h" @ONLY)
+CONFIGURE_FILE("config.h.in-cmake" "config.h" @ONLY)
 
 INCLUDE_DIRECTORIES("${CMAKE_CURRENT_BINARY_DIR}")
 INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}")
