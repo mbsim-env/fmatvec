@@ -196,6 +196,10 @@ namespace fmatvec {
           throw std::runtime_error("Matrix<Sparse, Ref, Ref, AT>::operator(int i, int j) is not implemented.");
         }
 
+        const AT& operator()(int i, int j) const {
+          throw std::runtime_error("Matrix<Sparse, Ref, Ref, AT>::operator(int i, int j) const is not implemented.");
+        }
+
         int ldim() {
           throw std::runtime_error("Matrix<Sparse, Ref, Ref, AT>::ldim() cannot be called.");
         }
