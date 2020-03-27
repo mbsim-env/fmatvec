@@ -158,6 +158,7 @@ int main() {
   // fPdjT can be calculate using parDer2DirDer1 OR parDer1ParDer2 in this special case (see KinematicSpiral above)
   cout<<"fPdjT    = "<<T->parDer2DirDer1(qd, q, t)+T->parDer2ParDer2(q, t)<<endl;
   cout<<"fPdjT    = "<<T->parDer1ParDer2(q, t)*qd+T->parDer2ParDer2(q, t)<<endl;
+  delete T;
 
 
 
@@ -176,6 +177,7 @@ int main() {
 
   cout<<"fPdJT    = "<<R->parDer1DirDer1(qd, q, t)+R->parDer1ParDer2(q, t)<<endl;
   cout<<"fPdjR    = "<<R->parDer1ParDer2(q, t)*qd+R->parDer2ParDer2(q, t)<<endl;
+  delete R;
 
 
 
