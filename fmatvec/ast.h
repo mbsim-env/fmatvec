@@ -338,7 +338,7 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
     std::vector<SymbolicExpression> child;
     typedef std::pair<Operator, std::vector<std::weak_ptr<const Vertex>>> CacheKey;
     struct CacheKeyComp {
-      bool operator()(const CacheKey& l, const CacheKey& r);
+      bool operator()(const CacheKey& l, const CacheKey& r) const;
       private:
         std::owner_less<std::weak_ptr<const Vertex>> ol;
     };

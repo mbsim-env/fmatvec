@@ -12,7 +12,7 @@ AC_PROG_CXXCPP
 AC_LANG([C++])
 
 # enable C++11
-CXXFLAGS="$CXXFLAGS -std=c++11"
+CXXFLAGS="$CXXFLAGS -std=c++17"
 
 dnl By autoscan
 AC_CHECK_FUNCS([sqrt])

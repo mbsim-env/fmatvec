@@ -588,7 +588,7 @@ Operation::Operation(Operator op_, const vector<SymbolicExpression> &child_) : o
     dependsOn.insert(c->getDependsOn().begin(), c->getDependsOn().end());
 }
 
-bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) {
+bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) const {
   if(l.first!=r.first)
     return l.first<r.first;
   if(l.second.size()!=r.second.size())
