@@ -29,9 +29,6 @@
 #include "var_symmetric_matrix.h"
 #include "fixed_symmetric_matrix.h"
 #include "ast.h"
-//#include <complex>
-//#include <boost/spirit/include/karma.hpp>
-//#include <boost/phoenix/bind/bind_function.hpp>
 
 namespace fmatvec {
 

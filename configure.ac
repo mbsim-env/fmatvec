@@ -63,10 +63,10 @@ AC_ARG_WITH([boost-inc],
 AC_CHECK_HEADERS([boost/preprocessor/iteration/local.hpp],[],[AC_MSG_ERROR([Can not find boost headers (boost/preprocessor/iteration/local.hpp)])])
 
 dnl Define the Memory class
-AC_ARG_WITH([memory-class],[  --with-memory-class=<class>  Use the defined memory management: (INTRUSIVECOUNT (default); BOOST; FMATVEC); BOOST uses boost::shared_array using new operator; INTRUSIVECOUNT uses a fmatvec builtin intrusive reference counting using new operator],[memory_class="$withval"],[memory_class="INTRUSIVECOUNT"])
-if test "_$memory_class" == "_BOOST"; then
-  CXXFLAGS="$CXXFLAGS -DMEMORYCLASS_BOOST"
-  DEFINES="$DEFINES -DMEMORYCLASS_BOOST"
+AC_ARG_WITH([memory-class],[  --with-memory-class=<class>  Use the defined memory management: (INTRUSIVECOUNT (default); STDSHAREDPTR; FMATVEC); STDSHAREDPTR uses str::shared_ptr<AT[]> using new operator; INTRUSIVECOUNT uses a fmatvec builtin intrusive reference counting using new operator],[memory_class="$withval"],[memory_class="INTRUSIVECOUNT"])
+if test "_$memory_class" == "_STDSHAREDPTR"; then
+  CXXFLAGS="$CXXFLAGS -DMEMORYCLASS_STDSHAREDPTR"
+  DEFINES="$DEFINES -DMEMORYCLASS_STDSHAREDPTR"
 elif test "_$memory_class" == "_FMATVEC"; then
   CXXFLAGS="$CXXFLAGS -DMEMORYCLASS_FMATVEC"
   DEFINES="$DEFINES -DMEMORYCLASS_FMATVEC"
@@ -218,10 +218,6 @@ elif test $threadsafety = yes -o $threadsafety = openmp; then
   AC_MSG_RESULT([Use OpenMP for thread safety.])
 elif test $threadsafety = no; then
   AC_MSG_RESULT([Thread safety is disabled.])
-  if test "_$memory_class" == "_BOOST"; then # if boost is used disable boost threadsafy
-    CXXFLAGS="$CXXFLAGS -DBOOST_SP_DISABLE_THREADS"
-    DEFINES="$DEFINES -DBOOST_SP_DISABLE_THREADS"
-  fi
 else
   AC_MSG_ERROR([Unknown thread safety type specified by --enable-threadsafety.])
 fi

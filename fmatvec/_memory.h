@@ -25,6 +25,7 @@
 // includes
 #include <cstdlib>
 #include <vector>
+#include <memory>
 
 // include header given by ALLOCATORHEADER
 #ifdef ALLOCATORHEADER
@@ -95,10 +96,6 @@
   #define FMATVEC_SYNCINIT(l)
   #define FMATVEC_SYNCINC(var, l) (var)++;
   #define FMATVEC_SYNCPREDEC(ret, var, l) ret=--(var);
-#endif
-
-#if defined MEMORYCLASS_BOOST
-#  include <boost/shared_array.hpp>
 #endif
 
 /**
@@ -232,13 +229,13 @@ namespace fmatvec {
       AT* get() const {return ele0;}
   };
 
-#elif defined MEMORYCLASS_BOOST
+#elif defined MEMORYCLASS_STDSHAREDPTR
 
-  // Just a wrapper class around boost::shared_array, since the Memory interface differs a little bit from the boost smart-ptr interface
+  // Just a wrapper class around std::shared_ptr<T[]>, since the Memory interface differs a little bit from the std smart-ptr interface
   // This wrapper is fully inlined by the compiler if optimization is used!
   template <class AT> class Memory {
     private:
-      boost::shared_array<AT> ele0;
+      std::shared_ptr<AT[]> ele0;
 
     public:
       Memory() : ele0() {}

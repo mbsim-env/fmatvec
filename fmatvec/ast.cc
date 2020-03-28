@@ -3,7 +3,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/scope_exit.hpp>
-#include <boost/assign/list_of.hpp>
 #include <sstream>
 #include <boost/spirit/include/qi.hpp>
 #include <string>
@@ -402,31 +401,31 @@ string Symbol::getUUIDStr() const {
 
 map<Operation::CacheKey, weak_ptr<const Operation>, Operation::CacheKeyComp> Operation::cache;
 
-std::map<Operation::Operator, string> Operation::opMap = boost::assign::map_list_of
-  ( Plus,  "plus")
-  ( Minus, "minus")
-  ( Mult,  "mult")
-  ( Div,   "div")
-  ( Pow,   "pow")
-  ( Log,   "log")
-  ( Sqrt,  "sqrt")
-  ( Neg,   "neg")
-  ( Sin,   "sin")
-  ( Cos,   "cos")
-  ( Tan,   "tan")
-  ( Sinh,  "sinh")
-  ( Cosh,  "cosh")
-  ( Tanh,  "tanh")
-  ( ASin,  "asin")
-  ( ACos,  "acos")
-  ( ATan,  "atan")
-  ( ASinh, "asinh")
-  ( ACosh, "acosh")
-  ( ATanh, "atanh")
-  ( Exp,   "exp")
-  ( Sign,  "sign")
-  ( Abs,   "abs")
-;
+std::map<Operation::Operator, string> Operation::opMap {
+  { Plus,  "plus"},
+  { Minus, "minus"},
+  { Mult,  "mult"},
+  { Div,   "div"},
+  { Pow,   "pow"},
+  { Log,   "log"},
+  { Sqrt,  "sqrt"},
+  { Neg,   "neg"},
+  { Sin,   "sin"},
+  { Cos,   "cos"},
+  { Tan,   "tan"},
+  { Sinh,  "sinh"},
+  { Cosh,  "cosh"},
+  { Tanh,  "tanh"},
+  { ASin,  "asin"},
+  { ACos,  "acos"},
+  { ATan,  "atan"},
+  { ASinh, "asinh"},
+  { ACosh, "acosh"},
+  { ATanh, "atanh"},
+  { Exp,   "exp"},
+  { Sign,  "sign"},
+  { Abs,   "abs"}
+};
 
 SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpression> &child_) {
   static bool optimizeExpressions=true; // this is "always" true (except for the initial call, see below)
