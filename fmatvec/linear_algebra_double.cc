@@ -674,7 +674,7 @@ namespace fmatvec {
     for (int i = 0; i < A.size(); i++) 
       w(i) = std::complex<double>(wr[i], wi[i]);
     for (int i = 0; i < A.size(); i++) {
-      if((i < A.size()-1) and (w(i+1)==conj(w(i)))) {
+      if((i < A.size()-1) && (w(i+1)==conj(w(i)))) {
         for(int j = 0; j < A.size(); j++) {
           V(j,i) = std::complex<double>(Vreal(j,i), Vreal(j,i+1));
           V(j,i+1) = std::complex<double>(Vreal(j,i), -Vreal(j,i+1));
