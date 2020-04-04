@@ -254,6 +254,9 @@ AC_CONFIG_FILES([fmatvec/check/testfunction.sh], [chmod +x fmatvec/check/testfun
 AC_CONFIG_FILES([fmatvec/check/testast.sh], [chmod +x fmatvec/check/testast.sh])
 AC_CONFIG_FILES([fmatvec/check/testsymfunction.sh], [chmod +x fmatvec/check/testsymfunction.sh])
 AC_CONFIG_FILES([fmatvec/check/valgrindtestast.sh], [chmod +x fmatvec/check/valgrindtestast.sh])
+AC_CONFIG_FILES([fmatvec/check/valgrindtestfunction.sh], [chmod +x fmatvec/check/valgrindtestfunction.sh])
+hardcode_into_libs=no # do not add hardcoded libdirs to ltlibraries
+hardcode_libdir_flag_spec_CXX= # do not add hardcodeed libdirs to ltbinaries
 AC_OUTPUT
 
 echo "

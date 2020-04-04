@@ -33,6 +33,8 @@ fi
 
 AC_CONFIG_FILES([Makefile fmatvecTestbench/Makefile doc/Makefile fmatvecTestbench.pc doc/doxyfile])
 
+hardcode_into_libs=no # do not add hardcoded libdirs to ltlibraries
+hardcode_libdir_flag_spec_CXX= # do not add hardcodeed libdirs to ltbinaries
 AC_OUTPUT
 
 echo "
