@@ -280,7 +280,8 @@ namespace fmatvec {
        * */
       inline const Vector<Ref,AT> operator()(const Range<Var,Var> &I) const;
 
-      using Matrix<General,Ref,Ref,AT>::operator();
+      AT* operator()() { return Matrix<General, Ref, Ref, AT>::operator()(); }
+      const AT* operator()() const { return Matrix<General, Ref, Ref, AT>::operator()(); }
 
       /*! \brief Cast to std::vector<AT>.
        *
