@@ -115,6 +115,12 @@ install(FILES
 ###  Installing ################################################################
 ################################################################################
 ###  Install the pkg-config file
+set(LIBDIRS "-L.")
+set(LIBS "-lpthread")
+foreach(LIB ${fmatvec_needed_libraries})
+  string(REGEX MATCH "(.*)/lib(.*)\\.(.*)" LIBTMP "${LIB}") # "." must have double excaping!!!
+  set(LIBS "${LIBS} -L${CMAKE_MATCH_1} -l${CMAKE_MATCH_2}")
+endforeach()
 configure_file("fmatvec.pc.in" "fmatvec.pc" @ONLY)
 install(FILES       "${CMAKE_CURRENT_BINARY_DIR}/fmatvec.pc"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
