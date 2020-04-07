@@ -7,6 +7,7 @@
 #include <memory>
 #include <array>
 #include <sstream>
+#include "stream.h"
 
 namespace fmatvec {
 

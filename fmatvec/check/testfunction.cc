@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fmatvec/fmatvec.h>
 #include <fmatvec/function.h>
+#include <fmatvec/stream_impl.h>
 #include <stdexcept>
 
 

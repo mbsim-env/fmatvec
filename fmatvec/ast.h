@@ -5,10 +5,15 @@
 #include <map>
 #include <memory>
 #include <boost/uuid/uuid.hpp>
+
+// the following two lines are a workaround for a bug in boost 1.69
+#define BOOST_PENDING_INTEGER_LOG2_HPP
+#include <boost/integer/integer_log2.hpp>
+
 #include <boost/uuid/uuid_generators.hpp>
-#include <boost/bimap.hpp>
 #include <boost/math/special_functions/sign.hpp>
 #include <fmatvec/types.h>
+#include <fmatvec/stream.h>
 
 namespace fmatvec {
 
@@ -29,15 +34,12 @@ namespace AST {
 //! or an arbitary expression consisting of a hierarchiy
 //! of operations consisting itself of expressions, symbols or constants.
 class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
-  friend class AST::Symbol;
   friend class AST::Operation;
   friend class AST::Constant<int>;
   friend class AST::Constant<double>;
   friend SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
   friend double eval(const SymbolicExpression &x);
   friend SymbolicExpression subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
-  friend std::ostream& operator<<(std::ostream& s, const SymbolicExpression& se);
-  friend std::istream& operator>>(std::istream& s, SymbolicExpression &se);
   protected:
     template<class T> SymbolicExpression(const shared_ptr<T> &x);
 #ifndef SWIG
@@ -186,16 +188,12 @@ class Vertex {
   friend Operation;
   public:
 
-    //! Create a AST from a by deserialization a stream.
-    static SymbolicExpression createFromStream(std::istream &s);
     //! Evaluate the AST.
     //! The returned value depends on the AST and on the current values of all independent variables this AST depends on.
     //! Also see Symbol ant Vertex::getDependsOn().
     virtual double eval() const=0;
     //! Generate a new AST being the partial derivate of this AST with respect to the variable x.
     virtual SymbolicExpression parDer(const IndependentVariable &x) const=0;
-    //! Write/serailize a AST to a stream.
-    virtual void serializeToStream(std::ostream &s) const=0;
     //! Rreturn true if this Vertex is a constant integer.
     inline virtual bool isConstantInt() const;
     //! Returns true if this Vertex is a constant with value 0.
@@ -219,7 +217,7 @@ class Vertex {
     mutable std::map<std::weak_ptr<const Symbol>, unsigned long, std::owner_less<std::weak_ptr<const Symbol>>> dependsOn;
 };
 
-bool Vertex::isConstantInt() const {
+inline bool Vertex::isConstantInt() const {
   return false;
 }
 
@@ -232,10 +230,8 @@ class Constant : public Vertex, public std::enable_shared_from_this<Constant<T>>
   public:
 
     static SymbolicExpression create(const T& c_);
-    static SymbolicExpression createFromStream(std::istream &s);
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
-    void serializeToStream(std::ostream &s) const override;
     inline bool isConstantInt() const override;
     //! Get the constant value of the vertex.
     inline const T& getValue() const;
@@ -243,19 +239,19 @@ class Constant : public Vertex, public std::enable_shared_from_this<Constant<T>>
   private:
 
     Constant(const T& c_);
-    T c;
+    const T c;
     bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
     typedef T CacheKey;
     static std::map<CacheKey, std::weak_ptr<const Constant>> cache;
 };
 
 template<>
-bool Constant<double>::isConstantInt() const {
+inline bool Constant<double>::isConstantInt() const {
   return false;
 }
 
 template<>
-bool Constant<int>::isConstantInt() const {
+inline bool Constant<int>::isConstantInt() const {
   return true;
 }
 
@@ -274,19 +270,20 @@ const T& Constant<T>::getValue() const {
 //! A vertex of the AST representing a independent variable.
 class Symbol : public Vertex, public std::enable_shared_from_this<Symbol> {
   friend SymbolicExpression;
+  friend IndependentVariable;
   public:
 
     static IndependentVariable create(const boost::uuids::uuid& uuid_=boost::uuids::random_generator()());
-    static IndependentVariable createFromStream(std::istream &s);
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
-    void serializeToStream(std::ostream &s) const override;
     //! Set the value of this independent variable.
     //! This has an influence on the evaluation of all ASTs which depend on this independent variable.
     inline void setValue(double x_) const;
     //! Eeturn the "version" of this variable.
     //! Each call to Symbol::set increased this "version count". This is used for caching evaluations.
     inline unsigned long getVersion() const;
+
+    std::string getUUIDStr() const;
 
   private:
 
@@ -318,15 +315,20 @@ unsigned long Symbol::getVersion() const {
 class Operation : public Vertex, public std::enable_shared_from_this<Operation> {
   friend SymbolicExpression;
   friend SymbolicExpression fmatvec::subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
+  friend boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>&
+    getBoostSpiritQiRule<SymbolicExpression>();
+  friend boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>&
+    getBoostSpiritKarmaRule<SymbolicExpression>();
   public:
 
     //! Defined operations.
     enum Operator { Plus, Minus, Mult, Div, Pow, Log, Sqrt, Neg, Sin, Cos, Tan, Sinh, Cosh, Tanh, ASin, ACos, ATan, ASinh, ACosh, ATanh, Exp, Sign, Abs };
     static SymbolicExpression create(Operator op_, const std::vector<SymbolicExpression> &child_);
-    static SymbolicExpression createFromStream(std::istream &s);
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
-    void serializeToStream(std::ostream &s) const override;
+
+    Operator getOp() const { return op; }
+    const std::vector<SymbolicExpression>& getChilds() const { return child; }
 
   private:
 
@@ -342,7 +344,7 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
     };
     static std::map<CacheKey, std::weak_ptr<const Operation>, CacheKeyComp> cache;
     mutable double cacheValue;
-    static boost::bimap<Operator, std::string> opMap;
+    static std::map<Operator, std::string> opMap;
 };
 
 double Operation::eval() const {
@@ -433,6 +435,12 @@ IndependentVariable& IndependentVariable::operator&=(double x) {
 double eval(const SymbolicExpression &x) {
   return x->eval();
 }
+
+template<> boost::spirit::qi::rule<boost::spirit::istream_iterator, IndependentVariable()>& getBoostSpiritQiRule<IndependentVariable>();
+template<> boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& getBoostSpiritQiRule<SymbolicExpression>();
+
+template<> boost::spirit::karma::rule<std::ostream_iterator<char>, IndependentVariable()>& getBoostSpiritKarmaRule<IndependentVariable>();
+template<> boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& getBoostSpiritKarmaRule<SymbolicExpression>();
 
 } // end namespace fmatvec
 

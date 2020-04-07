@@ -31,7 +31,6 @@
 #include <vector>
 #include <boost/scope_exit.hpp>
 #include "range.h"
-#include "toString.h"
 #include "types.h"
 
 /*! 
@@ -130,59 +129,6 @@ namespace fmatvec {
       for(int j=0; j<cols(); j++) 
 	e(i,j) = A.e(i,j);
     return *this;
-  }
-
-  /*! \brief Matrix output 
-   *
-   * This function writes a matrix into a stream.
-   * \param os An output stream.
-   * \param A A matrix of any shape and type.
-   * \return A reference to the output stream.
-   * */
-  template <class Type, class Row, class Col, class AT> std::ostream& operator<<(std::ostream &os, const Matrix<Type,Row,Col,AT> &A) {
-    os << toString(static_cast<std::vector<std::vector<AT>>>(A), os.precision());
-    return os;
-  }
-
-  /*! \brief Matrix input
-   *
-   * This function loads a matrix from a stream.
-   * \param is An input stream.
-   * \param A A matrix of any shape and type.
-   * \return A reference to the input stream.
-   * */
-  template <class Type, class Row, class Col, class AT> std::istream& operator>>(std::istream &is, Matrix<Type,Row,Col,AT> &A) {
-    std::ios_base::iostate oldEx=is.exceptions();
-    std::ios_base::fmtflags oldFlags=is.flags();
-    BOOST_SCOPE_EXIT_TPL(&is, oldEx, oldFlags) {
-      is.exceptions(oldEx);
-      is.flags(oldFlags);
-    } BOOST_SCOPE_EXIT_END
-    is.exceptions(std::ios::failbit | std::ios::badbit);
-    is.flags(std::ios_base::skipws);
-    char c;
-    AT e;
-    while((c=is.peek())==' ' || c=='\n') is.get();
-    if(c!='[') {
-      // its a scalar (written without the [ ] )
-      is>>e;
-      A<<=Matrix<Type,Row,Col,AT>(std::vector<std::vector<AT>>(1, std::vector<AT>(1, e)));
-      return is;
-    }
-    // its vector or matrix
-    is.get();
-    std::vector<std::vector<AT>> m(1);
-    int r=0;
-    while(true) {
-      is>>e;
-      m[r].push_back(e);
-      while((c=is.peek())==' ') is.get();
-      if     (c==','           ) { is.get(); }
-      else if(c==';' || c=='\n') { is.get(); m.resize(++r + 1); }
-      else if(c==']'           ) { is.get(); break; }
-    }
-    A<<=Matrix<Type,Row,Col,AT>(m);
-    return is;
   }
 
   /*! \brief Matrix dump

@@ -1,6 +1,7 @@
 #include <cfenv>
 #include <cassert>
 #include "fmatvec/symbolic.h"
+#include "fmatvec/stream_impl.h"
 #include <fmatvec/symbolic_function.h>
 
 using namespace std;
@@ -10,8 +11,6 @@ int main() {
 #ifndef _WIN32
   assert(feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)!=-1);
 #endif
-
-  cout.precision(10);
 
   {
     IndependentVariable x;

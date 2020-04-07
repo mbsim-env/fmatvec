@@ -1,43 +1,43 @@
 complex 0 = (6.6,9.9)
 complex 1 = (23.2,19.8)
 complex 2 = (9.95,14.52)
-v3 [{ i 0 }; { i 0 }; { i 0 }]
-m3 [{ i 0 }, { i 0 }, { i 0 }; { i 0 }, { i 0 }, { i 0 }; { i 0 }, { i 0 }, { i 0 }]
-indepVar 0 = { s 1 }
-indepVar 1 = { s 2 }
-indepVar 2 = { s 3 }
-depVar 0 = { o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 }
-depVar 1 = { o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 }
-depVar 2 = { o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 }
-norm = { o sqrt 1 o + 2 o + 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 }
-depVar0_indepVar 0 = { d 2 }
-depVar0_indepVar 1 = { s 4 }
-depVar0_indepVar 2 = { d 3 }
-depVar1_indepVar 0 = { d 4 }
-depVar1_indepVar 1 = { d 5 }
-depVar1_indepVar 2 = { d 6 }
-depVar2_indepVar 0 = { o + 2 o * 2 o / 2 o + 2 o * 2 i 3 o pow 2 s 1 i 2 i 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o log 1 o + 2 o pow 2 s 1 i 3 s 1 }
-depVar2_indepVar 1 = { d 8 }
-depVar2_indepVar 2 = { o + 2 s 5 s 6 }
-norm_indepVar 0 = { o / 2 o * 2 o + 2 o + 2 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 d 2 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 d 4 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 o + 2 o * 2 o / 2 o + 2 o * 2 i 3 o pow 2 s 1 i 2 i 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o log 1 o + 2 o pow 2 s 1 i 3 s 1 d 0.5 o sqrt 1 o + 2 o + 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 }
-norm_indepVar 1 = { o / 2 o * 2 o + 2 o + 2 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 s 4 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 d 5 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 d 8 d 0.5 o sqrt 1 o + 2 o + 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 }
-norm_indepVar 2 = { o / 2 o * 2 o + 2 o + 2 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 d 3 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 d 6 o * 2 o * 2 i 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 o + 2 s 5 s 6 d 0.5 o sqrt 1 o + 2 o + 2 o pow 2 o + 2 o + 2 o * 2 d 2 s 1 o * 2 s 4 s 2 o * 2 d 3 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 d 4 s 1 o * 2 d 5 s 2 o * 2 d 6 s 3 i 2 o pow 2 o + 2 o + 2 o * 2 o log 1 o + 2 o pow 2 s 1 i 3 s 1 s 1 o * 2 d 8 s 2 o * 2 o + 2 s 5 s 6 s 3 i 2 }
+v3 [0; 0; 0]
+m3 [0, 0, 0; 0, 0, 0; 0, 0, 0]
+indepVar 0 = s1
+indepVar 1 = s2
+indepVar 2 = s3
+depVar 0 = plus(plus(mult(3.3333333333333331e-01,s1),mult(s4,s2)),mult(6.6666666666665986e-03,s3))
+depVar 1 = plus(plus(mult(4.0e00,s1),mult(5.0e00,s2)),mult(6.0e00,s3))
+depVar 2 = plus(plus(mult(log(plus(pow(s1,3),s1)),s1),mult(8.0e00,s2)),mult(plus(s5,s6),s3))
+norm = sqrt(plus(plus(pow(plus(plus(mult(3.3333333333333331e-01,s1),mult(s4,s2)),mult(6.6666666666665986e-03,s3)),2),pow(plus(plus(mult(4.0e00,s1),mult(5.0e00,s2)),mult(6.0e00,s3)),2)),pow(plus(plus(mult(log(plus(pow(s1,3),s1)),s1),mult(8.0e00,s2)),mult(plus(s5,s6),s3)),2)))
+depVar0_indepVar 0 = 3.3333333333333331e-01
+depVar0_indepVar 1 = s4
+depVar0_indepVar 2 = 6.6666666666665986e-03
+depVar1_indepVar 0 = 4.0e00
+depVar1_indepVar 1 = 5.0e00
+depVar1_indepVar 2 = 6.0e00
+depVar2_indepVar 0 = plus(mult(div(plus(mult(3,pow(s1,2)),1),plus(pow(s1,3),s1)),s1),log(plus(pow(s1,3),s1)))
+depVar2_indepVar 1 = 8.0e00
+depVar2_indepVar 2 = plus(s5,s6)
+norm_indepVar 0 = div(mult(plus(plus(mult(mult(2,plus(plus(mult(3.3333333333333331e-01,s1),mult(s4,s2)),mult(6.6666666666665986e-03,s3))),3.3333333333333331e-01),mult(mult(2,plus(plus(mult(4.0e00,s1),mult(5.0e00,s2)),mult(6.0e00,s3))),4.0e00)),mult(mult(2,plus(plus(mult(log(plus(pow(s1,3),s1)),s1),mult(8.0e00,s2)),mult(plus(s5,s6),s3))),plus(mult(div(plus(mult(3,pow(s1,2)),1),plus(pow(s1,3),s1)),s1),log(plus(pow(s1,3),s1))))),5.0e-01),sqrt(plus(plus(pow(plus(plus(mult(3.3333333333333331e-01,s1),mult(s4,s2)),mult(6.6666666666665986e-03,s3)),2),pow(plus(plus(mult(4.0e00,s1),mult(5.0e00,s2)),mult(6.0e00,s3)),2)),pow(plus(plus(mult(log(plus(pow(s1,3),s1)),s1),mult(8.0e00,s2)),mult(plus(s5,s6),s3)),2))))
+norm_indepVar 1 = div(mult(plus(plus(mult(mult(2,plus(plus(mult(3.3333333333333331e-01,s1),mult(s4,s2)),mult(6.6666666666665986e-03,s3))),s4),mult(mult(2,plus(plus(mult(4.0e00,s1),mult(5.0e00,s2)),mult(6.0e00,s3))),5.0e00)),mult(mult(2,plus(plus(mult(log(plus(pow(s1,3),s1)),s1),mult(8.0e00,s2)),mult(plus(s5,s6),s3))),8.0e00)),5.0e-01),sqrt(plus(plus(pow(plus(plus(mult(3.3333333333333331e-01,s1),mult(s4,s2)),mult(6.6666666666665986e-03,s3)),2),pow(plus(plus(mult(4.0e00,s1),mult(5.0e00,s2)),mult(6.0e00,s3)),2)),pow(plus(plus(mult(log(plus(pow(s1,3),s1)),s1),mult(8.0e00,s2)),mult(plus(s5,s6),s3)),2))))
+norm_indepVar 2 = div(mult(plus(plus(mult(mult(2,plus(plus(mult(3.3333333333333331e-01,s1),mult(s4,s2)),mult(6.6666666666665986e-03,s3))),6.6666666666665986e-03),mult(mult(2,plus(plus(mult(4.0e00,s1),mult(5.0e00,s2)),mult(6.0e00,s3))),6.0e00)),mult(mult(2,plus(plus(mult(log(plus(pow(s1,3),s1)),s1),mult(8.0e00,s2)),mult(plus(s5,s6),s3))),plus(s5,s6))),5.0e-01),sqrt(plus(plus(pow(plus(plus(mult(3.3333333333333331e-01,s1),mult(s4,s2)),mult(6.6666666666665986e-03,s3)),2),pow(plus(plus(mult(4.0e00,s1),mult(5.0e00,s2)),mult(6.0e00,s3)),2)),pow(plus(plus(mult(log(plus(pow(s1,3),s1)),s1),mult(8.0e00,s2)),mult(plus(s5,s6),s3)),2))))
 frist eval
-pdn.eval = [5.007801888, 10.32364965, 13.73636805]
+pdn.eval = [4.6176565551686802e00, 9.9735992420090244e00, 1.3318288918147023e01]
 number of operations evaluated = 55
 second eval with same values for independent variables
-pdn.eval = [5.007801888, 10.32364965, 13.73636805]
+pdn.eval = [4.6176565551686802e00, 9.9735992420090244e00, 1.3318288918147023e01]
 number of operations evaluated = 0
 third eval with different values for independent variables
-pdn.eval = [7.678977339, 10.94600771, 17.14292077]
+pdn.eval = [7.3585395916345489e00, 1.0433498501365477e01, 1.6773365799233294e01]
 number of operations evaluated = 55
 number of operations evaluated = 0
-reread 7.678977339 == 7.678977339
-indepvar ser [{ s 7 }; { s 8 }; { s 9 }]
-depvar ser [{ i 1 }, { o + 2 i 2 s 7 }, { i 3 }; { o + 2 i 4 o log 1 s 8 }, { i 5 }, { i 6 }; { i 7 }, { i 8 }, { o * 2 i 9 s 9 }]
-depvar ser [{ o + 2 o + 2 s 7 o * 2 o + 2 i 2 s 7 s 8 o * 2 i 3 s 9 }; { o + 2 o + 2 o * 2 o + 2 i 4 o log 1 s 8 s 7 o * 2 i 5 s 8 o * 2 i 6 s 9 }; { o + 2 o + 2 o * 2 i 7 s 7 o * 2 i 8 s 8 o * 2 o * 2 i 9 s 9 s 9 }]
-reread [{ s 7 }; { s 8 }; { s 9 }]
-reread [{ o + 2 o + 2 s 7 o * 2 o + 2 i 2 s 7 s 8 o * 2 i 3 s 9 }; { o + 2 o + 2 o * 2 o + 2 i 4 o log 1 s 8 s 7 o * 2 i 5 s 8 o * 2 i 6 s 9 }; { o + 2 o + 2 o * 2 i 7 s 7 o * 2 i 8 s 8 o * 2 o * 2 i 9 s 9 s 9 }]
+reread 7.35854 == 7.35854
+indepvar ser [s7; s8; s9]
+depvar ser [1, plus(2,s7), 3; plus(4,log(s8)), 5, 6; 7, 8, mult(9,s9)]
+depvar ser [plus(plus(s7,mult(plus(2,s7),s8)),mult(3,s9)); plus(plus(mult(plus(4,log(s8)),s7),mult(5,s8)),mult(6,s9)); plus(plus(mult(7,s7),mult(8,s8)),mult(mult(9,s9),s9))]
+reread [s7; s8; s9]
+reread [plus(plus(s7,mult(plus(2,s7),s8)),mult(3,s9)); plus(plus(mult(plus(4,log(s8)),s7),mult(5,s8)),mult(6,s9)); plus(plus(mult(7,s7),mult(8,s8)),mult(mult(9,s9),s9))]
 reread-precision 1 1
 reread-precision 1 1
-reread 7.678977339 == 7.678977339
+reread 7.35854 == 7.35854

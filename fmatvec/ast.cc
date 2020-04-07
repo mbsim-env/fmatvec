@@ -1,7 +1,16 @@
 #include "ast.h"
+#include "stream_impl.h"
+#include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <boost/scope_exit.hpp>
 #include <boost/assign/list_of.hpp>
 #include <sstream>
+#include <boost/spirit/include/qi.hpp>
+#include <string>
+#include <iostream>
+#include <boost/phoenix/bind/bind_member_function.hpp>
+#include <boost/phoenix/bind/bind_function.hpp>
+#include <boost/spirit/include/karma.hpp>
 
 using namespace std;
 
@@ -159,21 +168,57 @@ SymbolicExpression abs(const SymbolicExpression &a) {
 }
 
 ostream& operator<<(ostream& s, const SymbolicExpression& se) {
-  s<<"{";
-  se->serializeToStream(s);
-  s<<" }";
+  namespace karma = boost::spirit::karma;
+  using It = std::ostream_iterator<char>;
+
+  karma::rule<It, SymbolicExpression()>& vertex = getBoostSpiritKarmaRule<SymbolicExpression>();
+
+  if(!karma::generate(It(s), vertex, se))
+    throw runtime_error("Failed to write SymbolicExpression to stream");
   return s;
 }
 
+#ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
+// when in a debug build the envvar FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID is set then a Symbol is not
+// serialized by it uuid but by a process global integer id. This way one can generate the same Symbol id
+// in the serialized output. This is quite usefull to write tests.
+// This envvar should NOT be set in normal program. It will generate wrong results if more than one
+// process in involved.
+static map<boost::uuids::uuid, int> mapUUIDInt;
+#endif
+
+namespace {
+#ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
+  IndependentVariable createSymbolByInt(int id) {
+    auto itm=find_if(mapUUIDInt.begin(), mapUUIDInt.end(), [id](const pair<boost::uuids::uuid, int> &x){
+      return id==x.second;
+    });
+    if(itm!=mapUUIDInt.end())
+      return AST::Symbol::create(itm->first);
+    else
+      return AST::Symbol::create(boost::uuids::random_generator()());
+  }
+#endif
+
+  IndependentVariable createSymbolByVec(const vector<char> &uuidStrVec) {
+    return AST::Symbol::create(boost::lexical_cast<boost::uuids::uuid>(std::string(uuidStrVec.begin(), uuidStrVec.end())));
+  }
+}
 istream& operator>>(istream& s, SymbolicExpression &se) {
-  char ch;
-  s>>ch;
-  if(ch!='{')
-    throw runtime_error("The SymbolicExpression in the stream is not starting with {.");
-  se=AST::Vertex::createFromStream(s);
-  s>>ch;
-  if(ch!='}')
-    throw runtime_error("The SymbolicExpression in the stream is not ending with }.");
+  namespace qi = boost::spirit::qi;
+  using It = boost::spirit::istream_iterator;
+
+  qi::rule<It, SymbolicExpression()>& vertex = getBoostSpiritQiRule<SymbolicExpression>();
+
+  auto savedFlags=s.flags();
+  s.unsetf(std::ios::skipws);
+  BOOST_SCOPE_EXIT(&s, &savedFlags) {
+    s.flags(savedFlags);
+  } BOOST_SCOPE_EXIT_END
+
+  if(!qi::parse(It(s), It(), vertex, se))
+    throw runtime_error("The stream does not contain a valid SymbolicExpression. Not parsed content of stream:\n"+
+                        string(istreambuf_iterator<char>(s), istreambuf_iterator<char>()));
   return s;
 }
 
@@ -251,21 +296,6 @@ namespace AST { // internal namespace
 
 // ***** Vertex *****
 
-SymbolicExpression Vertex::createFromStream(istream &s) {
-  string className;
-  s>>className;
-  if(className=="i")
-    return Constant<int>::createFromStream(s);
-  else if(className=="d")
-    return Constant<double>::createFromStream(s);
-  else if(className=="s")
-    return Symbol::createFromStream(s);
-  else if(className=="o")
-    return Operation::createFromStream(s);
-  else
-    throw runtime_error("Unknown class "+className);
-}
-
 bool Vertex::isZero() const {
   if(isConstantInt() && static_cast<const Constant<int>*>(this)->getValue()==0)
     return true;
@@ -300,13 +330,6 @@ SymbolicExpression Constant<T>::create(const T&c_) {
 }
 
 template<class T>
-SymbolicExpression Constant<T>::createFromStream(istream &s) {
-  T c;
-  s>>c;
-  return Constant<T>::create(c);
-}
-
-template<class T>
 bool Constant<T>::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
   // a constant is only equal to b if b is the same as this.
   return this->shared_from_this()==b;
@@ -317,29 +340,15 @@ SymbolicExpression Constant<T>::parDer(const IndependentVariable &x) const {
   return Constant<int>::create(0);
 }
 
-template<>
-void Constant<int>::serializeToStream(ostream &s) const {
-  s<<" i "<<c;
-}
-
-template<>
-void Constant<double>::serializeToStream(ostream &s) const {
-  s<<" d "<<c;
-}
-
 template<class T>
 Constant<T>::Constant(const T& c_) : c(c_) {}
 
 template SymbolicExpression Constant<int   >::create(const int   &c_);
 template SymbolicExpression Constant<double>::create(const double&c_);
-template SymbolicExpression Constant<int   >::createFromStream(istream &s);
-template SymbolicExpression Constant<double>::createFromStream(istream &s);
 template bool Constant<int   >::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const;
 template bool Constant<double>::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const;
 template SymbolicExpression Constant<int   >::parDer(const IndependentVariable &x) const;
 template SymbolicExpression Constant<double>::parDer(const IndependentVariable &x) const;
-template void Constant<int   >::serializeToStream(ostream &s) const;
-template void Constant<double>::serializeToStream(ostream &s) const;
 
 // ***** Symbol *****
 
@@ -371,69 +380,33 @@ bool Symbol::equal(const SymbolicExpression &b, std::map<IndependentVariable, Sy
   return ret.first->second==b;
 }
 
-#ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
-// when in a debug build the envvar FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID is set then a Symbol is not
-// serialized by it uuid but by a process global integer id. This way one can generate the same Symbol id
-// in the serialized output. This is quite usefull to write tests.
-// This envvar should NOT be set in normal program. It will generate wrong results if more than one
-// process in involved.
-static map<boost::uuids::uuid, int> mapUUIDInt;
-#endif
-
-IndependentVariable Symbol::createFromStream(istream &s) {
-  // get uuid from stream
-  boost::uuids::uuid uuid;
-#ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
-  if(getenv("FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID")) {
-    int id;
-    s>>id;
-    auto itm=find_if(mapUUIDInt.begin(), mapUUIDInt.end(), [id](const pair<boost::uuids::uuid, int> &x){
-      return id==x.second;
-    });
-    if(itm!=mapUUIDInt.end())
-      uuid=itm->first;
-    else
-      uuid=boost::uuids::random_generator()();
-  }
-  else
-    s>>uuid;
-#else
-  s>>uuid;
-#endif
-
-  // create a Symbol with this uuid
-  return Symbol::create(uuid);
-}
-
 SymbolicExpression Symbol::parDer(const IndependentVariable &x) const {
   return this == x.get() ? Constant<int>::create(1) : Constant<int>::create(0);
 }
 
-void Symbol::serializeToStream(ostream &s) const {
+Symbol::Symbol(const boost::uuids::uuid& uuid_) : version(0), uuid(uuid_) {}
+
+string Symbol::getUUIDStr() const {
 #ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
   if(getenv("FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID")) {
     auto res=mapUUIDInt.insert(make_pair(uuid, mapUUIDInt.size()+1));
-    s<<" s "<<res.first->second;
+    return "s"+to_string(res.first->second);
   }
-  else
-    s<<" s "<<uuid;
+  return to_string(uuid);
 #else
-  s<<" s "<<uuid;
+  return to_string(uuid);
 #endif
 }
-
-Symbol::Symbol(const boost::uuids::uuid& uuid_) : version(0), uuid(uuid_) {}
 
 // ***** Operation *****
 
 map<Operation::CacheKey, weak_ptr<const Operation>, Operation::CacheKeyComp> Operation::cache;
 
-boost::bimap<Operation::Operator, string> Operation::opMap =
-  boost::assign::list_of<boost::bimap<Operation::Operator, string>::relation>
-  ( Plus,  "+")
-  ( Minus, "-")
-  ( Mult,  "*")
-  ( Div,   "/")
+std::map<Operation::Operator, string> Operation::opMap = boost::assign::map_list_of
+  ( Plus,  "plus")
+  ( Minus, "minus")
+  ( Mult,  "mult")
+  ( Div,   "div")
   ( Pow,   "pow")
   ( Log,   "log")
   ( Sqrt,  "sqrt")
@@ -535,16 +508,6 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
   return newPtr;
 }
 
-SymbolicExpression Operation::createFromStream(istream &s) {
-  string opStr;
-  size_t size;
-  vector<SymbolicExpression> child;
-  s>>opStr>>size;
-  for(size_t i=0; i<size; ++i)
-    child.push_back(Vertex::createFromStream(s));
-  return Operation::create(opMap.right.at(opStr), child);
-}
-
 bool Operation::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
   // a operation equals b only if b is also a operation
   auto bo=dynamic_pointer_cast<const Operation>(b);
@@ -620,12 +583,6 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
   throw runtime_error("Unknown operation.");
 }
 
-void Operation::serializeToStream(ostream &s) const {
-  s<<" o "<<opMap.left.at(op)<<" "<<child.size();
-  for(auto &c : child)
-    c->serializeToStream(s);
-}
-
 Operation::Operation(Operator op_, const vector<SymbolicExpression> &child_) : op(op_), child(child_) {
   for(auto &c : child)
     dependsOn.insert(c->getDependsOn().begin(), c->getDependsOn().end());
@@ -643,4 +600,139 @@ bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) {
 }
 
 } // end namespace AST
+
+template<>
+boost::spirit::qi::rule<boost::spirit::istream_iterator, IndependentVariable()>& getBoostSpiritQiRule<IndependentVariable>() {
+  namespace qi = boost::spirit::qi;
+  namespace phx = boost::phoenix;
+
+  static boost::spirit::qi::rule<boost::spirit::istream_iterator, IndependentVariable()> ret;
+  static bool init=false;
+  if(!init) {
+    init=true;
+#ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
+    if(getenv("FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID"))
+      ret = *qi::blank >> 's' >> qi::int_[qi::_val=phx::bind(&createSymbolByInt, qi::_1)];
+    else
+      ret = *qi::blank >> (qi::repeat(36)[qi::char_("a-z0-9-")])[qi::_val=phx::bind(&createSymbolByVec, qi::_1)];
+#else
+    ret = *qi::blank >> (qi::repeat(36)[qi::char_("a-f0-9-")])[qi::_val=phx::bind(&createSymbolByVec, qi::_1)];
+#endif
+  }
+  return ret;
+}
+
+template<>
+boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& getBoostSpiritQiRule<SymbolicExpression>() {
+  namespace qi = boost::spirit::qi;
+  namespace phx = boost::phoenix;
+  using It = boost::spirit::istream_iterator;
+
+  static boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()> vertex;
+  static bool init=false;
+  if(!init) {
+    init=true;
+    static qi::rule<It, SymbolicExpression()>  constInt;
+    static qi::real_parser<double, qi::strict_real_policies<double>> strict_double;
+    static qi::rule<It, SymbolicExpression()>  constDouble;
+    static qi::rule<It, SymbolicExpression()>  operation;
+
+    static qi::symbols<char, AST::Operation::Operator> opSym;
+    for(auto &x : AST::Operation::opMap)
+      opSym.add(x.second, x.first);
+
+    constInt    = *qi::blank >> qi::int_[qi::_val=phx::bind(&AST::Constant<int>::create, qi::_1)];
+    constDouble = *qi::blank >> strict_double[qi::_val=phx::bind(&AST::Constant<double>::create, qi::_1)];
+    qi::rule<It, IndependentVariable()> &symbol = getBoostSpiritQiRule<IndependentVariable>();
+    operation   = *qi::blank >> (opSym >> '(' >> (vertex % ',') >> ')')[qi::_val=phx::bind(&AST::Operation::create, qi::_1, qi::_2)];
+    vertex      = symbol | operation | constDouble | constInt;
+  }
+  return vertex;
+}
+
+namespace {
+  int getConstInt(const SymbolicExpression &se, bool &pass) {
+    pass=true;
+    auto c=dynamic_pointer_cast<const AST::Constant<int>>(se);
+    if(c) return c->getValue();
+    pass=false;
+    return 0;
+  }
+  double getConstDouble(const SymbolicExpression &se, bool &pass) {
+    pass=true;
+    auto c=dynamic_pointer_cast<const AST::Constant<double>>(se);
+    if(c) return c->getValue();
+    pass=false;
+    return 0;
+  }
+  AST::Operation::Operator getOperationOp(const SymbolicExpression &se, bool &pass) {
+    pass=true;
+    auto o=dynamic_pointer_cast<const AST::Operation>(se);
+    if(o) return o->getOp();
+    pass=false;
+    return AST::Operation::Plus;
+  }
+  const vector<SymbolicExpression>& getOperationChilds(const SymbolicExpression &se, bool &pass) {
+    pass=true;
+    auto o=dynamic_pointer_cast<const AST::Operation>(se);
+    if(o) return o->getChilds();
+    pass=false;
+    static vector<SymbolicExpression> empty;
+    return empty;
+  }
+  string getSymbol(const SymbolicExpression &se, bool &pass) {
+    pass=true;
+    auto s=dynamic_pointer_cast<const AST::Symbol>(se);
+    if(s) return s->getUUIDStr();
+    pass=false;
+    return string();
+  }
+}
+
+template<>
+boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& getBoostSpiritKarmaRule<SymbolicExpression>() {
+  namespace karma = boost::spirit::karma;
+  namespace phx = boost::phoenix;
+  using It = std::ostream_iterator<char>;
+
+  static boost::spirit::karma::rule<It, SymbolicExpression()> vertex;
+  static bool init=false;
+  if(!init) {
+    init=true;
+    static karma::rule<It, SymbolicExpression()> constInt;
+    static karma::rule<It, SymbolicExpression()> constDouble;
+    static karma::rule<It, SymbolicExpression()> symbol;
+    static karma::rule<It, SymbolicExpression()> operation;
+
+    auto &doubleBitIdentical=getBoostSpiritKarmaRule<double>();
+
+    static karma::symbols<AST::Operation::Operator, string> opSym;
+    for(auto &x : AST::Operation::opMap)
+      opSym.add(x.first, x.second);
+
+    constInt    = karma::int_[karma::_1=phx::bind(&getConstInt, karma::_val, karma::_pass)];
+    constDouble = doubleBitIdentical[karma::_1=phx::bind(&getConstDouble, karma::_val, karma::_pass)];
+    operation   = opSym[karma::_1=phx::bind(&getOperationOp, karma::_val, karma::_pass)] << '(' <<
+                  (vertex % ',')[karma::_1=phx::bind(&getOperationChilds, karma::_val, karma::_pass)] << ')';
+    symbol      = karma::string[karma::_1=phx::bind(&getSymbol, karma::_val, karma::_pass)];
+    vertex      = constInt | constDouble | symbol | operation;
+  }
+  return vertex;
+}
+
+template<>
+boost::spirit::karma::rule<std::ostream_iterator<char>, IndependentVariable()>& getBoostSpiritKarmaRule<IndependentVariable>() {
+  namespace karma = boost::spirit::karma;
+  namespace phx = boost::phoenix;
+  using It = std::ostream_iterator<char>;
+
+  static karma::rule<It, IndependentVariable()> symbol;
+  static bool init=false;
+  if(!init) {
+    init=true;
+    symbol = karma::string[karma::_1=phx::bind(&getSymbol, karma::_val, karma::_pass)];
+  }
+  return symbol;
+}
+
 } // end namespace fmatvec

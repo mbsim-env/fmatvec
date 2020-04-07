@@ -317,12 +317,15 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>::Matrix(const std::vector<std::vector<AT>> &m) {
+      if(static_cast<int>(m.size())!=rows())
+        throw std::runtime_error("The number of rows does not match.");
       for(int r=0; r<rows(); r++) {
         if(static_cast<int>(m[r].size())!=cols())
           throw std::runtime_error("The rows of the input have different length.");
         for(int c=0; c<cols(); c++) {
+          using std::abs;
           e(r,c)=m[r][c];
-          if(r>c && fabs(m[r][c]-m[c][r])>fabs(m[r][c])*1e-13+1e-13)
+          if(r>c && abs(m[r][c]-m[c][r])>abs(m[r][c])*1e-13+1e-13)
             throw std::runtime_error("The input is not symmetric.");
         }
       }
