@@ -94,7 +94,7 @@ namespace fmatvec {
        * */
       template<class Type, class Row, class Col>
         Matrix(const Matrix<Type,Row,Col,AT> &A) : memory(A.rows()), ele((AT*)memory.get()) ,n(A.rows()) {
-          assert(A.rows() == A.cols());
+          FMATVEC_ASSERT(A.rows() == A.cols(), AT);
           copy(A);
         }
 
@@ -119,7 +119,7 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       inline Matrix<Diagonal,Ref,Ref,AT>& operator=(const Matrix<Diagonal,Ref,Ref,AT> &A) {
-        assert(n == A.n);
+        FMATVEC_ASSERT(n == A.n, AT);
         return copy(A);
       }
 
@@ -131,8 +131,8 @@ namespace fmatvec {
        * */
       template<class Type, class Row, class Col>
         inline Matrix<Diagonal,Ref,Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
-          assert(n == A.rows());
-          assert(n == A.cols());
+          FMATVEC_ASSERT(n == A.rows(), AT);
+          FMATVEC_ASSERT(n == A.cols(), AT);
           return copy(A);
         }
 
@@ -172,10 +172,10 @@ namespace fmatvec {
        * */
       const AT& operator()(int i, int j) const {
 
-        assert(i>=0);
-        assert(j>=0);
-        assert(i<n);
-        assert(j<n);
+        FMATVEC_ASSERT(i>=0, AT);
+        FMATVEC_ASSERT(j>=0, AT);
+        FMATVEC_ASSERT(i<n, AT);
+        FMATVEC_ASSERT(j<n, AT);
 
         return e(i,j);
       }
@@ -186,8 +186,8 @@ namespace fmatvec {
        * */
       const AT& operator()(int i) const {
 
-        assert(i>=0);
-        assert(i<n);
+        FMATVEC_ASSERT(i>=0, AT);
+        FMATVEC_ASSERT(i<n, AT);
 
         return e(i);
       }
@@ -202,8 +202,8 @@ namespace fmatvec {
        * */
       AT& operator()(int i) {
 
-        assert(i>=0);
-        assert(i<n);
+        FMATVEC_ASSERT(i>=0, AT);
+        FMATVEC_ASSERT(i<n, AT);
 
         return e(i);
       }
@@ -281,7 +281,7 @@ namespace fmatvec {
 
       /*! \brief std::vector<std::vector<AT>> Constructor.
        * Constructs and initializes a matrix with a std::vector<std::vector<AT>> object.
-       * An assert checks for constant length of each row.
+       * An FMATVEC_ASSERT checks for constant length of each row.
        * \param m The std::vector<std::vector<AT>> the matrix will be initialized with.
        * */
       explicit Matrix<Diagonal,Ref,Ref,AT>(const std::vector<std::vector<AT>> &m);
@@ -297,7 +297,7 @@ namespace fmatvec {
 //       * \return The AT representation of the matrix
 //       * */
 //      explicit operator AT() const {
-//        assert(n==1);
+//        FMATVEC_ASSERT(n==1, AT);
 //        return ele[0];
 //      }
 //

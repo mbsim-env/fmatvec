@@ -165,8 +165,8 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       Matrix<General,Ref,Ref,AT>& operator=(const Matrix<General,Ref,Ref,AT> &A) {
-        assert(m == A.rows());
-        assert(n == A.cols());
+        FMATVEC_ASSERT(m == A.rows(), AT);
+        FMATVEC_ASSERT(n == A.cols(), AT);
         return copy(A);
       }
 
@@ -178,8 +178,8 @@ namespace fmatvec {
        * */
       template<class Type, class Row, class Col>
       Matrix<General,Ref,Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
-        assert(m == A.rows());
-        assert(n == A.cols());
+        FMATVEC_ASSERT(m == A.rows(), AT);
+        FMATVEC_ASSERT(n == A.cols(), AT);
         return copy(A);
       }
 
@@ -229,10 +229,10 @@ namespace fmatvec {
        * \sa operator()(int,int) const
        * */
       AT& operator()(int i, int j) {
-	assert(i>=0);
-	assert(j>=0);
-	assert(i<m);
-	assert(j<n);
+	FMATVEC_ASSERT(i>=0, AT);
+	FMATVEC_ASSERT(j>=0, AT);
+	FMATVEC_ASSERT(i<m, AT);
+	FMATVEC_ASSERT(j<n, AT);
 
 	return e(i,j);
       }
@@ -242,10 +242,10 @@ namespace fmatvec {
        * See operator()(int,int) 
        * */
       const AT& operator()(int i, int j) const {
-	assert(i>=0);
-	assert(j>=0);
-	assert(i<m);
-	assert(j<n);
+	FMATVEC_ASSERT(i>=0, AT);
+	FMATVEC_ASSERT(j>=0, AT);
+	FMATVEC_ASSERT(i<m, AT);
+	FMATVEC_ASSERT(j<n, AT);
 
 	return e(i,j);
       }
@@ -377,7 +377,7 @@ namespace fmatvec {
 
       /*! \brief std::vector<std::vector<AT>> Constructor.
        * Constructs and initializes a matrix with a std::vector<std::vector<AT>> object.
-       * An assert checks for constant length of each row.
+       * An FMATVEC_ASSERT checks for constant length of each row.
        * \param m The std::vector<std::vector<AT>> the matrix will be initialized with.
        * */
       explicit inline Matrix(const std::vector<std::vector<AT>> &m);
@@ -387,8 +387,8 @@ namespace fmatvec {
 //       * \return The AT representation of the matrix
 //       * */
 //      explicit operator AT() const {
-//        assert(m==1);
-//        assert(n==1);
+//        FMATVEC_ASSERT(m==1, AT);
+//        FMATVEC_ASSERT(n==1, AT);
 //        return e(0);
 //      }
 //
@@ -463,8 +463,8 @@ namespace fmatvec {
 
   template <class AT> 
     inline const Matrix<General,Ref,Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
-      assert(I.end()<m);
-      assert(J.end()<n);
+      FMATVEC_ASSERT(I.end()<m, AT);
+      FMATVEC_ASSERT(J.end()<n, AT);
       Matrix<General,Ref,Ref,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
 
       for(int i=0; i<A.rows(); i++)
@@ -476,7 +476,7 @@ namespace fmatvec {
 
   template <class AT> 
     inline const SquareMatrix<Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) const {
-      assert(I.end()<m);
+      FMATVEC_ASSERT(I.end()<m, AT);
       SquareMatrix<Ref,AT> A(I.end()-I.start()+1,NONINIT);
 
       for(int i=0; i<A.rows(); i++)
@@ -489,8 +489,8 @@ namespace fmatvec {
   template <class AT>
     inline const RowVector<Ref,AT>  Matrix<General,Ref,Ref,AT>::row(int i) const {
 
-      assert(i>=0);
-      assert(i<m);
+      FMATVEC_ASSERT(i>=0, AT);
+      FMATVEC_ASSERT(i<m, AT);
 
       RowVector<Ref,AT> x(n,NONINIT);
 
@@ -503,8 +503,8 @@ namespace fmatvec {
   template <class AT>
     inline const Vector<Ref,AT>  Matrix<General,Ref,Ref,AT>::col(int j) const {
 
-      assert(j>=0);
-      assert(j<n);
+      FMATVEC_ASSERT(j>=0, AT);
+      FMATVEC_ASSERT(j<n, AT);
 
       Vector<Ref,AT> x(m,NONINIT);
 
@@ -556,16 +556,16 @@ namespace fmatvec {
 
   template <class AT> template <class Row>
     inline void Matrix<General,Ref,Ref,AT>::set(int j, const Vector<Row,AT> &x) {
-      assert(j<cols());
-      assert(rows()==x.size());
+      FMATVEC_ASSERT(j<cols(), AT);
+      FMATVEC_ASSERT(rows()==x.size(), AT);
       for(int i=0; i<rows(); i++)
         e(i,j) = x.e(i);
     }
 
   template <class AT> template <class Col>
     inline void Matrix<General,Ref,Ref,AT>::set(int i, const RowVector<Col,AT> &x) {
-      assert(i<rows());
-      assert(cols()==x.size());
+      FMATVEC_ASSERT(i<rows(), AT);
+      FMATVEC_ASSERT(cols()==x.size(), AT);
       for(int j=0; j<cols(); j++)
         e(i,j) = x.e(j);
     }
@@ -573,10 +573,10 @@ namespace fmatvec {
   template <class AT> template<class Type, class Row, class Col>
     inline void Matrix<General,Ref,Ref,AT>::set(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
 
-      assert(I.end()<rows());
-      assert(J.end()<cols());
-      assert(I.size()==A.rows());
-      assert(J.size()==A.cols());
+      FMATVEC_ASSERT(I.end()<rows(), AT);
+      FMATVEC_ASSERT(J.end()<cols(), AT);
+      FMATVEC_ASSERT(I.size()==A.rows(), AT);
+      FMATVEC_ASSERT(J.size()==A.cols(), AT);
 
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
@@ -585,16 +585,16 @@ namespace fmatvec {
 
   template <class AT> template <class Row>
     inline void Matrix<General,Ref,Ref,AT>::add(int j, const Vector<Row,AT> &x) {
-      assert(j<cols());
-      assert(rows()==x.size());
+      FMATVEC_ASSERT(j<cols(), AT);
+      FMATVEC_ASSERT(rows()==x.size(), AT);
       for(int i=0; i<rows(); i++)
         e(i,j) += x.e(i);
     }
 
   template <class AT> template <class Col>
     inline void Matrix<General,Ref,Ref,AT>::add(int i, const RowVector<Col,AT> &x) {
-      assert(i<rows());
-      assert(cols()==x.size());
+      FMATVEC_ASSERT(i<rows(), AT);
+      FMATVEC_ASSERT(cols()==x.size(), AT);
       for(int j=0; j<cols(); j++)
         e(i,j) += x.e(j);
     }
@@ -602,10 +602,10 @@ namespace fmatvec {
   template <class AT> template<class Type, class Row, class Col>
     inline void Matrix<General,Ref,Ref,AT>::add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
 
-      assert(I.end()<rows());
-      assert(J.end()<cols());
-      assert(I.size()==A.rows());
-      assert(J.size()==A.cols());
+      FMATVEC_ASSERT(I.end()<rows(), AT);
+      FMATVEC_ASSERT(J.end()<cols(), AT);
+      FMATVEC_ASSERT(I.size()==A.rows(), AT);
+      FMATVEC_ASSERT(J.size()==A.cols(), AT);
 
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
@@ -615,10 +615,10 @@ namespace fmatvec {
   template <class AT> template<class Type, class Row, class Col>
     inline void Matrix<General,Ref,Ref,AT>::sub(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
 
-      assert(I.end()<rows());
-      assert(J.end()<cols());
-      assert(I.size()==A.rows());
-      assert(J.size()==A.cols());
+      FMATVEC_ASSERT(I.end()<rows(), AT);
+      FMATVEC_ASSERT(J.end()<cols(), AT);
+      FMATVEC_ASSERT(I.size()==A.rows(), AT);
+      FMATVEC_ASSERT(J.size()==A.cols(), AT);
 
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
@@ -627,8 +627,8 @@ namespace fmatvec {
 
   template <class AT>
     inline void Matrix<General,Ref,Ref,AT>::ref(Matrix<General,Ref,Ref,AT> &A, const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J) {
-      assert(I.end()<A.rows());
-      assert(J.end()<A.cols());
+      FMATVEC_ASSERT(I.end()<A.rows(), AT);
+      FMATVEC_ASSERT(J.end()<A.cols(), AT);
       m=I.size();
       n=J.size();
       memory = A.memory;
@@ -638,10 +638,10 @@ namespace fmatvec {
 
   template <class AT>
     inline void Matrix<General,Ref,Ref,AT>::ref(Matrix<Symmetric,Ref,Ref,AT> &A, const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J) {
-      assert(I.end()<A.size());
-      assert(J.end()<A.size());
-      assert(I.start()>=J.start());
-      assert(J.end()<=I.start());
+      FMATVEC_ASSERT(I.end()<A.size(), AT);
+      FMATVEC_ASSERT(J.end()<A.size(), AT);
+      FMATVEC_ASSERT(I.start()>=J.start(), AT);
+      FMATVEC_ASSERT(J.end()<=I.start(), AT);
       m=I.size();
       n=J.size();
       memory = A.memory;

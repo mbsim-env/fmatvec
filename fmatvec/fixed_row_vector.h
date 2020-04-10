@@ -63,8 +63,8 @@ namespace fmatvec {
 
       explicit RowVector(Noinit ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { }
       explicit RowVector(Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini,a) { }
-      explicit RowVector(int n, Noinit ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { assert(n==N); }
-      explicit RowVector(int n, Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini,a) { assert(n==N); }
+      explicit RowVector(int n, Noinit ini) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini) { FMATVEC_ASSERT(n==N, AT); }
+      explicit RowVector(int n, Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<1>,Fixed<N>,AT>(ini,a) { FMATVEC_ASSERT(n==N, AT); }
 
       /*! \brief Copy Constructor
        *
@@ -119,7 +119,7 @@ namespace fmatvec {
        * */
       template <class Row>
       inline RowVector<Fixed<N>,AT>& operator=(const RowVector<Row,AT> &x) {
-        assert(x.size() == N);
+        FMATVEC_ASSERT(x.size() == N, AT);
         return copy(x);
       }
 
@@ -141,8 +141,8 @@ namespace fmatvec {
        * \sa operator()(int) const
        * */
       AT& operator()(int i) {
-	assert(i>=0);
-	assert(i<N);
+	FMATVEC_ASSERT(i>=0, AT);
+	FMATVEC_ASSERT(i<N, AT);
 	return e(i);
       }
 
@@ -151,8 +151,8 @@ namespace fmatvec {
        * See operator()(int) 
        * */
       const AT& operator()(int i) const {
-	assert(i>=0);
-	assert(i<N);
+	FMATVEC_ASSERT(i>=0, AT);
+	FMATVEC_ASSERT(i<N, AT);
 	return e(i);
       }
 
@@ -214,7 +214,7 @@ namespace fmatvec {
 //       * \return The AT representation of the vector
 //       * */
 //      explicit operator AT() const {
-//        assert(N==1);
+//        FMATVEC_ASSERT(N==1, AT);
 //        return ele[0];
 //      }
 //

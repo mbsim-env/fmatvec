@@ -48,9 +48,9 @@ namespace fmatvec {
       explicit SquareMatrix(Noinit ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
       explicit SquareMatrix(Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { }
       explicit SquareMatrix(Eye ini, const AT &a=1) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { }
-      explicit SquareMatrix(int m, Noinit ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { assert(m==M); }
-      explicit SquareMatrix(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { assert(m==M); }
-      explicit SquareMatrix(int m, Eye ini, const AT &a=1) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { assert(m==M); }
+      explicit SquareMatrix(int m, Noinit ini) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { FMATVEC_ASSERT(m==M, AT); }
+      explicit SquareMatrix(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { FMATVEC_ASSERT(m==M, AT); }
+      explicit SquareMatrix(int m, Eye ini, const AT &a=1) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini,a) { FMATVEC_ASSERT(m==M, AT); }
 
       /*! \brief Copy Constructor
        *

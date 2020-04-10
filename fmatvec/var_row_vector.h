@@ -128,7 +128,7 @@ namespace fmatvec {
        * \return A reference to the calling vector.
        * */
       inline RowVector<Var,AT>& operator=(const RowVector<Var,AT> &x) {
-        assert(N == x.size());
+        FMATVEC_ASSERT(N == x.size(), AT);
         return copy(x);
       }
 
@@ -140,7 +140,7 @@ namespace fmatvec {
        * */
       template <class Row>
       inline RowVector<Var,AT>& operator=(const RowVector<Row,AT> &x) {
-        assert(N == x.size());
+        FMATVEC_ASSERT(N == x.size(), AT);
         return copy(x);
       }
 
@@ -166,8 +166,8 @@ namespace fmatvec {
        * */
       AT& operator()(int i) {
 
-	assert(i>=0);
-	assert(i<N);
+	FMATVEC_ASSERT(i>=0, AT);
+	FMATVEC_ASSERT(i<N, AT);
 
 	return e(i);
       }
@@ -178,8 +178,8 @@ namespace fmatvec {
        * */
       const AT& operator()(int i) const {
 
-	assert(i>=0);
-	assert(i<N);
+	FMATVEC_ASSERT(i>=0, AT);
+	FMATVEC_ASSERT(i<N, AT);
 
 	return e(i);
       }
@@ -247,7 +247,7 @@ namespace fmatvec {
 //       * \return The AT representation of the vector
 //       * */
 //      explicit operator AT() const {
-//        assert(N==1);
+//        FMATVEC_ASSERT(N==1, AT);
 //        return ele[0];
 //      }
 //
@@ -297,7 +297,7 @@ namespace fmatvec {
 
   template <class AT>
     inline const RowVector<Var,AT> RowVector<Var,AT>::operator()(const Range<Var,Var> &I) const {
-      assert(I.end()<N);
+      FMATVEC_ASSERT(I.end()<N, AT);
       RowVector<Var,AT> x(I.end()-I.start()+1,NONINIT);
 
       for(int i=0; i<x.size(); i++)
@@ -308,8 +308,8 @@ namespace fmatvec {
 
   template <class AT> template <class Row>
     inline void RowVector<Var,AT>::set(const Range<Var,Var> &I, const RowVector<Row,AT> &x) {
-      assert(I.end()<size());
-      assert(I.size()==x.size());
+      FMATVEC_ASSERT(I.end()<size(), AT);
+      FMATVEC_ASSERT(I.size()==x.size(), AT);
 
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         e(i) = x.e(ii);
@@ -317,8 +317,8 @@ namespace fmatvec {
 
   template <class AT> template <class Row>
     inline void RowVector<Var,AT>::add(const Range<Var,Var> &I, const RowVector<Row,AT> &x) {
-      assert(I.end()<size());
-      assert(I.size()==x.size());
+      FMATVEC_ASSERT(I.end()<size(), AT);
+      FMATVEC_ASSERT(I.size()==x.size(), AT);
 
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         e(i) += x.e(ii);

@@ -442,6 +442,13 @@ template<> boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpr
 template<> boost::spirit::karma::rule<std::ostream_iterator<char>, IndependentVariable()>& getBoostSpiritKarmaRule<IndependentVariable>();
 template<> boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& getBoostSpiritKarmaRule<SymbolicExpression>();
 
+// for vectors/matrices of type IndependentVariable/SymbolicExpression throw exceptions instead of assert.
+// these exceptions are thrown regardless whether NDEBUG is defined or not.
+// this is done since vectors/matrix operations of this type are usually user input, should not abort/assert on errors,
+// and it not time critical since it just build the expression once which is than evaluated at runtime.
+template<> struct AssertUseException<IndependentVariable> { constexpr static bool value = true; };
+template<> struct AssertUseException<SymbolicExpression>  { constexpr static bool value = true; };
+
 } // end namespace fmatvec
 
 #endif

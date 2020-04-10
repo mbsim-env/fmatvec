@@ -240,7 +240,7 @@ Matrix<TypeR, RowShapeR, ColShapeR, DepR> subst(const Matrix<TypeR, RowShapeR, C
 //mfmf change operator &= to something better
 template<class ShapeDst, class ShapeSrc, class ATIndep>
 Vector<ShapeDst, ATIndep>& operator&=(Vector<ShapeDst, ATIndep> &dst, const Vector<ShapeSrc, double> &src) {
-  assert(dst.size()==src.size());
+  FMATVEC_ASSERT(dst.size()==src.size(), ATIndep);
   for(int i=0; i<dst.size(); ++i)
     dst(i)&=src(i);
   return dst;
@@ -255,7 +255,7 @@ Vector<Fixed<N>, ATIndep>& operator&=(Vector<Fixed<N>, ATIndep> &dst, const Vect
 
 template<int N, class ShapeSrc, class ATIndep>
 Vector<Fixed<N>, ATIndep>& operator&=(Vector<Fixed<N>, ATIndep> &dst, const Vector<ShapeSrc, double> &src) {
-  assert(N==src.size());
+  FMATVEC_ASSERT(N==src.size(), ATIndep);
   for(int i=0; i<N; ++i)
     dst(i)&=src(i);
   return dst;
@@ -263,7 +263,7 @@ Vector<Fixed<N>, ATIndep>& operator&=(Vector<Fixed<N>, ATIndep> &dst, const Vect
 
 template<class ShapeDst, int N, class ATIndep>
 Vector<ShapeDst, ATIndep>& operator&=(Vector<ShapeDst, ATIndep> &dst, const Vector<Fixed<N>, double> &src) {
-  assert(N==src.size());
+  FMATVEC_ASSERT(N==src.size(), ATIndep);
   for(int i=0; i<N; ++i)
     dst(i)&=src(i);
   return dst;

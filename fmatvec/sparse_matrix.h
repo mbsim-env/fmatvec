@@ -122,8 +122,8 @@ namespace fmatvec {
 	 * \return A reference to the calling matrix.
 	 * */
 	inline Matrix<Sparse,Ref,Ref,AT>& operator=(const Matrix<Sparse,Ref,Ref,AT> &A) {
-          assert(m == A.m);
-          assert(k == A.k);
+          FMATVEC_ASSERT(m == A.m, AT);
+          FMATVEC_ASSERT(k == A.k, AT);
           return copy(A);
         }
 
@@ -135,9 +135,9 @@ namespace fmatvec {
 	 * */
         template<class Type, class Row, class Col>
 	inline Matrix<Sparse,Ref,Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
-          assert(A.rows() == A.cols());
-          assert(m == A.cols());
-          assert(k == A.countElements());
+          FMATVEC_ASSERT(A.rows() == A.cols(), AT);
+          FMATVEC_ASSERT(m == A.cols(), AT);
+          FMATVEC_ASSERT(k == A.countElements(), AT);
           return copy(A);
         }
 
@@ -169,7 +169,7 @@ namespace fmatvec {
 	 * */
         template<class Type, class Row, class Col>
 	inline Matrix<Sparse,Ref,Ref,AT>& operator<<=(const Matrix<Type,Row,Col,AT> &A) {
-          assert(A.rows() == A.cols());
+          FMATVEC_ASSERT(A.rows() == A.cols(), AT);
           int k_ = A.countElements();
           if(m!=A.rows() || k!=k_) resize(A.rows(),k_,NONINIT);
           return copy(A);
