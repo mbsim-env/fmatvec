@@ -183,7 +183,7 @@ ostream& operator<<(ostream& s, const SymbolicExpression& se) {
 // in the serialized output. This is quite usefull to write tests.
 // This envvar should NOT be set in normal program. It will generate wrong results if more than one
 // process in involved.
-static map<boost::uuids::uuid, int> mapUUIDInt;
+static map<boost::uuids::uuid, size_t> mapUUIDInt;
 #endif
 
 namespace {
@@ -388,7 +388,7 @@ Symbol::Symbol(const boost::uuids::uuid& uuid_) : version(0), uuid(uuid_) {}
 string Symbol::getUUIDStr() const {
 #ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
   if(getenv("FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID")) {
-    auto res=mapUUIDInt.insert(make_pair(uuid, static_cast<int>(mapUUIDInt.size())+1));
+    auto res=mapUUIDInt.insert(make_pair(uuid, mapUUIDInt.size()+1));
     return "s"+to_string(res.first->second);
   }
   return to_string(uuid);
