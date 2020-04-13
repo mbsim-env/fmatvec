@@ -549,7 +549,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<General,Var,Var,AT>::Matrix(const std::vector<std::vector<AT>> &m) : M(m.size()), N(m[0].size()), ele(new AT[M*N]) {
+    inline Matrix<General,Var,Var,AT>::Matrix(const std::vector<std::vector<AT>> &m) : M(static_cast<int>(m.size())), N(static_cast<int>(m[0].size())), ele(new AT[M*N]) {
       for(int r=0; r<rows(); r++) {
         if(static_cast<int>(m[r].size())!=cols())
           throw std::runtime_error("The rows of the input have different length.");

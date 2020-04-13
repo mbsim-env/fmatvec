@@ -183,7 +183,7 @@ ostream& operator<<(ostream& s, const SymbolicExpression& se) {
 // in the serialized output. This is quite usefull to write tests.
 // This envvar should NOT be set in normal program. It will generate wrong results if more than one
 // process in involved.
-static map<boost::uuids::uuid, int> mapUUIDInt;
+static map<boost::uuids::uuid, size_t> mapUUIDInt;
 #endif
 
 namespace {

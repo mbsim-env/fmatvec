@@ -493,7 +493,7 @@ namespace fmatvec {
     }
 
   template <int N, class AT>
-    inline Matrix<General,Var,Fixed<N>,AT>::Matrix(const std::vector<std::vector<AT>> &m) : M(m.size()), ele(new AT[M*N]) {
+    inline Matrix<General,Var,Fixed<N>,AT>::Matrix(const std::vector<std::vector<AT>> &m) : M(static_cast<int>(m.size())), ele(new AT[M*N]) {
       if(m[0].size() != N)
         throw std::runtime_error("The input has "+std::to_string(m[0].size())+" columns but "+std::to_string(N)+" columns are required.");
       for(int r=0; r<rows(); r++) {
