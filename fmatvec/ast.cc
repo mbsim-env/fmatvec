@@ -283,6 +283,12 @@ SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariab
   return dep->parDer(indep);
 }
 
+#ifdef _MSC_VER
+#ifndef SWIG
+const SymbolicExpression::ConstructSymbol SymbolicExpression::constructSymbol{}; // just used for tag dispatching
+#endif
+#endif
+
 // ***** IndependentVariable *****
 
 IndependentVariable::IndependentVariable() : SymbolicExpression(constructSymbol) {}
