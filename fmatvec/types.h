@@ -198,8 +198,11 @@ namespace fmatvec {
   // FMATVEC_ASSERT(expr, AT) is fully equal to assert(expr) if no spezialization of AssertUseException for AT exists.
   // FMATVEC_ASSERT(expr, AT) is similar to assert(expr) but throws an exception instead of calling abort regardless whether
   // NDEBUG is defined or not if their is a spezialization of AssertUseException for AT with value = true
-  #define FMATVEC_ASSERT(expr, AT) fmatvec_assert<AssertUseException<AT>::value>(expr, __FILE__, __LINE__, __PRETTY_FUNCTION__, #expr);
-
+#ifdef _MSC_VER
+#define FMATVEC_ASSERT(expr, AT) fmatvec_assert<AssertUseException<AT>::value>(expr, __FILE__, __LINE__, __FUNCSIG__, #expr);
+#else
+#define FMATVEC_ASSERT(expr, AT) fmatvec_assert<AssertUseException<AT>::value>(expr, __FILE__, __LINE__, __PRETTY_FUNCTION__, #expr);
+#endif
   // a template which defined if for AT exceptions or assert should be used in fmatvec.
   // spezialize this template to use exceptions.
   // see mfmf for a spezialization.
