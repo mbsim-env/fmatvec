@@ -401,7 +401,7 @@ string Symbol::getUUIDStr() const {
 
 map<Operation::CacheKey, weak_ptr<const Operation>, Operation::CacheKeyComp> Operation::cache;
 
-std::map<Operation::Operator, string> Operation::opMap {
+const std::map<Operation::Operator, string> Operation::opMap {
   { Plus,  "plus"},
   { Minus, "minus"},
   { Mult,  "mult"},

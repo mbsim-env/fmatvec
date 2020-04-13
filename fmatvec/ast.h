@@ -344,7 +344,7 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
     };
     static std::map<CacheKey, std::weak_ptr<const Operation>, CacheKeyComp> cache;
     mutable double cacheValue;
-    static std::map<Operator, std::string> opMap;
+    static const std::map<Operator, std::string> opMap;
 };
 
 double Operation::eval() const {
