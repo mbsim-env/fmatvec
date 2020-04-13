@@ -283,6 +283,12 @@ SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariab
   return dep->parDer(indep);
 }
 
+#ifdef _MSC_VER
+#ifndef SWIG
+const SymbolicExpression::ConstructSymbol SymbolicExpression::constructSymbol{}; // just used for tag dispatching
+#endif
+#endif
+
 // ***** IndependentVariable *****
 
 IndependentVariable::IndependentVariable() : SymbolicExpression(constructSymbol) {}
@@ -401,7 +407,7 @@ string Symbol::getUUIDStr() const {
 
 map<Operation::CacheKey, weak_ptr<const Operation>, Operation::CacheKeyComp> Operation::cache;
 
-std::map<Operation::Operator, string> Operation::opMap {
+const std::map<Operation::Operator, string> Operation::opMap {
   { Plus,  "plus"},
   { Minus, "minus"},
   { Mult,  "mult"},

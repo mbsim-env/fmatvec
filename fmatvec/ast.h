@@ -316,9 +316,9 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
   friend SymbolicExpression;
   friend SymbolicExpression fmatvec::subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
   friend boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>&
-    getBoostSpiritQiRule<SymbolicExpression>();
+    fmatvec::getBoostSpiritQiRule<SymbolicExpression>();
   friend boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>&
-    getBoostSpiritKarmaRule<SymbolicExpression>();
+    fmatvec::getBoostSpiritKarmaRule<SymbolicExpression>();
   public:
 
     //! Defined operations.
@@ -344,7 +344,7 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
     };
     static std::map<CacheKey, std::weak_ptr<const Operation>, CacheKeyComp> cache;
     mutable double cacheValue;
-    static std::map<Operator, std::string> opMap;
+    static const std::map<Operator, std::string> opMap;
 };
 
 double Operation::eval() const {
