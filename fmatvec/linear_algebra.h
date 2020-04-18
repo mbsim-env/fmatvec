@@ -22,8 +22,6 @@
 #ifndef linear_algebra_h
 #define linear_algebra_h
 
-#include <cmath>
-
 #include "square_matrix.h"
 #include "vector.h"
 #include "row_vector.h"
