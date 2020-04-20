@@ -1,10 +1,10 @@
 #include <cfenv>
 #include <cassert>
 #include <iostream>
-#include "fmatvec/linear_algebra_complex.h"
 #include "fmatvec/symbolic.h"
 #include "fmatvec/fmatvec.h"
 #include "fmatvec/stream_impl.h"
+#include "fmatvec/linear_algebra_complex.h"
 
 using namespace std;
 using namespace fmatvec;
