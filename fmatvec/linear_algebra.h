@@ -22,8 +22,6 @@
 #ifndef linear_algebra_h
 #define linear_algebra_h
 
-#include <cmath>
-
 #include "square_matrix.h"
 #include "vector.h"
 #include "row_vector.h"
@@ -40,6 +38,16 @@
 #include <cmath>
 
 namespace fmatvec {
+
+  // template declaration for complex type defined in linear_algebra_complex.h
+  template<class T> std::complex<T> operator+(const std::complex<T> &x, int y);
+  template<class T> std::complex<T> operator-(const std::complex<T> &x, int y);
+  template<class T> std::complex<T> operator*(const std::complex<T> &x, int y);
+  template<class T> std::complex<T> operator/(const std::complex<T> &x, int y);
+  template<class T> std::complex<T> operator+(int x, const std::complex<T> &y);
+  template<class T> std::complex<T> operator-(int x, const std::complex<T> &y);
+  template<class T> std::complex<T> operator*(int x, const std::complex<T> &y);
+  template<class T> std::complex<T> operator/(int x, const std::complex<T> &y);
 
 /////////////////////////////////// vecvecadd //////////////////////////////
 
