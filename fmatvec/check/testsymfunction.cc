@@ -1,7 +1,6 @@
 #include <cfenv>
 #include <cassert>
 #include "fmatvec/symbolic.h"
-#include "fmatvec/stream_impl.h"
 #include <fmatvec/symbolic_function.h>
 
 using namespace std;

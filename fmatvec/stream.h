@@ -214,6 +214,8 @@ namespace fmatvec {
   extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<5>,IndependentVariable > &A);
   extern template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<6>,IndependentVariable > &A);
   extern template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<6>,IndependentVariable > &A);
+  extern template std::istream& operator>>(std::istream &s,       Matrix<Diagonal ,Ref     ,Ref     ,double              > &A);
+  extern template std::ostream& operator<<(std::ostream &s, const Matrix<Diagonal ,Ref     ,Ref     ,double              > &A);
 
 }
 
