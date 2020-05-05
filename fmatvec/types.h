@@ -27,6 +27,23 @@
 #include <stdexcept>
 #include <boost/current_function.hpp>
 
+#ifdef _MSC_VER
+#ifdef fmatvec_EXPORTS
+#define FMATVEC_EXPORT __declspec(dllexport)
+#else
+#define FMATVEC_EXPORT __declspec(dllimport)
+#endif
+#else
+#ifdef fmatvec_EXPORTS
+#define FMATVEC_EXPORT __attribute((visibility ("default")))
+#define FMATVEC_EXP __attribute((visibility ("default")))
+#else
+#define FMATVEC_EXPORT
+#define FMATVEC_EXP
+#endif
+#endif
+
+
 #ifndef HAVE_LIBMKL_INTEL_LP64
 #ifndef CBLAS_ENUM_DEFINED_H
    #define CBLAS_ENUM_DEFINED_H

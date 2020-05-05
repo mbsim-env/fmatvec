@@ -18,7 +18,7 @@ namespace fmatvec {
  * printing messages. No mathematical or other "none" basic content should
  * be added here.
  */
-class Atom {
+class FMATVEC_EXPORT Atom {
   public:
 
     //! Messages can be printed to different message types named here.
@@ -116,14 +116,14 @@ class Atom {
 
 #ifndef SWIG
 //! A ostream object which prefix/postfix every meassage and calls the given function.
-class PrePostfixedStream : public std::ostream {
+class FMATVEC_EXPORT PrePostfixedStream : public std::ostream {
   public:
     //! Call f with every message of the stream, prefixed/postfixed.
     PrePostfixedStream(const std::string &prefix_, const std::string &postfix_, const std::function<void(const std::string &)> &f);
     //! Convinence function to print to outstr_.
     PrePostfixedStream(const std::string &prefix_, const std::string &postfix_, std::ostream &outstr_);
   private:
-    class StringBuf : public std::stringbuf {
+    class FMATVEC_EXPORT StringBuf : public std::stringbuf {
       public:
         StringBuf(const std::string &prefix_, const std::string &postfix_, const std::function<void(const std::string &)> &f_);
       protected:
