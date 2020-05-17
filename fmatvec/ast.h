@@ -92,7 +92,7 @@ class FMATVEC_EXPORT SymbolicExpression : public std::shared_ptr<const AST::Vert
     SymbolicExpression& operator<<=(const SymbolicExpression &src);
 
 #if !defined(NDEBUG) && !defined(SWIG)
-    FMATVEC_EXPORT static unsigned long evalOperationsCount;
+    static unsigned long evalOperationsCount;
 #endif
 };
 
@@ -147,7 +147,7 @@ SymbolicExpression FMATVEC_EXPORT parDer(const SymbolicExpression &dep, const In
 //! The returned value depends on the symbolic expression and on the current values of all independent
 //! variables this symbolic expression depends on.
 //! Also see Symbol ant Vertex::getDependsOn().
-inline double FMATVEC_EXPORT eval(const SymbolicExpression &x);
+inline double eval(const SymbolicExpression &x);
 
 //! Write a SymbolicExpression to a stream using serialization.
 std::ostream FMATVEC_EXPORT & operator<<(std::ostream& s, const SymbolicExpression& se);
@@ -432,7 +432,7 @@ IndependentVariable& IndependentVariable::operator&=(double x) {
   return *this;
 }
 
-double FMATVEC_EXPORT eval(const SymbolicExpression &x) {
+double eval(const SymbolicExpression &x) {
   return x->eval();
 }
 
