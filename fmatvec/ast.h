@@ -37,9 +37,9 @@ class FMATVEC_EXPORT SymbolicExpression : public std::shared_ptr<const AST::Vert
   friend class AST::Operation;
   friend class AST::Constant<int>;
   friend class AST::Constant<double>;
-  friend SymbolicExpression FMATVEC_EXPORT parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
-  friend double FMATVEC_EXPORT eval(const SymbolicExpression &x);
-  friend SymbolicExpression FMATVEC_EXPORT subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
+  friend FMATVEC_EXPORT SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
+  friend FMATVEC_EXPORT double eval(const SymbolicExpression &x);
+  friend FMATVEC_EXPORT SymbolicExpression subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
   protected:
     template<class T> SymbolicExpression(const shared_ptr<T> &x);
 #ifndef SWIG
@@ -101,7 +101,7 @@ class FMATVEC_EXPORT SymbolicExpression : public std::shared_ptr<const AST::Vert
 //! An independent varible can also be assigned a value which is used if eval is called.
 class FMATVEC_EXPORT IndependentVariable : public SymbolicExpression {
   friend class AST::Symbol;
-  friend std::istream FMATVEC_EXPORT & operator>>(std::istream& s, IndependentVariable &v);
+  friend FMATVEC_EXPORT std::istream& operator>>(std::istream& s, IndependentVariable &v);
   public:
     //! Creates a IndependentVariable variable (each call to this ctor creates a new independent variable)
     IndependentVariable();
@@ -130,18 +130,18 @@ FMATVEC_OPERATORRESULT2(IndependentVariable, SymbolicExpression, SymbolicExpress
 // Some member function definition of SymbolicExpression/IndependentVariable are moved to the end of this file
 // since they need the defintion of the other class defined in this file.
 
-SymbolicExpression FMATVEC_EXPORT operator+(double a, const SymbolicExpression &b);
-SymbolicExpression FMATVEC_EXPORT operator-(double a, const SymbolicExpression &b);
-SymbolicExpression FMATVEC_EXPORT operator*(double a, const SymbolicExpression &b);
-SymbolicExpression FMATVEC_EXPORT operator/(double a, const SymbolicExpression &b);
-SymbolicExpression FMATVEC_EXPORT operator+(int a, const SymbolicExpression &b);
-SymbolicExpression FMATVEC_EXPORT operator-(int a, const SymbolicExpression &b);
-SymbolicExpression FMATVEC_EXPORT operator*(int a, const SymbolicExpression &b);
-SymbolicExpression FMATVEC_EXPORT operator/(int a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator+(double a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator-(double a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator*(double a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator/(double a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator+(int a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator-(int a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator*(int a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator/(int a, const SymbolicExpression &b);
 
 //! Generate a new SymbolicExpression being the partial derivate of dep
 //! with respect to indep (indep must be a symbol).
-SymbolicExpression FMATVEC_EXPORT parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
+FMATVEC_EXPORT SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
 
 //! Evaluate the SymbolicExpression.
 //! The returned value depends on the symbolic expression and on the current values of all independent
@@ -150,33 +150,33 @@ SymbolicExpression FMATVEC_EXPORT parDer(const SymbolicExpression &dep, const In
 inline double eval(const SymbolicExpression &x);
 
 //! Write a SymbolicExpression to a stream using serialization.
-std::ostream FMATVEC_EXPORT & operator<<(std::ostream& s, const SymbolicExpression& se);
+FMATVEC_EXPORT std::ostream& operator<<(std::ostream& s, const SymbolicExpression& se);
 //! Create/initialize a SymbolicExpression from a stream using deserialization.
-std::istream FMATVEC_EXPORT & operator>>(std::istream& s, SymbolicExpression &se);
+FMATVEC_EXPORT std::istream& operator>>(std::istream& s, SymbolicExpression &se);
 //! Create/initialize a IndependentVariable from a stream using deserialization.
-std::istream FMATVEC_EXPORT & operator>>(std::istream& s, IndependentVariable &v);
+FMATVEC_EXPORT std::istream& operator>>(std::istream& s, IndependentVariable &v);
 //! Substitutes in se the independent variable a with the expression b and returns the new expression.
-SymbolicExpression FMATVEC_EXPORT subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
 
 // function operations overloaded for SymbolicExpression
-SymbolicExpression FMATVEC_EXPORT pow(const SymbolicExpression &a, const SymbolicExpression &b);
-SymbolicExpression FMATVEC_EXPORT log(const SymbolicExpression &a);
-SymbolicExpression FMATVEC_EXPORT sqrt(const SymbolicExpression &a);
-SymbolicExpression FMATVEC_EXPORT sin(const SymbolicExpression &a);
-SymbolicExpression FMATVEC_EXPORT cos(const SymbolicExpression &a);
-SymbolicExpression FMATVEC_EXPORT tan(const SymbolicExpression &a);
-SymbolicExpression FMATVEC_EXPORT sinh(const SymbolicExpression &a);
-SymbolicExpression FMATVEC_EXPORT cosh(const SymbolicExpression &a);
-SymbolicExpression FMATVEC_EXPORT tanh(const SymbolicExpression &a);
-SymbolicExpression FMATVEC_EXPORT asin(const SymbolicExpression &a);
-SymbolicExpression FMATVEC_EXPORT acos(const SymbolicExpression &a);
-SymbolicExpression FMATVEC_EXPORT atan(const SymbolicExpression &a);
-SymbolicExpression FMATVEC_EXPORT asinh(const SymbolicExpression &a);
-SymbolicExpression FMATVEC_EXPORT acosh(const SymbolicExpression &a);
-SymbolicExpression FMATVEC_EXPORT atanh(const SymbolicExpression &a);
-SymbolicExpression FMATVEC_EXPORT exp(const SymbolicExpression &a);
-SymbolicExpression FMATVEC_EXPORT sign(const SymbolicExpression &a);
-SymbolicExpression FMATVEC_EXPORT abs(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression pow(const SymbolicExpression &a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression log(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression sqrt(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression sin(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression cos(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression tan(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression sinh(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression cosh(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression tanh(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression asin(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression acos(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression atan(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression asinh(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression acosh(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression atanh(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression exp(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression sign(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression abs(const SymbolicExpression &a);
 
 #ifndef SWIG
 namespace AST { // internal namespace

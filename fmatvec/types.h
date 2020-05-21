@@ -36,10 +36,8 @@
 #else
 #ifdef fmatvec_EXPORTS
 #define FMATVEC_EXPORT __attribute((visibility ("default")))
-#define FMATVEC_EXP __attribute((visibility ("default")))
 #else
 #define FMATVEC_EXPORT
-#define FMATVEC_EXP
 #endif
 #endif
 

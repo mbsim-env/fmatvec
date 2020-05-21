@@ -38,7 +38,7 @@ namespace fmatvec {
 /*!
  * This funtion computes the SVD
  * */
-int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, double> &S,  SquareMatrix<Ref, double> &U, SquareMatrix<Ref, double> &VT, int Rueckgabe);
+FMATVEC_EXPORT int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, Ref, Ref, double> &S,  SquareMatrix<Ref, double> &U, SquareMatrix<Ref, double> &VT, int Rueckgabe);
 
   /*! \brief Eigenvalues
    *
@@ -46,7 +46,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param A A square matrix. 
    * \return A vector containig the eigenvalues.
    * */
-  Vector<Ref, std::complex<double>> FMATVEC_EXPORT eigval(const SquareMatrix<Ref, double> &A);
+  FMATVEC_EXPORT Vector<Ref, std::complex<double>> eigval(const SquareMatrix<Ref, double> &A);
 
   /*! \brief Eigenvectors and Eigenvalues
    *
@@ -56,7 +56,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param eigenvalues A vector in the size of A, containing the eigenvalues.
    * \return If 0, successful exit. If -i, the i-th argument had an illegal value. If i, the QR algorithm failed to compute all the eigenvalues, and no eigenvectors have been computed.
    * */
-  int FMATVEC_EXPORT eigvec(const SquareMatrix<Ref, double> &A, SquareMatrix<Ref, std::complex<double>> &V, Vector<Ref, std::complex<double>> &w);
+  FMATVEC_EXPORT int eigvec(const SquareMatrix<Ref, double> &A, SquareMatrix<Ref, std::complex<double>> &V, Vector<Ref, std::complex<double>> &w);
 
   /*! \brief Eigenvectors and Eigenvalues
    *
@@ -68,7 +68,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param eigenvalues A vector in the size of A, containing the Eigenvalues at the end of the function
    * \return void
    * */
-  int FMATVEC_EXPORT eigvec(const Matrix<Symmetric, Ref, Ref, double> &A, const Matrix<Symmetric, Ref, Ref, double> &B, SquareMatrix<Ref, double> &eigenvectors, Vector<Ref, double> &eigenvalues);
+  FMATVEC_EXPORT int eigvec(const Matrix<Symmetric, Ref, Ref, double> &A, const Matrix<Symmetric, Ref, Ref, double> &B, SquareMatrix<Ref, double> &eigenvectors, Vector<Ref, double> &eigenvalues);
 
   /*! \brief Eigenvalues
    *
@@ -76,7 +76,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param A A symmetric matrix. 
    * \return A vector containig the eigenvalues.
    * */
-  Vector<Ref, double> FMATVEC_EXPORT eigval(const Matrix<Symmetric, Ref, Ref, double> &A);
+  FMATVEC_EXPORT Vector<Ref, double> eigval(const Matrix<Symmetric, Ref, Ref, double> &A);
 
   /*! \brief Eigenvalues
    *
@@ -89,7 +89,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param abstol The absolute error tolerance for the eigenvalues
    * \return A vector containig the eigenvalues.
    * */
-  Vector<Ref, double> FMATVEC_EXPORT eigvalSel(const Matrix<Symmetric, Ref, Ref, double> &A, int il, int iu, double abstol = 0);
+  FMATVEC_EXPORT Vector<Ref, double> eigvalSel(const Matrix<Symmetric, Ref, Ref, double> &A, int il, int iu, double abstol = 0);
 
   /*!
    * \brief solve linear system with LU decomposed matrix
@@ -112,7 +112,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    *
    * REMARK: Copied and fitted on 28.01.2013 of http://www.mymathlib.com/c_source/matrices/linearsystems/doolittle_pivot.c
    */
-  int FMATVEC_EXPORT Doolittle_LU_with_Pivoting_Solve(double *A, double B[], int pivot[], double x[], int n);
+  FMATVEC_EXPORT int Doolittle_LU_with_Pivoting_Solve(double *A, double B[], int pivot[], double x[], int n);
 
   /*! \brief Systems of linear equations
    *
@@ -123,8 +123,8 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param B A general matrix containing the right hand sides.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General, Ref, Ref, double> FMATVEC_EXPORT slvLU(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &X);
-  Matrix<General, Var, Var, double> FMATVEC_EXPORT slvLU(const SquareMatrix<Var, double> &A, const Matrix<General, Var, Var, double> &X, int & info);
+  FMATVEC_EXPORT Matrix<General, Ref, Ref, double> slvLU(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &X);
+  FMATVEC_EXPORT Matrix<General, Var, Var, double> slvLU(const SquareMatrix<Var, double> &A, const Matrix<General, Var, Var, double> &X, int & info);
 
   /*! \brief System of linear equations
    *
@@ -135,7 +135,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param b A vector containing the right hand side.
    * \return A vector containig the solution.
    * */
-  Vector<Ref, double> FMATVEC_EXPORT slvLU(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &x);
+  FMATVEC_EXPORT Vector<Ref, double> slvLU(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &x);
 
   /*! \brief System of linear equations
    *
@@ -147,8 +147,8 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param info Information about the success of the routine (0 = success)
    * \return A vector containig the solution.
    * */
-  Vector<Ref, double> FMATVEC_EXPORT slvLU(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &x, int & info);
-  Vector<Var, double> FMATVEC_EXPORT slvLU(const SquareMatrix<Var, double> &A, const Vector<Var, double> &x, int & info);
+  FMATVEC_EXPORT Vector<Ref, double> slvLU(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &x, int & info);
+  FMATVEC_EXPORT Vector<Var, double> slvLU(const SquareMatrix<Var, double> &A, const Vector<Var, double> &x, int & info);
 
   /*! \brief Systems of linear equations
    *
@@ -160,8 +160,8 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General, Ref, Ref, double> FMATVEC_EXPORT slvLUFac(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &X, const Vector<Ref, int> &ipiv);
-  Matrix<General, Var, Var, double> FMATVEC_EXPORT slvLUFac(const SquareMatrix<Var, double> &A, const Matrix<General, Var, Var, double> &X, const Vector<Var, int> &ipiv);
+  FMATVEC_EXPORT Matrix<General, Ref, Ref, double> slvLUFac(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &X, const Vector<Ref, int> &ipiv);
+  FMATVEC_EXPORT Matrix<General, Var, Var, double> slvLUFac(const SquareMatrix<Var, double> &A, const Matrix<General, Var, Var, double> &X, const Vector<Var, int> &ipiv);
 
   /*! \brief System of linear equations
    *
@@ -173,8 +173,8 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A vector containig the solution.
    * */
-  Vector<Ref, double> FMATVEC_EXPORT slvLUFac(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &x, const Vector<Ref, int> &ipiv);
-  Vector<Var, double> FMATVEC_EXPORT slvLUFac(const SquareMatrix<Var, double> &A, const Vector<Var, double> &x, const Vector<Var, int> &ipiv);
+  FMATVEC_EXPORT Vector<Ref, double> slvLUFac(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &x, const Vector<Ref, int> &ipiv);
+  FMATVEC_EXPORT Vector<Var, double> slvLUFac(const SquareMatrix<Var, double> &A, const Vector<Var, double> &x, const Vector<Var, int> &ipiv);
 
   /*! \brief Systems of linear equations
    *
@@ -185,7 +185,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param B A general matrix containing the right hand sides.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General, Ref, Ref, double> FMATVEC_EXPORT slvLL(const Matrix<Symmetric, Ref, Ref, double> &A, const Matrix<General, Ref, Ref, double> &X);
+  FMATVEC_EXPORT Matrix<General, Ref, Ref, double> slvLL(const Matrix<Symmetric, Ref, Ref, double> &A, const Matrix<General, Ref, Ref, double> &X);
 
   /*! \brief System of linear equations
    *
@@ -196,7 +196,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param b A vector containing the right hand side.
    * \return A vector containig the solution.
    * */
-  Vector<Ref, double> FMATVEC_EXPORT slvLL(const Matrix<Symmetric, Ref, Ref, double> &A, const Vector<Ref, double> &x);
+  FMATVEC_EXPORT Vector<Ref, double> slvLL(const Matrix<Symmetric, Ref, Ref, double> &A, const Vector<Ref, double> &x);
 
   /*! \brief Systems of linear equations
    *
@@ -207,7 +207,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param B A general matrix containing the right hand sides.
    * \return A general matrix containig the solution.
    * */
-  Matrix<General, Ref, Ref, double> FMATVEC_EXPORT slvQR(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &X);
+  FMATVEC_EXPORT Matrix<General, Ref, Ref, double> slvQR(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &X);
 
   /*! \brief System of linear equations
    *
@@ -218,7 +218,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param b A vector containing the right hand side.
    * \return A vector containig the solution.
    * */
-  Vector<Ref, double> FMATVEC_EXPORT slvQR(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &x);
+  FMATVEC_EXPORT Vector<Ref, double> slvQR(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &x);
 
   /*! \brief Inverse
    *
@@ -227,7 +227,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param A A square matrix. 
    * \return A square matrix containig the result.
    * */
-  SquareMatrix<Ref, double> FMATVEC_EXPORT inv(const SquareMatrix<Ref, double> &A);
+  FMATVEC_EXPORT SquareMatrix<Ref, double> inv(const SquareMatrix<Ref, double> &A);
 
   /*! \brief Inverse
    *
@@ -236,7 +236,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param A A symmetric matrix. 
    * \return A symmetric matrix containig the result.
    * */
-  Matrix<Symmetric, Ref, Ref, double> FMATVEC_EXPORT inv(const Matrix<Symmetric, Ref, Ref, double> &A);
+  FMATVEC_EXPORT Matrix<Symmetric, Ref, Ref, double> inv(const Matrix<Symmetric, Ref, Ref, double> &A);
 
   /*! \brief Inverse
    *
@@ -245,7 +245,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param A A diagonal matrix. 
    * \return A diagonal matrix containig the result.
    * */
-  Matrix<Diagonal, Ref, Ref, double> FMATVEC_EXPORT inv(const Matrix<Diagonal, Ref, Ref, double> &A);
+  FMATVEC_EXPORT Matrix<Diagonal, Ref, Ref, double> inv(const Matrix<Diagonal, Ref, Ref, double> &A);
 
   /*! \brief LU decomposition
    *
@@ -255,7 +255,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A general matrix containig the result.
    * */
-  Matrix<General, Ref, Ref, double> FMATVEC_EXPORT facLU(const Matrix<General, Ref, Ref, double> &A, Vector<Ref, int> &ipiv);
+  FMATVEC_EXPORT Matrix<General, Ref, Ref, double> facLU(const Matrix<General, Ref, Ref, double> &A, Vector<Ref, int> &ipiv);
 
   /*! \brief LU decomposition
    *
@@ -265,9 +265,9 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A square matrix containig the result.
    * */
-  SquareMatrix<Ref, double> FMATVEC_EXPORT facLU(const SquareMatrix<Ref, double> &A, Vector<Ref, int> &ipiv);
+  FMATVEC_EXPORT SquareMatrix<Ref, double> facLU(const SquareMatrix<Ref, double> &A, Vector<Ref, int> &ipiv);
 
-  SquareMatrix<Var, double> FMATVEC_EXPORT facLU(const SquareMatrix<Var, double> &A, Vector<Var, int> &ipiv);
+  FMATVEC_EXPORT SquareMatrix<Var, double> facLU(const SquareMatrix<Var, double> &A, Vector<Var, int> &ipiv);
 
   /*! \brief LU decomposition
    *
@@ -280,7 +280,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    *
    * Copied and fitted on 28.01.2013 of http://www.mymathlib.com/c_source/matrices/linearsystems/doolittle_pivot.c
    * */
-  int FMATVEC_EXPORT facLU(double *A, int pivot[], int n);
+  FMATVEC_EXPORT int facLU(double *A, int pivot[], int n);
   
   /*! \brief LL decomposition
    *
@@ -289,7 +289,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param A A symmetric matrix. 
    * \return A symmetric matrix containig the result.
    * */
-  Matrix<Symmetric, Ref, Ref, double> FMATVEC_EXPORT facLL(const Matrix<Symmetric, Ref, Ref, double> &A);
+  FMATVEC_EXPORT Matrix<Symmetric, Ref, Ref, double> facLL(const Matrix<Symmetric, Ref, Ref, double> &A);
 
   /*! \brief 1-norm
    *
@@ -297,7 +297,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param x A vector.
    * \return A scalar containig the result.
    * */
-  double FMATVEC_EXPORT nrm1(const Vector<Ref, double> &x);
+  FMATVEC_EXPORT double nrm1(const Vector<Ref, double> &x);
 
   /*! \brief 2-norm
    *
@@ -305,7 +305,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param x A vector.
    * \return A scalar containig the result.
    * */
-  double FMATVEC_EXPORT nrm2(const Vector<Ref, double> &x);
+  FMATVEC_EXPORT double nrm2(const Vector<Ref, double> &x);
 
   /*! \brief Infinity-norm
    *
@@ -313,7 +313,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param x A vector.
    * \return A scalar containig the result.
    * */
-  double FMATVEC_EXPORT nrmInf(const Vector<Ref, double> &x);
+  FMATVEC_EXPORT double nrmInf(const Vector<Ref, double> &x);
   
   /*! \brief 1-norm
    *
@@ -322,7 +322,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param A A general matrix.
    * \return A scalar containig the result.
    * */
-  double FMATVEC_EXPORT nrm1(const Matrix<General, Ref, Ref, double> &A);
+  FMATVEC_EXPORT double nrm1(const Matrix<General, Ref, Ref, double> &A);
 
   /*! \brief 2-norm
    *
@@ -330,7 +330,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param A A general matrix.
    * \return A scalar containig the result.
    * */
-  double FMATVEC_EXPORT nrm2(const Matrix<General, Ref, Ref, double> &A);
+  FMATVEC_EXPORT double nrm2(const Matrix<General, Ref, Ref, double> &A);
 
   /*! \brief Infinity-norm
    *
@@ -339,7 +339,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param A A general matrix.
    * \return A scalar containing the result.
    * */
-  double FMATVEC_EXPORT nrmInf(const Matrix<General, Ref, Ref, double> &A);
+  FMATVEC_EXPORT double nrmInf(const Matrix<General, Ref, Ref, double> &A);
 
   /*! \brief Infinity-norm
    *
@@ -348,7 +348,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param A A general matrix.
    * \return A scalar containing the result.
    * */
-  double FMATVEC_EXPORT nrmInf(const Matrix<Symmetric, Ref, Ref, double> &A);
+  FMATVEC_EXPORT double nrmInf(const Matrix<Symmetric, Ref, Ref, double> &A);
 
   /*! \brief Frobenius-norm
    *
@@ -356,7 +356,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param A A general matrix.
    * \return A scalar containig the result.
    * */
-  double FMATVEC_EXPORT nrmFro(const Matrix<General, Ref, Ref, double> &A);
+  FMATVEC_EXPORT double nrmFro(const Matrix<General, Ref, Ref, double> &A);
 
   /*! \brief Spectral radius
    *
@@ -364,7 +364,7 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param A A square matrix.
    * \return A scalar containig the result.
    * */
-  double FMATVEC_EXPORT rho(const SquareMatrix<Ref, double> &A);
+  FMATVEC_EXPORT double rho(const SquareMatrix<Ref, double> &A);
 
   /*! \brief Spectral radius
    *
@@ -372,15 +372,15 @@ int FMATVEC_EXPORT svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    * \param A A symmetric matrix.
    * \return A scalar containig the result.
    * */
-  double FMATVEC_EXPORT rho(const Matrix<Symmetric, Ref, Ref, double> &A);
+  FMATVEC_EXPORT double rho(const Matrix<Symmetric, Ref, Ref, double> &A);
 
-  Vector<Ref, double> FMATVEC_EXPORT slvLLFac(const Matrix<Symmetric, Ref, Ref, double> &A, const Vector<Ref, double> &x);
+  FMATVEC_EXPORT Vector<Ref, double> slvLLFac(const Matrix<Symmetric, Ref, Ref, double> &A, const Vector<Ref, double> &x);
 
-  Matrix<General, Ref, Ref, double> FMATVEC_EXPORT slvLLFac(const Matrix<Symmetric, Ref, Ref, double> &A, const Matrix<General, Ref, Ref, double> &X);
+  FMATVEC_EXPORT Matrix<General, Ref, Ref, double> slvLLFac(const Matrix<Symmetric, Ref, Ref, double> &A, const Matrix<General, Ref, Ref, double> &X);
 
-  Matrix<General, Ref, Ref, double> FMATVEC_EXPORT slvLS(const Matrix<General, Ref, Ref, double> &A, const Matrix<General, Ref, Ref, double> &B, double rcond = -1);
+  FMATVEC_EXPORT Matrix<General, Ref, Ref, double> slvLS(const Matrix<General, Ref, Ref, double> &A, const Matrix<General, Ref, Ref, double> &B, double rcond = -1);
   
-  Vector<Ref, double> FMATVEC_EXPORT slvLS(const Matrix<General, Ref, Ref, double> &A, const Vector<Ref, double> &b, double rcond = -1);
+  FMATVEC_EXPORT Vector<Ref, double> slvLS(const Matrix<General, Ref, Ref, double> &A, const Vector<Ref, double> &b, double rcond = -1);
 
 //Matrix<General,Ref,Ref,double> slvLU(CBLAS_SIDE side, CBLAS_UPLO uplo, CBLAS_DIAG unit, const SquareMatrix<Ref,double> &A, const Matrix<General,Ref,Ref,double> &X, const Vector<Ref,int> &ipiv );
 
