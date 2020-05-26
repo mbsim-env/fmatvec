@@ -33,3 +33,4 @@ set(FMATVEC_CONFIG_INCLUDE ${CMAKE_BINARY_DIR}/include)
 file(WRITE ${FMATVEC_CONFIG_INCLUDE}/config.h "/* DUMMY FILE*/")
 
 add_subdirectory(fmatvec)
+add_subdirectory("c#/wrapper")
