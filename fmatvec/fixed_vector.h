@@ -60,8 +60,8 @@ namespace fmatvec {
 
       explicit Vector(Noinit ini) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini) { }
       explicit Vector(Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini,a) { }
-      explicit Vector(int m, Noinit ini) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini) { assert(m==M); }
-      explicit Vector(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini,a) { assert(m==M); }
+      explicit Vector(int m, Noinit ini) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini) { FMATVEC_ASSERT(m==M, AT); }
+      explicit Vector(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Fixed<M>,Fixed<1>,AT>(ini,a) { FMATVEC_ASSERT(m==M, AT); }
 
       /*! \brief Copy Constructor
        *
@@ -119,7 +119,7 @@ namespace fmatvec {
        * */
       template <class Row>
       inline Vector<Fixed<M>,AT>& operator=(const Vector<Row,AT> &x) {
-        assert(x.size() == M);
+        FMATVEC_ASSERT(x.size() == M, AT);
         return copy(x);
       }
 
@@ -150,8 +150,8 @@ namespace fmatvec {
        * */
       AT& operator()(int i) {
 
-	assert(i>=0);
-	assert(i<M);
+	FMATVEC_ASSERT(i>=0, AT);
+	FMATVEC_ASSERT(i<M, AT);
 
 	return e(i);
       }
@@ -162,8 +162,8 @@ namespace fmatvec {
        * */
       const AT& operator()(int i) const {
 
-	assert(i>=0);
-	assert(i<M);
+	FMATVEC_ASSERT(i>=0, AT);
+	FMATVEC_ASSERT(i<M, AT);
 
 	return e(i);
       }
@@ -241,7 +241,7 @@ namespace fmatvec {
 //       * \return The AT representation of the vector
 //       * */
 //      explicit operator AT() const {
-//        assert(M==1);
+//        FMATVEC_ASSERT(M==1, AT);
 //        return ele[0][0];
 //      }
 //
@@ -272,7 +272,7 @@ namespace fmatvec {
 
   template <int M, class AT> template <int M1, int M2>
     inline const Vector<Fixed<M2-M1+1>,AT> Vector<Fixed<M>,AT>::operator()(const Range<Fixed<M1>,Fixed<M2>> &I) const {
-      assert(M2<M);
+      FMATVEC_ASSERT(M2<M, AT);
       Vector<Fixed<M2-M1+1>,AT> x(NONINIT);
 
       for(int i=0; i<x.size(); i++) 

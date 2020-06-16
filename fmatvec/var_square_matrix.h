@@ -77,7 +77,7 @@ namespace fmatvec {
        * */
       template<class Type, class Row, class Col>
       explicit SquareMatrix(const Matrix<Type,Row,Col,AT>&  A) : Matrix<General,Var,Var,AT>(A) {
-	assert(A.rows() == A.cols()); 
+	FMATVEC_ASSERT(A.rows() == A.cols(), AT); 
       }
 
       SquareMatrix(const char *str) : Matrix<General,Var,Var,AT>(str) { }
@@ -134,7 +134,7 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       template<class Type, class Row, class Col> SquareMatrix<Var,AT>& operator<<=(const Matrix<Type,Row,Col,AT> &A) {
-        assert(A.rows() == A.cols());
+        FMATVEC_ASSERT(A.rows() == A.cols(), AT);
 	Matrix<General,Var,Var,AT>::operator<<=(A);
 	return *this;
       }

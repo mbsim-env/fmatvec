@@ -80,10 +80,10 @@ namespace fmatvec {
        * \sa operator()(int,int) const
        * */
       AT& operator()(int i, int j) {
-	assert(i>=0);
-	assert(j>=0);
-	assert(i<rows());
-	assert(j<cols());
+	FMATVEC_ASSERT(i>=0, AT);
+	FMATVEC_ASSERT(j>=0, AT);
+	FMATVEC_ASSERT(i<rows(), AT);
+	FMATVEC_ASSERT(j<cols(), AT);
 
 	return e(i,j);
       }
@@ -93,10 +93,10 @@ namespace fmatvec {
        * See operator()(int,int) 
        * */
       const AT& operator()(int i, int j) const {
-	assert(i>=0);
-	assert(j>=0);
-	assert(i<rows());
-	assert(j<cols());
+	FMATVEC_ASSERT(i>=0, AT);
+	FMATVEC_ASSERT(j>=0, AT);
+	FMATVEC_ASSERT(i<rows(), AT);
+	FMATVEC_ASSERT(j<cols(), AT);
 
 	return e(i,j);
       }

@@ -33,13 +33,13 @@ namespace AST {
 //! This can either be the special case of just a symbol
 //! or an arbitary expression consisting of a hierarchiy
 //! of operations consisting itself of expressions, symbols or constants.
-class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
+class FMATVEC_EXPORT SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
   friend class AST::Operation;
   friend class AST::Constant<int>;
   friend class AST::Constant<double>;
-  friend SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
-  friend double eval(const SymbolicExpression &x);
-  friend SymbolicExpression subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
+  friend FMATVEC_EXPORT SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
+  friend FMATVEC_EXPORT double eval(const SymbolicExpression &x);
+  friend FMATVEC_EXPORT SymbolicExpression subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
   protected:
     template<class T> SymbolicExpression(const shared_ptr<T> &x);
 #ifndef SWIG
@@ -99,9 +99,9 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
 //! A independent variable.
 //! Any SymbolicExpression can be partialliy differentiated with respect to a independent variable.
 //! An independent varible can also be assigned a value which is used if eval is called.
-class IndependentVariable : public SymbolicExpression {
+class FMATVEC_EXPORT IndependentVariable : public SymbolicExpression {
   friend class AST::Symbol;
-  friend std::istream& operator>>(std::istream& s, IndependentVariable &v);
+  friend FMATVEC_EXPORT std::istream& operator>>(std::istream& s, IndependentVariable &v);
   public:
     //! Creates a IndependentVariable variable (each call to this ctor creates a new independent variable)
     IndependentVariable();
@@ -130,18 +130,18 @@ FMATVEC_OPERATORRESULT2(IndependentVariable, SymbolicExpression, SymbolicExpress
 // Some member function definition of SymbolicExpression/IndependentVariable are moved to the end of this file
 // since they need the defintion of the other class defined in this file.
 
-SymbolicExpression operator+(double a, const SymbolicExpression &b);
-SymbolicExpression operator-(double a, const SymbolicExpression &b);
-SymbolicExpression operator*(double a, const SymbolicExpression &b);
-SymbolicExpression operator/(double a, const SymbolicExpression &b);
-SymbolicExpression operator+(int a, const SymbolicExpression &b);
-SymbolicExpression operator-(int a, const SymbolicExpression &b);
-SymbolicExpression operator*(int a, const SymbolicExpression &b);
-SymbolicExpression operator/(int a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator+(double a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator-(double a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator*(double a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator/(double a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator+(int a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator-(int a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator*(int a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator/(int a, const SymbolicExpression &b);
 
 //! Generate a new SymbolicExpression being the partial derivate of dep
 //! with respect to indep (indep must be a symbol).
-SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
+FMATVEC_EXPORT SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
 
 //! Evaluate the SymbolicExpression.
 //! The returned value depends on the symbolic expression and on the current values of all independent
@@ -150,33 +150,33 @@ SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariab
 inline double eval(const SymbolicExpression &x);
 
 //! Write a SymbolicExpression to a stream using serialization.
-std::ostream& operator<<(std::ostream& s, const SymbolicExpression& se);
+FMATVEC_EXPORT std::ostream& operator<<(std::ostream& s, const SymbolicExpression& se);
 //! Create/initialize a SymbolicExpression from a stream using deserialization.
-std::istream& operator>>(std::istream& s, SymbolicExpression &se);
+FMATVEC_EXPORT std::istream& operator>>(std::istream& s, SymbolicExpression &se);
 //! Create/initialize a IndependentVariable from a stream using deserialization.
-std::istream& operator>>(std::istream& s, IndependentVariable &v);
+FMATVEC_EXPORT std::istream& operator>>(std::istream& s, IndependentVariable &v);
 //! Substitutes in se the independent variable a with the expression b and returns the new expression.
-SymbolicExpression subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
 
 // function operations overloaded for SymbolicExpression
-SymbolicExpression pow(const SymbolicExpression &a, const SymbolicExpression &b);
-SymbolicExpression log(const SymbolicExpression &a);
-SymbolicExpression sqrt(const SymbolicExpression &a);
-SymbolicExpression sin(const SymbolicExpression &a);
-SymbolicExpression cos(const SymbolicExpression &a);
-SymbolicExpression tan(const SymbolicExpression &a);
-SymbolicExpression sinh(const SymbolicExpression &a);
-SymbolicExpression cosh(const SymbolicExpression &a);
-SymbolicExpression tanh(const SymbolicExpression &a);
-SymbolicExpression asin(const SymbolicExpression &a);
-SymbolicExpression acos(const SymbolicExpression &a);
-SymbolicExpression atan(const SymbolicExpression &a);
-SymbolicExpression asinh(const SymbolicExpression &a);
-SymbolicExpression acosh(const SymbolicExpression &a);
-SymbolicExpression atanh(const SymbolicExpression &a);
-SymbolicExpression exp(const SymbolicExpression &a);
-SymbolicExpression sign(const SymbolicExpression &a);
-SymbolicExpression abs(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression pow(const SymbolicExpression &a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression log(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression sqrt(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression sin(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression cos(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression tan(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression sinh(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression cosh(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression tanh(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression asin(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression acos(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression atan(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression asinh(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression acosh(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression atanh(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression exp(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression sign(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression abs(const SymbolicExpression &a);
 
 #ifndef SWIG
 namespace AST { // internal namespace
@@ -184,7 +184,7 @@ namespace AST { // internal namespace
 // ***** Vertex *****
 
 //! A abstract class for a Vertex of the AST (abstract syntax tree).
-class Vertex {
+class FMATVEC_EXPORT Vertex {
   friend Operation;
   public:
 
@@ -225,7 +225,7 @@ inline bool Vertex::isConstantInt() const {
 
 //! A vertex of the AST representing a constant (int or double)
 template<class T>
-class Constant : public Vertex, public std::enable_shared_from_this<Constant<T>> {
+class FMATVEC_EXPORT Constant : public Vertex, public std::enable_shared_from_this<Constant<T>> {
   friend SymbolicExpression;
   public:
 
@@ -268,7 +268,7 @@ const T& Constant<T>::getValue() const {
 // ***** Symbol *****
 
 //! A vertex of the AST representing a independent variable.
-class Symbol : public Vertex, public std::enable_shared_from_this<Symbol> {
+class FMATVEC_EXPORT Symbol : public Vertex, public std::enable_shared_from_this<Symbol> {
   friend SymbolicExpression;
   friend IndependentVariable;
   public:
@@ -312,13 +312,13 @@ unsigned long Symbol::getVersion() const {
 // ***** Operation *****
 
 //! A vertex of the AST representing an operation.
-class Operation : public Vertex, public std::enable_shared_from_this<Operation> {
+class FMATVEC_EXPORT Operation : public Vertex, public std::enable_shared_from_this<Operation> {
   friend SymbolicExpression;
   friend SymbolicExpression fmatvec::subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
   friend boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>&
-    getBoostSpiritQiRule<SymbolicExpression>();
+    fmatvec::getBoostSpiritQiRule<SymbolicExpression>();
   friend boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>&
-    getBoostSpiritKarmaRule<SymbolicExpression>();
+    fmatvec::getBoostSpiritKarmaRule<SymbolicExpression>();
   public:
 
     //! Defined operations.
@@ -338,13 +338,13 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
     std::vector<SymbolicExpression> child;
     typedef std::pair<Operator, std::vector<std::weak_ptr<const Vertex>>> CacheKey;
     struct CacheKeyComp {
-      bool operator()(const CacheKey& l, const CacheKey& r);
+      bool operator()(const CacheKey& l, const CacheKey& r) const;
       private:
         std::owner_less<std::weak_ptr<const Vertex>> ol;
     };
     static std::map<CacheKey, std::weak_ptr<const Operation>, CacheKeyComp> cache;
     mutable double cacheValue;
-    static std::map<Operator, std::string> opMap;
+    static const std::map<Operator, std::string> opMap;
 };
 
 double Operation::eval() const {
@@ -441,6 +441,13 @@ template<> boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpr
 
 template<> boost::spirit::karma::rule<std::ostream_iterator<char>, IndependentVariable()>& getBoostSpiritKarmaRule<IndependentVariable>();
 template<> boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& getBoostSpiritKarmaRule<SymbolicExpression>();
+
+// for vectors/matrices of type IndependentVariable/SymbolicExpression throw exceptions instead of assert.
+// these exceptions are thrown regardless whether NDEBUG is defined or not.
+// this is done since vectors/matrix operations of this type are usually user input, should not abort/assert on errors,
+// and it not time critical since it just build the expression once which is than evaluated at runtime.
+template<> struct AssertUseException<IndependentVariable> { constexpr static bool value = true; };
+template<> struct AssertUseException<SymbolicExpression>  { constexpr static bool value = true; };
 
 } // end namespace fmatvec
 

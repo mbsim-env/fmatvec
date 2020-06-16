@@ -92,7 +92,7 @@ namespace fmatvec {
        * */
       template<class Type, class Row, class Col>
       explicit Matrix(const Matrix<Type,Row,Col,AT> &A) : M(A.rows()), ele(new AT[M*M])  {
-	assert(A.rows() == A.cols()); 
+	FMATVEC_ASSERT(A.rows() == A.cols(), AT); 
 	copy(A);
       }
 
@@ -120,7 +120,7 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       inline Matrix<Symmetric,Var,Var,AT>& operator=(const Matrix<Symmetric,Var,Var,AT> &A) {
-        assert(M == A.M);
+        FMATVEC_ASSERT(M == A.M, AT);
         return copy(A);
       }
 
@@ -132,8 +132,8 @@ namespace fmatvec {
        * */
       template<class Type, class Row, class Col>
       inline Matrix<Symmetric,Var,Var,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
-        assert(A.rows() == A.cols());
-        assert(M == A.rows());
+        FMATVEC_ASSERT(A.rows() == A.cols(), AT);
+        FMATVEC_ASSERT(M == A.rows(), AT);
         return copy(A);
       }
 
@@ -145,7 +145,7 @@ namespace fmatvec {
        * */
       template<class Type, class Row, class Col>
       inline Matrix<Symmetric,Var,Var,AT>& operator<<=(const Matrix<Type,Row,Col,AT> &A) {
-        assert(A.rows() == A.cols());
+        FMATVEC_ASSERT(A.rows() == A.cols(), AT);
         if(M!=A.rows()) resize(A.rows(),NONINIT);
         return copy(A);
       }
@@ -168,10 +168,10 @@ namespace fmatvec {
        * \sa operator()(int,int) const
        * */
       AT& operator()(int i, int j) {
-	assert(i>=0);
-	assert(j>=0);
-	assert(i<M);
-	assert(j<M);
+	FMATVEC_ASSERT(i>=0, AT);
+	FMATVEC_ASSERT(j>=0, AT);
+	FMATVEC_ASSERT(i<M, AT);
+	FMATVEC_ASSERT(j<M, AT);
 
 	return e(i,j);
       }
@@ -181,10 +181,10 @@ namespace fmatvec {
        * See operator()(int,int) 
        * */
       const AT& operator()(int i, int j) const {
-	assert(i>=0);
-	assert(j>=0);
-	assert(i<M);
-	assert(j<M);
+	FMATVEC_ASSERT(i>=0, AT);
+	FMATVEC_ASSERT(j>=0, AT);
+	FMATVEC_ASSERT(i<M, AT);
+	FMATVEC_ASSERT(j<M, AT);
 
 	return e(i,j);
       }

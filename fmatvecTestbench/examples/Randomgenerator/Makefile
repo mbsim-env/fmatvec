@@ -10,7 +10,7 @@ libsources =
 objects = $(sources:.cc=.o) 
 
 CPPFLAGS= -g3 -Wall -Werror -Wno-unknown-pragmas `pkg-config --cflags fmatvec fmatvecTestbench` 
-CXXFLAGS= -std=c++11
+CXXFLAGS= -std=c++17
 
 $(Target) : $(objects)
 	$(CXX) -o $@ $(objects) `pkg-config --libs fmatvec fmatvecTestbench` 

@@ -96,7 +96,7 @@ namespace fmatvec {
        * */
       template<class Type, class Row, class Col>
       explicit Matrix(const Matrix<Type,Row,Col,AT> &A) : memory(A.rows()*(2*A.rows()-1)), ele((AT*)memory.get()), n(A.rows()), kl(n-1), ku(n-1) {
-        assert(A.rows() == A.cols());
+        FMATVEC_ASSERT(A.rows() == A.cols(), AT);
 	copy(A);
       }
 
@@ -134,7 +134,7 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       inline Matrix<GeneralBand,Ref,Ref,AT>& operator=(const Matrix<GeneralBand,Ref,Ref,AT> &A) {
-        assert(n == A.n);
+        FMATVEC_ASSERT(n == A.n, AT);
         return copy(A);
       }
 
@@ -146,8 +146,8 @@ namespace fmatvec {
        * */
       template<class Type, class Row, class Col>
       inline Matrix<GeneralBand,Ref,Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
-        assert(n == A.rows());
-        assert(n == A.cols());
+        FMATVEC_ASSERT(n == A.rows(), AT);
+        FMATVEC_ASSERT(n == A.cols(), AT);
         return copy(A);
       }
 
@@ -186,12 +186,12 @@ namespace fmatvec {
        * \sa operator()(int,int) const
        * */
       const AT& operator()(int i, int j) const {
-	assert(i>=0);
-	assert(j>=0);
-	assert(i<n);
-	assert(j<n);
-	//     assert(i-j<=kl);
-	//      assert(i-j>=-ku);
+	FMATVEC_ASSERT(i>=0, AT);
+	FMATVEC_ASSERT(j>=0, AT);
+	FMATVEC_ASSERT(i<n, AT);
+	FMATVEC_ASSERT(j<n, AT);
+	//     FMATVEC_ASSERT(i-j<=kl, AT);
+	//      FMATVEC_ASSERT(i-j>=-ku, AT);
 	static AT zero=0;
 
 	return ((i-j>kl) || (i-j<-ku)) ? zero : ele[ku+i+j*(kl+ku)];
@@ -290,8 +290,8 @@ namespace fmatvec {
 
 //  template <class AT>
 //    inline Vector<Ref,AT> Matrix<GeneralBand,Ref,Ref,AT>::operator()(int i) {
-//      assert(i<=ku);
-//      assert(i>=-kl);
+//      FMATVEC_ASSERT(i<=ku, AT);
+//      FMATVEC_ASSERT(i>=-kl, AT);
 //
 //      //return Vector<Ref,AT>(n-i,ku+kl+1,memory,ele[ku-i + (i>0?i:0)*(kl+ku+1)]);
 //      return Vector<Ref,AT>(n-abs(i),ku+kl+1,true,memory,ele+ku-i + (i>0?i:0)*(kl+ku+1));
@@ -300,8 +300,8 @@ namespace fmatvec {
 //
 //  template <class AT>
 //    inline const Vector<Ref,AT> Matrix<GeneralBand,Ref,Ref,AT>::operator()(int i) const {
-//      assert(i<=ku);
-//      assert(i>=-kl);
+//      FMATVEC_ASSERT(i<=ku, AT);
+//      FMATVEC_ASSERT(i>=-kl, AT);
 //
 //      return Vector<Ref,AT>(n-abs(i),ku+kl+1,true,memory,ele+ku-i + (i>0?i:0)*(kl+ku+1));
 //      //(ku-i,i>0?i:0));

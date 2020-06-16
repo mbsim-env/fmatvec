@@ -28,10 +28,8 @@
 #include "symmetric_matrix.h"
 #include "var_symmetric_matrix.h"
 #include "fixed_symmetric_matrix.h"
+#include "diagonal_matrix.h"
 #include "ast.h"
-//#include <complex>
-//#include <boost/spirit/include/karma.hpp>
-//#include <boost/phoenix/bind/bind_function.hpp>
 
 namespace fmatvec {
 
@@ -229,5 +227,7 @@ namespace fmatvec {
   template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<5>,IndependentVariable > &A);
   template std::istream& operator>>(std::istream &s,       Matrix<General  ,Fixed<1>,Fixed<6>,IndependentVariable > &A);
   template std::ostream& operator<<(std::ostream &s, const Matrix<General  ,Fixed<1>,Fixed<6>,IndependentVariable > &A);
+  template std::istream& operator>>(std::istream &s,       Matrix<Diagonal ,Ref     ,Ref     ,double              > &A);
+  template std::ostream& operator<<(std::ostream &s, const Matrix<Diagonal ,Ref     ,Ref     ,double              > &A);
 
 }

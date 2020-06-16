@@ -11,8 +11,8 @@ AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_LANG([C++])
 
-# enable C++11
-CXXFLAGS="$CXXFLAGS -std=c++11"
+# enable C++17
+CXXFLAGS="$CXXFLAGS -std=c++17 -fvisibility=hidden"
 
 dnl By autoscan
 AC_CHECK_FUNCS([sqrt])
@@ -63,10 +63,10 @@ AC_ARG_WITH([boost-inc],
 AC_CHECK_HEADERS([boost/preprocessor/iteration/local.hpp],[],[AC_MSG_ERROR([Can not find boost headers (boost/preprocessor/iteration/local.hpp)])])
 
 dnl Define the Memory class
-AC_ARG_WITH([memory-class],[  --with-memory-class=<class>  Use the defined memory management: (INTRUSIVECOUNT (default); BOOST; FMATVEC); BOOST uses boost::shared_array using new operator; INTRUSIVECOUNT uses a fmatvec builtin intrusive reference counting using new operator],[memory_class="$withval"],[memory_class="INTRUSIVECOUNT"])
-if test "_$memory_class" == "_BOOST"; then
-  CXXFLAGS="$CXXFLAGS -DMEMORYCLASS_BOOST"
-  DEFINES="$DEFINES -DMEMORYCLASS_BOOST"
+AC_ARG_WITH([memory-class],[  --with-memory-class=<class>  Use the defined memory management: (INTRUSIVECOUNT (default); STDSHAREDPTR; FMATVEC); STDSHAREDPTR uses str::shared_ptr<AT[]> using new operator; INTRUSIVECOUNT uses a fmatvec builtin intrusive reference counting using new operator],[memory_class="$withval"],[memory_class="INTRUSIVECOUNT"])
+if test "_$memory_class" == "_STDSHAREDPTR"; then
+  CXXFLAGS="$CXXFLAGS -DMEMORYCLASS_STDSHAREDPTR"
+  DEFINES="$DEFINES -DMEMORYCLASS_STDSHAREDPTR"
 elif test "_$memory_class" == "_FMATVEC"; then
   CXXFLAGS="$CXXFLAGS -DMEMORYCLASS_FMATVEC"
   DEFINES="$DEFINES -DMEMORYCLASS_FMATVEC"
@@ -218,10 +218,6 @@ elif test $threadsafety = yes -o $threadsafety = openmp; then
   AC_MSG_RESULT([Use OpenMP for thread safety.])
 elif test $threadsafety = no; then
   AC_MSG_RESULT([Thread safety is disabled.])
-  if test "_$memory_class" == "_BOOST"; then # if boost is used disable boost threadsafy
-    CXXFLAGS="$CXXFLAGS -DBOOST_SP_DISABLE_THREADS"
-    DEFINES="$DEFINES -DBOOST_SP_DISABLE_THREADS"
-  fi
 else
   AC_MSG_ERROR([Unknown thread safety type specified by --enable-threadsafety.])
 fi
@@ -258,6 +254,9 @@ AC_CONFIG_FILES([fmatvec/check/testfunction.sh], [chmod +x fmatvec/check/testfun
 AC_CONFIG_FILES([fmatvec/check/testast.sh], [chmod +x fmatvec/check/testast.sh])
 AC_CONFIG_FILES([fmatvec/check/testsymfunction.sh], [chmod +x fmatvec/check/testsymfunction.sh])
 AC_CONFIG_FILES([fmatvec/check/valgrindtestast.sh], [chmod +x fmatvec/check/valgrindtestast.sh])
+AC_CONFIG_FILES([fmatvec/check/valgrindtestfunction.sh], [chmod +x fmatvec/check/valgrindtestfunction.sh])
+hardcode_into_libs=no # do not add hardcoded libdirs to ltlibraries
+hardcode_libdir_flag_spec_CXX= # do not add hardcodeed libdirs to ltbinaries
 AC_OUTPUT
 
 echo "

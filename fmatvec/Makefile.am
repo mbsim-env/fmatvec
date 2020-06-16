@@ -9,7 +9,7 @@ libfmatvec_la_SOURCES = linear_algebra_double.cc \
 			stream.cc \
 			ast.cc
 
-libfmatvec_la_CPPFLAGS = -I$(top_srcdir)
+libfmatvec_la_CPPFLAGS = -I$(top_srcdir) -Dfmatvec_EXPORTS=1
 fmatvecincludedir=$(includedir)/fmatvec
 fmatvecinclude_HEADERS = diagonal_matrix.h \
 			 atom.h \

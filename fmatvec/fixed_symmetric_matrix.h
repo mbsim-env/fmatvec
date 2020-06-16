@@ -53,9 +53,9 @@ namespace fmatvec {
       explicit Matrix(Noinit ini) { }
       explicit Matrix(Init ini=INIT, const AT &a=AT()) { init(a); }
       explicit Matrix(Eye ini, const AT &a=1) { init(ini,a); }
-      explicit Matrix(int m, int n, Noinit ini) { assert(m==M && n==M); }
-      explicit Matrix(int m, int n, Init ini, const AT &a=AT()) { assert(m==M && n==M); init(a); }
-      explicit Matrix(int m, int n, Eye ini, const AT &a=1) { assert(m==M && n==M); init(ini,a); }
+      explicit Matrix(int m, int n, Noinit ini) { FMATVEC_ASSERT(m==M && n==M, AT); }
+      explicit Matrix(int m, int n, Init ini, const AT &a=AT()) { FMATVEC_ASSERT(m==M && n==M, AT); init(a); }
+      explicit Matrix(int m, int n, Eye ini, const AT &a=1) { FMATVEC_ASSERT(m==M && n==M, AT); init(ini,a); }
 
       /*! \brief Copy Constructor
        *
@@ -71,7 +71,7 @@ namespace fmatvec {
        * */
       template<class Row>
       Matrix(const Matrix<Symmetric,Row,Row,AT> &A) {
-	assert(A.size() == M); 
+	FMATVEC_ASSERT(A.size() == M, AT); 
 	copy(A);
       }
 
@@ -82,8 +82,8 @@ namespace fmatvec {
        * */
       template<class Type, class Row, class Col>
       explicit Matrix(const Matrix<Type,Row,Col,AT> &A) {
-	assert(A.rows() == M); 
-	assert(A.cols() == M);
+	FMATVEC_ASSERT(A.rows() == M, AT); 
+	FMATVEC_ASSERT(A.cols() == M, AT);
 	copy(A);
       }
 
@@ -103,8 +103,8 @@ namespace fmatvec {
        * */
       template<class Type, class Row, class Col>
       inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
-        assert(A.rows() == A.cols());
-        assert(M == A.rows());
+        FMATVEC_ASSERT(A.rows() == A.cols(), AT);
+        FMATVEC_ASSERT(M == A.rows(), AT);
         return copy(A);
       }
 
@@ -134,10 +134,10 @@ namespace fmatvec {
        * \sa operator()(int,int) const
        * */
       AT& operator()(int i, int j) {
-	assert(i>=0);
-	assert(j>=0);
-	assert(i<M);
-	assert(j<M);
+	FMATVEC_ASSERT(i>=0, AT);
+	FMATVEC_ASSERT(j>=0, AT);
+	FMATVEC_ASSERT(i<M, AT);
+	FMATVEC_ASSERT(j<M, AT);
 
 	return e(i,j);
       }
@@ -147,10 +147,10 @@ namespace fmatvec {
        * See operator()(int,int) 
        * */
       const AT& operator()(int i, int j) const {
-	assert(i>=0);
-	assert(j>=0);
-	assert(i<M);
-	assert(j<M);
+	FMATVEC_ASSERT(i>=0, AT);
+	FMATVEC_ASSERT(j>=0, AT);
+	FMATVEC_ASSERT(i<M, AT);
+	FMATVEC_ASSERT(j<M, AT);
 
 	return e(i,j);
       }
@@ -258,7 +258,7 @@ namespace fmatvec {
 
       /*! \brief std::vector<std::vector<AT>> Constructor.
        * Constructs and initializes a matrix with a std::vector<std::vector<AT>> object.
-       * An assert checks for constant length of each row.
+       * An FMATVEC_ASSERT checks for constant length of each row.
        * \param m The std::vector<std::vector<AT>> the matrix will be initialized with.
        * */
       explicit inline Matrix(const std::vector<std::vector<AT>> &m);
@@ -268,7 +268,7 @@ namespace fmatvec {
 //       * \return The AT representation of the matrix
 //       * */
 //      explicit operator AT() const {
-//        assert(M==1);
+//        FMATVEC_ASSERT(M==1, AT);
 //        return ele[0][0];
 //      }
 //
@@ -277,7 +277,7 @@ namespace fmatvec {
 //       * \param x The AT the matrix will be initialized with.
 //       * */
 //      explicit Matrix(const AT &x) {
-//        assert(M==1);
+//        FMATVEC_ASSERT(M==1, AT);
 //        ele[0][0] = x;
 //      }
   };

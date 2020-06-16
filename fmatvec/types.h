@@ -23,6 +23,24 @@
 #define types_h
 
 #include <complex>
+#include <string>
+#include <stdexcept>
+#include <boost/current_function.hpp>
+
+#ifdef _MSC_VER
+#ifdef fmatvec_EXPORTS
+#define FMATVEC_EXPORT __declspec(dllexport)
+#else
+#define FMATVEC_EXPORT __declspec(dllimport)
+#endif
+#else
+#ifdef fmatvec_EXPORTS
+#define FMATVEC_EXPORT __attribute((visibility ("default")))
+#else
+#define FMATVEC_EXPORT
+#endif
+#endif
+
 
 #ifndef HAVE_LIBMKL_INTEL_LP64
 #ifndef CBLAS_ENUM_DEFINED_H
@@ -192,6 +210,38 @@ namespace fmatvec {
   FMATVEC_OPERATORRESULT2(double, std::complex<double>, std::complex<double>)
   FMATVEC_OPERATORRESULT2(int, std::complex<double>, std::complex<double>)
   FMATVEC_OPERATORRESULT2(int, double, double)
+
+  // FMATVEC_ASSERT(expr, AT) is fully equal to assert(expr) if no spezialization of AssertUseException for AT exists.
+  // FMATVEC_ASSERT(expr, AT) is similar to assert(expr) but throws an exception instead of calling abort regardless whether
+  // NDEBUG is defined or not if their is a spezialization of AssertUseException for AT with value = true
+  #define FMATVEC_ASSERT(expr, AT) fmatvec_assert<AssertUseException<AT>::value>(expr, __FILE__, __LINE__, BOOST_CURRENT_FUNCTION, #expr);
+
+  // a template which defined if for AT exceptions or assert should be used in fmatvec.
+  // spezialize this template to use exceptions.
+  // see mfmf for a spezialization.
+  template<typename AT> struct AssertUseException { constexpr static bool value = false; };
+
+  template<bool value>
+  inline void fmatvec_assert(bool expr, std::string_view file, int line, std::string_view func, std::string_view exprStr);
+
+  template<>
+  inline void fmatvec_assert<false>(bool expr, std::string_view file, int line, std::string_view func, std::string_view exprStr) {
+    #ifndef NDEBUG
+      if(!expr) {
+        // print with fprintf since printing with higher level functions like cerr may be redirected.
+        fprintf(stderr, (std::string(file)+":"+std::to_string(line)+": "+
+                         std::string(func)+": Assertion `"+std::string(exprStr)+"' failed.").c_str());
+        std::abort();
+      }
+    #endif
+  }
+  
+  template<>
+  inline void fmatvec_assert<true>(bool expr, std::string_view file, int line, std::string_view func, std::string_view exprStr) {
+    if(!expr)
+      throw std::runtime_error(std::string(file)+":"+std::to_string(line)+": "+
+            std::string(func)+": Assertion `"+std::string(exprStr)+"' failed.");
+  }
 
 }
 

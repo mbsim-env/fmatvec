@@ -3,7 +3,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/scope_exit.hpp>
-#include <boost/assign/list_of.hpp>
 #include <sstream>
 #include <boost/spirit/include/qi.hpp>
 #include <string>
@@ -184,7 +183,7 @@ ostream& operator<<(ostream& s, const SymbolicExpression& se) {
 // in the serialized output. This is quite usefull to write tests.
 // This envvar should NOT be set in normal program. It will generate wrong results if more than one
 // process in involved.
-static map<boost::uuids::uuid, int> mapUUIDInt;
+static map<boost::uuids::uuid, size_t> mapUUIDInt;
 #endif
 
 namespace {
@@ -283,6 +282,12 @@ SymbolicExpression operator/(int a, const SymbolicExpression &b) {
 SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep) {
   return dep->parDer(indep);
 }
+
+#ifdef _MSC_VER
+#ifndef SWIG
+const SymbolicExpression::ConstructSymbol SymbolicExpression::constructSymbol{}; // just used for tag dispatching
+#endif
+#endif
 
 // ***** IndependentVariable *****
 
@@ -402,31 +407,31 @@ string Symbol::getUUIDStr() const {
 
 map<Operation::CacheKey, weak_ptr<const Operation>, Operation::CacheKeyComp> Operation::cache;
 
-std::map<Operation::Operator, string> Operation::opMap = boost::assign::map_list_of
-  ( Plus,  "plus")
-  ( Minus, "minus")
-  ( Mult,  "mult")
-  ( Div,   "div")
-  ( Pow,   "pow")
-  ( Log,   "log")
-  ( Sqrt,  "sqrt")
-  ( Neg,   "neg")
-  ( Sin,   "sin")
-  ( Cos,   "cos")
-  ( Tan,   "tan")
-  ( Sinh,  "sinh")
-  ( Cosh,  "cosh")
-  ( Tanh,  "tanh")
-  ( ASin,  "asin")
-  ( ACos,  "acos")
-  ( ATan,  "atan")
-  ( ASinh, "asinh")
-  ( ACosh, "acosh")
-  ( ATanh, "atanh")
-  ( Exp,   "exp")
-  ( Sign,  "sign")
-  ( Abs,   "abs")
-;
+const std::map<Operation::Operator, string> Operation::opMap {
+  { Plus,  "plus"},
+  { Minus, "minus"},
+  { Mult,  "mult"},
+  { Div,   "div"},
+  { Pow,   "pow"},
+  { Log,   "log"},
+  { Sqrt,  "sqrt"},
+  { Neg,   "neg"},
+  { Sin,   "sin"},
+  { Cos,   "cos"},
+  { Tan,   "tan"},
+  { Sinh,  "sinh"},
+  { Cosh,  "cosh"},
+  { Tanh,  "tanh"},
+  { ASin,  "asin"},
+  { ACos,  "acos"},
+  { ATan,  "atan"},
+  { ASinh, "asinh"},
+  { ACosh, "acosh"},
+  { ATanh, "atanh"},
+  { Exp,   "exp"},
+  { Sign,  "sign"},
+  { Abs,   "abs"}
+};
 
 SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpression> &child_) {
   static bool optimizeExpressions=true; // this is "always" true (except for the initial call, see below)
@@ -588,7 +593,7 @@ Operation::Operation(Operator op_, const vector<SymbolicExpression> &child_) : o
     dependsOn.insert(c->getDependsOn().begin(), c->getDependsOn().end());
 }
 
-bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) {
+bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) const {
   if(l.first!=r.first)
     return l.first<r.first;
   if(l.second.size()!=r.second.size())
