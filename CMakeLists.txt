@@ -1,82 +1,71 @@
-cmake_minimum_required (VERSION 3.10)
-project(fmatvec)
+cmake_minimum_required(VERSION 3.10)
 
-include(CheckSymbolExists)
+# read config from "configure.sc"
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/configure.ac CONF_AC)
+string(REGEX MATCH "AC_INIT\\(\\ *([a-zA-Z0-9]+)\\ *,\\ *([0-9\.]*)\\ *,(.*)\\)" _ ${CONF_AC}) # regex matching needs double escaping, e.g. "\\(", for special characters
+  set(PROJECT_NAME "${CMAKE_MATCH_1}")
+  set(VERSION      "${CMAKE_MATCH_2}")
+# set(PROJECT_MAINTAINER "${CMAKE_MATCH_3}")
+project(${PROJECT_NAME} VERSION ${VERSION})
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+if(MSVC)
+  # https://devblogs.microsoft.com/cppblog/permissive-switch/
+  add_compile_options(/permissive- /wd4996)
+else()
+# string(APPEND CMAKE_CXX_FLAGS_INIT "-Wno-format-security")
+  add_compile_options(-Wno-format-security) # this is required by types.h stating "fprintf(stderr, out_c_str);" which is marked by gcc -Wformat-security which is enabled by default on Ubuntu distributions
+endif()
 
 # Adhere to GNU filesystem layout conventions
 include(GNUInstallDirs)
 
 ################################################################################
-### The version number etc.
-# Name of package 
-SET(PACKAGE ${CMAKE_PROJECT_NAME})
-SET (fmatvec_MAJOR_VERSION 2)
-SET (fmatvec_MINOR_VERSION 0)
-SET (fmatvec_PATCH_VERSION 0)
-# Version number of package 
-SET(VERSION ${fmatvec_MAJOR_VERSION}.${fmatvec_MINOR_VERSION}.${fmatvec_PATCH_VERSION})
-# Define to the address where bug reports for this package should be sent. 
-SET(PACKAGE_BUGREPORT "martin.o.foerg@googlemail.com")
-# Define to the full name of this package. 
-SET(PACKAGE_NAME ${CMAKE_PROJECT_NAME})
-# Define to the full name and version of this package. 
-SET(PACKAGE_STRING "${CMAKE_PROJECT_NAME} ${VERSION}")
-# Define to the one symbol short name of this package. 
-SET(PACKAGE_TARNAME ${CMAKE_PROJECT_NAME})
-# Define to the home page for this package. 
-SET(PACKAGE_URL "")
-# Define to the version of this package. 
-SET(PACKAGE_VERSION ${VERSION})
-# Define to 1 if you have the ANSI C header files. 
-SET(STDC_HEADERS 1)
-
-################################################################################
-### Options ####################################################################
-################################################################################
-
-SET(INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig")
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-
-################################################################################
-add_compile_options(-std=c++11)
-add_compile_options(-Wno-unused-function)
-add_compile_options(-Werror)
-
-################################################################################
 ### Search for dependencies ####################################################
 ################################################################################
-# Checking for the blas and lapack dependency
-FIND_PACKAGE(LAPACK REQUIRED) # checks for blas and lapack!
 
-# Check for the boost dependency
-find_package(Boost REQUIRED) 
+# cmake 3.12.18081601-MSVC_2 fails to find c:\local\boost_1_72_0 (it ONLY detects the coexisting c:\local\boost_1_60_0)
+#     With boost 1.67 it works as expected
+# cmake 3.17 finds c:\local\boost_1_72_0 extracted from boost_<version>-bin-msvc-all-32-64.7z
+# Alternative: set BOOST_INCLUDEDIR to boost installation
+if( WIN32 )
+  set(Boost_USE_STATIC_LIBS ON)
+endif()
+find_package(Boost 1.67 REQUIRED ) # COMPONENTS spirit uuid ... => all header only ???
+
+# Checking for the blas and lapack dependency
+IF( WIN32 )
+  # Path with blas and lapack lib/dll needs to be in environment variable LIB
+  # find_package(BLAS) called separately for slightly better error message
+  find_package(BLAS)
+  if(BLAS)
+    find_package(LAPACK)
+  endif()
+
+  if(NOT LAPACK)
+    MESSAGE("   ... trying to find Intel MKL runtime libraries instead of LAPACK/BLAS")
+    # fall back to Intel MKL runtime libs
+
+    # get link library
+    find_library(LAPACK_LIBRARIES name "mkl_rt.lib" PATHS $ENV{LIB} ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR} REQUIRED)
+    # ... and runtime libraries needed to be installed
+    SET(CMAKE_FIND_LIBRARY_SUFFIXES ".dll")
+    set(mkl_needed_libs "mkl_rt;mkl_intel_thread")
+    foreach(lib ${mkl_needed_libs})
+      find_library(mkl_${lib} name "${lib}" PATHS $ENV{LIB} ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+      install(FILES ${mkl_${lib}} DESTINATION bin)
+      MESSAGE("    install mkl_needed_libs: mkl_${lib}= ${mkl_${lib}}")
+    endforeach()
+  endif()
+ELSE()
+  FIND_PACKAGE(LAPACK REQUIRED) # checks for blas and lapack!
+ENDIF()
 
 ################################################################################
-SET(HAVE_BOOST_PREPROCESSOR_ITERATION_LOCAL_HPP ${Boost_preprocessor_FOUND})
-FIND_FILE(HAVE_BOOST_PREPROCESSOR_ITERATION_LOCAL_HPP "boost/preprocessor/iteration/local.hpp" DOC "Does the boost/preprocessor/iteration/local.hpp exist?")
-FIND_FILE(HAVE_DLFCN_H     "dlfcn.h"     DOC "Does the dlfcn.h exist?")
-FIND_FILE(HAVE_INTTYPES_H  "inttypes.h"  DOC "Does the inttypes.h exist?")
-FIND_FILE(HAVE_MEMORY_H    "memory.h"    DOC "Does the memory.h exist?")
-FIND_FILE(HAVE_STDBOOL_H   "stdbool.h"   DOC "Does the stdbool.h exist?")
-FIND_FILE(HAVE_STDINT_H    "stdint.h"    DOC "Does the stdint.h exist?")
-FIND_FILE(HAVE_STDLIB_H    "stdlib.h"    DOC "Does the stdlib.h exist?")
-FIND_FILE(HAVE_STRINGS_H   "strings.h"   DOC "Does the strings.h exist?")
-FIND_FILE(HAVE_STRING_H    "string.h"    DOC "Does the string.h exist?")
-FIND_FILE(HAVE_SYS_STAT_H  "sys/stat.h"  DOC "Does the sys/stat.h exist?")
-FIND_FILE(HAVE_SYS_TYPES_H "sys/types.h" DOC "Does the sys/types.h exist?")
-FIND_FILE(HAVE_UNISTD_H    "unistd.h"    DOC "Does the unistd.h exist?")
+set(FMATVEC_CONFIG_INCLUDE ${CMAKE_BINARY_DIR}/include)
+file(WRITE ${FMATVEC_CONFIG_INCLUDE}/config.h "/* DUMMY FILE*/")
 
-SET(HAVE_LIBATLAS  ${ATLAS_FOUND})
-SET(HAVE_LIBBLAS   ${BLAS_FOUND})
-SET(HAVE_LIBLAPACK ${LAPACK_FOUND})
-check_symbol_exists(sqrt "math.h" HAVE_SQRT)
-check_symbol_exists(pow "math.h" HAVE_POW)
-
-SET(prefix "${CMAKE_INSTALL_PREFIX}")
-CONFIGURE_FILE("config.h.in-cmake" "config.h" @ONLY)
-
-INCLUDE_DIRECTORIES("${CMAKE_CURRENT_BINARY_DIR}")
-INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}")
 
 ################################################################################
 ### Include the subdirectories #################################################
@@ -115,10 +104,11 @@ install(FILES
 ###  Installing ################################################################
 ################################################################################
 ###  Install the pkg-config file
+set(prefix ${CMAKE_INSTALL_PREFIX})
 set(LIBDIRS "-L.")
 set(LIBS "-lpthread")
 foreach(LIB ${fmatvec_needed_libraries})
-  string(REGEX MATCH "(.*)/lib(.*)\\.(.*)" LIBTMP "${LIB}") # "." must have double excaping!!!
+  string(REGEX MATCH "(.*)/lib(.*)\\.(.*)" LIBTMP "${LIB}") # "." must have double excaping "\\"
   set(LIBS "${LIBS} -L${CMAKE_MATCH_1} -l${CMAKE_MATCH_2}")
 endforeach()
 configure_file("fmatvec.pc.in" "fmatvec.pc" @ONLY)

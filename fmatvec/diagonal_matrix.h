@@ -309,7 +309,7 @@ namespace fmatvec {
   };
 
   template <class AT>
-    Matrix<Diagonal,Ref,Ref,AT>::Matrix(const std::vector<std::vector<AT>> &m) : Matrix<Diagonal,Ref,Ref,AT>(m.size()) {
+    Matrix<Diagonal,Ref,Ref,AT>::Matrix(const std::vector<std::vector<AT>> &m) : Matrix<Diagonal,Ref,Ref,AT>(static_cast<int>(m.size())) {
       for(size_t r=0; r<m.size(); ++r) {
         if(n!=static_cast<int>(m[r].size()))
           throw std::runtime_error("The rows of the input have different lenght.");
