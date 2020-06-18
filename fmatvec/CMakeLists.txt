@@ -24,6 +24,10 @@ target_include_directories( fmatvec
    $<BUILD_INTERFACE:${FMATVEC_CONFIG_INCLUDE}>
 )
 
+if( MSVC )
+  set_source_files_properties(stream.cc PROPERTIES COMPILE_FLAGS /bigobj)
+endif()
+
 target_link_libraries(fmatvec ${LAPACK_LIBRARIES})
 
 #############################################
@@ -32,6 +36,7 @@ target_link_libraries(fmatvec ${LAPACK_LIBRARIES})
 
 # Install the library fmatvec
 if( WIN32 ) # WIN32 diffs in destination for the library (bin on Windows?!?) and must include lapack stuff for portability
+  include(InstallRequiredSystemLibraries)
   install(TARGETS fmatvec EXPORT fmatvec
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
