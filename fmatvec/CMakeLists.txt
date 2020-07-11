@@ -57,14 +57,7 @@ endif()
 install(FILES  ${fmatvecHdr}
   DESTINATION include/fmatvec)
 
-if( WIN32 )
-  target_compile_definitions(fmatvec
-      PRIVATE
-      "MSVC_DLL_DECLSPEC=__declspec(dllexport)"
-  )
-endif()
-
-
+# Make build takes that info from config.h
 target_compile_definitions(fmatvec
   PUBLIC
   HAVE_LIBBLAS
