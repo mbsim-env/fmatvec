@@ -14,6 +14,9 @@ if(MSVC)
   add_compile_options(/permissive- /wd4996)
 else()
   add_compile_options(-Wno-format-security) # this is required by types.h stating "fprintf(stderr, out_c_str);" which is marked by gcc -Wformat-security which is enabled by default on Ubuntu distributions
+  add_compile_options(-Wno-unused-function)
+  add_compile_options(-Werror)
+  add_compile_options(-fvisibility=hidden)
 endif()
 
 # Adhere to GNU filesystem layout conventions
@@ -99,6 +102,9 @@ install(FILES
 ################################################################################
 ###  Install the pkg-config file
 set(prefix ${CMAKE_INSTALL_PREFIX})
+set(exec_prefix "\${prefix}")
+set(libdir      "\${prefix}/lib")
+set(includedir  "\${prefix}/include")
 set(LIBDIRS "-L.")
 set(LIBS "-lpthread")
 foreach(LIB ${fmatvec_needed_libraries})
