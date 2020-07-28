@@ -33,6 +33,7 @@ if( WIN32 )
   find_package(BLAS)
   if(BLAS)
     find_package(LAPACK)
+    set(BLAS_LAPACK_LIBRARIES ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} )
   endif()
 
   if(NOT LAPACK)
@@ -48,10 +49,12 @@ if( WIN32 )
       install(FILES ${mkl_${lib}} DESTINATION bin)
       message("    install mkl_needed_libs: mkl_${lib}= ${mkl_${lib}}")
     endforeach()
+    set(BLAS_LAPACK_LIBRARIES ${LAPACK_LIBRARIES} )
   endif()
   set(Boost_USE_STATIC_LIBS ON)
 else()
   find_package(LAPACK REQUIRED) # checks for blas and lapack!
+  set(BLAS_LAPACK_LIBRARIES ${LAPACK_LIBRARIES} )
 endif()
 # Notes for cmake limitations under Windows:
 #     cmake 3.12.18081601-MSVC_2 fails to find c:\local\boost_1_72_0 (it ONLY detects the coexisting c:\local\boost_1_60_0)
@@ -74,7 +77,6 @@ add_subdirectory(fmatvec)
 ### Config.cmake generation and installation
 ################################################################################
 
-set(fmatvec_needed_libraries ${fmatvec_needed_libraries} ${LAPACK_LIBRARIES} )
 
 set(ConfigPackageLocation "${CMAKE_INSTALL_LIBDIR}/cmake/fmatvec")
 install(EXPORT fmatvec
@@ -102,12 +104,13 @@ install(FILES
 ################################################################################
 ###  Install the pkg-config file
 set(prefix ${CMAKE_INSTALL_PREFIX})
-set(exec_prefix "\${prefix}")
-set(libdir      "\${prefix}/lib")
-set(includedir  "\${prefix}/include")
+set(exec_prefix \${prefix})
+set(libdir      \${prefix}/lib)
+set(includedir  \${prefix}/include)
 set(LIBDIRS "-L.")
 set(LIBS "-lpthread")
-foreach(LIB ${fmatvec_needed_libraries})
+set(INCDIRS "-I${Boost_INCLUDE_DIRS}")
+foreach(LIB ${BLAS_LAPACK_LIBRARIES})
   string(REGEX MATCH "(.*)/lib(.*)\\.(.*)" LIBTMP "${LIB}") # "." must have double excaping "\\"
   set(LIBS "${LIBS} -L${CMAKE_MATCH_1} -l${CMAKE_MATCH_2}")
 endforeach()

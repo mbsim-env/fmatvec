@@ -28,7 +28,7 @@ if( MSVC )
   set_source_files_properties(stream.cc PROPERTIES COMPILE_FLAGS /bigobj)
 endif()
 
-target_link_libraries(fmatvec ${LAPACK_LIBRARIES})
+target_link_libraries(fmatvec ${BLAS_LAPACK_LIBRARIES})
 
 #############################################
 ### Install
@@ -43,7 +43,7 @@ if( WIN32 ) # WIN32 diffs in destination for the library (bin on Windows?!?) and
     ARCHIVE DESTINATION lib
     CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
     )
-  install(FILES ${LAPACK_LIBRARIES} DESTINATION lib)
+  install(FILES ${BLAS_LAPACK_LIBRARIES} DESTINATION lib)
 else()
   install(TARGETS fmatvec EXPORT fmatvec
     RUNTIME DESTINATION bin
