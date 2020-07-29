@@ -36,7 +36,8 @@ add_dependencies(doc doc_copy)
 
 # make doc/clean automatically provided via package DOXYGEN
 
-# make install for html doc
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/          DESTINATION share/doc/fmatvec/)
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/ DESTINATION share/fmatvec/doxy_template)
-
+# unfortunately, this install does not work but even breaks the build => TODO: rework
+# # make install for html doc
+# install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/          DESTINATION share/doc/fmatvec/)
+# install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/ DESTINATION share/fmatvec/doxy_template)
+# 
