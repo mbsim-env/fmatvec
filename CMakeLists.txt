@@ -1,5 +1,14 @@
 cmake_minimum_required(VERSION 3.10)
 
+if(UNIX)
+  find_program(CCACHE_PROGRAM ccache)
+  if(CCACHE_PROGRAM AND NOT NO_CCACHE)
+    # Support Unix Makefiles and Ninja
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+    message("Use ccache as compile launcher...")
+  endif()
+endif()
+
 # read config from "configure.ac"
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/configure.ac CONF_AC)
 string(REGEX MATCH "AC_INIT\\(\\ *([a-zA-Z0-9]+)\\ *,\\ *([0-9\.]*)\\ *,(.*)\\)" _ ${CONF_AC}) # regex matching needs double escaping, e.g. "\\(", for special characters
@@ -71,7 +80,7 @@ file(WRITE ${FMATVEC_CONFIG_INCLUDE}/config.h "/* DUMMY FILE*/")
 ### Include the subdirectories #################################################
 ################################################################################
 add_subdirectory(fmatvec)
-#add_subdirectory(doc)
+add_subdirectory(doc)
 
 ################################################################################
 ### Config.cmake generation and installation
