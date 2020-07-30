@@ -30,14 +30,38 @@ add_custom_target(doc_copy
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/doxy_template/footer.html       ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/doxy_template/header.html       ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/doxy_template/doxy.mk           ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/
+    COMMENT "Populating ${CMAKE_CURRENT_SOURCE_DIR}/doxy_template"
     )
 
 add_dependencies(doc doc_copy)
 
-# make doc/clean automatically provided via package DOXYGEN
+# The installation of the documentation must not take place in conjunction with main
+# install. Therefore exclude it from ALL installation and make it a component "doc" install
+# triggered via explicit cmake command "cmake -DCMAKE_INSTALL_COMPONENT=doc ..." as
+# custom target.
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/
+        DESTINATION share/doc/fmatvec/
+        EXCLUDE_FROM_ALL
+        COMPONENT doc
+        )
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/
+        DESTINATION share/fmatvec/doxy_template
+        EXCLUDE_FROM_ALL
+        COMPONENT doc
+        )
 
-# unfortunately, this install does not work but even breaks the build => TODO: rework
-# # make install for html doc
-# install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/          DESTINATION share/doc/fmatvec/)
-# install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/ DESTINATION share/fmatvec/doxy_template)
-# 
+# custom target doc-all (alias for "doc"
+add_custom_target(doc-all DEPENDS doc)
+
+# custom target doc-install
+add_custom_target(doc-install
+        DEPENDS doc-all
+        COMMAND ${CMAKE_COMMAND} -DCMAKE_INSTALL_COMPONENT=doc -P ${CMAKE_BINARY_DIR}/cmake_install.cmake
+        COMMENT "Installing documentation to ${CMAKE_INSTALL_PREFIX}/share"
+        )
+
+# custom target doc-clean
+add_custom_target(doc-clean
+        COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/html
+        COMMENT "Removing recursively ${CMAKE_CURRENT_BINARY_DIR}/html"
+        )
