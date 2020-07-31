@@ -30,6 +30,8 @@ add_custom_target(doc_copy
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/doxy_template/footer.html       ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/doxy_template/header.html       ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/doxy_template/doxy.mk           ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/doxy_template/doxy-boot.js      ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/doxy_template/doxyfile_common   ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/
     COMMENT "Populating ${CMAKE_CURRENT_SOURCE_DIR}/doxy_template"
     )
 

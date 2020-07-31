@@ -1,5 +1,22 @@
 cmake_minimum_required(VERSION 3.10)
 
+set(VALGRINDARGS "")
+if( WIN32 )
+  find_program(DIFF NAMES fc diff)
+  set(VALGRIND "")
+else()
+  find_program(DIFF NAMES diff)
+  find_program(VALGRIND NAMES valgrind)
+  if(VALGRIND)
+    set(VALGRINDARGS --gen-suppressions=all --suppressions=/home/zander-ste/Development/src/mbsim/fmatvec/fmatvec/check/valgrindtestast.supp --error-exitcode=200 --num-callers=150 --leak-check=full --show-reachable=yes)
+  else()
+    set(VALGRIND "")
+  endif()
+endif()
+
+################################################################################
+# generate test executables
+################################################################################
 add_executable(testfunction
                "testfunction.cc")
 
@@ -33,20 +50,40 @@ target_include_directories(testsymfunction
 
 target_link_libraries(testsymfunction fmatvec)
 
-add_custom_command(OUTPUT testsymfunction.out
-    COMMAND testsymfunction > testsymfunction.out # add_custom_command can take target names and expands to regular platform-specific paths/executable names
+################################################################################
+# define tests, each taking steps run and diff as individual parts
+################################################################################
+add_custom_target(testsymfunction_run
+    COMMAND ${VALGRIND} ${VALGRINDARGS} $<TARGET_FILE_DIR:testsymfunction>/$<TARGET_FILE_NAME:testsymfunction>  > testsymfunction.out # add_custom_command can take target names and expands to regular platform-specific paths/executable names
     DEPENDS testsymfunction
+    COMMENT "Run testsymfunction"
 )
+add_custom_target(testsymfunction_diff
+    COMMAND ${DIFF} ${CMAKE_CURRENT_SOURCE_DIR}/testsymfunction.ref testsymfunction.out
+    DEPENDS testsymfunction_run
+    COMMENT "Diff reulsts of testsymfunction"
+)
+add_dependencies(testsymfunction_diff testsymfunction_run)
 
-add_custom_command(OUTPUT testast.out
-    COMMAND testast > testast.out # add_custom_command can take target names and expands to regular platform-specific paths/executable names
+add_custom_target(testast_run
+    COMMAND ${VALGRIND} ${VALGRINDARGS} $<TARGET_FILE_DIR:testast>/$<TARGET_FILE_NAME:testast> > testast.out # add_custom_command can take target names and expands to regular platform-specific paths/executable names
     DEPENDS testast
+    COMMENT "Run testast"
+)
+add_custom_target(testast_diff
+    COMMAND ${DIFF} ${CMAKE_CURRENT_SOURCE_DIR}/testast.ref testast.out
+    COMMENT "Diff reulsts of testast"
+)
+add_dependencies(testast_diff testast_run)
+
+add_custom_target(testfunction_run
+    COMMAND ${VALGRIND} ${VALGRINDARGS} $<TARGET_FILE_DIR:testfunction>/$<TARGET_FILE_NAME:testfunction> # add_custom_command can take target names and expands to regular platform-specific paths/executable names
+    COMMENT "Run testfunction"
+    DEPENDS testfunction
 )
 
 add_custom_target(check
-    testfunction # add_custom_command can take target names and expands to regular platform-specific paths/executable names
-    COMMAND ${CMAKE_COMMAND} -E compare_files "${CMAKE_CURRENT_SOURCE_DIR}/testsymfunction.ref" testsymfunction.out
-    COMMAND ${CMAKE_COMMAND} -E compare_files "${CMAKE_CURRENT_SOURCE_DIR}/testast.ref" testast.out
-    DEPENDS testfunction testast testsymfunction.out testast.out
+    DEPENDS testfunction_run testsymfunction_diff testast_diff
     COMMENT "Run test binaries"
 )
+
