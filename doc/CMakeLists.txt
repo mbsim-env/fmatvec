@@ -23,6 +23,9 @@ doxygen_add_docs(doc
     COMMENT "Generate doxygen doc"
 )
 
+set(prefix ${CMAKE_INSTALL_PREFIX})
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxy_template/doxyfile_common.in ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/doxyfile_common)
+
 # copy stuff that is needed locally
 add_custom_target(doc_copy
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/
@@ -31,7 +34,6 @@ add_custom_target(doc_copy
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/doxy_template/header.html       ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/doxy_template/doxy.mk           ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/doxy_template/doxy-boot.js      ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/doxy_template/doxyfile_common   ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/
     COMMENT "Populating ${CMAKE_CURRENT_SOURCE_DIR}/doxy_template"
     )
 
