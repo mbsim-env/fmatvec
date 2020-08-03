@@ -5,7 +5,6 @@ fmatvec_share_dir ?= $(prefix)/share/fmatvec
 doxytempl.all: doxyfile
 	rm -rf html
 	$(doxygen) doxyfile
-	cp $(fmatvec_share_dir)/doxy_template/doxy-boot.js html/.
 	$(fmatvec_share_dir)/checkHtml/checkMathJax.sh html
 doxytempl.clean:
 	rm -rf html
