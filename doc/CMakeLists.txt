@@ -51,6 +51,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/checkHtml/
         DESTINATION share/fmatvec/checkHtml
         EXCLUDE_FROM_ALL
         COMPONENT doc
+        PATTERN "*.sh" PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ
         PATTERN "Makefile.*" EXCLUDE
         )
 
