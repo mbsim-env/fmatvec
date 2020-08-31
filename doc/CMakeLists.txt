@@ -20,6 +20,19 @@ doxygen_add_docs(doc
     COMMENT "Generate doxygen doc"
 )
 
+# Check for node (implying mathjax-node is installed) and add check as POST_BUILD
+# command to target doc
+find_program(NODE node)
+if(NODE)
+  add_custom_command(TARGET doc
+                     POST_BUILD
+                     COMMAND ${NODE} ${CMAKE_CURRENT_SOURCE_DIR}/checkHtml/checkMathJax.js ${CMAKE_CURRENT_BINARY_DIR}
+  )
+else()
+  message(WARNING "mathjax-node/node not found: skipping check of math formula generation for doxygen output")
+endif()
+
+# Configure doxyfile_common
 set(prefix ${CMAKE_INSTALL_PREFIX})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxy_template/doxyfile_common.in ${CMAKE_CURRENT_BINARY_DIR}/doxy_template/doxyfile_common)
 

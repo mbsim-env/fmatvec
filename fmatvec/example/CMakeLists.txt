@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 
 add_executable(eigval
-               "eigval.cc")
+               EXCLUDE_FROM_ALL
+               "eigval.cc"
+               )
 
 target_include_directories(eigval
    PRIVATE

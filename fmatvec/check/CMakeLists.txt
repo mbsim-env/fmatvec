@@ -24,7 +24,9 @@ endif()
 # generate test executables
 ################################################################################
 add_executable(testfunction
-               "testfunction.cc")
+               EXCLUDE_FROM_ALL
+               "testfunction.cc"
+               )
 
 target_include_directories(testfunction
    PRIVATE
@@ -35,7 +37,9 @@ target_include_directories(testfunction
 target_link_libraries(testfunction fmatvec)
 
 add_executable(testast
-               "testast.cc")
+               EXCLUDE_FROM_ALL
+               "testast.cc"
+               )
 
 target_include_directories(testast
    PRIVATE
@@ -46,7 +50,9 @@ target_include_directories(testast
 target_link_libraries(testast fmatvec)
 
 add_executable(testsymfunction
-               "testsymfunction.cc")
+               EXCLUDE_FROM_ALL
+               "testsymfunction.cc"
+               )
 
 target_include_directories(testsymfunction
    PRIVATE
@@ -91,7 +97,7 @@ add_custom_target(testfunction_run
 )
 
 add_custom_target(check
-    DEPENDS testfunction_run testsymfunction_diff $<$<CONFIG:Debug>:testast_diff>
+    DEPENDS testfunction_run testsymfunction_diff $<IF:$<CONFIG:Debug>,testast_diff,testast_run>
     COMMENT "Run test binaries"
 )
 

@@ -12,7 +12,51 @@ set( fmatvecSrc
    wrapper.cc 
 )
 
-file(GLOB_RECURSE fmatvecHdr "*.h")
+set(fmatvecHdr
+   var_fixed_general_matrix.h
+   ast.h
+   linear_algebra_fixed_var.h
+   fixed_var_general_matrix.h
+   _memory.h
+   function.h
+   symbolic_function1_temp.h
+   range.h
+   vector.h
+   var_square_matrix.h
+   band_matrix.h
+   wrapper.h
+   atom.h
+   stream.h
+   square_matrix.h
+   row_vector.h
+   linear_algebra_var.h
+   matrix.h
+   linear_algebra_var_fixed.h
+   fixed_square_matrix.h
+   linear_algebra_complex.h
+   diagonal_matrix.h
+   stream_impl.h
+   types.h
+   var_row_vector.h
+   symbolic_function.h
+   fixed_general_matrix.h
+   toString.h
+   fixed_row_vector.h
+   linear_algebra_fixed.h
+   linear_algebra.h
+   var_general_matrix.h
+   var_vector.h
+   fmatvec.h
+   general_matrix.h
+   symbolic_function2_temp.h
+   sparse_matrix.h
+   fixed_symmetric_matrix.h
+   symmetric_matrix.h
+   var_symmetric_matrix.h
+   linear_algebra_double.h
+   symbolic.h
+   fixed_vector.h
+)
 
 add_library(fmatvec SHARED ${fmatvecSrc} ${fmatvecHdr})
 
