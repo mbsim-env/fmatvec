@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-# read config from "configure.ac"
-file(READ ${CMAKE_CURRENT_SOURCE_DIR}/configure.ac CONF_AC)
-string(REGEX MATCH "AC_INIT\\(\\ *([a-zA-Z0-9]+)\\ *,\\ *([0-9\.]*)\\ *,(.*)\\)" _ ${CONF_AC}) # regex matching needs double escaping, e.g. "\\(", for special characters
-  set(PROJECT_NAME "${CMAKE_MATCH_1}")
-  set(VERSION      "${CMAKE_MATCH_2}")
-project(${PROJECT_NAME} VERSION ${VERSION})
+project(fmatvec VERSION 0.0.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -89,7 +84,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/fmatvecConfig.cmake.in
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/config/fmatvecConfigVersion.cmake"
-    VERSION ${VERSION}
     COMPATIBILITY AnyNewerVersion
     )
 

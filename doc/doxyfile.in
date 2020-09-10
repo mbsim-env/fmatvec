@@ -1,7 +1,0 @@
-PROJECT_BRIEF          = "Fast Matrix/Vector Library"
-INPUT                  = @top_srcdir@/fmatvec
-PROJECT_NAME           = @PACKAGE@
-PROJECT_NUMBER         = @VERSION@
-GENERATE_TAGFILE       = html/fmatvec.tag
-
-@INCLUDE = doxy_template/doxyfile_common_fmatvec
