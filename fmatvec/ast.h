@@ -108,8 +108,10 @@ class FMATVEC_EXPORT IndependentVariable : public SymbolicExpression {
     //! Creates a IndependentVariable variable from the specified string (the string is a serialized IndependentVariable).
     IndependentVariable(const std::string &str);
 
+#ifndef SWIG
     //! Set the double value of the independent value.
-    inline IndependentVariable& operator&=(double x);
+    inline IndependentVariable& operator^=(double x);
+#endif
 
   private:
     IndependentVariable(const shared_ptr<const AST::Symbol> &x);
@@ -427,7 +429,7 @@ double Operation::eval() const {
 } // end namespace AST
 #endif
 
-IndependentVariable& IndependentVariable::operator&=(double x) {
+IndependentVariable& IndependentVariable::operator^=(double x) {
   static_cast<const AST::Symbol*>(get())->setValue(x);
   return *this;
 }

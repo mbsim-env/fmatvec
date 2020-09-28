@@ -214,50 +214,50 @@ int SymbolicFunction<RET(ARG1, ARG2)>::getArg2Size() const {
 
 template<TEMPLATE>
 RET SymbolicFunction<RET(ARG1, ARG2)>::operator()(const ARG1 &arg1, const ARG2 &arg2) {
-  arg1S&=arg1;
-  arg2S&=arg2;
+  arg1S^=arg1;
+  arg2S^=arg2;
   return eval(retS);
 }
 
 #ifdef PARDER1
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::parDer1(const ARG1 &arg1, const ARG2 &arg2) -> DRetDArg1 {
-  arg1S&=arg1;
-  arg2S&=arg2;
+  arg1S^=arg1;
+  arg2S^=arg2;
   return eval(pd1);
 }
 #endif
 
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::dirDer1(const ARG1 &arg1Dir, const ARG1 &arg1, const ARG2 &arg2) -> DRetDDir1 {
-  argDir1S&=arg1Dir;
-  arg1S&=arg1;
-  arg2S&=arg2;
+  argDir1S^=arg1Dir;
+  arg1S^=arg1;
+  arg2S^=arg2;
   return eval(dd1);
 }
 
 #ifdef PARDER2
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::parDer2(const ARG1 &arg1, const ARG2 &arg2) -> DRetDArg2 {
-  arg1S&=arg1;
-  arg2S&=arg2;
+  arg1S^=arg1;
+  arg2S^=arg2;
   return eval(pd2);
 }
 #endif
 
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::dirDer2(const ARG2 &arg2Dir, const ARG1 &arg1, const ARG2 &arg2) -> DRetDDir2 {
-  argDir2S&=arg2Dir;
-  arg1S&=arg1;
-  arg2S&=arg2;
+  argDir2S^=arg2Dir;
+  arg1S^=arg1;
+  arg2S^=arg2;
   return eval(dd2);
 }
 
 #ifdef PARDER1PARDER1
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::parDer1ParDer1(const ARG1 &arg1, const ARG2 &arg2) -> DDRetDDArg1 {
-  arg1S&=arg1;
-  arg2S&=arg2;
+  arg1S^=arg1;
+  arg2S^=arg2;
   return eval(pd1pd1);
 }
 #endif
@@ -265,27 +265,27 @@ auto SymbolicFunction<RET(ARG1, ARG2)>::parDer1ParDer1(const ARG1 &arg1, const A
 #ifdef PARDER1
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::parDer1DirDer1(const ARG1 &arg1Dir, const ARG1 &arg1, const ARG2 &arg2) -> DRetDArg1 {
-  argDir1S&=arg1Dir;
-  arg1S&=arg1;
-  arg2S&=arg2;
+  argDir1S^=arg1Dir;
+  arg1S^=arg1;
+  arg2S^=arg2;
   return eval(pd1dd1);
 }
 #endif
 
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::dirDer1DirDer1(const ARG1 &arg1Dir_1, const ARG1 &arg1Dir_2, const ARG1 &arg1, const ARG2 &arg2) -> DRetDDir1 {
-  argDir1S&=arg1Dir_1;
-  argDir1S_2&=arg1Dir_2;
-  arg1S&=arg1;
-  arg2S&=arg2;
+  argDir1S^=arg1Dir_1;
+  argDir1S_2^=arg1Dir_2;
+  arg1S^=arg1;
+  arg2S^=arg2;
   return eval(dd1dd1);
 }
 
 #ifdef PARDER2PARDER2
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::parDer2ParDer2(const ARG1 &arg1, const ARG2 &arg2) -> DDRetDDArg2 {
-  arg1S&=arg1;
-  arg2S&=arg2;
+  arg1S^=arg1;
+  arg2S^=arg2;
   return eval(pd2pd2);
 }
 #endif
@@ -293,27 +293,27 @@ auto SymbolicFunction<RET(ARG1, ARG2)>::parDer2ParDer2(const ARG1 &arg1, const A
 #ifdef PARDER2
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::parDer2DirDer2(const ARG2 &arg2Dir, const ARG1 &arg1, const ARG2 &arg2) -> DRetDArg2 {
-  argDir2S&=arg2Dir;
-  arg1S&=arg1;
-  arg2S&=arg2;
+  argDir2S^=arg2Dir;
+  arg1S^=arg1;
+  arg2S^=arg2;
   return eval(pd2dd2);
 }
 #endif
 
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::dirDer2DirDer2(const ARG2 &arg2Dir_1, const ARG2 &arg2Dir_2, const ARG1 &arg1, const ARG2 &arg2) -> DRetDDir2 {
-  argDir2S&=arg2Dir_1;
-  argDir2S_2&=arg2Dir_2;
-  arg1S&=arg1;
-  arg2S&=arg2;
+  argDir2S^=arg2Dir_1;
+  argDir2S_2^=arg2Dir_2;
+  arg1S^=arg1;
+  arg2S^=arg2;
   return eval(dd2dd2);
 }
 
 #ifdef PARDER1PARDER2
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::parDer1ParDer2(const ARG1 &arg1, const ARG2 &arg2) -> DDRetDArg1DArg2 {
-  arg1S&=arg1;
-  arg2S&=arg2;
+  arg1S^=arg1;
+  arg2S^=arg2;
   return eval(pd1pd2);
 }
 #endif
@@ -321,28 +321,28 @@ auto SymbolicFunction<RET(ARG1, ARG2)>::parDer1ParDer2(const ARG1 &arg1, const A
 #ifdef PARDER1
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::parDer1DirDer2(const ARG2 &arg2Dir, const ARG1 &arg1, const ARG2 &arg2) -> DRetDArg1 {
-  argDir2S&=arg2Dir;
-  arg1S&=arg1;
-  arg2S&=arg2;
+  argDir2S^=arg2Dir;
+  arg1S^=arg1;
+  arg2S^=arg2;
   return eval(pd1dd2);
 }
 #endif
 
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::dirDer2DirDer1(const ARG2 &arg2Dir, const ARG1 &arg1Dir, const ARG1 &arg1, const ARG2 &arg2) -> DRetDDir2 {
-  argDir2S&=arg2Dir;
-  argDir1S&=arg1Dir;
-  arg1S&=arg1;
-  arg2S&=arg2;
+  argDir2S^=arg2Dir;
+  argDir1S^=arg1Dir;
+  arg1S^=arg1;
+  arg2S^=arg2;
   return eval(dd2dd1);
 }
 
 #ifdef PARDER2
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::parDer2DirDer1(const ARG1 &arg1Dir, const ARG1 &arg1, const ARG2 &arg2) -> DRetDArg2 {
-  argDir1S&=arg1Dir;
-  arg1S&=arg1;
-  arg2S&=arg2;
+  argDir1S^=arg1Dir;
+  arg1S^=arg1;
+  arg2S^=arg2;
   return eval(pd2dd1);
 }
 #endif

@@ -255,46 +255,45 @@ Matrix<TypeR, RowShapeR, ColShapeR, DepR> subst(const Matrix<TypeR, RowShapeR, C
   return ret;
 }
 
-//mfmf change operator &= to something better
 template<class ShapeDst, class ShapeSrc, class ATIndep>
-Vector<ShapeDst, ATIndep>& operator&=(Vector<ShapeDst, ATIndep> &dst, const Vector<ShapeSrc, double> &src) {
+Vector<ShapeDst, ATIndep>& operator^=(Vector<ShapeDst, ATIndep> &dst, const Vector<ShapeSrc, double> &src) {
   FMATVEC_ASSERT(dst.size()==src.size(), ATIndep);
   for(int i=0; i<dst.size(); ++i)
-    dst(i)&=src(i);
+    dst(i)^=src(i);
   return dst;
 }
 
 template<int N, class ATIndep>
-Vector<Fixed<N>, ATIndep>& operator&=(Vector<Fixed<N>, ATIndep> &dst, const Vector<Fixed<N>, double> &src) {
+Vector<Fixed<N>, ATIndep>& operator^=(Vector<Fixed<N>, ATIndep> &dst, const Vector<Fixed<N>, double> &src) {
   for(int i=0; i<N; ++i)
-    dst(i)&=src(i);
+    dst(i)^=src(i);
   return dst;
 }
 
 template<int N, class ShapeSrc, class ATIndep>
-Vector<Fixed<N>, ATIndep>& operator&=(Vector<Fixed<N>, ATIndep> &dst, const Vector<ShapeSrc, double> &src) {
+Vector<Fixed<N>, ATIndep>& operator^=(Vector<Fixed<N>, ATIndep> &dst, const Vector<ShapeSrc, double> &src) {
   FMATVEC_ASSERT(N==src.size(), ATIndep);
   for(int i=0; i<N; ++i)
-    dst(i)&=src(i);
+    dst(i)^=src(i);
   return dst;
 }
 
 template<class ShapeDst, int N, class ATIndep>
-Vector<ShapeDst, ATIndep>& operator&=(Vector<ShapeDst, ATIndep> &dst, const Vector<Fixed<N>, double> &src) {
+Vector<ShapeDst, ATIndep>& operator^=(Vector<ShapeDst, ATIndep> &dst, const Vector<Fixed<N>, double> &src) {
   FMATVEC_ASSERT(N==src.size(), ATIndep);
   for(int i=0; i<N; ++i)
-    dst(i)&=src(i);
+    dst(i)^=src(i);
   return dst;
 }
 
 template<class TypeDst, class TypeSrc, class ShapeRowDst, class ShapeRowSrc, class ShapeColDst, class ShapeColSrc, class ATIndep>
-Matrix<TypeDst, ShapeRowDst, ShapeColDst, ATIndep>& operator&=(Matrix<TypeDst, ShapeRowDst, ShapeColDst, ATIndep> &dst,
+Matrix<TypeDst, ShapeRowDst, ShapeColDst, ATIndep>& operator^=(Matrix<TypeDst, ShapeRowDst, ShapeColDst, ATIndep> &dst,
                                                                const Matrix<TypeSrc, ShapeRowSrc, ShapeColSrc, double> &src) {
   FMATVEC_ASSERT(dst.rows()==src.rows(), ATIndep);
   FMATVEC_ASSERT(dst.cols()==src.cols(), ATIndep);
   for(int r=0; r<dst.rows(); ++r)
     for(int c=0; c<dst.cols(); ++c)
-      dst(r,c)&=src(r,c);
+      dst(r,c)^=src(r,c);
   return dst;
 }
 

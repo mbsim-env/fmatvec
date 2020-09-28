@@ -177,10 +177,10 @@ void checkSym(double &pdn0Value,
 
   // check evaluation
   Vec3 vdouble3({1.1,2.2,3.3});
-  v&=vdouble3;
-  a_&=4.4;
-  a5&=5.5;
-  a6&=6.6;
+  v^=vdouble3;
+  a_^=4.4;
+  a5^=5.5;
+  a6^=6.6;
 #ifndef NDEBUG
   SymbolicExpression::evalOperationsCount=0;
 #endif
@@ -197,10 +197,10 @@ void checkSym(double &pdn0Value,
 #endif
 
   VecV vdoublev({3.1,4.2,5.3});
-  v&=vdoublev;
-  a_&=6.4;
-  a5&=7.5;
-  a6&=8.6;
+  v^=vdoublev;
+  a_^=6.4;
+  a5^=7.5;
+  a6^=8.6;
 #ifndef NDEBUG
   SymbolicExpression::evalOperationsCount=0;
 #endif
@@ -300,10 +300,10 @@ void checkSymReread(double pdn0Value,
   SymbolicExpression pdn0; { stringstream istr(pdn0Ser); istr>>pdn0; }
 
   // set independent variables
-  v&=Vec3({3.1,4.2,5.3});
-  a_&=6.4;
-  a5&=7.5;
-  a6&=8.6;
+  v^=Vec3({3.1,4.2,5.3});
+  a_^=6.4;
+  a5^=7.5;
+  a6^=8.6;
 
   // print evaluated value after reading the expressions from stream
   cout<<"reread "<<pdn0Value<<" == "<<eval(pdn0)<<endl;
@@ -372,10 +372,10 @@ void checkSymRereadExistingIndeps(double pdn0Value,
   }
 
   // set independent variables
-  v&=Vec3({3.1,4.2,5.3});
-  a_&=6.4;
-  a5&=7.5;
-  a6&=8.6;
+  v^=Vec3({3.1,4.2,5.3});
+  a_^=6.4;
+  a5^=7.5;
+  a6^=8.6;
 
   // dump output
   cout<<"reread "<<pdn0Value<<" == "<<eval(pdn0)<<endl;

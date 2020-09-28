@@ -117,29 +117,29 @@ int SymbolicFunction<RET(ARG)>::getArgSize() const {
 
 template<TEMPLATE>
 RET SymbolicFunction<RET(ARG)>::operator()(const ARG &arg) {
-  argS&=arg;//mfmf use something better here, this disables the caching of ast!?
+  argS^=arg;//mfmf use something better here, this disables the caching of ast!?
   return eval(retS);
 }
 
 #ifdef PARDER
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG)>::parDer(const ARG &arg) -> DRetDArg {
-  argS&=arg;
+  argS^=arg;
   return eval(pd);
 }
 #endif
 
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG)>::dirDer(const ARG &argDir, const ARG &arg) -> DRetDDir {
-  argDirS&=argDir;
-  argS&=arg;
+  argDirS^=argDir;
+  argS^=arg;
   return eval(dd);
 }
 
 #ifdef PARDERPARDER
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG)>::parDerParDer(const ARG &arg) -> DDRetDDArg {
-  argS&=arg;
+  argS^=arg;
   return eval(pdpd);
 }
 #endif
@@ -147,17 +147,17 @@ auto SymbolicFunction<RET(ARG)>::parDerParDer(const ARG &arg) -> DDRetDDArg {
 #ifdef PARDER
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG)>::parDerDirDer(const ARG &argDir, const ARG &arg) -> DRetDArg {
-  argDirS&=argDir;
-  argS&=arg;
+  argDirS^=argDir;
+  argS^=arg;
   return eval(pddd);
 }
 #endif
 
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG)>::dirDerDirDer(const ARG &argDir_1, const ARG &argDir_2, const ARG &arg) -> DRetDDir {
-  argDirS&=argDir_1;
-  argDirS_2&=argDir_2;
-  argS&=arg;
+  argDirS^=argDir_1;
+  argDirS_2^=argDir_2;
+  argS^=arg;
   return eval(dddd);
 }
 

@@ -218,7 +218,7 @@ namespace fmatvec {
 
   // a template which defined if for AT exceptions or assert should be used in fmatvec.
   // spezialize this template to use exceptions.
-  // see mfmf for a spezialization.
+  // see also ast.h for a spezialization.
   template<typename AT> struct AssertUseException { constexpr static bool value = false; };
 
   template<bool value>
