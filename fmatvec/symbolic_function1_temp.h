@@ -11,6 +11,8 @@ class SymbolicFunction<RET(ARG)> : public virtual Function<RET(ARG)> {
     SymbolicFunction(const ArgS &argS_, const RetS &retS_); // calls init() at the end
     void setIndependentVariable(const ArgS &argS_);
     void setDependentFunction(const RetS &retS_);
+    ArgS& getIndependentVariable();
+    RetS& getDependentFunction();
     void init(); // must be called after setIndependentVariable/setDependentFunction.
 
     std::pair<int, int> getRetSize() const override;
@@ -73,6 +75,16 @@ void SymbolicFunction<RET(ARG)>::setIndependentVariable(const ArgS &argS_) {
 template<TEMPLATE>
 void SymbolicFunction<RET(ARG)>::setDependentFunction(const RetS &retS_) {
   retS<<=retS_;
+}
+
+template<TEMPLATE>
+typename SymbolicFunction<RET(ARG)>::ArgS& SymbolicFunction<RET(ARG)>::getIndependentVariable() {
+  return argS;
+}
+
+template<TEMPLATE>
+typename SymbolicFunction<RET(ARG)>::RetS& SymbolicFunction<RET(ARG)>::getDependentFunction() {
+  return retS;
 }
 
 template<TEMPLATE>

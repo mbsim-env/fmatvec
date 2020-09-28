@@ -230,19 +230,19 @@ namespace fmatvec {
        *
        * \return The number of rows and columns of the matrix
        * */
-      int size() const {return M;}
+      constexpr int size() const {return M;}
 
       /*! \brief Number of rows.
        *
        * \return The number of rows of the matrix
        * */
-      int rows() const {return M;}
+      constexpr int rows() const {return M;}
 
       /*! \brief Number of columns.
        *
        * \return The number of columns of the matrix
        * */
-      int cols() const {return M;}
+      constexpr int cols() const {return M;}
 
       /*! \brief Leading dimension.
        *

@@ -346,13 +346,15 @@ namespace fmatvec {
   template <class AT>
     inline Vector<Ref,AT>::operator std::vector<AT>() const {
       std::vector<AT> ret(size());
-      if(size()>0) memcpy(&ret[0], &operator()(0), sizeof(AT)*size());
+      for(int i=0; i<size(); ++i)
+        ret[i] = operator()(i);
       return ret;
     }
 
   template <class AT>
     inline Vector<Ref,AT>::Vector(const std::vector<AT> &v) : Matrix<General,Ref,Ref,AT>(v.size(),1) {
-      if(size()>0) memcpy(&operator()(0), &v[0], sizeof(AT)*size());
+      for(int i=0; i<size(); ++i)
+        operator()(i) = v[i];
     }
 
   /// @cond NO_SHOW

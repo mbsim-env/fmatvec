@@ -202,7 +202,7 @@ namespace fmatvec {
        *
        * \return The size of the vector.
        * */
-      int size() const {return M;}
+      constexpr int size() const {return M;}
 
       //! Resize a fixed vector
       //! Do nothing for the fixed dimension and throw for any other dimension.
@@ -292,13 +292,15 @@ namespace fmatvec {
   template <int M, class AT>
    inline Vector<Fixed<M>,AT>::operator std::vector<AT>() const {
       std::vector<AT> ret(size());
-      if(size()>0) memcpy(&ret[0], &operator()(0), sizeof(AT)*size());
+      for(int i=0; i<size(); ++i)
+        ret[i] = operator()(i);
       return ret;
     }
 
   template <int M, class AT>
     inline Vector<Fixed<M>,AT>::Vector(const std::vector<AT> &v) : Matrix<General,Fixed<M>,Fixed<1>,AT>() {
-      if(size()>0) memcpy(&operator()(0), &v[0], sizeof(AT)*size());
+      for(int i=0; i<size(); ++i)
+        operator()(i) = v[i];
     }
 
   /// @cond NO_SHOW

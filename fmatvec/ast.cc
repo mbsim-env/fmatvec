@@ -441,6 +441,7 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
     firstCall=false;
     IndependentVariable a;
     IndependentVariable b;
+    SymbolicExpression error(std::shared_ptr<const Vertex>{nullptr});
     // we need to disable the expression optimization during buildup of the expressions to optimize
     optimizeExpressions=false;
     optExpr={
@@ -449,19 +450,31 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
       { 0+a       , a},
       { a+0       , a},
       { a-0       , a},
+      { a-a       , 0},
       { 0*a       , 0},
       { a*0       , 0},
       { 1*a       , a},
+      { -1*a      , -a},
       { a*1       , a},
+      { a*(-1)    , -a},
       { a*a       , pow(a,2)},
+      { a/0       , error},
+      { 0/a       , 0},
+      { a/a       , 1},
       { a/1       , a},
-      { a/a       , 1}, // we do not care about the 0/0 case here :-(
-      { 0/a       , 0}, // we do not care about the /0 case here :-(
+      { a/-1      , -a},
       { pow(a,1)  , a},
+      { pow(a,-1) , 1/a},
       { pow(a,0)  , 1},
       { pow(a,b)*a, pow(a,b+1)},
       { a*pow(a,b), pow(a,b+1)},
-      { pow(a,b)/a, pow(a,b-1)} // we do not care about the /0 case here :-(
+      { pow(a,b)/a, pow(a,b-1)},
+      { log(0)    , error},
+      { sqrt(-1)  , error},
+      { acosh(-1) , error},
+      { acosh(0)  , error},
+      { atanh(-1) , error},
+      { atanh(1)  , error},
     };
     // now enable the optimizations again
     optimizeExpressions=true;
@@ -476,7 +489,15 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
       SymbolicExpression out=opt.second;
       map<IndependentVariable, SymbolicExpression> m;
       if(in->equal(curOp, m)) {
-        // if this optimization expression matches then return the optimized expressions with all symbols of m replaced.
+        // if this optimization expression matches ...
+        // ... and the result is an error -> throw
+        if(!out.get())
+        {
+          stringstream str;
+          str<<in;
+          throw runtime_error("Illegal constant argument in operation: "+str.str());
+        }
+        // ... then return the optimized expressions with all symbols of m replaced.
         for(auto &x : m)
           out=subst(out, x.first, x.second);
         return out;

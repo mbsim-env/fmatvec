@@ -190,7 +190,7 @@ namespace fmatvec {
        *
        * \return The size of the rowvector.
        * */
-      int size() const {return N;}
+      constexpr int size() const {return N;}
 
       //! Resize a fixed vector
       //! Do nothing for the fixed dimension and throw on any other dimension.

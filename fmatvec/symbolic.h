@@ -209,6 +209,24 @@ Matrix<Type, Fixed<N>, Fixed<M>, double> eval(const Matrix<Type, Fixed<N>, Fixed
   return ret;
 }
 
+template<int N, class AT>
+SquareMatrix<Fixed<N>, double> eval(const SquareMatrix<Fixed<N>, AT> &x) {
+  SquareMatrix<Fixed<N>, double> ret;
+  for(int r=0; r<N; ++r)
+    for(int c=0; c<N; ++c)
+      ret(r,c)=eval(x(r,c));
+  return ret;
+}
+
+template<class Shape, class AT>
+SquareMatrix<Shape, double> eval(const SquareMatrix<Shape, AT> &x) {
+  SquareMatrix<Shape, double> ret(x.size());
+  for(int r=0; r<x.size(); ++r)
+    for(int c=0; c<x.size(); ++c)
+      ret(r,c)=eval(x(r,c));
+  return ret;
+}
+
 template<class DepR, class ShapeA, class IndepA, class ShapeB, class DepB>
 DepR subst(const DepR &se, const Vector<ShapeA, IndepA>& a, const Vector<ShapeB, DepB> &b) {
   if(a.size()!=b.size())
@@ -266,6 +284,17 @@ Vector<ShapeDst, ATIndep>& operator&=(Vector<ShapeDst, ATIndep> &dst, const Vect
   FMATVEC_ASSERT(N==src.size(), ATIndep);
   for(int i=0; i<N; ++i)
     dst(i)&=src(i);
+  return dst;
+}
+
+template<class TypeDst, class TypeSrc, class ShapeRowDst, class ShapeRowSrc, class ShapeColDst, class ShapeColSrc, class ATIndep>
+Matrix<TypeDst, ShapeRowDst, ShapeColDst, ATIndep>& operator&=(Matrix<TypeDst, ShapeRowDst, ShapeColDst, ATIndep> &dst,
+                                                               const Matrix<TypeSrc, ShapeRowSrc, ShapeColSrc, double> &src) {
+  FMATVEC_ASSERT(dst.rows()==src.rows(), ATIndep);
+  FMATVEC_ASSERT(dst.cols()==src.cols(), ATIndep);
+  for(int r=0; r<dst.rows(); ++r)
+    for(int c=0; c<dst.cols(); ++c)
+      dst(r,c)&=src(r,c);
   return dst;
 }
 

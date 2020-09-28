@@ -143,7 +143,7 @@ namespace fmatvec {
        *
        * \return The number of rows and columns of the matrix.
        * */
-      int size() const {return M;}
+      constexpr int size() const {return M;}
 
       using Matrix<General,Var,Var,AT>::operator();
       using Matrix<General,Var,Var,AT>::e;

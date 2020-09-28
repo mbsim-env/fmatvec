@@ -218,7 +218,7 @@ namespace fmatvec {
        *
        * \return The size of the vector.
        * */
-      int size() const {return N;}
+      constexpr int size() const {return N;}
 
       /*! \brief Increment.
        *
@@ -286,13 +286,15 @@ namespace fmatvec {
   template <class AT>
     inline RowVector<Var,AT>::operator std::vector<AT>() const {
       std::vector<AT> ret(size());
-      if(size()>0) memcpy(&ret[0], &operator()(0), sizeof(AT)*size());
+      for(int i=0; i<size(); ++i)
+        ret[i] = operator()(i);
       return ret;
     }
 
   template <class AT>
     inline RowVector<Var,AT>::RowVector(const std::vector<AT> &v) : Matrix<General,Fixed<1>,Var,AT>(v.size(),1) {
-      if(size()>0) memcpy(&operator()(0), &v[0], sizeof(AT)*size());
+      for(int i=0; i<size(); ++i)
+        operator()(i) = v[i];
     }
 
   template <class AT>
