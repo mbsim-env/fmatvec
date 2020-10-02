@@ -575,5 +575,31 @@ int main() {
     funcR .parDer2DirDer1(arg1Dir, arg1, arg2);
   }
 
+  {
+    IndependentVariable t;
+    auto x = t*t;
+    class Func : public Function<double(double)> {
+      public:
+        double operator()(const double &arg) override {
+          return arg*arg;
+        }
+        double parDer(const double &arg) override {
+          return 2*arg;
+        }
+        // double dirDer(...) override -> use default implemention from fmatvec/function.h
+        double parDerParDer(const double &arg) override {
+          return 2;
+        }
+        // double dirDerDirDer(...) override -> use default implemention from fmatvec/function.h
+    };
+    auto func = make_shared<Func>(); // arg*arg
+    auto fx = symbolicFunc(func, x); // x * x = t*t * t*t
+    auto res = x * fx; // t*t * t*t * t*t
+    t ^= 2;
+    cout<<eval(res)<<endl; // 64
+    cout<<eval(parDer(res,t))<<endl; // 192
+    cout<<eval(parDer(parDer(res,t),t))<<endl; // 480
+  }
+
   return 0;  
 }
