@@ -232,7 +232,10 @@ class Function<Ret(Arg)> : virtual public Atom {
 
     //! First derivative: directional derivative of the function value with respect to the argument.
     virtual DRetDDir dirDer(const Arg &argDir, const Arg &arg) {
-      throw std::runtime_error("dirDer must be overloaded by derived class.");
+      if constexpr (std::is_same_v<DRetDArg, ErrorType>)
+        throw std::runtime_error("dirDer must be overloaded by derived class.");
+      else
+        return parDer(arg) * argDir;
     }
 
     //! Second derivative: partial derivative of parDer with respect to the argument.
@@ -242,12 +245,18 @@ class Function<Ret(Arg)> : virtual public Atom {
 
     //! Second derivative: directional derivative of parDer with respect to the argument.
     virtual DRetDArg parDerDirDer(const Arg &argDir, const Arg &arg) {
-      throw std::runtime_error("parDerDirDer must be overloaded by derived class.");
+      if constexpr (std::is_same_v<DDRetDDArg, ErrorType>)
+        throw std::runtime_error("parDerDirDer must be overloaded by derived class.");
+      else
+        return parDerParDer(arg) * argDir;
     }
 
     //! Second derivative: directional derivative of dirDer with respect to the argument.
     virtual DRetDDir dirDerDirDer(const Arg &argDir_1, const Arg &argDir_2, const Arg &arg) {
-      throw std::runtime_error("dirDerDirDer must be overloaded by derived class.");
+      if constexpr (std::is_same_v<DDRetDDArg, ErrorType>)
+        throw std::runtime_error("dirDerDirDer must be overloaded by derived class.");
+      else
+        return parDerParDer(arg) * argDir_1 * argDir_2;
     }
 
     //! Returns true, if the partial derivative of the function value with respect to the argument 
@@ -295,7 +304,10 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
 
     //! First derivative: directional derivative of the function value with respect to the first argument.
     virtual DRetDDir1 dirDer1(const Arg1 &arg1Dir, const Arg1 &arg1, const Arg2 &arg2) {
-      throw std::runtime_error("dirDer1 must be overloaded by derived class.");
+      if constexpr (std::is_same_v<DRetDArg1, ErrorType>)
+        throw std::runtime_error("dirDer1 must be overloaded by derived class.");
+      else
+        return parDer1(arg1, arg2) * arg1Dir;
     }
 
     //! First derivative: partial derivative of the function value with respect to the second argument.
@@ -305,7 +317,10 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
 
     //! First derivative: directional derivative of the function value with respect to the second argument.
     virtual DRetDDir2 dirDer2(const Arg2 &arg2Dir, const Arg1 &arg1, const Arg2 &arg2) {
-      throw std::runtime_error("dirDer2 must be overloaded by derived class.");
+      if constexpr (std::is_same_v<DRetDArg2, ErrorType>)
+        throw std::runtime_error("dirDer2 must be overloaded by derived class.");
+      else
+        return parDer2(arg1, arg2) * arg2Dir;
     }
 
     //! Second derivative: partial derivative of parDer1 with respect to the first argument.
@@ -315,12 +330,18 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
 
     //! Second derivative: directional derivative of parDer1 with respect to the first argument.
     virtual DRetDArg1 parDer1DirDer1(const Arg1 &arg1Dir, const Arg1 &arg1, const Arg2 &arg2) {
-      throw std::runtime_error("parDer1DirDer1 must be overloaded by derived class.");
+      if constexpr (std::is_same_v<DDRetDDArg1, ErrorType>)
+        throw std::runtime_error("parDer1DirDer1 must be overloaded by derived class.");
+      else
+        return parDer1ParDer1(arg1, arg2) * arg1Dir;
     }
 
     //! Second derivative: directional derivative of dirDer1 with respect to the first argument.
     virtual DRetDDir1 dirDer1DirDer1(const Arg1 &arg1Dir_1, const Arg1 &arg1Dir_2, const Arg1 &arg1, const Arg2 &arg2) {
-      throw std::runtime_error("dirDer1DirDer1 must be overloaded by derived class.");
+      if constexpr (std::is_same_v<DDRetDDArg1, ErrorType>)
+        throw std::runtime_error("dirDer1DirDer1 must be overloaded by derived class.");
+      else
+        return parDer1ParDer1(arg1, arg2) * arg1Dir_1 * arg1Dir_2;
     }
 
     //! Second derivative: partial derivative of parDer2 with respect to the first argument.
@@ -330,12 +351,18 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
 
     //! Second derivative: directional derivative of parDer2 with respect to the first argument.
     virtual DRetDArg2 parDer2DirDer2(const Arg2 &arg2Dir, const Arg1 &arg1, const Arg2 &arg2) {
-      throw std::runtime_error("parDer2DirDer2 must be overloaded by derived class.");
+      if constexpr (std::is_same_v<DDRetDDArg2, ErrorType>)
+        throw std::runtime_error("parDer2DirDer2 must be overloaded by derived class.");
+      else
+        return parDer2ParDer2(arg1, arg2) * arg2Dir;
     }
 
     //! Second derivative: directional derivative of dirDer2 with respect to the first argument.
     virtual DRetDDir2 dirDer2DirDer2(const Arg2 &arg2Dir_1, const Arg2 &arg2Dir_2, const Arg1 &arg1, const Arg2 &arg2) {
-      throw std::runtime_error("dirDer2DirDer2 must be overloaded by derived class.");
+      if constexpr (std::is_same_v<DDRetDDArg2, ErrorType>)
+        throw std::runtime_error("dirDer2DirDer2 must be overloaded by derived class.");
+      else
+        return parDer2ParDer2(arg1, arg2) * arg2Dir_1 * arg2Dir_2;
     }
 
     //! Second mixed derivative: partial derivative of parDer1 with respect to the second argument.
@@ -345,17 +372,26 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
 
     //! Second mixed derivative: directional derivative of parDer1 with respect to the second argument.
     virtual DRetDArg1 parDer1DirDer2(const Arg2 &arg2Dir, const Arg1 &arg1, const Arg2 &arg2) {
-      throw std::runtime_error("parDer1DirDer2 must be overloaded by derived class.");
+      if constexpr (std::is_same_v<DDRetDArg1DArg2, ErrorType>)
+        throw std::runtime_error("parDer1DirDer2 must be overloaded by derived class.");
+      else
+        return parDer1ParDer2(arg1, arg2) * arg2Dir;
     }
 
     //! Second mixed derivative: directional derivative of dirDer2 with respect to the first argument.
     virtual DRetDDir2 dirDer2DirDer1(const Arg2 &arg2Dir, const Arg1 &arg1Dir, const Arg1 &arg1, const Arg2 &arg2) {
-      throw std::runtime_error("dirDer2DirDer1 must be overloaded by derived class.");
+      if constexpr (std::is_same_v<DDRetDArg1DArg2, ErrorType>)
+        throw std::runtime_error("dirDer2DirDer1 must be overloaded by derived class.");
+      else
+        return parDer1ParDer2(arg1, arg2) * arg2Dir * arg1Dir;
     }
 
     //! Second mixed derivative: partial derivative of dirDer1 with respect to the second argument.
     virtual DRetDArg2 parDer2DirDer1(const Arg1 &arg1Dir, const Arg1 &arg1, const Arg2 &arg2) {
-      throw std::runtime_error("parDer2DirDer1 must be overloaded by derived class.");
+      if constexpr (std::is_same_v<DDRetDArg1DArg2, ErrorType>)
+        throw std::runtime_error("parDer2DirDer1 must be overloaded by derived class.");
+      else
+        return parDer1ParDer2(arg1, arg2) * arg1Dir;
     }
 
     //! Returns true, if the partial derivative of the function value with respect to the first argument 
