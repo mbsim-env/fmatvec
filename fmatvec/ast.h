@@ -26,7 +26,8 @@ namespace AST {
   class Vertex;
   class Symbol;
   class Operation;
-  class Function;
+  class Function1;
+  class Function2;
   template<class T> class Constant;
 }
 
@@ -39,7 +40,8 @@ class FMATVEC_EXPORT SymbolicExpression : public std::shared_ptr<const AST::Vert
   friend class AST::Operation;
   friend class AST::Constant<int>;
   friend class AST::Constant<double>;
-  friend class AST::Function;
+  friend class AST::Function1;
+  friend class AST::Function2;
   friend FMATVEC_EXPORT SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
   friend FMATVEC_EXPORT double eval(const SymbolicExpression &x);
   friend FMATVEC_EXPORT SymbolicExpression subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
@@ -183,7 +185,10 @@ FMATVEC_EXPORT SymbolicExpression exp(const SymbolicExpression &a);
 FMATVEC_EXPORT SymbolicExpression sign(const SymbolicExpression &a);
 FMATVEC_EXPORT SymbolicExpression abs(const SymbolicExpression &a);
 
-FMATVEC_EXPORT SymbolicExpression symbolicFunc(const std::shared_ptr<fmatvec::Function<double(double)>> &func, const SymbolicExpression &arg);
+FMATVEC_EXPORT SymbolicExpression symbolicFunc(
+  const std::shared_ptr<fmatvec::Function<double(double)>> &func, const SymbolicExpression &arg);
+FMATVEC_EXPORT SymbolicExpression symbolicFunc(
+  const std::shared_ptr<fmatvec::Function<double(double,double)>> &func, const SymbolicExpression &arg1, const SymbolicExpression &arg2);
 
 #ifndef SWIG
 namespace AST { // internal namespace
@@ -316,19 +321,19 @@ unsigned long Symbol::getVersion() const {
   return version;
 }
 
-// ***** Function *****
+// ***** Function1 *****
 
 //! A vertex of the AST representing an arbitary function.
-class FMATVEC_EXPORT Function : public Vertex, public std::enable_shared_from_this<Function> {
+class FMATVEC_EXPORT Function1 : public Vertex, public std::enable_shared_from_this<Function1> {
   public:
     static SymbolicExpression create(const std::shared_ptr<fmatvec::Function<double(double)>> &func, const SymbolicExpression &arg);
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
 
   private:
-    Function(const std::shared_ptr<fmatvec::Function<double(double)>> &func_, const SymbolicExpression &arg_, int derivative_,
-             const SymbolicExpression& argDir1_, const SymbolicExpression& argDir2_,
-             const SymbolicExpression& argDir1Dir2_);
+    Function1(const std::shared_ptr<fmatvec::Function<double(double)>> &func_, const SymbolicExpression &arg_, int derivative_,
+              const SymbolicExpression& argDir1_, const SymbolicExpression& argDir2_,
+              const SymbolicExpression& argDir1Dir2_);
     bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
 
     const std::shared_ptr<fmatvec::Function<double(double)>> func;
@@ -340,12 +345,58 @@ class FMATVEC_EXPORT Function : public Vertex, public std::enable_shared_from_th
     //mfmf cache
 };
 
-double Function::eval() const {
+double Function1::eval() const {
   switch(derivative) {
     case 0: return (*func)(fmatvec::eval(arg));
     case 1: return func->dirDer(fmatvec::eval(argDir1), fmatvec::eval(arg));
     case 2: return func->dirDer(fmatvec::eval(argDir1Dir2), fmatvec::eval(arg)) +
                    func->dirDerDirDer(fmatvec::eval(argDir1), fmatvec::eval(argDir2), fmatvec::eval(arg));
+    default: return 0; // cannot happen, see ctor
+  }
+}
+
+// ***** Function2 *****
+
+//! A vertex of the AST representing an arbitary function.
+class FMATVEC_EXPORT Function2 : public Vertex, public std::enable_shared_from_this<Function2> {
+  public:
+    static SymbolicExpression create(const std::shared_ptr<fmatvec::Function<double(double,double)>> &func,
+                                     const SymbolicExpression &arg1, const SymbolicExpression &arg2);
+    inline double eval() const override;
+    SymbolicExpression parDer(const IndependentVariable &x) const override;
+
+  private:
+    Function2(const std::shared_ptr<fmatvec::Function<double(double,double)>> &func_,
+              const SymbolicExpression &arg1_, const SymbolicExpression &arg2_, int derivative_,
+              const SymbolicExpression& arg1Dir1_, const SymbolicExpression& arg2Dir1_,
+              const SymbolicExpression& arg1Dir2_, const SymbolicExpression& arg2Dir2_,
+              const SymbolicExpression& arg1Dir1Dir2_, const SymbolicExpression& arg2Dir1Dir2_);
+    bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
+
+    const std::shared_ptr<fmatvec::Function<double(double,double)>> func;
+    const SymbolicExpression arg1;
+    const SymbolicExpression arg2;
+    int derivative;
+    const SymbolicExpression arg1Dir1;
+    const SymbolicExpression arg2Dir1;
+    const SymbolicExpression arg1Dir2;
+    const SymbolicExpression arg2Dir2;
+    const SymbolicExpression arg1Dir1Dir2;
+    const SymbolicExpression arg2Dir1Dir2;
+    //mfmf cache
+};
+
+double Function2::eval() const {
+  switch(derivative) {
+    case 0: return (*func)(fmatvec::eval(arg1), fmatvec::eval(arg2));
+    case 1: return func->dirDer1(fmatvec::eval(arg1Dir1),fmatvec::eval(arg1),fmatvec::eval(arg2))+
+                   func->dirDer2(fmatvec::eval(arg2Dir1),fmatvec::eval(arg1),fmatvec::eval(arg2));
+    case 2: return func->dirDer1(fmatvec::eval(arg1Dir1Dir2),fmatvec::eval(arg1),fmatvec::eval(arg2))+
+                   func->dirDer1DirDer1(fmatvec::eval(arg1Dir1),fmatvec::eval(arg1Dir2),fmatvec::eval(arg1),fmatvec::eval(arg2))+
+                   func->dirDer2DirDer1(fmatvec::eval(arg1Dir1),fmatvec::eval(arg2Dir2),fmatvec::eval(arg1),fmatvec::eval(arg2))+
+                   func->dirDer2(fmatvec::eval(arg2Dir1Dir2),fmatvec::eval(arg1),fmatvec::eval(arg2))+
+                   func->dirDer2DirDer1(fmatvec::eval(arg2Dir1),fmatvec::eval(arg1Dir2),fmatvec::eval(arg1),fmatvec::eval(arg2))+
+                   func->dirDer2DirDer2(fmatvec::eval(arg2Dir1),fmatvec::eval(arg2Dir2),fmatvec::eval(arg1),fmatvec::eval(arg2));
     default: return 0; // cannot happen, see ctor
   }
 }

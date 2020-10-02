@@ -575,9 +575,10 @@ int main() {
     funcR .parDer2DirDer1(arg1Dir, arg1, arg2);
   }
 
+  // native function with one argument as symbolic function
   {
-    IndependentVariable t;
-    auto x = t*t;
+    IndependentVariable i1, i2;
+    auto arg = sin(pow(i1,2))*sinh(pow(i2,3));
     class Func : public Function<double(double)> {
       public:
         double operator()(const double &arg) override {
@@ -592,13 +593,62 @@ int main() {
         }
         // double dirDerDirDer(...) override -> use default implemention from fmatvec/function.h
     };
-    auto func = make_shared<Func>(); // arg*arg
-    auto fx = symbolicFunc(func, x); // x * x = t*t * t*t
-    auto res = x * fx; // t*t * t*t * t*t
-    t ^= 2;
-    cout<<eval(res)<<endl; // 64
-    cout<<eval(parDer(res,t))<<endl; // 192
-    cout<<eval(parDer(parDer(res,t),t))<<endl; // 480
+    auto funcN = symbolicFunc(make_shared<Func>(), arg);
+    auto funcS = arg*arg;
+    auto resN = sin(arg) * pow(funcN,2);
+    auto resS = sin(arg) * pow(funcS,2);
+    i1 ^= 0.9;
+    i2 ^= 0.8;
+    double v;
+    cout<<(v=eval(resN))<<" "<<eval(resN)-v<<endl;
+    cout<<(v=eval(parDer(resN,i1)))<<" "<<eval(parDer(resN,i1))-v<<endl;
+    cout<<(v=eval(parDer(resN,i2)))<<" "<<eval(parDer(resN,i2))-v<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i1),i1)))<<" "<<eval(parDer(parDer(resN,i1),i1))-v<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i2),i2)))<<" "<<eval(parDer(parDer(resN,i2),i2))-v<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i1),i2)))<<" "<<eval(parDer(parDer(resN,i1),i2))-v<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i2),i1)))<<" "<<eval(parDer(parDer(resN,i2),i1))-v<<endl;
+  }
+
+  // native function with two arguments as symbolic function
+  {
+    IndependentVariable i1, i2;
+    auto arg1 = sin(pow(i1,2))*sinh(pow(i2,3));
+    auto arg2 = cos(pow(i2,2))*cosh(pow(i1,3));
+    class Func : public Function<double(double,double)> {
+      public:
+        double operator()(const double &arg1, const double &arg2) override {
+          return arg1*arg1+arg2*arg2+arg1*arg1*arg2*arg2;
+        }
+        double parDer1(const double &arg1, const double &arg2) override {
+          return 2*arg1+2*arg1*arg2*arg2;
+        }
+        double parDer2(const double &arg1, const double &arg2) override {
+          return 2*arg2+arg1*arg1*2*arg2;
+        }
+        double parDer1ParDer2(const double &arg1, const double &arg2) override {
+          return 2*arg1*2*arg2;
+        }
+        double parDer1ParDer1(const double &arg1, const double &arg2) override {
+          return 2+2*arg2*arg2;
+        }
+        double parDer2ParDer2(const double &arg1, const double &arg2) override {
+          return 2+arg1*arg1*2;
+        }
+    };
+    auto funcN = symbolicFunc(make_shared<Func>(), arg1, arg2);
+    auto funcS = arg1*arg1+arg2*arg2+arg1*arg1*arg2*arg2;
+    auto resN = cos(arg1) *sin(arg2) * pow(funcN,2);
+    auto resS = cos(arg1) *sin(arg2) * pow(funcS,2);
+    i1 ^= 0.9;
+    i2 ^= 0.8;
+    double v;
+    cout<<(v=eval(resN))<<" "<<eval(resN)-v<<endl;
+    cout<<(v=eval(parDer(resN,i1)))<<" "<<eval(parDer(resN,i1))-v<<endl;
+    cout<<(v=eval(parDer(resN,i2)))<<" "<<eval(parDer(resN,i2))-v<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i1),i1)))<<" "<<eval(parDer(parDer(resN,i1),i1))-v<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i2),i2)))<<" "<<eval(parDer(parDer(resN,i2),i2))-v<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i1),i2)))<<" "<<eval(parDer(parDer(resN,i1),i2))-v<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i2),i1)))<<" "<<eval(parDer(parDer(resN,i2),i1))-v<<endl;
   }
 
   return 0;  
