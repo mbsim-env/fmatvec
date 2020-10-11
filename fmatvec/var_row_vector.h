@@ -292,7 +292,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline RowVector<Var,AT>::RowVector(const std::vector<AT> &v) : Matrix<General,Fixed<1>,Var,AT>(v.size(),1) {
+    inline RowVector<Var,AT>::RowVector(const std::vector<AT> &v) : Matrix<General,Fixed<1>,Var,AT>(1, v.size()) {
       for(int i=0; i<size(); ++i)
         operator()(i) = v[i];
     }

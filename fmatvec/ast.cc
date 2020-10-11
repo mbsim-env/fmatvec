@@ -543,6 +543,8 @@ bool Operation::equal(const SymbolicExpression &b, std::map<IndependentVariable,
   if(op!=bo->op)
     return false;
   // if any of the children vertexes are not equal -> return false
+  if(child.size()!=bo->child.size())
+    return false;
   for(size_t i=0; i<child.size(); ++i)
     if(!child[i]->equal(bo->child[i], m))
       return false;
@@ -611,7 +613,8 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
 
 Operation::Operation(Operator op_, const vector<SymbolicExpression> &child_) : op(op_), child(child_) {
   for(auto &c : child)
-    dependsOn.insert(c->getDependsOn().begin(), c->getDependsOn().end());
+    for(auto &x : c->getDependsOn())
+      dependsOn.insert(make_pair(x.first, 0));
 }
 
 bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) const {
