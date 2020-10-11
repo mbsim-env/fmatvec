@@ -846,5 +846,26 @@ int main() {
     cout<<(v=eval(parDer(parDer(resN,i2),i1)))<<" "<<compare(eval(parDer(parDer(resS,i2),i1)),v)<<endl;
   }
 
+  {
+    IndependentVariable i1, i2;
+    auto arg = sin(pow(i1,2))*sinh(pow(i2,3));
+    class Func : public Function<VecV(double)> {
+      public:
+        VecV operator()(const double &arg) override {
+          return VecV({arg*arg,arg*arg+100});
+        }
+        VecV parDer(const double &arg) override {
+          return VecV({2*arg,2*arg});
+        }
+        VecV parDerParDer(const double &arg) override {
+          return VecV({2,2});
+        }
+    };
+    auto funcN = symbolicFunc<Var,double>(make_shared<Func>(), arg);
+    i1 ^= 0.9;
+    i2 ^= 0.8;
+    cout<<eval(funcN)<<endl;
+  }
+
   return 0;  
 }

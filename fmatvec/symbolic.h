@@ -6,6 +6,35 @@
 
 namespace fmatvec {
 
+// Replace in a fmatvec scalar, vector or matrix the AT with ATNew.
+template<class MatVec, class NewAT>
+struct ReplaceAT;
+
+template<class NewAT>
+struct ReplaceAT<ErrorType, NewAT> {
+  using Type = ErrorType;
+};
+
+template<class NewAT>
+struct ReplaceAT<double, NewAT> {
+  using Type = NewAT;
+};
+
+template<class Shape, class NewAT>
+struct ReplaceAT<Vector<Shape, double>, NewAT> {
+  using Type = Vector<Shape, NewAT>;
+};
+
+template<class Shape, class NewAT>
+struct ReplaceAT<RowVector<Shape, double>, NewAT> {
+  using Type = RowVector<Shape, NewAT>;
+};
+
+template<class MatType, class RowShape, class ColShape, class NewAT>
+struct ReplaceAT<Matrix<MatType, RowShape, ColShape, double>, NewAT> {
+  using Type = Matrix<MatType, RowShape, ColShape, NewAT>;
+};
+
 // definitions of matrix/vector operations/functions only usefull for symbolic calculations
 // like building partial derivatives, evaluation of symbolic expressions to double values, ...
 
@@ -295,6 +324,52 @@ Matrix<TypeDst, ShapeRowDst, ShapeColDst, ATIndep>& operator^=(Matrix<TypeDst, S
     for(int c=0; c<dst.cols(); ++c)
       dst(r,c)^=src(r,c);
   return dst;
+}
+
+/***** native function as symbolic function (scalar function are defined in ast.h; here are vector and matrix function defined) *****/
+
+namespace {
+  template<class RType, class Arg>
+  class FunctionRetWrapper : public Function<double(Arg)>  {
+    public:
+      FunctionRetWrapper(const std::shared_ptr<Function<Vector<RType,double>(Arg)>> &func_, int idx_) : func(func_), idx(idx_) {}
+      double operator()(const Arg &arg) override {
+        return (*func)(arg)(idx);
+      }
+      typename Function<double(Arg)>::DRetDArg parDer(const Arg &arg) override {
+        return func->parDer(arg)(idx);
+      }
+      typename Function<double(Arg)>::DRetDDir dirDer(const Arg &argDir, const Arg &arg) override {
+        return func->dirDer(argDir, arg)(idx);
+      }
+      typename Function<double(Arg)>::DDRetDDArg parDerParDer(const Arg &arg) override {
+        return func->parDerParDer(arg)(idx);
+      }
+      typename Function<double(Arg)>::DRetDArg parDerDirDer(const Arg &argDir, const Arg &arg) override {
+        return func->parDerDirDer(argDir, arg)(idx);
+      }
+      typename Function<double(Arg)>::DRetDDir dirDerDirDer(const Arg &argDir_1, const Arg &argDir_2, const Arg &arg) override {
+        return func->dirDerDirDer(argDir_1, argDir_2, arg)(idx);
+      }
+    private:
+      std::shared_ptr<Function<Vector<RType,double>(Arg)>> func;
+      int idx;
+  };
+}
+
+template<class RType, class Arg>
+FMATVEC_EXPORT Vector<RType,SymbolicExpression> symbolicFunc(
+  const std::shared_ptr<Function<Vector<RType,double>(Arg)>> &func,
+  const typename ReplaceAT<Arg,SymbolicExpression>::Type &arg, int size_=0) {
+  int size=func->getRetSize().first;
+  if(size==0 && size_!=0)
+    size=size_;
+  else
+    size=(*func)(Arg()).size();
+  Vector<RType,SymbolicExpression> ret(size);
+  for(int i=0; i<size; ++i)
+    ret(i) = symbolicFunc(std::make_shared<FunctionRetWrapper<Var,Arg>>(func, i), arg);//mfmf use cache
+  return ret;
 }
 
 }

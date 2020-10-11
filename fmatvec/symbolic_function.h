@@ -7,35 +7,6 @@
 
 namespace fmatvec {
 
-// Replace in a fmatvec scalar, vector or matrix the AT with ATNew.
-template<class MatVec, class NewAT>
-struct ReplaceAT;
-
-template<class NewAT>
-struct ReplaceAT<ErrorType, NewAT> {
-  using Type = ErrorType;
-};
-
-template<class NewAT>
-struct ReplaceAT<double, NewAT> {
-  using Type = NewAT;
-};
-
-template<class Shape, class NewAT>
-struct ReplaceAT<Vector<Shape, double>, NewAT> {
-  using Type = Vector<Shape, NewAT>;
-};
-
-template<class Shape, class NewAT>
-struct ReplaceAT<RowVector<Shape, double>, NewAT> {
-  using Type = RowVector<Shape, NewAT>;
-};
-
-template<class MatType, class RowShape, class ColShape, class NewAT>
-struct ReplaceAT<Matrix<MatType, RowShape, ColShape, double>, NewAT> {
-  using Type = Matrix<MatType, RowShape, ColShape, NewAT>;
-};
-
 namespace {
   template<class ATIndep>
   struct Helper {
