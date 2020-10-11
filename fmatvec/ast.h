@@ -26,8 +26,7 @@ namespace AST {
   class Vertex;
   class Symbol;
   class Operation;
-  class Function1;
-  class Function2;
+  class Function;
   template<class T> class Constant;
 }
 
@@ -40,8 +39,7 @@ class FMATVEC_EXPORT SymbolicExpression : public std::shared_ptr<const AST::Vert
   friend class AST::Operation;
   friend class AST::Constant<int>;
   friend class AST::Constant<double>;
-  friend class AST::Function1;
-  friend class AST::Function2;
+  friend class AST::Function;
   friend FMATVEC_EXPORT SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
   friend FMATVEC_EXPORT double eval(const SymbolicExpression &x);
   friend FMATVEC_EXPORT SymbolicExpression subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
@@ -186,9 +184,32 @@ FMATVEC_EXPORT SymbolicExpression sign(const SymbolicExpression &a);
 FMATVEC_EXPORT SymbolicExpression abs(const SymbolicExpression &a);
 
 FMATVEC_EXPORT SymbolicExpression symbolicFunc(
-  const std::shared_ptr<fmatvec::Function<double(double)>> &func, const SymbolicExpression &arg);
+  const std::shared_ptr<Function<double(double)>> &func,
+  const SymbolicExpression &arg);
+
+template<class Type>
 FMATVEC_EXPORT SymbolicExpression symbolicFunc(
-  const std::shared_ptr<fmatvec::Function<double(double,double)>> &func, const SymbolicExpression &arg1, const SymbolicExpression &arg2);
+  const std::shared_ptr<Function<double(Vector<Type, double>)>> &func,
+  const Vector<Type, SymbolicExpression> &arg);
+
+FMATVEC_EXPORT SymbolicExpression symbolicFunc(
+  const std::shared_ptr<Function<double(double,double)>> &func,
+  const SymbolicExpression &arg1, const SymbolicExpression &arg2);
+
+template<class Type>
+FMATVEC_EXPORT SymbolicExpression symbolicFunc(
+  const std::shared_ptr<Function<double(Vector<Type,double>,double)>> &func,
+  const Vector<Type, SymbolicExpression> &arg1, const SymbolicExpression &arg2);
+
+template<class Type>
+FMATVEC_EXPORT SymbolicExpression symbolicFunc(
+  const std::shared_ptr<Function<double(double,Vector<Type,double>)>> &func,
+  const SymbolicExpression &arg1, const Vector<Type, SymbolicExpression> &arg2);
+
+template<class Type1, class Type2>
+FMATVEC_EXPORT SymbolicExpression symbolicFunc(
+  const std::shared_ptr<Function<double(Vector<Type1,double>,Vector<Type2,double>)>> &func,
+  const Vector<Type1, SymbolicExpression> &arg1, const Vector<Type2, SymbolicExpression> &arg2);
 
 #ifndef SWIG
 namespace AST { // internal namespace
@@ -321,84 +342,271 @@ unsigned long Symbol::getVersion() const {
   return version;
 }
 
-// ***** Function1 *****
+// ***** FunctionWrapper *****
+
+class FunctionWrapper {
+  public:
+    virtual double operator()(const std::vector<double> &arg) = 0;
+    virtual double dirDer(const std::vector<double> &dir1, const std::vector<double> &arg) = 0;
+    virtual double dirDerDirDer(const std::vector<double> &dir1, const std::vector<double> &dir2, const std::vector<double> &arg) = 0;
+};
+
+class FunctionWrapperS : public FunctionWrapper {
+  public:
+    FunctionWrapperS(const std::shared_ptr<fmatvec::Function<double(double)>> &func_) : func(func_) {}
+    double operator()(const std::vector<double> &arg) override {
+      return (*func)(arg[0]);
+    }
+    double dirDer(const std::vector<double> &dir1, const std::vector<double> &arg) override {
+      return func->dirDer(dir1[0], arg[0]);
+    }
+    double dirDerDirDer(const std::vector<double> &dir1, const std::vector<double> &dir2, const std::vector<double> &arg) override {
+      return func->dirDerDirDer(dir1[0], dir2[0], arg[0]);
+    }
+  private:
+    std::shared_ptr<fmatvec::Function<double(double)>> func;
+};
+
+template<class Type>
+class FunctionWrapperV : public FunctionWrapper {
+  public:
+    FunctionWrapperV(const std::shared_ptr<fmatvec::Function<double(fmatvec::Vector<Type,double>)>> &func_, int argSize) : func(func_) {
+      argV.resize(argSize);
+      dir1V.resize(argSize);
+      dir2V.resize(argSize);
+    }
+    double operator()(const std::vector<double> &arg) override {
+      for(size_t i=0; i<arg.size(); ++i)
+        argV(i) = arg[i];
+      return (*func)(argV);
+    }
+    double dirDer(const std::vector<double> &dir1, const std::vector<double> &arg) override {
+      for(size_t i=0; i<arg.size(); ++i)
+        argV(i) = arg[i];
+      for(size_t i=0; i<arg.size(); ++i)
+        dir1V(i) = dir1[i];
+      return func->dirDer(dir1V, argV);
+    }
+    double dirDerDirDer(const std::vector<double> &dir1, const std::vector<double> &dir2, const std::vector<double> &arg) override {
+      for(size_t i=0; i<arg.size(); ++i)
+        argV(i) = arg[i];
+      for(size_t i=0; i<arg.size(); ++i)
+        dir1V(i) = dir1[i];
+      for(size_t i=0; i<arg.size(); ++i)
+        dir2V(i) = dir2[i];
+      return func->dirDerDirDer(dir1V, dir2V, argV);
+    }
+  private:
+    std::shared_ptr<fmatvec::Function<double(fmatvec::Vector<Type,double>)>> func;
+    fmatvec::Vector<Type,double> argV;
+    fmatvec::Vector<Type,double> dir1V;
+    fmatvec::Vector<Type,double> dir2V;
+};
+
+class FunctionWrapperSS : public FunctionWrapper {
+  public:
+    FunctionWrapperSS(const std::shared_ptr<fmatvec::Function<double(double,double)>> &func_) : func(func_) {}
+    double operator()(const std::vector<double> &arg) override {
+      return (*func)(arg[0], arg[1]);
+    }
+    double dirDer(const std::vector<double> &dir1, const std::vector<double> &arg) override {
+      return func->dirDer1(dir1[0], arg[0], arg[1]) +
+             func->dirDer2(dir1[1], arg[0], arg[1]);
+    }
+    double dirDerDirDer(const std::vector<double> &dir1, const std::vector<double> &dir2, const std::vector<double> &arg) override {
+      return func->dirDer1DirDer1(dir1[0], dir2[0], arg[0], arg[1]) + 
+             func->dirDer2DirDer1(dir1[0], dir2[1], arg[0], arg[1]) +
+             func->dirDer2DirDer1(dir1[1], dir2[0], arg[0], arg[1]) +
+             func->dirDer2DirDer2(dir1[1], dir2[1], arg[0], arg[1]);
+    }
+  private:
+    std::shared_ptr<fmatvec::Function<double(double,double)>> func;
+};
+
+template<class Type>
+class FunctionWrapperVS : public FunctionWrapper {
+  public:
+    FunctionWrapperVS(const std::shared_ptr<fmatvec::Function<double(Vector<Type,double>,double)>> &func_, int argSize) : func(func_) {
+      argV.resize(argSize);
+      dir1V.resize(argSize);
+      dir2V.resize(argSize);
+    }
+    double operator()(const std::vector<double> &arg) override {
+      for(size_t i=0; i<arg.size()-1; ++i)
+        argV(i) = arg[i];
+      return (*func)(argV, arg[arg.size()-1]);
+    }
+    double dirDer(const std::vector<double> &dir1, const std::vector<double> &arg) override {
+      for(size_t i=0; i<arg.size()-1; ++i)
+        argV(i) = arg[i];
+      for(size_t i=0; i<arg.size()-1; ++i)
+        dir1V(i) = dir1[i];
+      return func->dirDer1(dir1V             , argV, arg[arg.size()-1]) +
+             func->dirDer2(dir1[arg.size()-1], argV, arg[arg.size()-1]);
+    }
+    double dirDerDirDer(const std::vector<double> &dir1, const std::vector<double> &dir2, const std::vector<double> &arg) override {
+      for(size_t i=0; i<arg.size()-1; ++i)
+        argV(i) = arg[i];
+      for(size_t i=0; i<arg.size()-1; ++i)
+        dir1V(i) = dir1[i];
+      for(size_t i=0; i<arg.size()-1; ++i)
+        dir2V(i) = dir2[i];
+      return func->dirDer1DirDer1(dir1V             , dir2V             , argV, arg[arg.size()-1]) + 
+             func->dirDer2DirDer1(dir1V             , dir2[arg.size()-1], argV, arg[arg.size()-1]) +
+             func->dirDer2DirDer1(dir1[arg.size()-1], dir2V             , argV, arg[arg.size()-1]) +
+             func->dirDer2DirDer2(dir1[arg.size()-1], dir2[arg.size()-1], argV, arg[arg.size()-1]);
+    }
+  private:
+    std::shared_ptr<fmatvec::Function<double(Vector<Type,double>,double)>> func;
+    fmatvec::Vector<Type,double> argV;
+    fmatvec::Vector<Type,double> dir1V;
+    fmatvec::Vector<Type,double> dir2V;
+};
+
+template<class Type>
+class FunctionWrapperSV : public FunctionWrapper {
+  public:
+    FunctionWrapperSV(const std::shared_ptr<fmatvec::Function<double(double,Vector<Type,double>)>> &func_, int argSize) : func(func_) {
+      argV.resize(argSize);
+      dir1V.resize(argSize);
+      dir2V.resize(argSize);
+    }
+    double operator()(const std::vector<double> &arg) override {
+      for(size_t i=0; i<arg.size()-1; ++i)
+        argV(i) = arg[i+1];
+      return (*func)(arg[0], argV);
+    }
+    double dirDer(const std::vector<double> &dir1, const std::vector<double> &arg) override {
+      for(size_t i=0; i<arg.size()-1; ++i)
+        argV(i) = arg[i+1];
+      for(size_t i=0; i<arg.size()-1; ++i)
+        dir1V(i) = dir1[i+1];
+      return func->dirDer1(dir1[0], arg[0], argV) +
+             func->dirDer2(dir1V  , arg[0], argV);
+    }
+    double dirDerDirDer(const std::vector<double> &dir1, const std::vector<double> &dir2, const std::vector<double> &arg) override {
+      for(size_t i=0; i<arg.size()-1; ++i)
+        argV(i) = arg[i+1];
+      for(size_t i=0; i<arg.size()-1; ++i)
+        dir1V(i) = dir1[i+1];
+      for(size_t i=0; i<arg.size()-1; ++i)
+        dir2V(i) = dir2[i+1];
+      return func->dirDer1DirDer1(dir1[0], dir2[0], arg[0], argV) + 
+             func->dirDer2DirDer1(dir1[0], dir2V  , arg[0], argV) +
+             func->dirDer2DirDer1(dir1V  , dir2[0], arg[0], argV) +
+             func->dirDer2DirDer2(dir1V  , dir2V  , arg[0], argV);
+    }
+  private:
+    std::shared_ptr<fmatvec::Function<double(double,Vector<Type,double>)>> func;
+    fmatvec::Vector<Type,double> argV;
+    fmatvec::Vector<Type,double> dir1V;
+    fmatvec::Vector<Type,double> dir2V;
+};
+
+template<class Type1, class Type2>
+class FunctionWrapperVV : public FunctionWrapper {
+  public:
+    FunctionWrapperVV(const std::shared_ptr<fmatvec::Function<double(Vector<Type1,double>,Vector<Type2,double>)>> &func_,
+                      int argaSize, int argbSize) : func(func_) {
+      argV1.resize(argaSize);
+      argV2.resize(argbSize);
+      dir1V1.resize(argaSize);
+      dir1V2.resize(argbSize);
+      dir2V1.resize(argaSize);
+      dir2V2.resize(argbSize);
+    }
+    double operator()(const std::vector<double> &arg) override {
+      for(int i=0; i<argV1.size(); ++i)
+        argV1(i)=arg[i];
+      for(int i=0; i<argV2.size(); ++i)
+        argV1(i)=arg[argV1.size()+1];
+      return (*func)(argV1, argV2);
+    }
+    double dirDer(const std::vector<double> &dir1, const std::vector<double> &arg) override {
+      for(int i=0; i<argV1.size(); ++i)
+        argV1(i)=arg[i];
+      for(int i=0; i<argV2.size(); ++i)
+        argV1(i)=arg[argV1.size()+1];
+      for(int i=0; i<argV1.size(); ++i)
+        dir1V1(i)=dir1[i];
+      for(int i=0; i<argV2.size(); ++i)
+        dir1V1(i)=dir1[dir1V1.size()+1];
+      return func->dirDer1(dir1V1, argV1, argV2) +
+             func->dirDer2(dir1V2, argV1, argV2);
+    }
+    double dirDerDirDer(const std::vector<double> &dir1, const std::vector<double> &dir2, const std::vector<double> &arg) override {
+      for(int i=0; i<argV1.size(); ++i)
+        argV1(i)=arg[i];
+      for(int i=0; i<argV2.size(); ++i)
+        argV1(i)=arg[argV1.size()+1];
+      for(int i=0; i<argV1.size(); ++i)
+        dir1V1(i)=dir1[i];
+      for(int i=0; i<argV2.size(); ++i)
+        dir1V1(i)=dir1[dir1V1.size()+1];
+      for(int i=0; i<argV1.size(); ++i)
+        dir2V1(i)=dir2[i];
+      for(int i=0; i<argV2.size(); ++i)
+        dir2V1(i)=dir2[dir2V1.size()+1];
+      return func->dirDer1DirDer1(dir1V1, dir2V1, argV1, argV2) + 
+             func->dirDer2DirDer1(dir1V1, dir2V2, argV1, argV2) +
+             func->dirDer2DirDer1(dir1V2, dir2V1, argV1, argV2) +
+             func->dirDer2DirDer2(dir1V2, dir2V2, argV1, argV2);
+    }
+  private:
+    std::shared_ptr<fmatvec::Function<double(Vector<Type1,double>,Vector<Type2,double>)>> func;
+    fmatvec::Vector<Type1,double> argV1;
+    fmatvec::Vector<Type2,double> argV2;
+    fmatvec::Vector<Type1,double> dir1V1;
+    fmatvec::Vector<Type2,double> dir1V2;
+    fmatvec::Vector<Type1,double> dir2V1;
+    fmatvec::Vector<Type2,double> dir2V2;
+};
+
+// ***** Function *****
 
 //! A vertex of the AST representing an arbitary function.
-class FMATVEC_EXPORT Function1 : public Vertex, public std::enable_shared_from_this<Function1> {
+class FMATVEC_EXPORT Function : public Vertex, public std::enable_shared_from_this<Function> {
   public:
-    static SymbolicExpression create(const std::shared_ptr<fmatvec::Function<double(double)>> &func, const SymbolicExpression &arg);
+    static SymbolicExpression create(const std::shared_ptr<FunctionWrapper> &funcWrapper, const std::vector<SymbolicExpression> &argS,
+                                     const std::vector<SymbolicExpression> &dir1S={}, const std::vector<SymbolicExpression> &dir2S={});
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
 
   private:
-    Function1(const std::shared_ptr<fmatvec::Function<double(double)>> &func_, const SymbolicExpression &arg_, int derivative_,
-              const SymbolicExpression& argDir1_, const SymbolicExpression& argDir2_,
-              const SymbolicExpression& argDir1Dir2_);
+    Function(const std::shared_ptr<FunctionWrapper> &func_, const std::vector<SymbolicExpression> &argS,
+             const std::vector<SymbolicExpression> &dir1S, const std::vector<SymbolicExpression> &dir2S);
     bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
 
-    const std::shared_ptr<fmatvec::Function<double(double)>> func;
-    const SymbolicExpression arg;
-    int derivative;
-    const SymbolicExpression argDir1;
-    const SymbolicExpression argDir2;
-    const SymbolicExpression argDir1Dir2;
+    std::shared_ptr<FunctionWrapper> funcWrapper;
+    const std::vector<SymbolicExpression> argS;
+    const std::vector<SymbolicExpression> dir1S;
+    const std::vector<SymbolicExpression> dir2S;
+    mutable std::vector<double> argN;
+    mutable std::vector<double> dir1N;
+    mutable std::vector<double> dir2N;
     //mfmf cache
 };
 
-double Function1::eval() const {
-  switch(derivative) {
-    case 0: return (*func)(fmatvec::eval(arg));
-    case 1: return func->dirDer(fmatvec::eval(argDir1), fmatvec::eval(arg));
-    case 2: return func->dirDer(fmatvec::eval(argDir1Dir2), fmatvec::eval(arg)) +
-                   func->dirDerDirDer(fmatvec::eval(argDir1), fmatvec::eval(argDir2), fmatvec::eval(arg));
-    default: return 0; // cannot happen, see ctor
+double Function::eval() const {
+  for(size_t i=0; i<argS.size(); ++i)
+    argN[i]=fmatvec::eval(argS[i]);
+
+  if(dir1S.size()==0) {
+    // calculate function value (0th derivative)
+    return (*funcWrapper)(argN);
   }
-}
-
-// ***** Function2 *****
-
-//! A vertex of the AST representing an arbitary function.
-class FMATVEC_EXPORT Function2 : public Vertex, public std::enable_shared_from_this<Function2> {
-  public:
-    static SymbolicExpression create(const std::shared_ptr<fmatvec::Function<double(double,double)>> &func,
-                                     const SymbolicExpression &arg1, const SymbolicExpression &arg2);
-    inline double eval() const override;
-    SymbolicExpression parDer(const IndependentVariable &x) const override;
-
-  private:
-    Function2(const std::shared_ptr<fmatvec::Function<double(double,double)>> &func_,
-              const SymbolicExpression &arg1_, const SymbolicExpression &arg2_, int derivative_,
-              const SymbolicExpression& arg1Dir1_, const SymbolicExpression& arg2Dir1_,
-              const SymbolicExpression& arg1Dir2_, const SymbolicExpression& arg2Dir2_,
-              const SymbolicExpression& arg1Dir1Dir2_, const SymbolicExpression& arg2Dir1Dir2_);
-    bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
-
-    const std::shared_ptr<fmatvec::Function<double(double,double)>> func;
-    const SymbolicExpression arg1;
-    const SymbolicExpression arg2;
-    int derivative;
-    const SymbolicExpression arg1Dir1;
-    const SymbolicExpression arg2Dir1;
-    const SymbolicExpression arg1Dir2;
-    const SymbolicExpression arg2Dir2;
-    const SymbolicExpression arg1Dir1Dir2;
-    const SymbolicExpression arg2Dir1Dir2;
-    //mfmf cache
-};
-
-double Function2::eval() const {
-  switch(derivative) {
-    case 0: return (*func)(fmatvec::eval(arg1), fmatvec::eval(arg2));
-    case 1: return func->dirDer1(fmatvec::eval(arg1Dir1),fmatvec::eval(arg1),fmatvec::eval(arg2))+
-                   func->dirDer2(fmatvec::eval(arg2Dir1),fmatvec::eval(arg1),fmatvec::eval(arg2));
-    case 2: return func->dirDer1(fmatvec::eval(arg1Dir1Dir2),fmatvec::eval(arg1),fmatvec::eval(arg2))+
-                   func->dirDer1DirDer1(fmatvec::eval(arg1Dir1),fmatvec::eval(arg1Dir2),fmatvec::eval(arg1),fmatvec::eval(arg2))+
-                   func->dirDer2DirDer1(fmatvec::eval(arg1Dir1),fmatvec::eval(arg2Dir2),fmatvec::eval(arg1),fmatvec::eval(arg2))+
-                   func->dirDer2(fmatvec::eval(arg2Dir1Dir2),fmatvec::eval(arg1),fmatvec::eval(arg2))+
-                   func->dirDer2DirDer1(fmatvec::eval(arg2Dir1),fmatvec::eval(arg1Dir2),fmatvec::eval(arg1),fmatvec::eval(arg2))+
-                   func->dirDer2DirDer2(fmatvec::eval(arg2Dir1),fmatvec::eval(arg2Dir2),fmatvec::eval(arg1),fmatvec::eval(arg2));
-    default: return 0; // cannot happen, see ctor
+  if(dir2S.size()==0) {
+    // calculate first derivative
+    for(size_t i=0; i<dir1S.size(); ++i)
+      dir1N[i]=fmatvec::eval(dir1S[i]);
+    return funcWrapper->dirDer(dir1N, argN);
   }
+  // calculate second derivative
+  for(size_t i=0; i<dir1S.size(); ++i)
+    dir1N[i]=fmatvec::eval(dir1S[i]);
+  for(size_t i=0; i<dir2S.size(); ++i)
+    dir2N[i]=fmatvec::eval(dir2S[i]);
+  return funcWrapper->dirDerDirDer(dir1N, dir2N, argN);
 }
 
 // ***** Operation *****
@@ -540,6 +748,50 @@ template<> boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpre
 // and it not time critical since it just build the expression once which is than evaluated at runtime.
 template<> struct AssertUseException<IndependentVariable> { constexpr static bool value = true; };
 template<> struct AssertUseException<SymbolicExpression>  { constexpr static bool value = true; };
+
+template<class Type>
+SymbolicExpression symbolicFunc(
+  const std::shared_ptr<Function<double(Vector<Type, double>)>> &func,
+  const Vector<Type, SymbolicExpression> &arg) {
+  std::vector<SymbolicExpression> argV(arg.size());
+  for(int i=0; i<arg.size(); ++i)
+    argV[i]=arg(i);
+  return AST::Function::create(std::make_shared<AST::FunctionWrapperV<Type>>(func, arg.size()), argV);
+}
+
+template<class Type>
+SymbolicExpression symbolicFunc(
+  const std::shared_ptr<Function<double(Vector<Type,double>,double)>> &func,
+  const Vector<Type, SymbolicExpression> &arg1, const SymbolicExpression &arg2) {
+  std::vector<SymbolicExpression> argV(arg1.size()+1);
+  for(int i=0; i<arg1.size(); ++i)
+    argV[i]=arg1(i);
+  argV[arg1.size()]=arg2;
+  return AST::Function::create(std::make_shared<AST::FunctionWrapperVS<Type>>(func, arg1.size()), argV);
+}
+
+template<class Type>
+SymbolicExpression symbolicFunc(
+  const std::shared_ptr<Function<double(double,Vector<Type,double>)>> &func,
+  const SymbolicExpression &arg1, const Vector<Type, SymbolicExpression> &arg2) {
+  std::vector<SymbolicExpression> argV(1+arg2.size());
+  argV[0]=arg1;
+  for(int i=0; i<arg2.size(); ++i)
+    argV[i+1]=arg2(i);
+  return AST::Function::create(std::make_shared<AST::FunctionWrapperSV<Type>>(func, arg2.size()), argV);
+}
+
+template<class Type1, class Type2>
+SymbolicExpression symbolicFunc(
+  const std::shared_ptr<Function<double(Vector<Type1,double>,Vector<Type2,double>)>> &func,
+  const Vector<Type1, SymbolicExpression> &arg1, const Vector<Type2, SymbolicExpression> &arg2) {
+  std::vector<SymbolicExpression> argV(arg1.size()+arg2.size());
+  for(int i=0; i<arg1.size(); ++i)
+    argV[i]=arg1(i);
+  for(int i=0; i<arg2.size(); ++i)
+    argV[arg1.size()+i]=arg2(i);
+  return AST::Function::create(std::make_shared<AST::FunctionWrapperVV<Type1,Type2>>(func, arg1.size(), arg2.size()), argV);
+}
 
 } // end namespace fmatvec
 

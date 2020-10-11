@@ -166,13 +166,16 @@ SymbolicExpression abs(const SymbolicExpression &a) {
   return AST::Operation::create(AST::Operation::Abs, {a});
 }
 
-SymbolicExpression symbolicFunc(const shared_ptr<Function<double(double)>> &func, const SymbolicExpression &arg) {
-  return AST::Function1::create(func, arg);
+SymbolicExpression symbolicFunc(
+  const std::shared_ptr<fmatvec::Function<double(double)>> &func,
+  const SymbolicExpression &arg) {
+  return AST::Function::create(std::make_shared<AST::FunctionWrapperS>(func), vector<SymbolicExpression>{arg});
 }
 
-SymbolicExpression symbolicFunc(const shared_ptr<Function<double(double,double)>> &func,
-                                const SymbolicExpression &arg1, const SymbolicExpression &arg2) {
-  return AST::Function2::create(func, arg1, arg2);
+SymbolicExpression symbolicFunc(
+  const std::shared_ptr<fmatvec::Function<double(double,double)>> &func,
+  const SymbolicExpression &arg1, const SymbolicExpression &arg2) {
+  return AST::Function::create(std::make_shared<AST::FunctionWrapperSS>(func), vector<SymbolicExpression>{arg1,arg2});
 }
 
 ostream& operator<<(ostream& s, const SymbolicExpression& se) {
@@ -412,79 +415,47 @@ string Symbol::getUUIDStr() const {
 #endif
 }
 
-// ***** Function1 *****
+// ***** Function *****
 
-Function1::Function1(const shared_ptr<fmatvec::Function<double(double)>> &func_, const SymbolicExpression &arg_, int derivative_,
-                     const SymbolicExpression &argDir1_, const SymbolicExpression &argDir2_,
-                     const SymbolicExpression &argDir1Dir2_) :
-  func(func_), arg(arg_), derivative(derivative_), argDir1(argDir1_), argDir2(argDir2_), argDir1Dir2(argDir1Dir2_) {
-  if(derivative>2)
-    throw std::runtime_error("Derivative higher than 2 of external function needed. "
-                             "External functions provide only the second derivative.");
-  for(auto &x : arg->getDependsOn())
-    dependsOn.insert(make_pair(x.first, 0));
+Function::Function(const shared_ptr<FunctionWrapper> &funcWrapper_, const vector<SymbolicExpression> &argS_,
+                   const vector<SymbolicExpression> &dir1S_, const vector<SymbolicExpression> &dir2S_) :
+  funcWrapper(funcWrapper_), argS(argS_), dir1S(dir1S_), dir2S(dir2S_) {
+  argN.resize(argS.size());
+  dir1N.resize(dir1S.size());
+  dir2N.resize(dir2S.size());
+  for(auto &a : argS)
+    for(auto &x : a->getDependsOn())
+      dependsOn.insert(make_pair(x.first, 0));
 }
 
-SymbolicExpression Function1::create(const shared_ptr<fmatvec::Function<double(double)>> &func, const SymbolicExpression &arg) {
-  return shared_ptr<Function1>(new Function1(func, arg, 0, 0/*not used*/, 0/*not used*/, 0/*not used*/));
+SymbolicExpression Function::create(const shared_ptr<FunctionWrapper> &funcWrapper, const vector<SymbolicExpression> &argS,
+                                    const vector<SymbolicExpression> &dir1S, const vector<SymbolicExpression> &dir2S) {
+  return shared_ptr<Function>(new Function(funcWrapper, argS, dir1S, dir2S));
 }
 
-SymbolicExpression Function1::parDer(const IndependentVariable &x) const {
-  switch(derivative)
-  {
-    case 0: return shared_ptr<Function1>(new Function1(func, arg, 1, arg->parDer(x), 0/*not used*/, 0/*not used*/));
-    case 1: return shared_ptr<Function1>(new Function1(func, arg, 2, argDir1, arg->parDer(x), argDir1->parDer(x)));
-    default:
-      throw std::runtime_error("Derivative higher than 2 of external function needed. "
-                               "External functions provide only the second derivative.");
+SymbolicExpression Function::parDer(const IndependentVariable &x) const {
+  if(dir1S.size()==0) {
+    // create a new first derivative
+    vector<SymbolicExpression> dir1S_;
+    for(size_t i=0; i<argS.size(); ++i)
+      dir1S_.push_back(argS[i]->parDer(x));
+    return create(funcWrapper, argS, dir1S_);
   }
-}
-
-bool Function1::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
-  // a function is only equal to b if b is the same as this.
-  return this->shared_from_this()==b;//mfmf improve this
-}
-
-// ***** Function2 *****
-
-Function2::Function2(const std::shared_ptr<fmatvec::Function<double(double,double)>> &func_,
-                     const SymbolicExpression &arg1_, const SymbolicExpression &arg2_, int derivative_,
-                     const SymbolicExpression& arg1Dir1_, const SymbolicExpression& arg2Dir1_,
-                     const SymbolicExpression& arg1Dir2_, const SymbolicExpression& arg2Dir2_,
-                     const SymbolicExpression& arg1Dir1Dir2_, const SymbolicExpression& arg2Dir1Dir2_) :
-  func(func_), arg1(arg1_), arg2(arg2_), derivative(derivative_), 
-  arg1Dir1(arg1Dir1_), arg2Dir1(arg2Dir1_),
-  arg1Dir2(arg1Dir2_), arg2Dir2(arg2Dir2_),
-  arg1Dir1Dir2(arg1Dir1Dir2_), arg2Dir1Dir2(arg2Dir1Dir2_) {
-  if(derivative>2)
-    throw std::runtime_error("Derivative higher than 2 of external function needed. "
-                             "External functions provide only the second derivative.");
-  for(auto &x : arg1->getDependsOn())
-    dependsOn.insert(make_pair(x.first, 0));
-  for(auto &x : arg2->getDependsOn())
-    dependsOn.insert(make_pair(x.first, 0));
-}
-
-SymbolicExpression Function2::create(const shared_ptr<fmatvec::Function<double(double,double)>> &func,
-                                     const SymbolicExpression &arg1, const SymbolicExpression &arg2) {
-  return shared_ptr<Function2>(new Function2(func, arg1, arg2, 0,
-                               0/*not used*/, 0/*not used*/, 0/*not used*/, 0/*not used*/, 0/*not used*/, 0/*not used*/));
-}
-
-SymbolicExpression Function2::parDer(const IndependentVariable &x) const {
-  switch(derivative)
-  {
-    case 0: return shared_ptr<Function2>(new Function2(func, arg1, arg2, 1, arg1->parDer(x), arg2->parDer(x),
-                                         0/*not used*/, 0/*not used*/, 0/*not used*/, 0/*not used*/));
-    case 1: return shared_ptr<Function2>(new Function2(func, arg1, arg2, 2, arg1Dir1, arg2Dir1,
-                                         arg1->parDer(x), arg2->parDer(x), arg1Dir1->parDer(x), arg2Dir1->parDer(x)));
-    default:
-      throw std::runtime_error("Derivative higher than 2 of external function needed. "
-                               "External functions provide only the second derivative.");
+  if(dir2S.size()==0) {
+    // create a new second derivative
+    vector<SymbolicExpression> dir1S_;
+    vector<SymbolicExpression> dir2S_;
+    for(size_t i=0; i<argS.size(); ++i)
+      dir1S_.push_back(dir1S[i]->parDer(x));
+    for(size_t i=0; i<argS.size(); ++i)
+      dir2S_.push_back(argS[i]->parDer(x));
+    return create(funcWrapper, argS, dir1S_) + create(funcWrapper, argS, dir1S, dir2S_);
   }
+  throw std::runtime_error("Derivative higher than 2 of external function needed. "
+                           "External functions provide only the second derivative.");
 }
 
-bool Function2::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
+bool Function::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
   // a function is only equal to b if b is the same as this.
   return this->shared_from_this()==b;//mfmf improve this
 }
@@ -749,7 +720,7 @@ boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& 
     static qi::real_parser<double, qi::strict_real_policies<double>> strict_double;
     static qi::rule<It, SymbolicExpression()>  constDouble;
     static qi::rule<It, SymbolicExpression()>  operation;
-    // Function1 cannot be serialized and hence not deserialized
+    // Function cannot be serialized and hence not deserialized
 
     static qi::symbols<char, AST::Operation::Operator> opSym;
     for(auto &x : AST::Operation::opMap)
@@ -833,7 +804,7 @@ boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& g
     operation   = opSym[karma::_1=phx::bind(&getOperationOp, karma::_val, karma::_pass)] << '(' <<
                   (vertex % ',')[karma::_1=phx::bind(&getOperationChilds, karma::_val, karma::_pass)] << ')';
     symbol      = karma::string[karma::_1=phx::bind(&getSymbol, karma::_val, karma::_pass)];
-    function    = karma::int_[karma::_1=phx::bind(&getFunction, karma::_val, karma::_pass)]; // Function1 and Function2
+    function    = karma::int_[karma::_1=phx::bind(&getFunction, karma::_val, karma::_pass)];
     vertex      = constInt | constDouble | symbol | operation | function;
   }
   return vertex;

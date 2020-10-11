@@ -6,6 +6,10 @@
 using namespace std;
 using namespace fmatvec;
 
+bool compare(double a, double b) {
+  return (a-b)>1e-12;
+}
+
 int main() {
 #ifndef _WIN32
   assert(feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)!=-1);
@@ -600,13 +604,13 @@ int main() {
     i1 ^= 0.9;
     i2 ^= 0.8;
     double v;
-    cout<<(v=eval(resN))<<" "<<eval(resN)-v<<endl;
-    cout<<(v=eval(parDer(resN,i1)))<<" "<<eval(parDer(resN,i1))-v<<endl;
-    cout<<(v=eval(parDer(resN,i2)))<<" "<<eval(parDer(resN,i2))-v<<endl;
-    cout<<(v=eval(parDer(parDer(resN,i1),i1)))<<" "<<eval(parDer(parDer(resN,i1),i1))-v<<endl;
-    cout<<(v=eval(parDer(parDer(resN,i2),i2)))<<" "<<eval(parDer(parDer(resN,i2),i2))-v<<endl;
-    cout<<(v=eval(parDer(parDer(resN,i1),i2)))<<" "<<eval(parDer(parDer(resN,i1),i2))-v<<endl;
-    cout<<(v=eval(parDer(parDer(resN,i2),i1)))<<" "<<eval(parDer(parDer(resN,i2),i1))-v<<endl;
+    cout<<(v=eval(resN))<<" "<<compare(eval(resS),v)<<endl;
+    cout<<(v=eval(parDer(resN,i1)))<<" "<<compare(eval(parDer(resS,i1)),v)<<endl;
+    cout<<(v=eval(parDer(resN,i2)))<<" "<<compare(eval(parDer(resS,i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i1),i1)))<<" "<<compare(eval(parDer(parDer(resS,i1),i1)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i2),i2)))<<" "<<compare(eval(parDer(parDer(resS,i2),i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i1),i2)))<<" "<<compare(eval(parDer(parDer(resS,i1),i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i2),i1)))<<" "<<compare(eval(parDer(parDer(resS,i2),i1)),v)<<endl;
   }
 
   // native function with two arguments as symbolic function
@@ -642,13 +646,46 @@ int main() {
     i1 ^= 0.9;
     i2 ^= 0.8;
     double v;
-    cout<<(v=eval(resN))<<" "<<eval(resN)-v<<endl;
-    cout<<(v=eval(parDer(resN,i1)))<<" "<<eval(parDer(resN,i1))-v<<endl;
-    cout<<(v=eval(parDer(resN,i2)))<<" "<<eval(parDer(resN,i2))-v<<endl;
-    cout<<(v=eval(parDer(parDer(resN,i1),i1)))<<" "<<eval(parDer(parDer(resN,i1),i1))-v<<endl;
-    cout<<(v=eval(parDer(parDer(resN,i2),i2)))<<" "<<eval(parDer(parDer(resN,i2),i2))-v<<endl;
-    cout<<(v=eval(parDer(parDer(resN,i1),i2)))<<" "<<eval(parDer(parDer(resN,i1),i2))-v<<endl;
-    cout<<(v=eval(parDer(parDer(resN,i2),i1)))<<" "<<eval(parDer(parDer(resN,i2),i1))-v<<endl;
+    cout<<(v=eval(resN))<<" "<<compare(eval(resS),v)<<endl;
+    cout<<(v=eval(parDer(resN,i1)))<<" "<<compare(eval(parDer(resS,i1)),v)<<endl;
+    cout<<(v=eval(parDer(resN,i2)))<<" "<<compare(eval(parDer(resS,i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i1),i1)))<<" "<<compare(eval(parDer(parDer(resS,i1),i1)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i2),i2)))<<" "<<compare(eval(parDer(parDer(resS,i2),i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i1),i2)))<<" "<<compare(eval(parDer(parDer(resS,i1),i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i2),i1)))<<" "<<compare(eval(parDer(parDer(resS,i2),i1)),v)<<endl;
+  }
+
+  // native function with one vector argument as symbolic function
+  {
+    IndependentVariable i1, i2;
+    Vector<Var, SymbolicExpression> arg({ sin(pow(i1,2))*sinh(pow(i2,3)), cos(pow(i2,2))*cosh(pow(i1,3)) });
+    class Func : public Function<double(VecV)> {
+      public:
+        double operator()(const VecV &arg) override {
+          return arg(0)*arg(0)+arg(1)*arg(1)+arg(0)*arg(0)*arg(1)*arg(1);
+        }
+        RowVecV parDer(const VecV &arg) override {
+          return RowVecV({ 2*arg(0)+2*arg(0)*arg(1)*arg(1), 2*arg(1)+arg(0)*arg(0)*2*arg(1) });
+        }
+        RowVecV parDerDirDer(const VecV &dir, const VecV &arg) override {
+          return RowVecV({ (2+2*arg(1)*arg(1))*dir(0) + (2*arg(0)*2*arg(1))*dir(1),
+                           (2*arg(0)*2*arg(1))*dir(0) + (2+arg(0)*arg(0)*2)*dir(1) });
+        }
+    };
+    auto funcN = symbolicFunc<Var>(make_shared<Func>(), arg);
+    auto funcS = arg(0)*arg(0)+arg(1)*arg(1)+arg(0)*arg(0)*arg(1)*arg(1);
+    auto resN = cos(arg(0)) *sin(arg(1)) * pow(funcN,2);
+    auto resS = cos(arg(0)) *sin(arg(1)) * pow(funcS,2);
+    i1 ^= 0.9;
+    i2 ^= 0.8;
+    double v;
+    cout<<(v=eval(resN))<<" "<<compare(eval(resS),v)<<endl;
+    cout<<(v=eval(parDer(resN,i1)))<<" "<<compare(eval(parDer(resS,i1)),v)<<endl;
+    cout<<(v=eval(parDer(resN,i2)))<<" "<<compare(eval(parDer(resS,i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i1),i1)))<<" "<<compare(eval(parDer(parDer(resS,i1),i1)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i2),i2)))<<" "<<compare(eval(parDer(parDer(resS,i2),i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i1),i2)))<<" "<<compare(eval(parDer(parDer(resS,i1),i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i2),i1)))<<" "<<compare(eval(parDer(parDer(resS,i2),i1)),v)<<endl;
   }
 
   return 0;  
