@@ -437,19 +437,40 @@ SymbolicExpression Function::parDer(const IndependentVariable &x) const {
   if(dir1S.size()==0) {
     // create a new first derivative
     vector<SymbolicExpression> dir1S_;
-    for(size_t i=0; i<argS.size(); ++i)
+    bool allZero=true;
+    for(size_t i=0; i<argS.size(); ++i) {
       dir1S_.push_back(argS[i]->parDer(x));
+      if(!dir1S_.back()->isZero())
+        allZero=false;
+    }
+    if(allZero)
+      return 0;
     return create(funcWrapper, argS, dir1S_);
   }
   if(dir2S.size()==0) {
     // create a new second derivative
     vector<SymbolicExpression> dir1S_;
     vector<SymbolicExpression> dir2S_;
-    for(size_t i=0; i<argS.size(); ++i)
+    SymbolicExpression ret;
+    bool all1Zero=true;
+    for(size_t i=0; i<argS.size(); ++i) {
       dir1S_.push_back(dir1S[i]->parDer(x));
-    for(size_t i=0; i<argS.size(); ++i)
+      if(!dir1S_.back()->isZero())
+        all1Zero=false;
+    }
+    if(all1Zero)
+      ret=0;
+    else
+      ret=create(funcWrapper, argS, dir1S_);
+    bool all2Zero=true;
+    for(size_t i=0; i<argS.size(); ++i) {
       dir2S_.push_back(argS[i]->parDer(x));
-    return create(funcWrapper, argS, dir1S_) + create(funcWrapper, argS, dir1S, dir2S_);
+      if(!dir2S_.back()->isZero())
+        all2Zero=false;
+    }
+    if(!all2Zero)
+      ret=ret+create(funcWrapper, argS, dir1S, dir2S_);
+    return ret;
   }
   throw std::runtime_error("Derivative higher than 2 of external function needed. "
                            "External functions provide only the second derivative.");

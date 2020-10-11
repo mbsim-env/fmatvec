@@ -415,7 +415,7 @@ class FunctionWrapperSS : public FunctionWrapper {
     }
     double dirDerDirDer(const std::vector<double> &dir1, const std::vector<double> &dir2, const std::vector<double> &arg) override {
       return func->dirDer1DirDer1(dir1[0], dir2[0], arg[0], arg[1]) + 
-             func->dirDer2DirDer1(dir1[0], dir2[1], arg[0], arg[1]) +
+             func->dirDer2DirDer1(dir2[1], dir1[0], arg[0], arg[1]) +
              func->dirDer2DirDer1(dir1[1], dir2[0], arg[0], arg[1]) +
              func->dirDer2DirDer2(dir1[1], dir2[1], arg[0], arg[1]);
     }
@@ -452,7 +452,7 @@ class FunctionWrapperVS : public FunctionWrapper {
       for(size_t i=0; i<arg.size()-1; ++i)
         dir2V(i) = dir2[i];
       return func->dirDer1DirDer1(dir1V             , dir2V             , argV, arg[arg.size()-1]) + 
-             func->dirDer2DirDer1(dir1V             , dir2[arg.size()-1], argV, arg[arg.size()-1]) +
+             func->dirDer2DirDer1(dir2[arg.size()-1], dir1V             , argV, arg[arg.size()-1]) +
              func->dirDer2DirDer1(dir1[arg.size()-1], dir2V             , argV, arg[arg.size()-1]) +
              func->dirDer2DirDer2(dir1[arg.size()-1], dir2[arg.size()-1], argV, arg[arg.size()-1]);
     }
@@ -492,7 +492,7 @@ class FunctionWrapperSV : public FunctionWrapper {
       for(size_t i=0; i<arg.size()-1; ++i)
         dir2V(i) = dir2[i+1];
       return func->dirDer1DirDer1(dir1[0], dir2[0], arg[0], argV) + 
-             func->dirDer2DirDer1(dir1[0], dir2V  , arg[0], argV) +
+             func->dirDer2DirDer1(dir2V  , dir1[0], arg[0], argV) +
              func->dirDer2DirDer1(dir1V  , dir2[0], arg[0], argV) +
              func->dirDer2DirDer2(dir1V  , dir2V  , arg[0], argV);
     }
@@ -519,18 +519,18 @@ class FunctionWrapperVV : public FunctionWrapper {
       for(int i=0; i<argV1.size(); ++i)
         argV1(i)=arg[i];
       for(int i=0; i<argV2.size(); ++i)
-        argV1(i)=arg[argV1.size()+1];
+        argV2(i)=arg[argV1.size()+i];
       return (*func)(argV1, argV2);
     }
     double dirDer(const std::vector<double> &dir1, const std::vector<double> &arg) override {
       for(int i=0; i<argV1.size(); ++i)
         argV1(i)=arg[i];
       for(int i=0; i<argV2.size(); ++i)
-        argV1(i)=arg[argV1.size()+1];
+        argV2(i)=arg[argV1.size()+i];
       for(int i=0; i<argV1.size(); ++i)
         dir1V1(i)=dir1[i];
       for(int i=0; i<argV2.size(); ++i)
-        dir1V1(i)=dir1[dir1V1.size()+1];
+        dir1V2(i)=dir1[dir1V1.size()+i];
       return func->dirDer1(dir1V1, argV1, argV2) +
              func->dirDer2(dir1V2, argV1, argV2);
     }
@@ -538,17 +538,17 @@ class FunctionWrapperVV : public FunctionWrapper {
       for(int i=0; i<argV1.size(); ++i)
         argV1(i)=arg[i];
       for(int i=0; i<argV2.size(); ++i)
-        argV1(i)=arg[argV1.size()+1];
+        argV2(i)=arg[argV1.size()+i];
       for(int i=0; i<argV1.size(); ++i)
         dir1V1(i)=dir1[i];
       for(int i=0; i<argV2.size(); ++i)
-        dir1V1(i)=dir1[dir1V1.size()+1];
+        dir1V2(i)=dir1[dir1V1.size()+i];
       for(int i=0; i<argV1.size(); ++i)
         dir2V1(i)=dir2[i];
       for(int i=0; i<argV2.size(); ++i)
-        dir2V1(i)=dir2[dir2V1.size()+1];
+        dir2V2(i)=dir2[dir2V1.size()+i];
       return func->dirDer1DirDer1(dir1V1, dir2V1, argV1, argV2) + 
-             func->dirDer2DirDer1(dir1V1, dir2V2, argV1, argV2) +
+             func->dirDer2DirDer1(dir2V2, dir1V1, argV1, argV2) +
              func->dirDer2DirDer1(dir1V2, dir2V1, argV1, argV2) +
              func->dirDer2DirDer2(dir1V2, dir2V2, argV1, argV2);
     }

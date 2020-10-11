@@ -7,7 +7,7 @@ using namespace std;
 using namespace fmatvec;
 
 bool compare(double a, double b) {
-  return (a-b)>1e-12;
+  return abs(a-b)>1e-12;
 }
 
 int main() {
@@ -676,6 +676,164 @@ int main() {
     auto funcS = arg(0)*arg(0)+arg(1)*arg(1)+arg(0)*arg(0)*arg(1)*arg(1);
     auto resN = cos(arg(0)) *sin(arg(1)) * pow(funcN,2);
     auto resS = cos(arg(0)) *sin(arg(1)) * pow(funcS,2);
+    i1 ^= 0.9;
+    i2 ^= 0.8;
+    double v;
+    cout<<(v=eval(resN))<<" "<<compare(eval(resS),v)<<endl;
+    cout<<(v=eval(parDer(resN,i1)))<<" "<<compare(eval(parDer(resS,i1)),v)<<endl;
+    cout<<(v=eval(parDer(resN,i2)))<<" "<<compare(eval(parDer(resS,i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i1),i1)))<<" "<<compare(eval(parDer(parDer(resS,i1),i1)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i2),i2)))<<" "<<compare(eval(parDer(parDer(resS,i2),i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i1),i2)))<<" "<<compare(eval(parDer(parDer(resS,i1),i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i2),i1)))<<" "<<compare(eval(parDer(parDer(resS,i2),i1)),v)<<endl;
+  }
+
+  // native function with two vector arguments as symbolic function
+  {
+    IndependentVariable i1, i2;
+    auto arg1 = sin(pow(i1,2))*sinh(pow(i2,3));
+    auto arg2 = Vector<Var,SymbolicExpression>({cos(pow(i2,2))*cosh(pow(i1,3)), log(pow(i2,2))*cosh(pow(i1,5)), cos(2*pow(i2,2))*sqrt(pow(i1,3))});
+    class Func : public Function<double(double,VecV)> {
+      public:
+        double operator()(const double &arg1, const VecV &arg2) override {
+          return arg1*arg1+arg2(0)*arg2(1)*arg2(2)+arg1*arg1*arg2(0)*arg2(1)*arg2(2);
+        }
+        double dirDer1(const double &arg1Dir, const double &arg1, const VecV &arg2) {
+          return (2*arg1+2*arg1*arg2(0)*arg2(1)*arg2(2))*arg1Dir;
+        }
+        double dirDer2(const VecV &arg2Dir, const double &arg1, const VecV &arg2) {
+          return (arg2(1)*arg2(2)+arg1*arg1*arg2(1)*arg2(2))*arg2Dir(0) +
+                 (arg2(0)*arg2(2)+arg1*arg1*arg2(0)*arg2(2))*arg2Dir(1) +
+                 (arg2(0)*arg2(1)+arg1*arg1*arg2(0)*arg2(1))*arg2Dir(2);
+        }
+        double dirDer2DirDer1(const VecV &arg2Dir, const double &arg1Dir, const double &arg1, const VecV &arg2) {
+          return (2*arg1*arg2(1)*arg2(2))*arg2Dir(0)*arg1Dir +
+                 (2*arg1*arg2(0)*arg2(2))*arg2Dir(1)*arg1Dir +
+                 (2*arg1*arg2(0)*arg2(1))*arg2Dir(2)*arg1Dir;
+        }
+        double dirDer1DirDer1(const double &arg1Dir_1, const double &arg1Dir_2, const double &arg1, const VecV &arg2) {
+          return (2+2*arg2(0)*arg2(1)*arg2(2))*arg1Dir_1*arg1Dir_2;
+        }
+        double dirDer2DirDer2(const VecV &arg2Dir_1, const VecV &arg2Dir_2, const double &arg1, const VecV &arg2) {
+          return (arg2(2)+arg1*arg1*arg2(2))*arg2Dir_1(1)*arg2Dir_2(0) +
+                 (arg2(1)+arg1*arg1*arg2(1))*arg2Dir_1(2)*arg2Dir_2(0) +
+                 (arg2(2)+arg1*arg1*arg2(2))*arg2Dir_1(0)*arg2Dir_2(1) +
+                 (arg2(0)+arg1*arg1*arg2(0))*arg2Dir_1(2)*arg2Dir_2(1) +
+                 (arg2(1)+arg1*arg1*arg2(1))*arg2Dir_1(0)*arg2Dir_2(2) +
+                 (arg2(0)+arg1*arg1*arg2(0))*arg2Dir_1(1)*arg2Dir_2(2);
+        }
+    };
+    auto funcN = symbolicFunc<Var>(make_shared<Func>(), arg1, arg2);
+    auto funcS = arg1*arg1+arg2(0)*arg2(1)*arg2(2)+arg1*arg1*arg2(0)*arg2(1)*arg2(2);
+    auto resN = cos(arg1+arg1) *sin(arg2(0)+arg2(1)+arg2(2)) * pow(funcN,2);
+    auto resS = cos(arg1+arg1) *sin(arg2(0)+arg2(1)+arg2(2)) * pow(funcS,2);
+    i1 ^= 0.9;
+    i2 ^= 0.8;
+    double v;
+    cout<<(v=eval(resN))<<" "<<compare(eval(resS),v)<<endl;
+    cout<<(v=eval(parDer(resN,i1)))<<" "<<compare(eval(parDer(resS,i1)),v)<<endl;
+    cout<<(v=eval(parDer(resN,i2)))<<" "<<compare(eval(parDer(resS,i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i1),i1)))<<" "<<compare(eval(parDer(parDer(resS,i1),i1)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i2),i2)))<<" "<<compare(eval(parDer(parDer(resS,i2),i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i1),i2)))<<" "<<compare(eval(parDer(parDer(resS,i1),i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i2),i1)))<<" "<<compare(eval(parDer(parDer(resS,i2),i1)),v)<<endl;
+  }
+
+  // native function with two vector arguments as symbolic function
+  {
+    IndependentVariable i1, i2;
+    auto arg1 = Vector<Var,SymbolicExpression>({cos(pow(i2,2))*cosh(pow(i1,3)), log(pow(i2,2))*cosh(pow(i1,5)), cos(2*pow(i2,2))*sqrt(pow(i1,3))});
+    auto arg2 = sin(pow(i1,2))*sinh(pow(i2,3));
+    class Func : public Function<double(VecV,double)> {
+      public:
+        double operator()(const VecV &arg1, const double &arg2) override {
+          return arg2*arg2+arg1(0)*arg1(1)*arg1(2)+arg2*arg2*arg1(0)*arg1(1)*arg1(2);
+        }
+        double dirDer1(const VecV &arg1Dir, const VecV &arg1, const double &arg2) {
+          return (arg1(1)*arg1(2)+arg2*arg2*arg1(1)*arg1(2))*arg1Dir(0) +
+                 (arg1(0)*arg1(2)+arg2*arg2*arg1(0)*arg1(2))*arg1Dir(1) +
+                 (arg1(0)*arg1(1)+arg2*arg2*arg1(0)*arg1(1))*arg1Dir(2);
+        }
+        double dirDer2(const double &arg2Dir, const VecV &arg1, const double &arg2) {
+          return (2*arg2+2*arg2*arg1(0)*arg1(1)*arg1(2))*arg2Dir;
+        }
+        double dirDer2DirDer1(const double &arg2Dir, const VecV &arg1Dir, const VecV &arg1, const double &arg2) {
+          return (2*arg2*arg1(1)*arg1(2))*arg1Dir(0)*arg2Dir +
+                 (2*arg2*arg1(0)*arg1(2))*arg1Dir(1)*arg2Dir +
+                 (2*arg2*arg1(0)*arg1(1))*arg1Dir(2)*arg2Dir;
+        }
+        double dirDer1DirDer1(const VecV &arg1Dir_1, const VecV &arg1Dir_2, const VecV &arg1, const double &arg2) {
+          return (arg1(2)+arg2*arg2*arg1(2))*arg1Dir_1(1)*arg1Dir_2(0) +
+                 (arg1(1)+arg2*arg2*arg1(1))*arg1Dir_1(2)*arg1Dir_2(0) +
+                 (arg1(2)+arg2*arg2*arg1(2))*arg1Dir_1(0)*arg1Dir_2(1) +
+                 (arg1(0)+arg2*arg2*arg1(0))*arg1Dir_1(2)*arg1Dir_2(1) +
+                 (arg1(1)+arg2*arg2*arg1(1))*arg1Dir_1(0)*arg1Dir_2(2) +
+                 (arg1(0)+arg2*arg2*arg1(0))*arg1Dir_1(1)*arg1Dir_2(2);
+        }
+        double dirDer2DirDer2(const double &arg2Dir_1, const double &arg2Dir_2, const VecV &arg1, const double &arg2) {
+          return (2+2*arg1(0)*arg1(1)*arg1(2))*arg2Dir_1*arg2Dir_2;
+        }
+    };
+    auto funcN = symbolicFunc<Var>(make_shared<Func>(), arg1, arg2);
+    auto funcS = arg2*arg2+arg1(0)*arg1(1)*arg1(2)+arg2*arg2*arg1(0)*arg1(1)*arg1(2);
+    auto resN = cos(arg2+arg2) *sin(arg1(0)+arg1(1)+arg1(2)) * pow(funcN,2);
+    auto resS = cos(arg2+arg2) *sin(arg1(0)+arg1(1)+arg1(2)) * pow(funcS,2);
+    i1 ^= 0.9;
+    i2 ^= 0.8;
+    double v;
+    cout<<(v=eval(resN))<<" "<<compare(eval(resS),v)<<endl;
+    cout<<(v=eval(parDer(resN,i1)))<<" "<<compare(eval(parDer(resS,i1)),v)<<endl;
+    cout<<(v=eval(parDer(resN,i2)))<<" "<<compare(eval(parDer(resS,i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i1),i1)))<<" "<<compare(eval(parDer(parDer(resS,i1),i1)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i2),i2)))<<" "<<compare(eval(parDer(parDer(resS,i2),i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i1),i2)))<<" "<<compare(eval(parDer(parDer(resS,i1),i2)),v)<<endl;
+    cout<<(v=eval(parDer(parDer(resN,i2),i1)))<<" "<<compare(eval(parDer(parDer(resS,i2),i1)),v)<<endl;
+  }
+
+  // native function with two vector arguments as symbolic function
+  {
+    IndependentVariable i1, i2;
+    auto arg1 = Vector<Var,SymbolicExpression>({sin(pow(i1,2))*sinh(pow(i2,3)), tan(pow(i1,2))*tanh(pow(i2,3))});
+    auto arg2 = Vector<Var,SymbolicExpression>({cos(pow(i2,2))*cosh(pow(i1,3)), log(pow(i2,2))*cosh(pow(i1,5)), cos(2*pow(i2,2))*sqrt(pow(i1,3))});
+    class Func : public Function<double(VecV,VecV)> {
+      public:
+        double operator()(const VecV &arg1, const VecV &arg2) override {
+          return arg1(0)*arg1(1)+arg2(0)*arg2(1)*arg2(2)+arg1(0)*arg1(1)*arg2(0)*arg2(1)*arg2(2);
+        }
+        double dirDer1(const VecV &arg1Dir, const VecV &arg1, const VecV &arg2) {
+          return (arg1(1)+arg1(1)*arg2(0)*arg2(1)*arg2(2))*arg1Dir(0) +
+                 (arg1(0)+arg1(0)*arg2(0)*arg2(1)*arg2(2))*arg1Dir(1);
+        }
+        double dirDer2(const VecV &arg2Dir, const VecV &arg1, const VecV &arg2) {
+          return (arg2(1)*arg2(2)+arg1(0)*arg1(1)*arg2(1)*arg2(2))*arg2Dir(0) +
+                 (arg2(0)*arg2(2)+arg1(0)*arg1(1)*arg2(0)*arg2(2))*arg2Dir(1) +
+                 (arg2(0)*arg2(1)+arg1(0)*arg1(1)*arg2(0)*arg2(1))*arg2Dir(2);
+        }
+        double dirDer2DirDer1(const VecV &arg2Dir, const VecV &arg1Dir, const VecV &arg1, const VecV &arg2) {
+          return (arg1(1)*arg2(1)*arg2(2))*arg2Dir(0)*arg1Dir(0) +
+                 (arg1(1)*arg2(0)*arg2(2))*arg2Dir(1)*arg1Dir(0) +
+                 (arg1(1)*arg2(0)*arg2(1))*arg2Dir(2)*arg1Dir(0) +
+                 (arg1(0)*arg2(1)*arg2(2))*arg2Dir(0)*arg1Dir(1) +
+                 (arg1(0)*arg2(0)*arg2(2))*arg2Dir(1)*arg1Dir(1) +
+                 (arg1(0)*arg2(0)*arg2(1))*arg2Dir(2)*arg1Dir(1);
+        }
+        double dirDer1DirDer1(const VecV &arg1Dir_1, const VecV &arg1Dir_2, const VecV &arg1, const VecV &arg2) {
+          return (1+arg2(0)*arg2(1)*arg2(2))*arg1Dir_1(1)*arg1Dir_2(0) +
+                 (1+arg2(0)*arg2(1)*arg2(2))*arg1Dir_1(0)*arg1Dir_2(1);
+        }
+        double dirDer2DirDer2(const VecV &arg2Dir_1, const VecV &arg2Dir_2, const VecV &arg1, const VecV &arg2) {
+          return (arg2(2)+arg1(0)*arg1(1)*arg2(2))*arg2Dir_1(1)*arg2Dir_2(0) +
+                 (arg2(1)+arg1(0)*arg1(1)*arg2(1))*arg2Dir_1(2)*arg2Dir_2(0) +
+                 (arg2(2)+arg1(0)*arg1(1)*arg2(2))*arg2Dir_1(0)*arg2Dir_2(1) +
+                 (arg2(0)+arg1(0)*arg1(1)*arg2(0))*arg2Dir_1(2)*arg2Dir_2(1) +
+                 (arg2(1)+arg1(0)*arg1(1)*arg2(1))*arg2Dir_1(0)*arg2Dir_2(2) +
+                 (arg2(0)+arg1(0)*arg1(1)*arg2(0))*arg2Dir_1(1)*arg2Dir_2(2);
+        }
+    };
+    auto funcN = symbolicFunc<Var,Var>(make_shared<Func>(), arg1, arg2);
+    auto funcS = arg1(0)*arg1(1)+arg2(0)*arg2(1)*arg2(2)+arg1(0)*arg1(1)*arg2(0)*arg2(1)*arg2(2);
+    auto resN = cos(arg1(0)+arg1(1)) *sin(arg2(0)+arg2(1)+arg2(2)) * pow(funcN,2);
+    auto resS = cos(arg1(0)+arg1(1)) *sin(arg2(0)+arg2(1)+arg2(2)) * pow(funcS,2);
     i1 ^= 0.9;
     i2 ^= 0.8;
     double v;
