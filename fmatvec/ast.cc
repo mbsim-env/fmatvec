@@ -611,7 +611,8 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
 
 Operation::Operation(Operator op_, const vector<SymbolicExpression> &child_) : op(op_), child(child_) {
   for(auto &c : child)
-    dependsOn.insert(c->getDependsOn().begin(), c->getDependsOn().end());
+    for(auto &x : c->getDependsOn())
+      dependsOn.insert(make_pair(x.first, 0));
 }
 
 bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) const {

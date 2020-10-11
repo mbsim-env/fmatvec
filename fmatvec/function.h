@@ -253,10 +253,10 @@ class Function<Ret(Arg)> : virtual public Atom {
 
     //! Second derivative: directional derivative of dirDer with respect to the argument.
     virtual DRetDDir dirDerDirDer(const Arg &argDir_1, const Arg &argDir_2, const Arg &arg) {
-      if constexpr (std::is_same_v<DDRetDDArg, ErrorType>)
+      if constexpr (std::is_same_v<DRetDArg, ErrorType>)
         throw std::runtime_error("dirDerDirDer must be overloaded by derived class.");
       else
-        return parDerParDer(arg) * argDir_1 * argDir_2;
+        return parDerDirDer(argDir_2, arg) * argDir_1;
     }
 
     //! Returns true, if the partial derivative of the function value with respect to the argument 
