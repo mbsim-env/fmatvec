@@ -597,7 +597,7 @@ int main() {
         }
         // double dirDerDirDer(...) override -> use default implemention from fmatvec/function.h
     };
-    auto funcN = symbolicFunc(make_shared<Func>(), arg);
+    auto funcN = symbolicFunc<double(double)>(make_shared<Func>(), arg);
     auto funcS = arg*arg;
     auto resN = sin(arg) * pow(funcN,2);
     auto resS = sin(arg) * pow(funcS,2);
@@ -639,7 +639,7 @@ int main() {
           return 2+arg1*arg1*2;
         }
     };
-    auto funcN = symbolicFunc(make_shared<Func>(), arg1, arg2);
+    auto funcN = symbolicFunc<double(double,double)>(make_shared<Func>(), arg1, arg2);
     auto funcS = arg1*arg1+arg2*arg2+arg1*arg1*arg2*arg2;
     auto resN = cos(arg1) *sin(arg2) * pow(funcN,2);
     auto resS = cos(arg1) *sin(arg2) * pow(funcS,2);
@@ -672,7 +672,7 @@ int main() {
                            (2*arg(0)*2*arg(1))*dir(0) + (2+arg(0)*arg(0)*2)*dir(1) });
         }
     };
-    auto funcN = symbolicFunc<Var>(make_shared<Func>(), arg);
+    auto funcN = symbolicFunc<double(VecV)>(make_shared<Func>(), arg);
     auto funcS = arg(0)*arg(0)+arg(1)*arg(1)+arg(0)*arg(0)*arg(1)*arg(1);
     auto resN = cos(arg(0)) *sin(arg(1)) * pow(funcN,2);
     auto resS = cos(arg(0)) *sin(arg(1)) * pow(funcS,2);
@@ -723,7 +723,7 @@ int main() {
                  (arg2(0)+arg1*arg1*arg2(0))*arg2Dir_1(1)*arg2Dir_2(2);
         }
     };
-    auto funcN = symbolicFunc<Var>(make_shared<Func>(), arg1, arg2);
+    auto funcN = symbolicFunc<double(double,VecV)>(make_shared<Func>(), arg1, arg2);
     auto funcS = arg1*arg1+arg2(0)*arg2(1)*arg2(2)+arg1*arg1*arg2(0)*arg2(1)*arg2(2);
     auto resN = cos(arg1+arg1) *sin(arg2(0)+arg2(1)+arg2(2)) * pow(funcN,2);
     auto resS = cos(arg1+arg1) *sin(arg2(0)+arg2(1)+arg2(2)) * pow(funcS,2);
@@ -774,7 +774,7 @@ int main() {
           return (2+2*arg1(0)*arg1(1)*arg1(2))*arg2Dir_1*arg2Dir_2;
         }
     };
-    auto funcN = symbolicFunc<Var>(make_shared<Func>(), arg1, arg2);
+    auto funcN = symbolicFunc<double(VecV,double)>(make_shared<Func>(), arg1, arg2);
     auto funcS = arg2*arg2+arg1(0)*arg1(1)*arg1(2)+arg2*arg2*arg1(0)*arg1(1)*arg1(2);
     auto resN = cos(arg2+arg2) *sin(arg1(0)+arg1(1)+arg1(2)) * pow(funcN,2);
     auto resS = cos(arg2+arg2) *sin(arg1(0)+arg1(1)+arg1(2)) * pow(funcS,2);
@@ -830,7 +830,7 @@ int main() {
                  (arg2(0)+arg1(0)*arg1(1)*arg2(0))*arg2Dir_1(1)*arg2Dir_2(2);
         }
     };
-    auto funcN = symbolicFunc<Var,Var>(make_shared<Func>(), arg1, arg2);
+    auto funcN = symbolicFunc<double(VecV,VecV)>(make_shared<Func>(), arg1, arg2);
     auto funcS = arg1(0)*arg1(1)+arg2(0)*arg2(1)*arg2(2)+arg1(0)*arg1(1)*arg2(0)*arg2(1)*arg2(2);
     auto resN = cos(arg1(0)+arg1(1)) *sin(arg2(0)+arg2(1)+arg2(2)) * pow(funcN,2);
     auto resS = cos(arg1(0)+arg1(1)) *sin(arg2(0)+arg2(1)+arg2(2)) * pow(funcS,2);
@@ -861,7 +861,28 @@ int main() {
           return VecV({2,2});
         }
     };
-    auto funcN = symbolicFunc<Var,double>(make_shared<Func>(), arg);
+    auto funcN = symbolicFunc<VecV(double)>(make_shared<Func>(), arg);
+    i1 ^= 0.9;
+    i2 ^= 0.8;
+    cout<<eval(funcN)<<endl;
+  }
+
+  {
+    IndependentVariable i1, i2;
+    auto arg = sin(pow(i1,2))*sinh(pow(i2,3));
+    class Func : public Function<MatV(double)> {
+      public:
+        MatV operator()(const double &arg) override {
+          return MatV({{arg*arg,arg*arg+100},{arg*arg+200,arg*arg+300}});
+        }
+        MatV parDer(const double &arg) override {
+          return MatV({{2*arg,2*arg},{2*arg,2*arg}});
+        }
+        MatV parDerParDer(const double &arg) override {
+          return MatV({{2,2},{2,2}});
+        }
+    };
+    auto funcN = symbolicFunc<MatV(double)>(make_shared<Func>(), arg);
     i1 ^= 0.9;
     i2 ^= 0.8;
     cout<<eval(funcN)<<endl;

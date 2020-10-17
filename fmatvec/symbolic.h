@@ -3,35 +3,33 @@
 
 #include "ast.h"
 #include "function.h"
+#include <boost/hana/type.hpp>
 
 namespace fmatvec {
 
-// Replace in a fmatvec scalar, vector or matrix the AT with ATNew.
-template<class MatVec, class NewAT>
-struct ReplaceAT;
+// Replace in a fmatvec scalar, vector or matrix the OldAT with NewAT.
+template<class MatVec, class NewAT> // handles MatVec being a scalar
+struct ReplaceAT {
+  using Type = NewAT;
+};
 
-template<class NewAT>
+template<class NewAT> // handles MatVec being a ErrorType
 struct ReplaceAT<ErrorType, NewAT> {
   using Type = ErrorType;
 };
 
-template<class NewAT>
-struct ReplaceAT<double, NewAT> {
-  using Type = NewAT;
-};
-
-template<class Shape, class NewAT>
-struct ReplaceAT<Vector<Shape, double>, NewAT> {
+template<class Shape, class OldAT, class NewAT> // handles MatVec being a Vector
+struct ReplaceAT<Vector<Shape, OldAT>, NewAT> {
   using Type = Vector<Shape, NewAT>;
 };
 
-template<class Shape, class NewAT>
-struct ReplaceAT<RowVector<Shape, double>, NewAT> {
+template<class Shape, class OldAT, class NewAT> // handles MatVec being a RowVector
+struct ReplaceAT<RowVector<Shape, OldAT>, NewAT> {
   using Type = RowVector<Shape, NewAT>;
 };
 
-template<class MatType, class RowShape, class ColShape, class NewAT>
-struct ReplaceAT<Matrix<MatType, RowShape, ColShape, double>, NewAT> {
+template<class MatType, class RowShape, class ColShape, class OldAT, class NewAT> // handles MatVec being a Matrix
+struct ReplaceAT<Matrix<MatType, RowShape, ColShape, OldAT>, NewAT> {
   using Type = Matrix<MatType, RowShape, ColShape, NewAT>;
 };
 
@@ -329,47 +327,124 @@ Matrix<TypeDst, ShapeRowDst, ShapeColDst, ATIndep>& operator^=(Matrix<TypeDst, S
 /***** native function as symbolic function (scalar function are defined in ast.h; here are vector and matrix function defined) *****/
 
 namespace {
-  template<class RType, class Arg>
-  class FunctionRetWrapper : public Function<double(Arg)>  {
+  template<class ArgN>
+  class FunctionRetVecWrapper : public Function<double(ArgN)>  {
     public:
-      FunctionRetWrapper(const std::shared_ptr<Function<Vector<RType,double>(Arg)>> &func_, int idx_) : func(func_), idx(idx_) {}
-      double operator()(const Arg &arg) override {
+      FunctionRetVecWrapper(const std::shared_ptr<Function<VecV(ArgN)>> &func_, int idx_) : func(func_), idx(idx_) {}
+      double operator()(const ArgN &arg) override {
         return (*func)(arg)(idx);
       }
-      typename Function<double(Arg)>::DRetDArg parDer(const Arg &arg) override {
+      typename Function<double(ArgN)>::DRetDArg parDer(const ArgN &arg) override {
         return func->parDer(arg)(idx);
       }
-      typename Function<double(Arg)>::DRetDDir dirDer(const Arg &argDir, const Arg &arg) override {
+      typename Function<double(ArgN)>::DRetDDir dirDer(const ArgN &argDir, const ArgN &arg) override {
         return func->dirDer(argDir, arg)(idx);
       }
-      typename Function<double(Arg)>::DDRetDDArg parDerParDer(const Arg &arg) override {
+      typename Function<double(ArgN)>::DDRetDDArg parDerParDer(const ArgN &arg) override {
         return func->parDerParDer(arg)(idx);
       }
-      typename Function<double(Arg)>::DRetDArg parDerDirDer(const Arg &argDir, const Arg &arg) override {
+      typename Function<double(ArgN)>::DRetDArg parDerDirDer(const ArgN &argDir, const ArgN &arg) override {
         return func->parDerDirDer(argDir, arg)(idx);
       }
-      typename Function<double(Arg)>::DRetDDir dirDerDirDer(const Arg &argDir_1, const Arg &argDir_2, const Arg &arg) override {
+      typename Function<double(ArgN)>::DRetDDir dirDerDirDer(const ArgN &argDir_1, const ArgN &argDir_2, const ArgN &arg) override {
         return func->dirDerDirDer(argDir_1, argDir_2, arg)(idx);
       }
     private:
-      std::shared_ptr<Function<Vector<RType,double>(Arg)>> func;
+      std::shared_ptr<Function<VecV(ArgN)>> func;
       int idx;
+  };
+
+  template<class ArgN>
+  class FunctionRetMatWrapper : public Function<double(ArgN)>  {
+    public:
+      FunctionRetMatWrapper(const std::shared_ptr<Function<MatV(ArgN)>> &func_, int row_, int col_) :
+        func(func_), row(row_), col(col_) {}
+      double operator()(const ArgN &arg) override {
+        return (*func)(arg)(row,col);
+      }
+      typename Function<double(ArgN)>::DRetDArg parDer(const ArgN &arg) override {
+        return func->parDer(arg)(row,col);
+      }
+      typename Function<double(ArgN)>::DRetDDir dirDer(const ArgN &argDir, const ArgN &arg) override {
+        return func->dirDer(argDir, arg)(row,col);
+      }
+      typename Function<double(ArgN)>::DDRetDDArg parDerParDer(const ArgN &arg) override {
+        return func->parDerParDer(arg)(row,col);
+      }
+      typename Function<double(ArgN)>::DRetDArg parDerDirDer(const ArgN &argDir, const ArgN &arg) override {
+        return func->parDerDirDer(argDir, arg)(row,col);
+      }
+      typename Function<double(ArgN)>::DRetDDir dirDerDirDer(const ArgN &argDir_1, const ArgN &argDir_2, const ArgN &arg) override {
+        return func->dirDerDirDer(argDir_1, argDir_2, arg)(row,col);
+      }
+    private:
+      std::shared_ptr<Function<MatV(ArgN)>> func;
+      int row;
+      int col;
   };
 }
 
-template<class RType, class Arg>
-FMATVEC_EXPORT Vector<RType,SymbolicExpression> symbolicFunc(
-  const std::shared_ptr<Function<Vector<RType,double>(Arg)>> &func,
-  const typename ReplaceAT<Arg,SymbolicExpression>::Type &arg, int size_=0) {
-  int size=func->getRetSize().first;
-  if(size==0 && size_!=0)
-    size=size_;
+template<class Func, class ArgS>
+FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFuncVecOrMat(
+  const std::shared_ptr<Function<Func>> &func, const ArgS &arg, int size1=0, int size2=0) {
+  using RetN = typename std::function<Func>::result_type;
+  using RetS = typename ReplaceAT<RetN,SymbolicExpression>::Type;
+  using ArgN = typename ReplaceAT<ArgS,double>::Type;
+
+  auto hasSize = boost::hana::is_valid([](auto&& vec) -> decltype(vec.size()) {});
+
+  RetS ret;
+  if constexpr (hasSize(ret)) {
+    // vector
+    int size=func->getRetSize().first;
+    if(size==0 && size1!=0)
+      size=size1;
+    else
+      size=(*func)(ArgN()).size();
+    ret.resize(size);
+    for(int i=0; i<size; ++i)
+      ret(i) = symbolicFuncScalar(std::make_shared<FunctionRetVecWrapper<ArgN>>(func, i), arg);//mfmf use cache
+    return ret;
+  }
+  else {
+    // matrix
+    auto size=func->getRetSize();
+    if(size.first==0 && size1!=0)
+      size.first=size1;
+    else
+      size.first=(*func)(ArgN()).rows();
+    if(size.second==0 && size2!=0)
+      size.second=size2;
+    else
+      size.second=(*func)(ArgN()).cols();
+    ret.resize(size.first, size.second);
+    for(int r=0; r<size.first; ++r)
+      for(int c=0; c<size.second; ++c)
+        ret(r,c) = symbolicFuncScalar(std::make_shared<FunctionRetMatWrapper<ArgN>>(func, r, c), arg);//mfmf use cache
+    return ret;
+  }
+}
+
+template<class Func, class ArgS>
+FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFunc(
+  const std::shared_ptr<Function<Func>> &func, const ArgS &arg, int size1=0, int size2=0) {
+  using RetN = typename std::function<Func>::result_type;
+  using RetS = typename ReplaceAT<RetN,SymbolicExpression>::Type;
+  if constexpr (std::is_same_v<RetN, double>)
+    return symbolicFuncScalar(func, arg);
   else
-    size=(*func)(Arg()).size();
-  Vector<RType,SymbolicExpression> ret(size);
-  for(int i=0; i<size; ++i)
-    ret(i) = symbolicFunc(std::make_shared<FunctionRetWrapper<Var,Arg>>(func, i), arg);//mfmf use cache
-  return ret;
+    return symbolicFuncVecOrMat<Func, ArgS>(func, arg, size1, size2);
+}
+
+template<class Func, class Arg1S, class Arg2S>
+FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFunc(
+  const std::shared_ptr<Function<Func>> &func, const Arg1S &arg1, const Arg2S &arg2, int size1=0, int size2=0) {
+  using RetN = typename std::function<Func>::result_type;
+  using RetS = typename ReplaceAT<RetN,SymbolicExpression>::Type;
+  if constexpr (std::is_same_v<RetN, double>)
+    return symbolicFuncScalar(func, arg1, arg2);
+  else
+    return symbolicFuncVecOrMat<Func, Arg1S, Arg2S>(func, arg1, arg2, size1, size2);
 }
 
 }

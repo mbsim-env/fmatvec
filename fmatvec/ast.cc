@@ -166,13 +166,13 @@ SymbolicExpression abs(const SymbolicExpression &a) {
   return AST::Operation::create(AST::Operation::Abs, {a});
 }
 
-SymbolicExpression symbolicFunc(
+SymbolicExpression symbolicFuncScalar(
   const std::shared_ptr<fmatvec::Function<double(double)>> &func,
   const SymbolicExpression &arg) {
   return AST::Function::create(std::make_shared<AST::FunctionWrapperS>(func), vector<SymbolicExpression>{arg});
 }
 
-SymbolicExpression symbolicFunc(
+SymbolicExpression symbolicFuncScalar(
   const std::shared_ptr<fmatvec::Function<double(double,double)>> &func,
   const SymbolicExpression &arg1, const SymbolicExpression &arg2) {
   return AST::Function::create(std::make_shared<AST::FunctionWrapperSS>(func), vector<SymbolicExpression>{arg1,arg2});

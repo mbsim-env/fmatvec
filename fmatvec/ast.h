@@ -183,31 +183,31 @@ FMATVEC_EXPORT SymbolicExpression exp(const SymbolicExpression &a);
 FMATVEC_EXPORT SymbolicExpression sign(const SymbolicExpression &a);
 FMATVEC_EXPORT SymbolicExpression abs(const SymbolicExpression &a);
 
-FMATVEC_EXPORT SymbolicExpression symbolicFunc(
+FMATVEC_EXPORT SymbolicExpression symbolicFuncScalar(
   const std::shared_ptr<Function<double(double)>> &func,
   const SymbolicExpression &arg);
 
 template<class Type>
-FMATVEC_EXPORT SymbolicExpression symbolicFunc(
+FMATVEC_EXPORT SymbolicExpression symbolicFuncScalar(
   const std::shared_ptr<Function<double(Vector<Type, double>)>> &func,
   const Vector<Type, SymbolicExpression> &arg);
 
-FMATVEC_EXPORT SymbolicExpression symbolicFunc(
+FMATVEC_EXPORT SymbolicExpression symbolicFuncScalar(
   const std::shared_ptr<Function<double(double,double)>> &func,
   const SymbolicExpression &arg1, const SymbolicExpression &arg2);
 
 template<class Type>
-FMATVEC_EXPORT SymbolicExpression symbolicFunc(
+FMATVEC_EXPORT SymbolicExpression symbolicFuncScalar(
   const std::shared_ptr<Function<double(Vector<Type,double>,double)>> &func,
   const Vector<Type, SymbolicExpression> &arg1, const SymbolicExpression &arg2);
 
 template<class Type>
-FMATVEC_EXPORT SymbolicExpression symbolicFunc(
+FMATVEC_EXPORT SymbolicExpression symbolicFuncScalar(
   const std::shared_ptr<Function<double(double,Vector<Type,double>)>> &func,
   const SymbolicExpression &arg1, const Vector<Type, SymbolicExpression> &arg2);
 
 template<class Type1, class Type2>
-FMATVEC_EXPORT SymbolicExpression symbolicFunc(
+FMATVEC_EXPORT SymbolicExpression symbolicFuncScalar(
   const std::shared_ptr<Function<double(Vector<Type1,double>,Vector<Type2,double>)>> &func,
   const Vector<Type1, SymbolicExpression> &arg1, const Vector<Type2, SymbolicExpression> &arg2);
 
@@ -750,7 +750,7 @@ template<> struct AssertUseException<IndependentVariable> { constexpr static boo
 template<> struct AssertUseException<SymbolicExpression>  { constexpr static bool value = true; };
 
 template<class Type>
-SymbolicExpression symbolicFunc(
+SymbolicExpression symbolicFuncScalar(
   const std::shared_ptr<Function<double(Vector<Type, double>)>> &func,
   const Vector<Type, SymbolicExpression> &arg) {
   std::vector<SymbolicExpression> argV(arg.size());
@@ -760,7 +760,7 @@ SymbolicExpression symbolicFunc(
 }
 
 template<class Type>
-SymbolicExpression symbolicFunc(
+SymbolicExpression symbolicFuncScalar(
   const std::shared_ptr<Function<double(Vector<Type,double>,double)>> &func,
   const Vector<Type, SymbolicExpression> &arg1, const SymbolicExpression &arg2) {
   std::vector<SymbolicExpression> argV(arg1.size()+1);
@@ -771,7 +771,7 @@ SymbolicExpression symbolicFunc(
 }
 
 template<class Type>
-SymbolicExpression symbolicFunc(
+SymbolicExpression symbolicFuncScalar(
   const std::shared_ptr<Function<double(double,Vector<Type,double>)>> &func,
   const SymbolicExpression &arg1, const Vector<Type, SymbolicExpression> &arg2) {
   std::vector<SymbolicExpression> argV(1+arg2.size());
@@ -782,7 +782,7 @@ SymbolicExpression symbolicFunc(
 }
 
 template<class Type1, class Type2>
-SymbolicExpression symbolicFunc(
+SymbolicExpression symbolicFuncScalar(
   const std::shared_ptr<Function<double(Vector<Type1,double>,Vector<Type2,double>)>> &func,
   const Vector<Type1, SymbolicExpression> &arg1, const Vector<Type2, SymbolicExpression> &arg2) {
   std::vector<SymbolicExpression> argV(arg1.size()+arg2.size());
