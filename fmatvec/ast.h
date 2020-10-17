@@ -186,33 +186,61 @@ FMATVEC_EXPORT SymbolicExpression abs(const SymbolicExpression &a);
 #ifndef SWIG
 namespace AST { // internal namespace
 
-FMATVEC_EXPORT SymbolicExpression symbolicFuncWrapArg(
-  const std::shared_ptr<Function<double(double)>> &func,
-  const SymbolicExpression &arg);
+template<class Func, class ArgS>
+struct SymbolicFuncWrapArg1 {
+  static SymbolicExpression call(
+    const std::shared_ptr<Function<Func>> &func,
+    const ArgS &arg);
+};
+
+template<>
+struct SymbolicFuncWrapArg1<double(double), SymbolicExpression> {
+  static SymbolicExpression call(
+    const std::shared_ptr<Function<double(double)>> &func,
+    const SymbolicExpression &arg);
+};
 
 template<class Type>
-FMATVEC_EXPORT SymbolicExpression symbolicFuncWrapArg(
-  const std::shared_ptr<Function<double(Vector<Type, double>)>> &func,
-  const Vector<Type, SymbolicExpression> &arg);
+struct SymbolicFuncWrapArg1<double(Vector<Type, double>), Vector<Type, SymbolicExpression>> {
+  static SymbolicExpression call(
+    const std::shared_ptr<Function<double(Vector<Type, double>)>> &func,
+    const Vector<Type, SymbolicExpression> &arg);
+};
+  
+template<class Func, class Arg1S, class Arg2S>
+struct SymbolicFuncWrapArg2 {
+  static SymbolicExpression call(
+    const std::shared_ptr<Function<Func>> &func,
+    const Arg1S &arg1, const Arg2S &arg2);
+};
 
-FMATVEC_EXPORT SymbolicExpression symbolicFuncWrapArg(
-  const std::shared_ptr<Function<double(double,double)>> &func,
-  const SymbolicExpression &arg1, const SymbolicExpression &arg2);
+template<>
+struct SymbolicFuncWrapArg2<double(double,double), SymbolicExpression, SymbolicExpression> {
+  static SymbolicExpression call(
+    const std::shared_ptr<Function<double(double,double)>> &func,
+    const SymbolicExpression &arg1, const SymbolicExpression &arg2);
+};
 
 template<class Type>
-FMATVEC_EXPORT SymbolicExpression symbolicFuncWrapArg(
-  const std::shared_ptr<Function<double(Vector<Type,double>,double)>> &func,
-  const Vector<Type, SymbolicExpression> &arg1, const SymbolicExpression &arg2);
+struct SymbolicFuncWrapArg2<double(Vector<Type,double>,double), Vector<Type, SymbolicExpression>, SymbolicExpression> {
+  static SymbolicExpression call(
+    const std::shared_ptr<Function<double(Vector<Type,double>,double)>> &func,
+    const Vector<Type, SymbolicExpression> &arg1, const SymbolicExpression &arg2);
+};
 
 template<class Type>
-FMATVEC_EXPORT SymbolicExpression symbolicFuncWrapArg(
-  const std::shared_ptr<Function<double(double,Vector<Type,double>)>> &func,
-  const SymbolicExpression &arg1, const Vector<Type, SymbolicExpression> &arg2);
+struct SymbolicFuncWrapArg2<double(double,Vector<Type,double>), SymbolicExpression, Vector<Type, SymbolicExpression>> {
+  static SymbolicExpression call(
+    const std::shared_ptr<Function<double(double,Vector<Type,double>)>> &func,
+    const SymbolicExpression &arg1, const Vector<Type, SymbolicExpression> &arg2);
+};
 
 template<class Type1, class Type2>
-FMATVEC_EXPORT SymbolicExpression symbolicFuncWrapArg(
-  const std::shared_ptr<Function<double(Vector<Type1,double>,Vector<Type2,double>)>> &func,
-  const Vector<Type1, SymbolicExpression> &arg1, const Vector<Type2, SymbolicExpression> &arg2);
+struct SymbolicFuncWrapArg2<double(Vector<Type1,double>,Vector<Type2,double>), Vector<Type1, SymbolicExpression>, Vector<Type2, SymbolicExpression>> {
+  static SymbolicExpression call(
+    const std::shared_ptr<Function<double(Vector<Type1,double>,Vector<Type2,double>)>> &func,
+    const Vector<Type1, SymbolicExpression> &arg1, const Vector<Type2, SymbolicExpression> &arg2);
+};
 
 // ***** Vertex *****
 
@@ -724,8 +752,14 @@ double Operation::eval() const {
   throw std::runtime_error("Unknown operation.");
 }
 
+inline SymbolicExpression SymbolicFuncWrapArg1<double(double), SymbolicExpression>::call(
+  const std::shared_ptr<fmatvec::Function<double(double)>> &func,
+  const SymbolicExpression &arg) {
+  return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgS>(func), std::vector<SymbolicExpression>{arg});
+}
+
 template<class Type>
-SymbolicExpression symbolicFuncWrapArg(
+SymbolicExpression SymbolicFuncWrapArg1<double(Vector<Type, double>), Vector<Type, SymbolicExpression>>::call(
   const std::shared_ptr<Function<double(Vector<Type, double>)>> &func,
   const Vector<Type, SymbolicExpression> &arg) {
   std::vector<SymbolicExpression> argV(arg.size());
@@ -734,8 +768,14 @@ SymbolicExpression symbolicFuncWrapArg(
   return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgV<Type>>(func, arg.size()), argV);
 }
 
+inline SymbolicExpression SymbolicFuncWrapArg2<double(double,double), SymbolicExpression, SymbolicExpression>::call(
+  const std::shared_ptr<fmatvec::Function<double(double,double)>> &func,
+  const SymbolicExpression &arg1, const SymbolicExpression &arg2) {
+  return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgSS>(func), std::vector<SymbolicExpression>{arg1,arg2});
+}
+
 template<class Type>
-SymbolicExpression symbolicFuncWrapArg(
+SymbolicExpression SymbolicFuncWrapArg2<double(Vector<Type,double>,double), Vector<Type, SymbolicExpression>, SymbolicExpression>::call(
   const std::shared_ptr<Function<double(Vector<Type,double>,double)>> &func,
   const Vector<Type, SymbolicExpression> &arg1, const SymbolicExpression &arg2) {
   std::vector<SymbolicExpression> argV(arg1.size()+1);
@@ -746,7 +786,7 @@ SymbolicExpression symbolicFuncWrapArg(
 }
 
 template<class Type>
-SymbolicExpression symbolicFuncWrapArg(
+SymbolicExpression SymbolicFuncWrapArg2<double(double,Vector<Type,double>), SymbolicExpression, Vector<Type, SymbolicExpression>>::call(
   const std::shared_ptr<Function<double(double,Vector<Type,double>)>> &func,
   const SymbolicExpression &arg1, const Vector<Type, SymbolicExpression> &arg2) {
   std::vector<SymbolicExpression> argV(1+arg2.size());
@@ -757,7 +797,7 @@ SymbolicExpression symbolicFuncWrapArg(
 }
 
 template<class Type1, class Type2>
-SymbolicExpression symbolicFuncWrapArg(
+SymbolicExpression SymbolicFuncWrapArg2<double(Vector<Type1,double>,Vector<Type2,double>), Vector<Type1, SymbolicExpression>, Vector<Type2, SymbolicExpression>>::call(
   const std::shared_ptr<Function<double(Vector<Type1,double>,Vector<Type2,double>)>> &func,
   const Vector<Type1, SymbolicExpression> &arg1, const Vector<Type2, SymbolicExpression> &arg2) {
   std::vector<SymbolicExpression> argV(arg1.size()+arg2.size());

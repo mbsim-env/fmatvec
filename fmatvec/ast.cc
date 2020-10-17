@@ -692,18 +692,6 @@ bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) c
   return false;
 }
 
-SymbolicExpression symbolicFuncWrapArg(
-  const std::shared_ptr<fmatvec::Function<double(double)>> &func,
-  const SymbolicExpression &arg) {
-  return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgS>(func), vector<SymbolicExpression>{arg});
-}
-
-SymbolicExpression symbolicFuncWrapArg(
-  const std::shared_ptr<fmatvec::Function<double(double,double)>> &func,
-  const SymbolicExpression &arg1, const SymbolicExpression &arg2) {
-  return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgSS>(func), vector<SymbolicExpression>{arg1,arg2});
-}
-
 } // end namespace AST
 
 template<>

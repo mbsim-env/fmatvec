@@ -327,30 +327,21 @@ Matrix<TypeDst, ShapeRowDst, ShapeColDst, ATIndep>& operator^=(Matrix<TypeDst, S
 /***** native function as symbolic function (scalar function are defined in ast.h; here are vector and matrix function defined) *****/
 
 namespace {
-  template<class ArgN>
+  template<class RetN, class ArgN>
   class FunctionWrapVecRetToScalar : public Function<double(ArgN)>  {
     public:
-      FunctionWrapVecRetToScalar(const std::shared_ptr<Function<VecV(ArgN)>> &func_, int idx_) : func(func_), idx(idx_) {}
+      FunctionWrapVecRetToScalar(const std::shared_ptr<Function<RetN(ArgN)>> &func_, int idx_) : func(func_), idx(idx_) {}
       double operator()(const ArgN &arg) override {
         return (*func)(arg)(idx);
       }
-      typename Function<double(ArgN)>::DRetDArg parDer(const ArgN &arg) override {
-        return func->parDer(arg)(idx);
-      }
       typename Function<double(ArgN)>::DRetDDir dirDer(const ArgN &argDir, const ArgN &arg) override {
         return func->dirDer(argDir, arg)(idx);
-      }
-      typename Function<double(ArgN)>::DDRetDDArg parDerParDer(const ArgN &arg) override {
-        return func->parDerParDer(arg)(idx);
-      }
-      typename Function<double(ArgN)>::DRetDArg parDerDirDer(const ArgN &argDir, const ArgN &arg) override {
-        return func->parDerDirDer(argDir, arg)(idx);
       }
       typename Function<double(ArgN)>::DRetDDir dirDerDirDer(const ArgN &argDir_1, const ArgN &argDir_2, const ArgN &arg) override {
         return func->dirDerDirDer(argDir_1, argDir_2, arg)(idx);
       }
     private:
-      std::shared_ptr<Function<VecV(ArgN)>> func;
+      std::shared_ptr<Function<RetN(ArgN)>> func;
       int idx;
   };
 
@@ -362,17 +353,8 @@ namespace {
       double operator()(const ArgN &arg) override {
         return (*func)(arg)(row,col);
       }
-      typename Function<double(ArgN)>::DRetDArg parDer(const ArgN &arg) override {
-        return func->parDer(arg)(row,col);
-      }
       typename Function<double(ArgN)>::DRetDDir dirDer(const ArgN &argDir, const ArgN &arg) override {
         return func->dirDer(argDir, arg)(row,col);
-      }
-      typename Function<double(ArgN)>::DDRetDDArg parDerParDer(const ArgN &arg) override {
-        return func->parDerParDer(arg)(row,col);
-      }
-      typename Function<double(ArgN)>::DRetDArg parDerDirDer(const ArgN &argDir, const ArgN &arg) override {
-        return func->parDerDirDer(argDir, arg)(row,col);
       }
       typename Function<double(ArgN)>::DRetDDir dirDerDirDer(const ArgN &argDir_1, const ArgN &argDir_2, const ArgN &arg) override {
         return func->dirDerDirDer(argDir_1, argDir_2, arg)(row,col);
@@ -402,7 +384,7 @@ namespace {
         size=(*func)(ArgN()).size();
       ret.resize(size);
       for(int i=0; i<size; ++i)
-        ret(i) = AST::symbolicFuncWrapArg(std::make_shared<FunctionWrapVecRetToScalar<ArgN>>(func, i), arg);//mfmf use cache
+        ret(i) = AST::SymbolicFuncWrapArg1<double(ArgN), ArgS>::call(std::make_shared<FunctionWrapVecRetToScalar<RetN,ArgN>>(func, i), arg);//mfmf use cache
       return ret;
     }
     else {
@@ -419,7 +401,7 @@ namespace {
       ret.resize(size.first, size.second);
       for(int r=0; r<size.first; ++r)
         for(int c=0; c<size.second; ++c)
-          ret(r,c) = AST::symbolicFuncWrapArg(std::make_shared<FunctionWrapMatRetToScalar<ArgN>>(func, r, c), arg);//mfmf use cache
+          ret(r,c) = AST::SymbolicFuncWrapArg1<double(ArgN), ArgS>::call(std::make_shared<FunctionWrapMatRetToScalar<ArgN>>(func, r, c), arg);//mfmf use cache
       return ret;
     }
   }
@@ -430,9 +412,9 @@ template<class Func, class ArgS>
 FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFunc(
   const std::shared_ptr<Function<Func>> &func, const ArgS &arg, int size1=0, int size2=0) {
   using RetN = typename std::function<Func>::result_type;
-  using RetS = typename ReplaceAT<RetN,SymbolicExpression>::Type;
+  using ArgN = typename ReplaceAT<ArgS,double>::Type;
   if constexpr (std::is_same_v<RetN, double>)
-    return AST::symbolicFuncWrapArg(func, arg);
+    return AST::SymbolicFuncWrapArg1<double(ArgN), ArgS>::call(func, arg);
   else
     return symbolicFuncWrapVecAndMatRet<Func, ArgS>(func, arg, size1, size2);
 }
@@ -441,9 +423,10 @@ template<class Func, class Arg1S, class Arg2S>
 FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFunc(
   const std::shared_ptr<Function<Func>> &func, const Arg1S &arg1, const Arg2S &arg2, int size1=0, int size2=0) {
   using RetN = typename std::function<Func>::result_type;
-  using RetS = typename ReplaceAT<RetN,SymbolicExpression>::Type;
+  using Arg1N = typename ReplaceAT<Arg1S,double>::Type;
+  using Arg2N = typename ReplaceAT<Arg2S,double>::Type;
   if constexpr (std::is_same_v<RetN, double>)
-    return AST::symbolicFuncWrapArg(func, arg1, arg2);
+    return AST::SymbolicFuncWrapArg2<double(Arg1N, Arg2N), Arg1S, Arg2S>::call(func, arg1, arg2);
   else
     return symbolicFuncWrapVecAndMatRet<Func, Arg1S, Arg2S>(func, arg1, arg2, size1, size2);
 }
