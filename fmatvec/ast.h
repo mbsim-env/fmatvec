@@ -26,7 +26,7 @@ namespace AST {
   class Vertex;
   class Symbol;
   class Operation;
-  class Function;
+  class NativeFunction;
   template<class T> class Constant;
 }
 
@@ -39,7 +39,7 @@ class FMATVEC_EXPORT SymbolicExpression : public std::shared_ptr<const AST::Vert
   friend class AST::Operation;
   friend class AST::Constant<int>;
   friend class AST::Constant<double>;
-  friend class AST::Function;
+  friend class AST::NativeFunction;
   friend FMATVEC_EXPORT SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
   friend FMATVEC_EXPORT double eval(const SymbolicExpression &x);
   friend FMATVEC_EXPORT SymbolicExpression subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
@@ -183,36 +183,36 @@ FMATVEC_EXPORT SymbolicExpression exp(const SymbolicExpression &a);
 FMATVEC_EXPORT SymbolicExpression sign(const SymbolicExpression &a);
 FMATVEC_EXPORT SymbolicExpression abs(const SymbolicExpression &a);
 
-FMATVEC_EXPORT SymbolicExpression symbolicFuncScalar(
+#ifndef SWIG
+namespace AST { // internal namespace
+
+FMATVEC_EXPORT SymbolicExpression symbolicFuncWrapArg(
   const std::shared_ptr<Function<double(double)>> &func,
   const SymbolicExpression &arg);
 
 template<class Type>
-FMATVEC_EXPORT SymbolicExpression symbolicFuncScalar(
+FMATVEC_EXPORT SymbolicExpression symbolicFuncWrapArg(
   const std::shared_ptr<Function<double(Vector<Type, double>)>> &func,
   const Vector<Type, SymbolicExpression> &arg);
 
-FMATVEC_EXPORT SymbolicExpression symbolicFuncScalar(
+FMATVEC_EXPORT SymbolicExpression symbolicFuncWrapArg(
   const std::shared_ptr<Function<double(double,double)>> &func,
   const SymbolicExpression &arg1, const SymbolicExpression &arg2);
 
 template<class Type>
-FMATVEC_EXPORT SymbolicExpression symbolicFuncScalar(
+FMATVEC_EXPORT SymbolicExpression symbolicFuncWrapArg(
   const std::shared_ptr<Function<double(Vector<Type,double>,double)>> &func,
   const Vector<Type, SymbolicExpression> &arg1, const SymbolicExpression &arg2);
 
 template<class Type>
-FMATVEC_EXPORT SymbolicExpression symbolicFuncScalar(
+FMATVEC_EXPORT SymbolicExpression symbolicFuncWrapArg(
   const std::shared_ptr<Function<double(double,Vector<Type,double>)>> &func,
   const SymbolicExpression &arg1, const Vector<Type, SymbolicExpression> &arg2);
 
 template<class Type1, class Type2>
-FMATVEC_EXPORT SymbolicExpression symbolicFuncScalar(
+FMATVEC_EXPORT SymbolicExpression symbolicFuncWrapArg(
   const std::shared_ptr<Function<double(Vector<Type1,double>,Vector<Type2,double>)>> &func,
   const Vector<Type1, SymbolicExpression> &arg1, const Vector<Type2, SymbolicExpression> &arg2);
-
-#ifndef SWIG
-namespace AST { // internal namespace
 
 // ***** Vertex *****
 
@@ -342,18 +342,18 @@ unsigned long Symbol::getVersion() const {
   return version;
 }
 
-// ***** FunctionWrapper *****
+// ***** ScalarFunctionWrapArg *****
 
-class FunctionWrapper {
+class ScalarFunctionWrapArg {
   public:
     virtual double operator()(const std::vector<double> &arg) = 0;
     virtual double dirDer(const std::vector<double> &dir1, const std::vector<double> &arg) = 0;
     virtual double dirDerDirDer(const std::vector<double> &dir1, const std::vector<double> &dir2, const std::vector<double> &arg) = 0;
 };
 
-class FunctionWrapperS : public FunctionWrapper {
+class ScalarFunctionWrapArgS : public ScalarFunctionWrapArg {
   public:
-    FunctionWrapperS(const std::shared_ptr<fmatvec::Function<double(double)>> &func_) : func(func_) {}
+    ScalarFunctionWrapArgS(const std::shared_ptr<fmatvec::Function<double(double)>> &func_) : func(func_) {}
     double operator()(const std::vector<double> &arg) override {
       return (*func)(arg[0]);
     }
@@ -368,9 +368,9 @@ class FunctionWrapperS : public FunctionWrapper {
 };
 
 template<class Type>
-class FunctionWrapperV : public FunctionWrapper {
+class ScalarFunctionWrapArgV : public ScalarFunctionWrapArg {
   public:
-    FunctionWrapperV(const std::shared_ptr<fmatvec::Function<double(fmatvec::Vector<Type,double>)>> &func_, int argSize) : func(func_) {
+    ScalarFunctionWrapArgV(const std::shared_ptr<fmatvec::Function<double(fmatvec::Vector<Type,double>)>> &func_, int argSize) : func(func_) {
       argV.resize(argSize);
       dir1V.resize(argSize);
       dir2V.resize(argSize);
@@ -403,9 +403,9 @@ class FunctionWrapperV : public FunctionWrapper {
     fmatvec::Vector<Type,double> dir2V;
 };
 
-class FunctionWrapperSS : public FunctionWrapper {
+class ScalarFunctionWrapArgSS : public ScalarFunctionWrapArg {
   public:
-    FunctionWrapperSS(const std::shared_ptr<fmatvec::Function<double(double,double)>> &func_) : func(func_) {}
+    ScalarFunctionWrapArgSS(const std::shared_ptr<fmatvec::Function<double(double,double)>> &func_) : func(func_) {}
     double operator()(const std::vector<double> &arg) override {
       return (*func)(arg[0], arg[1]);
     }
@@ -424,9 +424,9 @@ class FunctionWrapperSS : public FunctionWrapper {
 };
 
 template<class Type>
-class FunctionWrapperVS : public FunctionWrapper {
+class ScalarFunctionWrapArgVS : public ScalarFunctionWrapArg {
   public:
-    FunctionWrapperVS(const std::shared_ptr<fmatvec::Function<double(Vector<Type,double>,double)>> &func_, int argSize) : func(func_) {
+    ScalarFunctionWrapArgVS(const std::shared_ptr<fmatvec::Function<double(Vector<Type,double>,double)>> &func_, int argSize) : func(func_) {
       argV.resize(argSize);
       dir1V.resize(argSize);
       dir2V.resize(argSize);
@@ -464,9 +464,9 @@ class FunctionWrapperVS : public FunctionWrapper {
 };
 
 template<class Type>
-class FunctionWrapperSV : public FunctionWrapper {
+class ScalarFunctionWrapArgSV : public ScalarFunctionWrapArg {
   public:
-    FunctionWrapperSV(const std::shared_ptr<fmatvec::Function<double(double,Vector<Type,double>)>> &func_, int argSize) : func(func_) {
+    ScalarFunctionWrapArgSV(const std::shared_ptr<fmatvec::Function<double(double,Vector<Type,double>)>> &func_, int argSize) : func(func_) {
       argV.resize(argSize);
       dir1V.resize(argSize);
       dir2V.resize(argSize);
@@ -504,9 +504,9 @@ class FunctionWrapperSV : public FunctionWrapper {
 };
 
 template<class Type1, class Type2>
-class FunctionWrapperVV : public FunctionWrapper {
+class ScalarFunctionWrapArgVV : public ScalarFunctionWrapArg {
   public:
-    FunctionWrapperVV(const std::shared_ptr<fmatvec::Function<double(Vector<Type1,double>,Vector<Type2,double>)>> &func_,
+    ScalarFunctionWrapArgVV(const std::shared_ptr<fmatvec::Function<double(Vector<Type1,double>,Vector<Type2,double>)>> &func_,
                       int argaSize, int argbSize) : func(func_) {
       argV1.resize(argaSize);
       argV2.resize(argbSize);
@@ -565,19 +565,19 @@ class FunctionWrapperVV : public FunctionWrapper {
 // ***** Function *****
 
 //! A vertex of the AST representing an arbitary function.
-class FMATVEC_EXPORT Function : public Vertex, public std::enable_shared_from_this<Function> {
+class FMATVEC_EXPORT NativeFunction : public Vertex, public std::enable_shared_from_this<NativeFunction> {
   public:
-    static SymbolicExpression create(const std::shared_ptr<FunctionWrapper> &funcWrapper, const std::vector<SymbolicExpression> &argS,
+    static SymbolicExpression create(const std::shared_ptr<ScalarFunctionWrapArg> &funcWrapper, const std::vector<SymbolicExpression> &argS,
                                      const std::vector<SymbolicExpression> &dir1S={}, const std::vector<SymbolicExpression> &dir2S={});
     inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
 
   private:
-    Function(const std::shared_ptr<FunctionWrapper> &func_, const std::vector<SymbolicExpression> &argS,
-             const std::vector<SymbolicExpression> &dir1S, const std::vector<SymbolicExpression> &dir2S);
+    NativeFunction(const std::shared_ptr<ScalarFunctionWrapArg> &func_, const std::vector<SymbolicExpression> &argS,
+                   const std::vector<SymbolicExpression> &dir1S, const std::vector<SymbolicExpression> &dir2S);
     bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
 
-    std::shared_ptr<FunctionWrapper> funcWrapper;
+    std::shared_ptr<ScalarFunctionWrapArg> funcWrapper;
     const std::vector<SymbolicExpression> argS;
     const std::vector<SymbolicExpression> dir1S;
     const std::vector<SymbolicExpression> dir2S;
@@ -587,7 +587,7 @@ class FMATVEC_EXPORT Function : public Vertex, public std::enable_shared_from_th
     //mfmf cache
 };
 
-double Function::eval() const {
+double NativeFunction::eval() const {
   for(size_t i=0; i<argS.size(); ++i)
     argN[i]=fmatvec::eval(argS[i]);
 
@@ -724,6 +724,50 @@ double Operation::eval() const {
   throw std::runtime_error("Unknown operation.");
 }
 
+template<class Type>
+SymbolicExpression symbolicFuncWrapArg(
+  const std::shared_ptr<Function<double(Vector<Type, double>)>> &func,
+  const Vector<Type, SymbolicExpression> &arg) {
+  std::vector<SymbolicExpression> argV(arg.size());
+  for(int i=0; i<arg.size(); ++i)
+    argV[i]=arg(i);
+  return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgV<Type>>(func, arg.size()), argV);
+}
+
+template<class Type>
+SymbolicExpression symbolicFuncWrapArg(
+  const std::shared_ptr<Function<double(Vector<Type,double>,double)>> &func,
+  const Vector<Type, SymbolicExpression> &arg1, const SymbolicExpression &arg2) {
+  std::vector<SymbolicExpression> argV(arg1.size()+1);
+  for(int i=0; i<arg1.size(); ++i)
+    argV[i]=arg1(i);
+  argV[arg1.size()]=arg2;
+  return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgVS<Type>>(func, arg1.size()), argV);
+}
+
+template<class Type>
+SymbolicExpression symbolicFuncWrapArg(
+  const std::shared_ptr<Function<double(double,Vector<Type,double>)>> &func,
+  const SymbolicExpression &arg1, const Vector<Type, SymbolicExpression> &arg2) {
+  std::vector<SymbolicExpression> argV(1+arg2.size());
+  argV[0]=arg1;
+  for(int i=0; i<arg2.size(); ++i)
+    argV[i+1]=arg2(i);
+  return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgSV<Type>>(func, arg2.size()), argV);
+}
+
+template<class Type1, class Type2>
+SymbolicExpression symbolicFuncWrapArg(
+  const std::shared_ptr<Function<double(Vector<Type1,double>,Vector<Type2,double>)>> &func,
+  const Vector<Type1, SymbolicExpression> &arg1, const Vector<Type2, SymbolicExpression> &arg2) {
+  std::vector<SymbolicExpression> argV(arg1.size()+arg2.size());
+  for(int i=0; i<arg1.size(); ++i)
+    argV[i]=arg1(i);
+  for(int i=0; i<arg2.size(); ++i)
+    argV[arg1.size()+i]=arg2(i);
+  return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgVV<Type1,Type2>>(func, arg1.size(), arg2.size()), argV);
+}
+
 } // end namespace AST
 #endif
 
@@ -748,50 +792,6 @@ template<> boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpre
 // and it not time critical since it just build the expression once which is than evaluated at runtime.
 template<> struct AssertUseException<IndependentVariable> { constexpr static bool value = true; };
 template<> struct AssertUseException<SymbolicExpression>  { constexpr static bool value = true; };
-
-template<class Type>
-SymbolicExpression symbolicFuncScalar(
-  const std::shared_ptr<Function<double(Vector<Type, double>)>> &func,
-  const Vector<Type, SymbolicExpression> &arg) {
-  std::vector<SymbolicExpression> argV(arg.size());
-  for(int i=0; i<arg.size(); ++i)
-    argV[i]=arg(i);
-  return AST::Function::create(std::make_shared<AST::FunctionWrapperV<Type>>(func, arg.size()), argV);
-}
-
-template<class Type>
-SymbolicExpression symbolicFuncScalar(
-  const std::shared_ptr<Function<double(Vector<Type,double>,double)>> &func,
-  const Vector<Type, SymbolicExpression> &arg1, const SymbolicExpression &arg2) {
-  std::vector<SymbolicExpression> argV(arg1.size()+1);
-  for(int i=0; i<arg1.size(); ++i)
-    argV[i]=arg1(i);
-  argV[arg1.size()]=arg2;
-  return AST::Function::create(std::make_shared<AST::FunctionWrapperVS<Type>>(func, arg1.size()), argV);
-}
-
-template<class Type>
-SymbolicExpression symbolicFuncScalar(
-  const std::shared_ptr<Function<double(double,Vector<Type,double>)>> &func,
-  const SymbolicExpression &arg1, const Vector<Type, SymbolicExpression> &arg2) {
-  std::vector<SymbolicExpression> argV(1+arg2.size());
-  argV[0]=arg1;
-  for(int i=0; i<arg2.size(); ++i)
-    argV[i+1]=arg2(i);
-  return AST::Function::create(std::make_shared<AST::FunctionWrapperSV<Type>>(func, arg2.size()), argV);
-}
-
-template<class Type1, class Type2>
-SymbolicExpression symbolicFuncScalar(
-  const std::shared_ptr<Function<double(Vector<Type1,double>,Vector<Type2,double>)>> &func,
-  const Vector<Type1, SymbolicExpression> &arg1, const Vector<Type2, SymbolicExpression> &arg2) {
-  std::vector<SymbolicExpression> argV(arg1.size()+arg2.size());
-  for(int i=0; i<arg1.size(); ++i)
-    argV[i]=arg1(i);
-  for(int i=0; i<arg2.size(); ++i)
-    argV[arg1.size()+i]=arg2(i);
-  return AST::Function::create(std::make_shared<AST::FunctionWrapperVV<Type1,Type2>>(func, arg1.size(), arg2.size()), argV);
-}
 
 } // end namespace fmatvec
 

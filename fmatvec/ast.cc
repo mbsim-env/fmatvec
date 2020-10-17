@@ -166,18 +166,6 @@ SymbolicExpression abs(const SymbolicExpression &a) {
   return AST::Operation::create(AST::Operation::Abs, {a});
 }
 
-SymbolicExpression symbolicFuncScalar(
-  const std::shared_ptr<fmatvec::Function<double(double)>> &func,
-  const SymbolicExpression &arg) {
-  return AST::Function::create(std::make_shared<AST::FunctionWrapperS>(func), vector<SymbolicExpression>{arg});
-}
-
-SymbolicExpression symbolicFuncScalar(
-  const std::shared_ptr<fmatvec::Function<double(double,double)>> &func,
-  const SymbolicExpression &arg1, const SymbolicExpression &arg2) {
-  return AST::Function::create(std::make_shared<AST::FunctionWrapperSS>(func), vector<SymbolicExpression>{arg1,arg2});
-}
-
 ostream& operator<<(ostream& s, const SymbolicExpression& se) {
   namespace karma = boost::spirit::karma;
   using It = std::ostream_iterator<char>;
@@ -415,10 +403,10 @@ string Symbol::getUUIDStr() const {
 #endif
 }
 
-// ***** Function *****
+// ***** NativeFunction *****
 
-Function::Function(const shared_ptr<FunctionWrapper> &funcWrapper_, const vector<SymbolicExpression> &argS_,
-                   const vector<SymbolicExpression> &dir1S_, const vector<SymbolicExpression> &dir2S_) :
+NativeFunction::NativeFunction(const shared_ptr<ScalarFunctionWrapArg> &funcWrapper_, const vector<SymbolicExpression> &argS_,
+                               const vector<SymbolicExpression> &dir1S_, const vector<SymbolicExpression> &dir2S_) :
   funcWrapper(funcWrapper_), argS(argS_), dir1S(dir1S_), dir2S(dir2S_) {
   argN.resize(argS.size());
   dir1N.resize(dir1S.size());
@@ -428,12 +416,12 @@ Function::Function(const shared_ptr<FunctionWrapper> &funcWrapper_, const vector
       dependsOn.insert(make_pair(x.first, 0));
 }
 
-SymbolicExpression Function::create(const shared_ptr<FunctionWrapper> &funcWrapper, const vector<SymbolicExpression> &argS,
+SymbolicExpression NativeFunction::create(const shared_ptr<ScalarFunctionWrapArg> &funcWrapper, const vector<SymbolicExpression> &argS,
                                     const vector<SymbolicExpression> &dir1S, const vector<SymbolicExpression> &dir2S) {
-  return shared_ptr<Function>(new Function(funcWrapper, argS, dir1S, dir2S));
+  return shared_ptr<NativeFunction>(new NativeFunction(funcWrapper, argS, dir1S, dir2S));
 }
 
-SymbolicExpression Function::parDer(const IndependentVariable &x) const {
+SymbolicExpression NativeFunction::parDer(const IndependentVariable &x) const {
   if(dir1S.size()==0) {
     // create a new first derivative
     vector<SymbolicExpression> dir1S_;
@@ -476,7 +464,7 @@ SymbolicExpression Function::parDer(const IndependentVariable &x) const {
                            "External functions provide only the second derivative.");
 }
 
-bool Function::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
+bool NativeFunction::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
   // a function is only equal to b if b is the same as this.
   return this->shared_from_this()==b;//mfmf improve this
 }
@@ -704,6 +692,18 @@ bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) c
   return false;
 }
 
+SymbolicExpression symbolicFuncWrapArg(
+  const std::shared_ptr<fmatvec::Function<double(double)>> &func,
+  const SymbolicExpression &arg) {
+  return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgS>(func), vector<SymbolicExpression>{arg});
+}
+
+SymbolicExpression symbolicFuncWrapArg(
+  const std::shared_ptr<fmatvec::Function<double(double,double)>> &func,
+  const SymbolicExpression &arg1, const SymbolicExpression &arg2) {
+  return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgSS>(func), vector<SymbolicExpression>{arg1,arg2});
+}
+
 } // end namespace AST
 
 template<>
@@ -741,7 +741,7 @@ boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& 
     static qi::real_parser<double, qi::strict_real_policies<double>> strict_double;
     static qi::rule<It, SymbolicExpression()>  constDouble;
     static qi::rule<It, SymbolicExpression()>  operation;
-    // Function cannot be serialized and hence not deserialized
+    // NativeFunction cannot be serialized and hence not deserialized
 
     static qi::symbols<char, AST::Operation::Operator> opSym;
     for(auto &x : AST::Operation::opMap)
@@ -811,7 +811,7 @@ boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& g
     static karma::rule<It, SymbolicExpression()> constInt;
     static karma::rule<It, SymbolicExpression()> constDouble;
     static karma::rule<It, SymbolicExpression()> symbol;
-    static karma::rule<It, SymbolicExpression()> function;
+    static karma::rule<It, SymbolicExpression()> nativeFunction;
     static karma::rule<It, SymbolicExpression()> operation;
 
     auto &doubleBitIdentical=getBoostSpiritKarmaRule<double>();
@@ -820,13 +820,13 @@ boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& g
     for(auto &x : AST::Operation::opMap)
       opSym.add(x.first, x.second);
 
-    constInt    = karma::int_[karma::_1=phx::bind(&getConstInt, karma::_val, karma::_pass)];
-    constDouble = doubleBitIdentical[karma::_1=phx::bind(&getConstDouble, karma::_val, karma::_pass)];
-    operation   = opSym[karma::_1=phx::bind(&getOperationOp, karma::_val, karma::_pass)] << '(' <<
-                  (vertex % ',')[karma::_1=phx::bind(&getOperationChilds, karma::_val, karma::_pass)] << ')';
-    symbol      = karma::string[karma::_1=phx::bind(&getSymbol, karma::_val, karma::_pass)];
-    function    = karma::int_[karma::_1=phx::bind(&getFunction, karma::_val, karma::_pass)];
-    vertex      = constInt | constDouble | symbol | operation | function;
+    constInt       = karma::int_[karma::_1=phx::bind(&getConstInt, karma::_val, karma::_pass)];
+    constDouble    = doubleBitIdentical[karma::_1=phx::bind(&getConstDouble, karma::_val, karma::_pass)];
+    operation      = opSym[karma::_1=phx::bind(&getOperationOp, karma::_val, karma::_pass)] << '(' <<
+                     (vertex % ',')[karma::_1=phx::bind(&getOperationChilds, karma::_val, karma::_pass)] << ')';
+    symbol         = karma::string[karma::_1=phx::bind(&getSymbol, karma::_val, karma::_pass)];
+    nativeFunction = karma::int_[karma::_1=phx::bind(&getFunction, karma::_val, karma::_pass)];
+    vertex         = constInt | constDouble | symbol | operation | nativeFunction;
   }
   return vertex;
 }

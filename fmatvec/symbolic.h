@@ -328,9 +328,9 @@ Matrix<TypeDst, ShapeRowDst, ShapeColDst, ATIndep>& operator^=(Matrix<TypeDst, S
 
 namespace {
   template<class ArgN>
-  class FunctionRetVecWrapper : public Function<double(ArgN)>  {
+  class FunctionWrapVecRetToScalar : public Function<double(ArgN)>  {
     public:
-      FunctionRetVecWrapper(const std::shared_ptr<Function<VecV(ArgN)>> &func_, int idx_) : func(func_), idx(idx_) {}
+      FunctionWrapVecRetToScalar(const std::shared_ptr<Function<VecV(ArgN)>> &func_, int idx_) : func(func_), idx(idx_) {}
       double operator()(const ArgN &arg) override {
         return (*func)(arg)(idx);
       }
@@ -355,9 +355,9 @@ namespace {
   };
 
   template<class ArgN>
-  class FunctionRetMatWrapper : public Function<double(ArgN)>  {
+  class FunctionWrapMatRetToScalar : public Function<double(ArgN)>  {
     public:
-      FunctionRetMatWrapper(const std::shared_ptr<Function<MatV(ArgN)>> &func_, int row_, int col_) :
+      FunctionWrapMatRetToScalar(const std::shared_ptr<Function<MatV(ArgN)>> &func_, int row_, int col_) :
         func(func_), row(row_), col(col_) {}
       double operator()(const ArgN &arg) override {
         return (*func)(arg)(row,col);
@@ -382,47 +382,48 @@ namespace {
       int row;
       int col;
   };
-}
 
-template<class Func, class ArgS>
-FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFuncVecOrMat(
-  const std::shared_ptr<Function<Func>> &func, const ArgS &arg, int size1=0, int size2=0) {
-  using RetN = typename std::function<Func>::result_type;
-  using RetS = typename ReplaceAT<RetN,SymbolicExpression>::Type;
-  using ArgN = typename ReplaceAT<ArgS,double>::Type;
-
-  auto hasSize = boost::hana::is_valid([](auto&& vec) -> decltype(vec.size()) {});
-
-  RetS ret;
-  if constexpr (hasSize(ret)) {
-    // vector
-    int size=func->getRetSize().first;
-    if(size==0 && size1!=0)
-      size=size1;
-    else
-      size=(*func)(ArgN()).size();
-    ret.resize(size);
-    for(int i=0; i<size; ++i)
-      ret(i) = symbolicFuncScalar(std::make_shared<FunctionRetVecWrapper<ArgN>>(func, i), arg);//mfmf use cache
-    return ret;
+  template<class Func, class ArgS>
+  FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFuncWrapVecAndMatRet(
+    const std::shared_ptr<Function<Func>> &func, const ArgS &arg, int size1=0, int size2=0) {
+    using RetN = typename std::function<Func>::result_type;
+    using RetS = typename ReplaceAT<RetN,SymbolicExpression>::Type;
+    using ArgN = typename ReplaceAT<ArgS,double>::Type;
+  
+    auto hasSize = boost::hana::is_valid([](auto&& vec) -> decltype(vec.size()) {});
+  
+    RetS ret;
+    if constexpr (hasSize(ret)) {
+      // vector
+      int size=func->getRetSize().first;
+      if(size==0 && size1!=0)
+        size=size1;
+      else
+        size=(*func)(ArgN()).size();
+      ret.resize(size);
+      for(int i=0; i<size; ++i)
+        ret(i) = AST::symbolicFuncWrapArg(std::make_shared<FunctionWrapVecRetToScalar<ArgN>>(func, i), arg);//mfmf use cache
+      return ret;
+    }
+    else {
+      // matrix
+      auto size=func->getRetSize();
+      if(size.first==0 && size1!=0)
+        size.first=size1;
+      else
+        size.first=(*func)(ArgN()).rows();
+      if(size.second==0 && size2!=0)
+        size.second=size2;
+      else
+        size.second=(*func)(ArgN()).cols();
+      ret.resize(size.first, size.second);
+      for(int r=0; r<size.first; ++r)
+        for(int c=0; c<size.second; ++c)
+          ret(r,c) = AST::symbolicFuncWrapArg(std::make_shared<FunctionWrapMatRetToScalar<ArgN>>(func, r, c), arg);//mfmf use cache
+      return ret;
+    }
   }
-  else {
-    // matrix
-    auto size=func->getRetSize();
-    if(size.first==0 && size1!=0)
-      size.first=size1;
-    else
-      size.first=(*func)(ArgN()).rows();
-    if(size.second==0 && size2!=0)
-      size.second=size2;
-    else
-      size.second=(*func)(ArgN()).cols();
-    ret.resize(size.first, size.second);
-    for(int r=0; r<size.first; ++r)
-      for(int c=0; c<size.second; ++c)
-        ret(r,c) = symbolicFuncScalar(std::make_shared<FunctionRetMatWrapper<ArgN>>(func, r, c), arg);//mfmf use cache
-    return ret;
-  }
+
 }
 
 template<class Func, class ArgS>
@@ -431,9 +432,9 @@ FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,Symb
   using RetN = typename std::function<Func>::result_type;
   using RetS = typename ReplaceAT<RetN,SymbolicExpression>::Type;
   if constexpr (std::is_same_v<RetN, double>)
-    return symbolicFuncScalar(func, arg);
+    return AST::symbolicFuncWrapArg(func, arg);
   else
-    return symbolicFuncVecOrMat<Func, ArgS>(func, arg, size1, size2);
+    return symbolicFuncWrapVecAndMatRet<Func, ArgS>(func, arg, size1, size2);
 }
 
 template<class Func, class Arg1S, class Arg2S>
@@ -442,9 +443,9 @@ FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,Symb
   using RetN = typename std::function<Func>::result_type;
   using RetS = typename ReplaceAT<RetN,SymbolicExpression>::Type;
   if constexpr (std::is_same_v<RetN, double>)
-    return symbolicFuncScalar(func, arg1, arg2);
+    return AST::symbolicFuncWrapArg(func, arg1, arg2);
   else
-    return symbolicFuncVecOrMat<Func, Arg1S, Arg2S>(func, arg1, arg2, size1, size2);
+    return symbolicFuncWrapVecAndMatRet<Func, Arg1S, Arg2S>(func, arg1, arg2, size1, size2);
 }
 
 }
