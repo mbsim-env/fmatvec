@@ -865,6 +865,12 @@ int main() {
     i1 ^= 0.9;
     i2 ^= 0.8;
     cout<<eval(funcN)<<endl;
+    i1 ^= 0.92;
+    i2 ^= 0.82;
+    cout<<eval(funcN)<<endl;
+    i1 ^= 0.9;
+    i2 ^= 0.8;
+    cout<<eval(funcN)<<endl;
   }
 
   {
@@ -883,6 +889,12 @@ int main() {
         }
     };
     auto funcN = symbolicFunc<MatV(double)>(make_shared<Func>(), arg);
+    i1 ^= 0.9;
+    i2 ^= 0.8;
+    cout<<eval(funcN)<<endl;
+    i1 ^= 0.92;
+    i2 ^= 0.82;
+    cout<<eval(funcN)<<endl;
     i1 ^= 0.9;
     i2 ^= 0.8;
     cout<<eval(funcN)<<endl;

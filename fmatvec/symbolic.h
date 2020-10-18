@@ -327,42 +327,134 @@ Matrix<TypeDst, ShapeRowDst, ShapeColDst, ATIndep>& operator^=(Matrix<TypeDst, S
 /***** native function as symbolic function (scalar function are defined in ast.h; here are vector and matrix function defined) *****/
 
 namespace {
+
+  template<class RetN>
+  class Cache {
+    public:
+      Cache(int size) {
+        for(int i=0; i<3; ++i)
+          value[i].resize(size);
+      }
+      Cache(int rows, int cols) {
+        for(int i=0; i<3; ++i)
+          value[i].resize(rows, cols);
+      }
+      void addDependsOn(const SymbolicExpression &a) {
+        auto av = static_cast<const std::shared_ptr<const AST::Vertex>&>(a);
+        for(auto &x : av->getDependsOn()) {
+          for(int i=0; i<3; ++i)
+            dependsOn[i].insert(std::make_pair(x.first, 0));
+        }
+      }
+      template<class Type> void addDependsOn(const Vector<Type, SymbolicExpression> &v) {
+        for(int vi=0; vi<v.size(); vi++) {
+          auto vvi = static_cast<const std::shared_ptr<const AST::Vertex>&>(v(vi));
+          for(auto &x : vvi->getDependsOn())
+            for(int i=0; i<3; ++i)
+              dependsOn[i].insert(std::make_pair(x.first, 0));
+        }
+      }
+      RetN& useCacheValue(int derivative, bool &use) {
+        //mfmf
+        //this cache is not working for derivative 1 or 2 since the direction of the dirDer can be constant but different for different calls which is not detected by this cache (see all parts marked as mfmf here and in ast.*)
+        use=false;
+        return value[derivative];
+        //mfmf
+        use=true;
+        for(auto &d : dependsOn[derivative]) {
+          auto dFirst=d.first.lock();
+          if(dFirst->getVersion() > d.second)
+            use=false;
+          d.second=dFirst->getVersion();
+        }
+        return value[derivative];
+      }
+    private:
+      std::map<std::weak_ptr<const AST::Symbol>, unsigned long, std::owner_less<std::weak_ptr<const AST::Symbol>>> dependsOn[3];
+      RetN value[3];
+  };
+
   template<class RetN, class ArgN>
   class FunctionWrapVecRetToScalar : public Function<double(ArgN)>  {
     public:
-      FunctionWrapVecRetToScalar(const std::shared_ptr<Function<RetN(ArgN)>> &func_, int idx_) : func(func_), idx(idx_) {}
+      FunctionWrapVecRetToScalar(const std::shared_ptr<Function<RetN(ArgN)>> &func_, int idx_,
+        const std::shared_ptr<Cache<RetN>> &cache_) : func(func_), idx(idx_), cache(cache_) {}
       double operator()(const ArgN &arg) override {
-        return (*func)(arg)(idx);
+        bool use;
+        auto &value = cache->useCacheValue(0, use);
+        if(use)
+        {//mfmf
+          std::cout<<"mfmfc0 "<<this<<" "<<cache.get()<<": "<<value<<" = "<<(*func)(arg)<<" a="<<arg<<std::endl;
+          return value(idx);
+        }
+        value = (*func)(arg);
+        std::cout<<"mfmfe0 "<<this<<" "<<cache.get()<<": "<<value<<" = "<<(*func)(arg)<<" a="<<arg<<std::endl;
+        return value(idx);
       }
-      typename Function<double(ArgN)>::DRetDDir dirDer(const ArgN &argDir, const ArgN &arg) override {
-        return func->dirDer(argDir, arg)(idx);
+      double dirDer(const ArgN &argDir, const ArgN &arg) override {
+        bool use;
+        auto &value = cache->useCacheValue(1, use);
+        if(use)
+        {//mfmf
+          std::cout<<"mfmfc1 "<<this<<" "<<cache.get()<<": "<<value<<" = "<<func->dirDer(argDir, arg)<<" a="<<arg<<" d="<<argDir<<std::endl;
+          return value(idx);
+        }
+        value = func->dirDer(argDir, arg);
+        std::cout<<"mfmfe1 "<<this<<" "<<cache.get()<<": "<<value<<" = "<<func->dirDer(argDir, arg)<<" a="<<arg<<" d="<<argDir<<std::endl;
+        return value(idx);
       }
-      typename Function<double(ArgN)>::DRetDDir dirDerDirDer(const ArgN &argDir_1, const ArgN &argDir_2, const ArgN &arg) override {
-        return func->dirDerDirDer(argDir_1, argDir_2, arg)(idx);
+      double dirDerDirDer(const ArgN &argDir_1, const ArgN &argDir_2, const ArgN &arg) override {
+        bool use;
+        auto &value = cache->useCacheValue(2, use);
+        if(use)
+        {//mfmf
+          std::cout<<"mfmfc2 "<<this<<" "<<cache.get()<<": "<<value<<" = "<<func->dirDerDirDer(argDir_1, argDir_2, arg)<<" a="<<arg<<" d1="<<argDir_1<<" d2="<<argDir_2<<std::endl;
+          return value(idx);
+        }
+        value = func->dirDerDirDer(argDir_1, argDir_2, arg);
+        std::cout<<"mfmfe2 "<<this<<" "<<cache.get()<<": "<<value<<" = "<<func->dirDerDirDer(argDir_1, argDir_2, arg)<<" a="<<arg<<" d1="<<argDir_1<<" d2="<<argDir_2<<std::endl;
+        return value(idx);
       }
     private:
       std::shared_ptr<Function<RetN(ArgN)>> func;
       int idx;
+      std::shared_ptr<Cache<RetN>> cache;
   };
 
-  template<class ArgN>
+  template<class RetN, class ArgN>
   class FunctionWrapMatRetToScalar : public Function<double(ArgN)>  {
     public:
-      FunctionWrapMatRetToScalar(const std::shared_ptr<Function<MatV(ArgN)>> &func_, int row_, int col_) :
-        func(func_), row(row_), col(col_) {}
+      FunctionWrapMatRetToScalar(const std::shared_ptr<Function<RetN(ArgN)>> &func_, int row_, int col_,
+        const std::shared_ptr<Cache<RetN>> &cache_) : func(func_), row(row_), col(col_), cache(cache_) {}
       double operator()(const ArgN &arg) override {
-        return (*func)(arg)(row,col);
+        bool use;
+        auto &value = cache->useCacheValue(0, use);
+        if(use)
+          return value(row,col);
+        value = (*func)(arg);
+        return value(row,col);
       }
-      typename Function<double(ArgN)>::DRetDDir dirDer(const ArgN &argDir, const ArgN &arg) override {
-        return func->dirDer(argDir, arg)(row,col);
+      double dirDer(const ArgN &argDir, const ArgN &arg) override {
+        bool use;
+        auto &value = cache->useCacheValue(1, use);
+        if(use)
+          return value(row,col);
+        value = func->dirDer(argDir, arg);
+        return value(row,col);
       }
-      typename Function<double(ArgN)>::DRetDDir dirDerDirDer(const ArgN &argDir_1, const ArgN &argDir_2, const ArgN &arg) override {
-        return func->dirDerDirDer(argDir_1, argDir_2, arg)(row,col);
+      double dirDerDirDer(const ArgN &argDir_1, const ArgN &argDir_2, const ArgN &arg) override {
+        bool use;
+        auto &value = cache->useCacheValue(2, use);
+        if(use)
+          return value(row,col);
+        value = func->dirDerDirDer(argDir_1, argDir_2, arg);
+        return value(row,col);
       }
     private:
-      std::shared_ptr<Function<MatV(ArgN)>> func;
+      std::shared_ptr<Function<RetN(ArgN)>> func;
       int row;
       int col;
+      std::shared_ptr<Cache<RetN>> cache;
   };
 
   template<class Func, class ArgS>
@@ -383,8 +475,11 @@ namespace {
       else
         size=(*func)(ArgN()).size();
       ret.resize(size);
+      auto cache = std::make_shared<Cache<RetN>>(size);
+      cache->addDependsOn(arg);
       for(int i=0; i<size; ++i)
-        ret(i) = AST::SymbolicFuncWrapArg1<double(ArgN), ArgS>::call(std::make_shared<FunctionWrapVecRetToScalar<RetN,ArgN>>(func, i), arg);//mfmf use cache
+        ret(i) = AST::SymbolicFuncWrapArg1<double(ArgN), ArgS>::
+                 call(std::make_shared<FunctionWrapVecRetToScalar<RetN,ArgN>>(func, i, cache), arg);
       return ret;
     }
     else {
@@ -399,9 +494,12 @@ namespace {
       else
         size.second=(*func)(ArgN()).cols();
       ret.resize(size.first, size.second);
+      auto cache = std::make_shared<Cache<RetN>>(size.first, size.second);
+      cache->addDependsOn(arg);
       for(int r=0; r<size.first; ++r)
         for(int c=0; c<size.second; ++c)
-          ret(r,c) = AST::SymbolicFuncWrapArg1<double(ArgN), ArgS>::call(std::make_shared<FunctionWrapMatRetToScalar<ArgN>>(func, r, c), arg);//mfmf use cache
+          ret(r,c) = AST::SymbolicFuncWrapArg1<double(ArgN), ArgS>::call(std::make_shared<FunctionWrapMatRetToScalar<RetN,ArgN>>(
+                     func, r, c, cache), arg);
       return ret;
     }
   }

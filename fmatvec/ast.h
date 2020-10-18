@@ -247,6 +247,7 @@ struct SymbolicFuncWrapArg2<double(Vector<Type1,double>,Vector<Type2,double>), V
 //! A abstract class for a Vertex of the AST (abstract syntax tree).
 class FMATVEC_EXPORT Vertex {
   friend Operation;
+  friend NativeFunction;
   public:
 
     //! Evaluate the AST.
@@ -612,29 +613,51 @@ class FMATVEC_EXPORT NativeFunction : public Vertex, public std::enable_shared_f
     mutable std::vector<double> argN;
     mutable std::vector<double> dir1N;
     mutable std::vector<double> dir2N;
-    //mfmf cache
+    
+    typedef std::tuple<std::weak_ptr<ScalarFunctionWrapArg>,
+                       std::vector<std::weak_ptr<const Vertex>>,
+                       std::vector<std::weak_ptr<const Vertex>>,
+                       std::vector<std::weak_ptr<const Vertex>> > CacheKey;
+    struct CacheKeyComp {
+      bool operator()(const CacheKey& l, const CacheKey& r) const;
+      private:
+        std::owner_less<std::weak_ptr<const Vertex>> ol;
+        std::owner_less<std::weak_ptr<const ScalarFunctionWrapArg>> olf;
+    };
+    static std::map<CacheKey, std::weak_ptr<const NativeFunction>, CacheKeyComp> cache;
+    mutable double cacheValue;
 };
 
 double NativeFunction::eval() const {
+  bool useCacheValue=true;
+  for(auto &d : dependsOn) {
+    auto dFirst=d.first.lock();
+    if(dFirst->getVersion() > d.second)
+      useCacheValue=false;
+    d.second=dFirst->getVersion();
+  }
+  if(useCacheValue)
+    return cacheValue;
+
   for(size_t i=0; i<argS.size(); ++i)
     argN[i]=fmatvec::eval(argS[i]);
 
   if(dir1S.size()==0) {
     // calculate function value (0th derivative)
-    return (*funcWrapper)(argN);
+    return cacheValue = (*funcWrapper)(argN);
   }
   if(dir2S.size()==0) {
     // calculate first derivative
     for(size_t i=0; i<dir1S.size(); ++i)
       dir1N[i]=fmatvec::eval(dir1S[i]);
-    return funcWrapper->dirDer(dir1N, argN);
+    return cacheValue = funcWrapper->dirDer(dir1N, argN);
   }
   // calculate second derivative
   for(size_t i=0; i<dir1S.size(); ++i)
     dir1N[i]=fmatvec::eval(dir1S[i]);
   for(size_t i=0; i<dir2S.size(); ++i)
     dir2N[i]=fmatvec::eval(dir2S[i]);
-  return funcWrapper->dirDerDirDer(dir1N, dir2N, argN);
+  return cacheValue = funcWrapper->dirDerDirDer(dir1N, dir2N, argN);
 }
 
 // ***** Operation *****

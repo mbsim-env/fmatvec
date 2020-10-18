@@ -404,6 +404,25 @@ string Symbol::getUUIDStr() const {
 }
 
 // ***** NativeFunction *****
+//
+map<NativeFunction::CacheKey, weak_ptr<const NativeFunction>, NativeFunction::CacheKeyComp> NativeFunction::cache;
+
+bool NativeFunction::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) const {
+  if(olf(get<0>(l), get<0>(r)) || olf(get<0>(r), get<0>(l)))
+    return olf(get<0>(l), get<0>(r));
+
+#define FMATVEC_HELPER(ARG) \
+  if(get<ARG>(l).size() != get<ARG>(r).size()) \
+    return get<ARG>(l).size()<get<ARG>(r).size(); \
+  for(size_t i=0; i<get<ARG>(l).size(); ++i) \
+    if(ol(get<ARG>(l)[i],get<ARG>(r)[i]) || ol(get<ARG>(r)[i],get<ARG>(l)[i])) \
+      return ol(get<ARG>(l)[i], get<ARG>(r)[i]);
+  FMATVEC_HELPER(1)
+  FMATVEC_HELPER(2)
+  FMATVEC_HELPER(3)
+
+  return false;
+}
 
 NativeFunction::NativeFunction(const shared_ptr<ScalarFunctionWrapArg> &funcWrapper_, const vector<SymbolicExpression> &argS_,
                                const vector<SymbolicExpression> &dir1S_, const vector<SymbolicExpression> &dir2S_) :
@@ -417,8 +436,35 @@ NativeFunction::NativeFunction(const shared_ptr<ScalarFunctionWrapArg> &funcWrap
 }
 
 SymbolicExpression NativeFunction::create(const shared_ptr<ScalarFunctionWrapArg> &funcWrapper, const vector<SymbolicExpression> &argS,
-                                    const vector<SymbolicExpression> &dir1S, const vector<SymbolicExpression> &dir2S) {
-  return shared_ptr<NativeFunction>(new NativeFunction(funcWrapper, argS, dir1S, dir2S));
+                                          const vector<SymbolicExpression> &dir1S, const vector<SymbolicExpression> &dir2S) {
+  vector<weak_ptr<const Vertex>> weakArgS;
+  // we cannot just use std::copy here since std::shared_ptr is a private base of SymbolicExpression
+  transform(argS.begin(), argS.end(), back_inserter(weakArgS), [](const SymbolicExpression &x){
+    return weak_ptr<const Vertex>(x);
+  });
+
+  vector<weak_ptr<const Vertex>> weakDir1S;
+  // we cannot just use std::copy here since std::shared_ptr is a private base of SymbolicExpression
+  transform(dir1S.begin(), dir1S.end(), back_inserter(weakDir1S), [](const SymbolicExpression &x){
+    return weak_ptr<const Vertex>(x);
+  });
+
+  vector<weak_ptr<const Vertex>> weakDir2S;
+  // we cannot just use std::copy here since std::shared_ptr is a private base of SymbolicExpression
+  transform(dir2S.begin(), dir2S.end(), back_inserter(weakDir2S), [](const SymbolicExpression &x){
+    return weak_ptr<const Vertex>(x);
+  });
+
+  auto r=cache.insert(make_pair(make_tuple(weak_ptr<ScalarFunctionWrapArg>(funcWrapper),
+                      weakArgS, weakDir1S, weakDir2S), weak_ptr<const NativeFunction>()));
+  if(!r.second) {
+    auto oldPtr=r.first->second.lock();
+    if(oldPtr)
+      return oldPtr;
+  }
+  auto newPtr=shared_ptr<NativeFunction>(new NativeFunction(funcWrapper, argS, dir1S, dir2S));
+  r.first->second=newPtr;
+  return newPtr;
 }
 
 SymbolicExpression NativeFunction::parDer(const IndependentVariable &x) const {
@@ -465,8 +511,30 @@ SymbolicExpression NativeFunction::parDer(const IndependentVariable &x) const {
 }
 
 bool NativeFunction::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
-  // a function is only equal to b if b is the same as this.
-  return this->shared_from_this()==b;//mfmf improve this
+  // a native function equals b only if b is also a native function
+  auto bnf=dynamic_pointer_cast<const NativeFunction>(b);
+  if(!bnf)
+    return false;
+  // if the native functions are not the same -> return false
+  if(funcWrapper.get()!=bnf->funcWrapper.get())
+    return false;
+  // if any of the argS's are not equal -> return false
+  if(argS.size()!=bnf->argS.size())
+    return false;
+  for(size_t i=0; i<argS.size(); ++i)
+    if(!argS[i]->equal(bnf->argS[i], m))
+      return false;
+  if(dir1S.size()!=bnf->dir1S.size())
+    return false;
+  for(size_t i=0; i<dir1S.size(); ++i)
+    if(!dir1S[i]->equal(bnf->dir1S[i], m))
+      return false;
+  if(dir2S.size()!=bnf->dir2S.size())
+    return false;
+  for(size_t i=0; i<dir2S.size(); ++i)
+    if(!dir2S[i]->equal(bnf->dir2S[i], m))
+      return false;
+  return true;
 }
 
 // ***** Operation *****
@@ -609,6 +677,8 @@ bool Operation::equal(const SymbolicExpression &b, std::map<IndependentVariable,
   if(op!=bo->op)
     return false;
   // if any of the children vertexes are not equal -> return false
+  if(child.size()!=bo->child.size())
+    return false;
   for(size_t i=0; i<child.size(); ++i)
     if(!child[i]->equal(bo->child[i], m))
       return false;
