@@ -1490,9 +1490,9 @@ namespace fmatvec {
 
     SquareMatrix<Row, AT> B(x.size(), NONINIT);
 
-    B.e(0, 0) = 0;
-    B.e(1, 1) = 0;
-    B.e(2, 2) = 0;
+    B.e(0, 0) = 0.0;
+    B.e(1, 1) = 0.0;
+    B.e(2, 2) = 0.0;
     B.e(0, 1) = -x.e(2);
     B.e(0, 2) = x.e(1);
     B.e(1, 0) = x.e(2);

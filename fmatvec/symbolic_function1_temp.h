@@ -95,14 +95,14 @@ void SymbolicFunction<RET(ARG)>::init() {
 #ifdef PARDER
   pd<<=fmatvec::parDer(retS, argS);
 #endif
-  dd<<=fmatvec::dirDer(retS, argDirS, argS);
+  dd<<=fmatvec::dirDer(retS, argDirS*1, argS);
 #ifdef PARDERPARDER
   pdpd<<=fmatvec::parDer(fmatvec::parDer(retS, argS), argS);
 #endif
 #ifdef PARDER
-  pddd<<=fmatvec::dirDer(fmatvec::parDer(retS, argS), argDirS, argS);
+  pddd<<=fmatvec::dirDer(fmatvec::parDer(retS, argS), argDirS*1, argS);
 #endif
-  dddd<<=fmatvec::dirDer(fmatvec::dirDer(retS, argDirS, argS), argDirS_2, argS);
+  dddd<<=fmatvec::dirDer(fmatvec::dirDer(retS, argDirS*1, argS), argDirS_2*1, argS);
 }
 
 template<TEMPLATE>

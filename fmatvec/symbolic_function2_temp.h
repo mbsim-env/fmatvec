@@ -166,34 +166,34 @@ void SymbolicFunction<RET(ARG1, ARG2)>::init() {
 #ifdef PARDER1
   pd1<<=fmatvec::parDer(retS, arg1S);
 #endif
-  dd1<<=fmatvec::dirDer(retS, argDir1S, arg1S);
+  dd1<<=fmatvec::dirDer(retS, argDir1S*1, arg1S);
 #ifdef PARDER2
   pd2<<=fmatvec::parDer(retS, arg2S);
 #endif
-  dd2<<=fmatvec::dirDer(retS, argDir2S, arg2S);
+  dd2<<=fmatvec::dirDer(retS, argDir2S*1, arg2S);
 #ifdef PARDER1PARDER1
   pd1pd1<<=fmatvec::parDer(fmatvec::parDer(retS, arg1S), arg1S);
 #endif
 #ifdef PARDER1
-  pd1dd1<<=fmatvec::dirDer(fmatvec::parDer(retS, arg1S), argDir1S, arg1S);
+  pd1dd1<<=fmatvec::dirDer(fmatvec::parDer(retS, arg1S), argDir1S*1, arg1S);
 #endif
-  dd1dd1<<=fmatvec::dirDer(fmatvec::dirDer(retS, argDir1S, arg1S), argDir1S_2, arg1S);
+  dd1dd1<<=fmatvec::dirDer(fmatvec::dirDer(retS, argDir1S*1, arg1S), argDir1S_2*1, arg1S);
 #ifdef PARDER2PARDER2
   pd2pd2<<=fmatvec::parDer(fmatvec::parDer(retS, arg2S), arg2S);
 #endif
 #ifdef PARDER2
-  pd2dd2<<=fmatvec::dirDer(fmatvec::parDer(retS, arg2S), argDir2S, arg2S);
+  pd2dd2<<=fmatvec::dirDer(fmatvec::parDer(retS, arg2S), argDir2S*1, arg2S);
 #endif
-  dd2dd2<<=fmatvec::dirDer(fmatvec::dirDer(retS, argDir2S, arg2S), argDir2S_2, arg2S);
+  dd2dd2<<=fmatvec::dirDer(fmatvec::dirDer(retS, argDir2S*1, arg2S), argDir2S_2*1, arg2S);
 #ifdef PARDER1PARDER2
   pd1pd2<<=fmatvec::parDer(fmatvec::parDer(retS, arg1S), arg2S);
 #endif
 #ifdef PARDER1
-  pd1dd2<<=fmatvec::dirDer(fmatvec::parDer(retS, arg1S), argDir2S, arg2S);
+  pd1dd2<<=fmatvec::dirDer(fmatvec::parDer(retS, arg1S), argDir2S*1, arg2S);
 #endif
-  dd2dd1<<=fmatvec::dirDer(fmatvec::dirDer(retS, argDir2S, arg2S), argDir1S, arg1S);
+  dd2dd1<<=fmatvec::dirDer(fmatvec::dirDer(retS, argDir2S*1, arg2S), argDir1S*1, arg1S);
 #ifdef PARDER2
-  pd2dd1<<=fmatvec::dirDer(fmatvec::parDer(retS, arg2S), argDir1S, arg1S);
+  pd2dd1<<=fmatvec::dirDer(fmatvec::parDer(retS, arg2S), argDir1S*1, arg1S);
 #endif
 }
 

@@ -112,7 +112,7 @@ FMATVEC_EXPORT int svd(Matrix<General, Ref, Ref, double> &A,    Matrix<General, 
    *
    * REMARK: Copied and fitted on 28.01.2013 of http://www.mymathlib.com/c_source/matrices/linearsystems/doolittle_pivot.c
    */
-  FMATVEC_EXPORT int Doolittle_LU_with_Pivoting_Solve(double *A, double B[], int pivot[], double x[], int n);
+  FMATVEC_EXPORT int Doolittle_LU_with_Pivoting_Solve(double *A, double B[], const int pivot[], double x[], int n);
 
   /*! \brief Systems of linear equations
    *
