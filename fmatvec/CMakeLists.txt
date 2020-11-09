@@ -9,6 +9,9 @@ set( fmatvecSrc
    linear_algebra_complex.cc
    linear_algebra_double.cc
    stream.cc 
+   stream100.cc 
+   stream200.cc 
+   stream300.cc 
    wrapper.cc 
 )
 
@@ -69,7 +72,13 @@ target_include_directories( fmatvec
 )
 
 if( MSVC )
-  set_source_files_properties(stream.cc PROPERTIES COMPILE_FLAGS /bigobj)
+  set_source_files_properties(
+     stream.cc
+     stream100.cc
+     stream200.cc
+     stream300.cc
+     PROPERTIES COMPILE_FLAGS /bigobj
+  )
 endif()
 
 target_link_libraries(fmatvec ${BLAS_LAPACK_LIBRARIES})
