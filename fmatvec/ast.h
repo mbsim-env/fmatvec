@@ -205,7 +205,7 @@ class FMATVEC_EXPORT Vertex {
     //! Note that only integer constants can be 1. Double constants are never treated as 1 by this function.
     bool isOne() const;
     //! Return a list of all variables this AST depends on.
-    const std::map<std::weak_ptr<const Symbol>, unsigned long, std::owner_less<std::weak_ptr<const Symbol>>>& getDependsOn() const;
+    const std::map<std::shared_ptr<const Symbol>, unsigned long>& getDependsOn() const;
 
   protected:
 
@@ -216,7 +216,7 @@ class FMATVEC_EXPORT Vertex {
     virtual bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const=0;
 
     // the value of this map (the unsigned long = version) must be mutable
-    mutable std::map<std::weak_ptr<const Symbol>, unsigned long, std::owner_less<std::weak_ptr<const Symbol>>> dependsOn;
+    mutable std::map<std::shared_ptr<const Symbol>, unsigned long> dependsOn;
 };
 
 inline bool Vertex::isConstantInt() const {
@@ -354,10 +354,9 @@ double Operation::eval() const {
     // we eval expressions having no dependency always (such expressions are optimized out during Operation creation)
     bool useCacheValue=true;
     for(auto &d : dependsOn) {
-      auto dFirst=d.first.lock();
-      if(dFirst->getVersion() > d.second)
+      if(d.first->getVersion() > d.second)
         useCacheValue=false;
-      d.second=dFirst->getVersion();
+      d.second=d.first->getVersion();
     }
     if(useCacheValue)
       return cacheValue;

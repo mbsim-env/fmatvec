@@ -313,7 +313,7 @@ bool Vertex::isOne() const {
   return false;
 }
 
-const map<weak_ptr<const Symbol>, unsigned long, owner_less<weak_ptr<const Symbol>>>& Vertex::getDependsOn() const {
+const map<shared_ptr<const Symbol>, unsigned long>& Vertex::getDependsOn() const {
   return dependsOn;
 }
 
@@ -367,7 +367,6 @@ IndependentVariable Symbol::create(const boost::uuids::uuid& uuid_) {
       return oldPtr;
   }
   auto newPtr=shared_ptr<const Symbol>(new Symbol(uuid_));
-  newPtr->dependsOn.insert(make_pair(weak_ptr<const Symbol>(newPtr), 0)); // we cannot call this in Symbol::Symbol (it may be possible with weak_from_this() for C++17)
   r.first->second=newPtr;
   return newPtr;
 }
@@ -612,9 +611,12 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
 }
 
 Operation::Operation(Operator op_, const vector<SymbolicExpression> &child_) : op(op_), child(child_) {
-  for(auto &c : child)
+  for(auto &c : child) {
     for(auto &x : c->getDependsOn())
       dependsOn.insert(make_pair(x.first, 0));
+    if(auto s=dynamic_pointer_cast<const AST::Symbol>(c))
+      dependsOn.insert(make_pair(s, 0));
+  }
 }
 
 bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) const {
