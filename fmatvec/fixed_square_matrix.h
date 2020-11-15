@@ -108,6 +108,8 @@ namespace fmatvec {
        * \return The number of rows and columns of the matrix.
        * */
       constexpr int size() const {return M;}
+      constexpr int rows() const {return M;}
+      constexpr int cols() const {return M;}
 
       using Matrix<General,Fixed<M>,Fixed<M>,AT>::operator();
       using Matrix<General,Fixed<M>,Fixed<M>,AT>::e;
