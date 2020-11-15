@@ -38,7 +38,9 @@ namespace fmatvec {
   template <int M, class AT> class SquareMatrix<Fixed<M>,AT> : public Matrix<General,Fixed<M>,Fixed<M>,AT> {
 
     public:
+      static constexpr bool isVector {false};
       typedef AT value_type;
+      typedef Square shape_type;
 
 //      template<class Ini=All<AT>>
 //      SquareMatrix(Ini ini=All<AT>()) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }

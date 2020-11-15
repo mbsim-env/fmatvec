@@ -3,26 +3,40 @@
 
 #include "ast.h"
 #include "function.h"
+#include <type_traits>
 
 namespace fmatvec {
 
 // definitions of matrix/vector operations/functions only usefull for symbolic calculations
 // like building partial derivatives, evaluation of symbolic expressions to double values, ...
 
-template<class DepVec, class ATIndep>
-DepVec parDer(const DepVec &dep, const ATIndep &indep) {
-  DepVec ret(dep.size());
-  for(int i=0; i<dep.size(); ++i)
-    ret(i)=parDer(dep(i), indep);
+template<class Dep, class ATIndep>
+Dep parDer(const Dep &dep, const ATIndep &indep) {
+  Dep ret;
+  if constexpr (std::is_same_v<Dep, SymbolicExpression>) {
+  }
+  else if constexpr (Dep::isVector)
+    ret.resize(dep.size());
+  else
+    ret.resize(dep.rows(), dep.cols());
+  auto d=dep.begin();
+  auto r=ret.begin();
+  for(; d!=dep.end(); ++d, ++r)
+    *r=parDer(*d, indep);
   return ret;
 }
 
-template<class Type, class RowShape, class ColShape, class ATDep, class ATIndep>
-Matrix<Type, RowShape, ColShape, ATDep> parDer(const Matrix<Type, RowShape, ColShape, ATDep> &dep, const ATIndep &indep) {
-  Matrix<Type, RowShape, ColShape, ATDep> ret(dep.rows(), dep.cols());
-  for(int r=0; r<dep.rows(); ++r)
-    for(int c=0; c<dep.cols(); ++c)
-      ret(r,c)=parDer(dep(r,c), indep);
+template<class ATDep, class ATIndep>
+Vector<Fixed<3>, ATDep> parDer(const Matrix<Rotation, Fixed<3>, Fixed<3>, ATDep> &R, const ATIndep &x) {
+  Matrix<General, Fixed<3>, Fixed<3>, ATDep> Rs;
+  for(int r=0; r<3; ++r)
+    for(int c=0; c<3; ++c)
+      Rs(r,c)=parDer(R(r,c), x);
+  auto retTilde=Rs*trans(R);
+  Vector<Fixed<3>, ATDep> ret;
+  ret(0)=retTilde(2,1);
+  ret(1)=retTilde(0,2);
+  ret(2)=retTilde(1,0);
   return ret;
 }
 
@@ -43,20 +57,6 @@ RowVector<IndepShape, ATDep> parDer(const ATDep &dep, const Vector<IndepShape, A
   return ret;
 }
 
-template<class ATDep, class ATIndep>
-Vector<Fixed<3>, ATDep> parDer(const Matrix<Rotation, Fixed<3>, Fixed<3>, ATDep> &R, const ATIndep &x) {
-  Matrix<General, Fixed<3>, Fixed<3>, ATDep> Rs;
-  for(int r=0; r<3; ++r)
-    for(int c=0; c<3; ++c)
-      Rs(r,c)=parDer(R(r,c), x);
-  auto retTilde=Rs*trans(R);
-  Vector<Fixed<3>, ATDep> ret;
-  ret(0)=retTilde(2,1);
-  ret(1)=retTilde(0,2);
-  ret(2)=retTilde(1,0);
-  return ret;
-}
-
 template<class ATDep, class Shape, class ATIndep>
 Matrix<General, Fixed<3>, Fixed<3>, ATDep> parDer(const Matrix<Rotation, Fixed<3>, Fixed<3>, ATDep> &R, const Vector<Shape, ATIndep> &x) {
   Matrix<General, Fixed<3>, Shape, ATDep> ret;
@@ -70,69 +70,23 @@ Dep dirDer(const Dep &dep, const ATDep &indepdir, const ATIndep &indep) {
   return parDer(dep, indep)*indepdir;
 }
 
-template<class ShapeDep, class ATDep, class ATIndep>
-Vector<ShapeDep, ATDep> dirDer(const Vector<ShapeDep, ATDep> &dep, const ATDep &indepdir, const ATIndep &indep) {
-  Vector<ShapeDep, ATDep> ret(dep.size());
-  for(int i=0; i<dep.size(); ++i)
-    ret(i)=parDer(dep(i), indep)*indepdir;
-  return ret;
-}
-
-template<class ShapeDep, class ATDep, class ATIndep>
-RowVector<ShapeDep, ATDep> dirDer(const RowVector<ShapeDep, ATDep> &dep, const ATDep &indepdir, const ATIndep &indep) {
-  RowVector<ShapeDep, ATDep> ret(dep.size());
-  for(int i=0; i<dep.size(); ++i)
-    ret(i)=parDer(dep(i), indep)*indepdir;
-  return ret;
-}
-
-template<class Type, class RowShape, class ColShape, class ATDep, class ATIndep>
-Matrix<Type, RowShape, ColShape, ATDep> dirDer(const Matrix<Type, RowShape, ColShape, ATDep> &dep, const ATDep &indepdir, const ATIndep &indep) {
-  Matrix<Type, RowShape, ColShape, ATDep> ret(dep.rows(), dep.cols());
-  for(int r=0; r<dep.rows(); ++r)
-    for(int c=0; c<dep.cols(); ++c)
-      ret(r,c)=parDer(dep(r,c), indep)*indepdir;
-  return ret;
-}
-
 template<class ATDep, class ATIndep>
-Vector<Fixed<3>, ATDep> dirDer(const Matrix<Rotation, Fixed<3>, Fixed<3>, ATDep> &dep, const ATDep &indepdir, const ATIndep &indep) {
-  return parDer(dep, indep)*indepdir;
+Vector<Fixed<3>, ATDep> dirDer(const Matrix<Rotation, Fixed<3>, Fixed<3>, ATDep> &R, const ATDep &indepdir, const ATIndep &indep) {
+  return parDer(R, indep)*indepdir;
 }
 
 template<class Dep, class ShapeIndep, class ATDep, class ATIndep>
 Dep dirDer(const Dep &dep, const Vector<ShapeIndep, ATDep> &indepdir, const Vector<ShapeIndep, ATIndep> &indep) {
-  Dep ret=0.0;
+  Dep ret;
+  if constexpr (std::is_same_v<Dep, SymbolicExpression>) {
+    ret=0.0;
+  }
+  else if constexpr (Dep::isVector)
+    ret=Dep(dep.size(), INIT, 0.0);
+  else
+    ret=Dep(dep.rows(), dep.cols(), INIT, 0.0);
   for(int i=0; i<indep.size(); ++i)
     ret+=parDer(dep, indep(i))*indepdir(i);
-  return ret;
-}
-
-template<class DepShape, class ATDep, class ShapeIndep, class ATIndep>
-Vector<DepShape, ATDep> dirDer(const Vector<DepShape, ATDep> &dep, const Vector<ShapeIndep, ATDep> &indepdir, const Vector<ShapeIndep, ATIndep> &indep) {
-  Vector<DepShape, ATDep> ret(dep.size(), INIT, 0.0);
-  for(int d=0; d<dep.size(); ++d)
-    for(int i=0; i<indep.size(); ++i)
-      ret(d)+=parDer(dep(d), indep(i))*indepdir(i);
-  return ret;
-}
-
-template<class DepShape, class ATDep, class ShapeIndep, class ATIndep>
-RowVector<DepShape, ATDep> dirDer(const RowVector<DepShape, ATDep> &dep, const Vector<ShapeIndep, ATDep> &indepdir, const Vector<ShapeIndep, ATIndep> &indep) {
-  RowVector<DepShape, ATDep> ret(dep.size(), INIT, 0.0);
-  for(int d=0; d<dep.size(); ++d)
-    for(int i=0; i<indep.size(); ++i)
-      ret(d)+=parDer(dep(d), indep(i))*indepdir(i);
-  return ret;
-}
-
-template<class Type, class RowShape, class ColShape, class ATDep, class ShapeIndep, class ATIndep>
-Matrix<Type, RowShape, ColShape, ATDep> dirDer(const Matrix<Type, RowShape, ColShape, ATDep> &dep, const Vector<ShapeIndep, ATDep> &indepdir, const Vector<ShapeIndep, ATIndep> &indep) {
-  Matrix<Type, RowShape, ColShape, ATDep> ret(dep.rows(), dep.cols(), INIT, 0.0);
-  for(int r=0; r<dep.rows(); ++r)
-    for(int c=0; c<dep.cols(); ++c)
-      for(int i=0; i<indep.size(); ++i)
-        ret(r,c)+=parDer(dep(r,c), indep(i))*indepdir(i);
   return ret;
 }
 

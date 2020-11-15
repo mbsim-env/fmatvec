@@ -40,8 +40,10 @@ namespace fmatvec {
   template <int M, class AT> class Matrix<General,Fixed<M>,Var,AT> {
 
     public:
+      static constexpr bool isVector {false};
 
       typedef AT value_type;
+      typedef General shape_type;
 
  /// @cond NO_SHOW
 

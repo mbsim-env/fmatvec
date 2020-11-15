@@ -40,8 +40,10 @@ namespace fmatvec {
     using Matrix<General,Var,Var,AT>::M;
 
     public:
+      static constexpr bool isVector {false};
 
       typedef AT value_type;
+      typedef Square shape_type;
 
       /*! \brief Standard constructor
        *

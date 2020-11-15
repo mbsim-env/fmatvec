@@ -47,7 +47,9 @@ namespace fmatvec {
 
     public:
 
+    static constexpr bool isVector {false};
     typedef AT value_type;
+    typedef Square shape_type;
 
     public:
 

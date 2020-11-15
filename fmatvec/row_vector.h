@@ -42,6 +42,7 @@ namespace fmatvec {
     using Matrix<General,Ref,Ref,AT>::elePtr;
 
     public:
+    static constexpr bool isVector {true};
 
     typedef AT* iterator;
     typedef const AT* const_iterator;

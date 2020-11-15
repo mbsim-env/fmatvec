@@ -172,6 +172,15 @@ namespace fmatvec {
   class Sparse {
   };
 
+  /*! 
+   *  \brief Dummy shape class for square matrices.
+   *
+   * This is just a dummy since square matrices have a special class interface without a shape.
+   * This shape is just used to detect a square matrix.
+   * */
+  class Square {
+  };
+
 //  template<int M, int N>
 //  class GeneralFixed: public BasicType {
 //  };

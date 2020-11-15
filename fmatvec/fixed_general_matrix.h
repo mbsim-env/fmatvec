@@ -39,8 +39,12 @@ namespace fmatvec {
   template <int M, int N, class AT> class Matrix<General,Fixed<M>,Fixed<N>,AT> {
 
     public:
+      static constexpr bool isVector {false};
 
+      typedef AT* iterator;
+      typedef const AT* const_iterator;
       typedef AT value_type;
+      typedef General shape_type;
 
  /// @cond NO_SHOW
 
@@ -156,6 +160,11 @@ namespace fmatvec {
             ret(r,c) = (*this)(r,c);
         return ret;
       }
+
+      iterator begin() { return &ele[0][0]; }
+      iterator end() { return &ele[M-1][N]; }
+      const_iterator begin() const { return &ele[0][0]; }
+      const_iterator end() const { return &ele[M-1][N]; }
 
       /*! \brief Element operator
        *
@@ -588,12 +597,14 @@ namespace fmatvec {
   class Matrix<Rotation,Fixed<M>,Fixed<M>,AT> : public Matrix<General,Fixed<M>,Fixed<M>,AT> {
     public:
       typedef AT value_type;
+      typedef Rotation shape_type;
       // Constructors are not inherited. Hence we must redefine all ctors here.
 
       Matrix(Noinit ini) { }
       Matrix(Init ini=INIT, const AT &a=0) { this->init(a); }
       Matrix(Eye ini, const AT &a=1) { this->init(ini,a); }
 
+      Matrix(int m, int n) { }
       Matrix(int m, int n, Noinit ini) { }
       Matrix(int m, int n, Init ini, const AT &a=0) { this->init(a); }
       Matrix(int m, int n, Eye ini, const AT &a=1) { this->init(ini,a); }

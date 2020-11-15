@@ -62,7 +62,9 @@ namespace fmatvec {
       /// @endcond
 
     public:
+      static constexpr bool isVector {false};
       typedef AT value_type;
+      typedef Type shape_type;
 //      /*! \brief Standard constructor
 //       * 
 //       * The standard constructor.

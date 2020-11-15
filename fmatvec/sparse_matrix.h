@@ -61,8 +61,10 @@ namespace fmatvec {
 
 
       public:
+        static constexpr bool isVector {false};
 
         typedef AT value_type;
+        typedef Sparse shape_type;
 
 	/*! \brief Standard constructor
 	 *

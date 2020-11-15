@@ -48,7 +48,9 @@ namespace fmatvec {
     /// @endcond
 
     public:
+      static constexpr bool isVector {false};
       typedef AT value_type;
+      typedef Symmetric shape_type;
 
       explicit Matrix(Noinit ini) { }
       explicit Matrix(Init ini=INIT, const AT &a=AT()) { init(a); }
