@@ -55,6 +55,23 @@ namespace fmatvec {
       
     protected:
 
+      template<bool Const>
+      class Iterator {
+        typedef Matrix<General,Ref,Ref,AT> Mat;
+        public:
+          Iterator(std::conditional_t<Const, const Mat, Mat> &mat_, int row_, int col_) : mat(mat_), row(row_), col(col_) {}
+          bool operator!=(const Iterator& x) const { return row!=x.row || col!=x.col; }
+          Iterator& operator++() { ++row; if(row>=mat.m) { row=0; ++col; } return *this; }
+          std::conditional_t<Const, const AT, AT>& operator*() { return mat.e(row,col); }
+          std::conditional_t<Const, const AT, AT>& operator->() { return mat.e(row,col); }
+          const AT& operator*() const { return mat.e(row,col); }
+          const AT& operator->() const { return mat.e(row,col); }
+        private:
+          std::conditional_t<Const, const Mat, Mat> &mat;
+          int row;
+          int col;
+      };
+
       Memory<AT> memory;
       AT *ele;
       int m{0};
@@ -148,6 +165,13 @@ namespace fmatvec {
       /*! \brief Destructor. 
        * */
       ~Matrix() = default;
+
+      typedef Iterator<false> iterator;
+      typedef Iterator<true> const_iterator;
+      iterator begin() { return iterator(*this,0,0); }
+      iterator end() { return iterator(*this,0,n); }
+      const_iterator begin() const { return const_iterator(*this,0,0); }
+      const_iterator end() const { return const_iterator(*this,0,n); }
 
       Matrix<General,Ref,Ref,AT>& resize(int m_, int n_, Noinit) {
 	m = m_; n = n_; lda = m;

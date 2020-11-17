@@ -381,6 +381,19 @@ void checkSymRereadExistingIndeps(double pdn0Value,
   cout<<"reread "<<pdn0Value<<" == "<<eval(pdn0)<<endl;
 }
 
+void checkRefMatrix() {
+  IndependentVariable t;
+  Matrix<General, Ref, Ref, SymbolicExpression> full(4, 6);
+  full(0,0) = 11*t; full(0,1) = 12*t; full(0,2) = 13*t; full(0,3) = 14*t; full(0,4) = 15*t; full(0,5) = 16*t;
+  full(1,0) = 21*t; full(1,1) = 22*t; full(1,2) = 23*t; full(1,3) = 24*t; full(1,4) = 25*t; full(1,5) = 26*t;
+  full(2,0) = 31*t; full(2,1) = 32*t; full(2,2) = 33*t; full(2,3) = 34*t; full(2,4) = 35*t; full(2,5) = 36*t;
+  full(3,0) = 41*t; full(3,1) = 42*t; full(3,2) = 43*t; full(3,3) = 44*t; full(3,4) = 45*t; full(3,5) = 46*t;
+  Matrix<General, Ref, Ref, SymbolicExpression> sub;
+  sub.ref(full, RangeV(1,2), RangeV(2,4));
+  cout<<"subMat = "<<sub<<endl;
+  cout<<"subMatparder = "<<parDer(sub, t)<<endl;
+}
+
 int main() {
 #ifndef _WIN32
   assert(feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)!=-1);
@@ -394,6 +407,7 @@ int main() {
   SymbolicExpression::garbageCollect();
   checkSymReread(pdn0Value, v, a_, a5, a6, pdn0Ser);
   checkSymRereadExistingIndeps(pdn0Value, v, a_, a5, a6, pdn0Ser);
+  checkRefMatrix();
 
   return 0;  
 }

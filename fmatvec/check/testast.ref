@@ -41,3 +41,5 @@ reread [plus(plus(s7,mult(plus(2,s7),s8)),mult(3,s9)); plus(plus(mult(plus(4,log
 reread-precision 1 1
 reread-precision 1 1
 reread 7.35854 == 7.35854
+subMat = [mult(23,s10), mult(24,s10), mult(25,s10); mult(33,s10), mult(34,s10), mult(35,s10)]
+subMatparder = [23, 24, 25; 33, 34, 35]

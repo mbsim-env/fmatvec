@@ -124,6 +124,13 @@ namespace fmatvec {
 	delete[] ele;
       }
 
+      typedef AT* iterator;
+      typedef const AT* const_iterator;
+      iterator begin() { return &ele[0]; }
+      iterator end() { return &ele[M*N]; }
+      const_iterator begin() const { return &ele[0]; }
+      const_iterator end() const { return &ele[M*N]; }
+
       Matrix<General,Var,Var,AT>& resize(int m, int n, Noinit) {
         delete[] ele;
         M = m;

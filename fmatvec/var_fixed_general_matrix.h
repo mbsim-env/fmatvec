@@ -112,6 +112,13 @@ namespace fmatvec {
       Matrix(const std::string &strs);
       Matrix(const char *strs);
 
+      typedef AT* iterator;
+      typedef const AT* const_iterator;
+      iterator begin() { return &ele[0]; }
+      iterator end() { return &ele[M*N]; }
+      const_iterator begin() const { return &ele[0]; }
+      const_iterator end() const { return &ele[M*N]; }
+
       /*! \brief Destructor. 
        * */
       ~Matrix() {
