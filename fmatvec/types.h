@@ -252,6 +252,46 @@ namespace fmatvec {
             std::string(func)+": Assertion `"+std::string(exprStr)+"' failed.");
   }
 
+  class ErrorType;
+  template<class, class> class Vector;
+  template<class, class> class RowVector;
+  template<class, class, class, class> class Matrix;
+  template<class, class> class SquareMatrix;
+
+  // Replace in a fmatvec scalar, vector or matrix the AT with ATNew.
+  template<class MatVec, class NewAT>
+  struct ReplaceAT;
+  
+  template<class NewAT>
+  struct ReplaceAT<ErrorType, NewAT> {
+    using Type = ErrorType;
+  };
+  
+  template<class NewAT>
+  struct ReplaceAT<double, NewAT> {
+    using Type = NewAT;
+  };
+  
+  template<class Shape, class OldAT, class NewAT>
+  struct ReplaceAT<Vector<Shape, OldAT>, NewAT> {
+    using Type = Vector<Shape, NewAT>;
+  };
+  
+  template<class Shape, class OldAT, class NewAT>
+  struct ReplaceAT<RowVector<Shape, OldAT>, NewAT> {
+    using Type = RowVector<Shape, NewAT>;
+  };
+  
+  template<class MatType, class RowShape, class ColShape, class OldAT, class NewAT>
+  struct ReplaceAT<Matrix<MatType, RowShape, ColShape, OldAT>, NewAT> {
+    using Type = Matrix<MatType, RowShape, ColShape, NewAT>;
+  };
+  
+  template<class Shape, class OldAT, class NewAT>
+  struct ReplaceAT<SquareMatrix<Shape, OldAT>, NewAT> {
+    using Type = SquareMatrix<Shape, NewAT>;
+  };
+
 }
 
 #endif

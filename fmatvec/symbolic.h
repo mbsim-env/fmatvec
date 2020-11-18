@@ -1,6 +1,7 @@
 #ifndef _fmatvec_symbolic_h_
 #define _fmatvec_symbolic_h_
 
+#include "types.h"
 #include "ast.h"
 #include "function.h"
 #include <type_traits>
@@ -82,9 +83,9 @@ Dep dirDer(const Dep &dep, const Vector<ShapeIndep, ATDep> &indepdir, const Vect
     ret=0.0;
   }
   else if constexpr (Dep::isVector)
-    ret=Dep(dep.size(), INIT, 0.0);
+    ret<<=Dep(dep.size(), INIT, 0.0);
   else
-    ret=Dep(dep.rows(), dep.cols(), INIT, 0.0);
+    ret<<=Dep(dep.rows(), dep.cols(), INIT, 0.0);
   for(int i=0; i<indep.size(); ++i)
     ret+=parDer(dep, indep(i))*indepdir(i);
   return ret;
@@ -95,38 +96,18 @@ Vector<Fixed<3>, ATDep> dirDer(const Matrix<Rotation, Fixed<3>, Fixed<3>, ATDep>
   return parDer(dep, indep)*indepdir;
 }
 
-template<class Shape, class AT>
-Vector<Shape, double> eval(const Vector<Shape, AT> &x) {
-  Vector<Shape, double> ret(x.size());
-  for(int i=0; i<x.size(); ++i)
-    ret(i)=eval(x(i));
-  return ret;
-}
-
-template<class Shape, class AT>
-RowVector<Shape, double> eval(const RowVector<Shape, AT> &x) {
-  RowVector<Shape, double> ret(x.size());
-  for(int i=0; i<x.size(); ++i)
-    ret(i)=eval(x(i));
-  return ret;
-}
-
-template<class Type, class RowShape, class ColShape, class AT>
-Matrix<Type, RowShape, ColShape, double> eval(const Matrix<Type, RowShape, ColShape, AT> &x) {
-  Matrix<Type, RowShape, ColShape, double> ret(x.rows(), x.cols());
-  for(int r=0; r<x.rows(); ++r)
-    for(int c=0; c<x.cols(); ++c)
-      ret(r,c)=eval(x(r,c));
-  return ret;
-}
-
-template<class Shape, class AT>
-SquareMatrix<Shape, double> eval(const SquareMatrix<Shape, AT> &x) {
-  SquareMatrix<Shape, double> ret(x.size());
-  for(int r=0; r<x.size(); ++r)
-    for(int c=0; c<x.size(); ++c)
-      ret(r,c)=eval(x(r,c));
-  return ret;
+template<class Sym>
+typename ReplaceAT<Sym, double>::Type eval(const Sym &sym) {
+  typename ReplaceAT<Sym, double>::Type num;
+  if constexpr (Sym::isVector)
+    num.resize(sym.size());
+  else
+    num.resize(sym.rows(), sym.cols());
+  auto s=sym.begin();
+  auto n=num.begin();
+  for(; s!=sym.end(); ++s, ++n)
+    *n=eval(*s);
+  return num;
 }
 
 // substitute scalar in scalar expression -> defined in ast.h
