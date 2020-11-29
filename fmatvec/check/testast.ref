@@ -24,13 +24,13 @@ norm_indepVar 1 = div(mult(plus(plus(mult(mult(2,plus(plus(mult(3.33333333333333
 norm_indepVar 2 = div(mult(plus(plus(mult(mult(2,plus(plus(mult(3.3333333333333331e-01,s1),mult(s4,s2)),mult(6.6666666666665986e-03,s3))),6.6666666666665986e-03),mult(mult(2,plus(plus(mult(4.0e00,s1),mult(5.0e00,s2)),mult(6.0e00,s3))),6.0e00)),mult(mult(2,plus(plus(mult(log(plus(pow(s1,3),s1)),s1),mult(8.0e00,s2)),mult(plus(s5,s6),s3))),plus(s5,s6))),5.0e-01),sqrt(plus(plus(pow(plus(plus(mult(3.3333333333333331e-01,s1),mult(s4,s2)),mult(6.6666666666665986e-03,s3)),2),pow(plus(plus(mult(4.0e00,s1),mult(5.0e00,s2)),mult(6.0e00,s3)),2)),pow(plus(plus(mult(log(plus(pow(s1,3),s1)),s1),mult(8.0e00,s2)),mult(plus(s5,s6),s3)),2))))
 frist eval
 pdn.eval = [4.6176565551686802e00, 9.9735992420090244e00, 1.3318288918147023e01]
-number of operations evaluated = 55
+number of operations evaluated = 74
 second eval with same values for independent variables
 pdn.eval = [4.6176565551686802e00, 9.9735992420090244e00, 1.3318288918147023e01]
-number of operations evaluated = 0
+number of operations evaluated = 74
 third eval with different values for independent variables
 pdn.eval = [7.3585395916345489e00, 1.0433498501365477e01, 1.6773365799233294e01]
-number of operations evaluated = 55
+number of operations evaluated = 77
 number of operations evaluated = 0
 reread 7.35854 == 7.35854
 indepvar ser [s7; s8; s9]
