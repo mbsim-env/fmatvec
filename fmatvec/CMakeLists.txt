@@ -81,7 +81,10 @@ if( MSVC )
   )
 endif()
 
-target_link_libraries(fmatvec ${BLAS_LAPACK_LIBRARIES})
+target_link_libraries(fmatvec ${BLAS_LAPACK_LIBRARIES} Boost::system)
+if(NOT WIN32)
+  target_link_libraries(fmatvec pthread)
+endif()
 
 #############################################
 ### Install

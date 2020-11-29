@@ -77,6 +77,10 @@
 #include "mkl_cblas.h"
 #endif
 
+namespace std {
+  template<class T> class shared_ptr;
+}
+
 namespace fmatvec {
 
   /***** initialization types *****/
@@ -253,6 +257,7 @@ namespace fmatvec {
   }
 
   class ErrorType;
+  class SymbolicExpression;
   template<class, class> class Vector;
   template<class, class> class RowVector;
   template<class, class, class, class> class Matrix;
@@ -269,6 +274,11 @@ namespace fmatvec {
   
   template<class NewAT>
   struct ReplaceAT<double, NewAT> {
+    using Type = NewAT;
+  };
+
+  template<class NewAT>
+  struct ReplaceAT<SymbolicExpression, NewAT> {
     using Type = NewAT;
   };
   
