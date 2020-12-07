@@ -256,6 +256,9 @@ namespace fmatvec {
             std::string(func)+": Assertion `"+std::string(exprStr)+"' failed.");
   }
 
+  // tag dispatching
+  struct Transpose {};
+
   class ErrorType;
   class SymbolicExpression;
   template<class, class> class Vector;

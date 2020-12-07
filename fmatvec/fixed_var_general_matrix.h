@@ -65,6 +65,22 @@ namespace fmatvec {
        * */
       explicit Matrix() :  ele(nullptr) { }
 
+      // move
+      Matrix(Matrix<General,Fixed<M>,Var,AT> &&src) {
+        N=src.N;
+        src.N=0;
+        ele=src.ele;
+        src.ele=nullptr;
+      }
+      Matrix<General,Fixed<M>,Var,AT>& operator=(Matrix<General,Fixed<M>,Var,AT> &&src) {
+        FMATVEC_ASSERT(N == src.cols(), AT);
+        src.N=0;
+        delete[]ele;
+        ele=src.ele;
+        src.ele=nullptr;
+        return *this;
+      }
+
 //      template<class Ini=All<AT>>
 //      Matrix(int n, Ini ini=All<AT>()) :  N(n), ele(new AT[M*N]) {
 //        init(ini);
@@ -194,6 +210,17 @@ namespace fmatvec {
           FMATVEC_ASSERT(M == A.rows(), AT);
           if(N!=A.cols()) resize(A.cols(),NONINIT);
           return copy(A);
+        }
+      // move
+      template<class Type, class Row, class Col>
+        inline Matrix<General,Fixed<M>,Var,AT>& operator<<=(Matrix<General,Fixed<M>,Var,AT> &&src) {
+          FMATVEC_ASSERT(M == src.rows(), AT);
+          N=src.N;
+          src.N=0;
+          delete[]ele;
+          ele=src.ele;
+          src.ele=nullptr;
+          return *this;
         }
 
       /*! \brief Element operator
