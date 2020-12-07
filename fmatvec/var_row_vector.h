@@ -39,6 +39,7 @@ namespace fmatvec {
   template <class AT> class RowVector<Var,AT> : public Matrix<General,Fixed<1>,Var,AT> {
     using Matrix<General,Fixed<1>,Var,AT>::N;
     using Matrix<General,Fixed<1>,Var,AT>::ele;
+    friend class Vector<Var,AT>;
 
     public:
     static constexpr bool isVector {true};
@@ -63,6 +64,23 @@ namespace fmatvec {
        * Constructs a vector with no size. 
        * */
       explicit RowVector() : Matrix<General,Fixed<1>,Var,AT>() {
+      }
+
+      // move
+      RowVector(RowVector<Var,AT> &&src) : Matrix<General,Fixed<1>,Var,AT>(std::move(src)) {}
+      RowVector<Var,AT>& operator=(RowVector<Var,AT> &&src) {
+        FMATVEC_ASSERT(N == src.size(), AT);
+        src.N=0;
+        delete[]ele;
+        ele=src.ele;
+        src.ele=nullptr;
+        return *this;
+      }
+      RowVector(Transpose, Vector<Var, AT> &&src) : Matrix<General,Fixed<1>,Var,AT>() {
+        N=src.M;
+        src.M=0;
+        ele=src.ele;
+        src.ele=nullptr;
       }
 
 //      template<class Ini=All<AT>>
@@ -155,6 +173,16 @@ namespace fmatvec {
       inline RowVector<Var,AT>& operator<<=(const RowVector<Row,AT> &x) {
         if(N!=x.size()) resize(x.size(),NONINIT);
         return copy(x);
+      }
+      // move
+      template <class Row>
+      inline RowVector<Var,AT>& operator<<=(RowVector<Row,AT> &&src) {
+        N=src.N;
+        src.N=0;
+        delete[]ele;
+        ele=src.ele;
+        src.ele=nullptr;
+        return *this;
       }
 
       /*! \brief Element operator
@@ -258,7 +286,17 @@ namespace fmatvec {
 //       * */
 //      explicit RowVector(const AT &x) : Matrix<General,Fixed<1>,Var,AT>(x) { }
 
+#if defined(SWIG) && SWIG_VERSION < 0x040000
       inline const Vector<Var,AT> T() const;
+      inline Vector<Var,AT> T();
+#else
+      inline const Vector<Var,AT> T() const &;
+      inline Vector<Var,AT> T() &;
+#endif
+      // move
+#ifndef SWIG
+      inline Vector<Var,AT> T() &&;
+#endif
 
       inline const RowVector<Var,AT> operator()(const Range<Var,Var> &I) const;
 
@@ -277,12 +315,34 @@ namespace fmatvec {
     }
 
   template <class AT>
+#if defined(SWIG) && SWIG_VERSION < 0x040000
     inline const Vector<Var,AT> RowVector<Var,AT>::T() const {
+#else
+    inline const Vector<Var,AT> RowVector<Var,AT>::T() const & {
+#endif
       Vector<Var,AT> x(N,NONINIT);
       for(int i=0; i<N; i++)
         x.e(i) = e(i);
       return x;
     }
+  template <class AT>
+#if defined(SWIG) && SWIG_VERSION < 0x040000
+    inline Vector<Var,AT> RowVector<Var,AT>::T() {
+#else
+    inline Vector<Var,AT> RowVector<Var,AT>::T() & {
+#endif
+      Vector<Var,AT> x(N,NONINIT);
+      for(int i=0; i<N; i++)
+        x.e(i) = e(i);
+      return x;
+    }
+  // move
+#ifndef SWIG
+  template <class AT>
+    inline Vector<Var,AT> RowVector<Var,AT>::T() && {
+      return Vector<Var,AT>(Transpose(), std::move(*this));
+    }
+#endif
 
   template <class AT>
     inline RowVector<Var,AT>::operator std::vector<AT>() const {
