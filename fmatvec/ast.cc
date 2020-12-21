@@ -2,12 +2,14 @@
 #include "stream_impl.h"
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <boost/scope_exit.hpp>
+#include <sstream>
 #include <boost/spirit/include/qi.hpp>
-#include <regex>
+#include <string>
+#include <iostream>
 #include <boost/phoenix/bind/bind_member_function.hpp>
 #include <boost/phoenix/bind/bind_function.hpp>
 #include <boost/spirit/include/karma.hpp>
-#include <boost/format.hpp>
 
 using namespace std;
 
@@ -16,7 +18,7 @@ namespace fmatvec {
 // ***** SymbolicExpression *****
 
 #if !defined(NDEBUG) && !defined(SWIG)
-signed long SymbolicExpression::evalOperationsCount = 0;
+unsigned long SymbolicExpression::evalOperationsCount = 0;
 #endif
 
 namespace {
@@ -229,6 +231,22 @@ istream& operator>>(istream& s, IndependentVariable &v) {
   return s;
 }
 
+SymbolicExpression subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b) {
+  // if se is the indep a to be replaced -> return b
+  if(se==a)
+    return b;
+  // if se is a constant -> return se
+  auto o=dynamic_cast<const AST::Operation*>(se.get());
+  if(!o)
+    return se;
+  // if se is a Operation -> copy the operation and call subst on its childs
+  vector<SymbolicExpression> child;
+  transform(o->child.begin(), o->child.end(), back_inserter(child), [&a, &b](const SymbolicExpression &x){
+    return subst(x, a, b);
+  });
+  return AST::Operation::create(o->op, child);
+}
+
 SymbolicExpression operator+(double a, const SymbolicExpression &b) {
   return SymbolicExpression(a)+b;
 }
@@ -281,34 +299,6 @@ IndependentVariable::IndependentVariable(const shared_ptr<const AST::Symbol> &x)
 
 namespace AST { // internal namespace
 
-SymbolicExpression substScalar(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b) {
-  // if se is the indep a to be replaced -> return b
-  if(se==a)
-    return b;
-  // if se is a constant -> return se
-  auto o=dynamic_cast<const AST::Operation*>(se.get());
-  if(!o)
-    return se;
-  // if se is a Operation -> copy the operation and call subst on its childs
-  vector<SymbolicExpression> child;
-  transform(o->child.begin(), o->child.end(), back_inserter(child), [&a, &b](const SymbolicExpression &x){
-    return substScalar(x, a, b);
-  });
-  return AST::Operation::create(o->op, child);
-}
-
-// ***** ByteCode *****
-
-ByteCode::ByteCode() {
-  retPtr = &retValue;
-  for(size_t i=0; i<argsPtr.size(); ++i)
-    argsPtr[i] = &argsValue[i];
-}
-
-ByteCode::ByteCode(ByteCode &&) {
-  assert(0 && "ByteCode cannot be moved or copied. But the move-ctor is defined to allow in-place construction e.g. using emplace_back.");
-}
-
 // ***** Vertex *****
 
 bool Vertex::isZero() const {
@@ -321,6 +311,10 @@ bool Vertex::isOne() const {
   if(isConstantInt() && static_cast<const Constant<int>*>(this)->getValue()==1)
     return true;
   return false;
+}
+
+const map<shared_ptr<const Symbol>, unsigned long>& Vertex::getDependsOn() const {
+  return dependsOn;
 }
 
 // ***** Constant *****
@@ -354,34 +348,12 @@ SymbolicExpression Constant<T>::parDer(const IndependentVariable &x) const {
 template<class T>
 Constant<T>::Constant(const T& c_) : c(c_) {}
 
-template<class T>
-std::vector<ByteCode>::iterator Constant<T>::dumpByteCode(vector<ByteCode> &byteCode, map<const Vertex*, vector<ByteCode>::iterator> &existingVertex) const {
-  auto [lastIt, inserted] = existingVertex.insert(make_pair(this, vector<ByteCode>::iterator()));
-  if(!inserted) return lastIt->second;
-
-  byteCode.emplace_back();
-  auto it = --byteCode.end();
-  lastIt->second = it;
-  it->func = [](double* r, const std::array<double*,ByteCode::N>& a) {};
-  it->retValue = c;
-  return --byteCode.end();
-}
-
-template<class T>
-void Constant<T>::walkVertex(const function<void(const shared_ptr<const Vertex>&)> &func) const {
-  func(this->shared_from_this());
-}
-
 template SymbolicExpression Constant<int   >::create(const int   &c_);
 template SymbolicExpression Constant<double>::create(const double&c_);
 template bool Constant<int   >::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const;
 template bool Constant<double>::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const;
 template SymbolicExpression Constant<int   >::parDer(const IndependentVariable &x) const;
 template SymbolicExpression Constant<double>::parDer(const IndependentVariable &x) const;
-template std::vector<ByteCode>::iterator Constant<int   >::dumpByteCode(vector<ByteCode> &byteCode, map<const Vertex*, vector<ByteCode>::iterator> &existingVertex) const;
-template std::vector<ByteCode>::iterator Constant<double>::dumpByteCode(vector<ByteCode> &byteCode, map<const Vertex*, vector<ByteCode>::iterator> &existingVertex) const;
-template void Constant<int   >::walkVertex(const function<void(const shared_ptr<const Vertex>&)> &func) const;
-template void Constant<double>::walkVertex(const function<void(const shared_ptr<const Vertex>&)> &func) const;
 
 // ***** Symbol *****
 
@@ -416,7 +388,7 @@ SymbolicExpression Symbol::parDer(const IndependentVariable &x) const {
   return this == x.get() ? Constant<int>::create(1) : Constant<int>::create(0);
 }
 
-Symbol::Symbol(const boost::uuids::uuid& uuid_) : uuid(uuid_) {}
+Symbol::Symbol(const boost::uuids::uuid& uuid_) : version(0), uuid(uuid_) {}
 
 string Symbol::getUUIDStr() const {
 #ifndef NDEBUG // FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID
@@ -430,63 +402,43 @@ string Symbol::getUUIDStr() const {
 #endif
 }
 
-std::vector<ByteCode>::iterator Symbol::dumpByteCode(vector<ByteCode> &byteCode,
-                                                  map<const Vertex*, vector<ByteCode>::iterator> &existingVertex) const {
-  auto [lastIt, inserted] = existingVertex.insert(make_pair(this, vector<ByteCode>::iterator()));
-  if(!inserted) return lastIt->second;
-
-  byteCode.emplace_back();
-  auto it = --byteCode.end();
-  lastIt->second = it;
-  double *xPtr = &x;
-  it->func = [xPtr](double* r, const std::array<double*,ByteCode::N>& a) { *r = *xPtr; };
-  return --byteCode.end();
-}
-
-void Symbol::walkVertex(const function<void(const shared_ptr<const Vertex>&)> &func) const {
-  func(shared_from_this());
-}
-
 // ***** Operation *****
 
 map<Operation::CacheKey, weak_ptr<const Operation>, Operation::CacheKeyComp> Operation::cache;
 
-//mfmf optimized calls for int arguments
-#define FUNC(expr) [](double* r, const std::array<double*,ByteCode::N>& a){ *r = expr; }
-const std::map<Operation::Operator, Operation::OpMap> Operation::opMap {
-//  Operator Name     Lambda-Function
-  { Plus,  { "plus" , FUNC( *a[0] + *a[1]            ) }},
-  { Minus, { "minus", FUNC( *a[0] - *a[1]            ) }},
-  { Mult,  { "mult" , FUNC( *a[0] * *a[1]            ) }},
-  { Div,   { "div"  , FUNC( *a[0] / *a[1]            ) }},
-  { Pow,   { "pow"  , FUNC( std::pow(*a[0], *a[1])   ) }},
-  { Log,   { "log"  , FUNC( std::log(*a[0])          ) }},
-  { Sqrt,  { "sqrt" , FUNC( std::sqrt(*a[0])         ) }},
-  { Neg,   { "neg"  , FUNC( - *a[0]                  ) }},
-  { Sin,   { "sin"  , FUNC( std::sin(*a[0])          ) }},
-  { Cos,   { "cos"  , FUNC( std::cos(*a[0])          ) }}, 
-  { Tan,   { "tan"  , FUNC( std::tan(*a[0])          ) }}, 
-  { Sinh,  { "sinh" , FUNC( std::sinh(*a[0])         ) }}, 
-  { Cosh,  { "cosh" , FUNC( std::cosh(*a[0])         ) }}, 
-  { Tanh,  { "tanh" , FUNC( std::tanh(*a[0])         ) }}, 
-  { ASin,  { "asin" , FUNC( std::asin(*a[0])         ) }}, 
-  { ACos,  { "acos" , FUNC( std::acos(*a[0])         ) }}, 
-  { ATan,  { "atan" , FUNC( std::atan(*a[0])         ) }}, 
-  { ASinh, { "asinh", FUNC( std::asinh(*a[0])        ) }}, 
-  { ACosh, { "acosh", FUNC( std::acosh(*a[0])        ) }}, 
-  { ATanh, { "atanh", FUNC( std::atanh(*a[0])        ) }}, 
-  { Exp,   { "exp"  , FUNC( std::exp(*a[0])          ) }}, 
-  { Sign,  { "sign" , FUNC( boost::math::sign(*a[0]) ) }}, 
-  { Abs,   { "abs"  , FUNC( std::abs(*a[0])          ) }}  
-};                                                         
-                                                           
+const std::map<Operation::Operator, string> Operation::opMap {
+  { Plus,  "plus"},
+  { Minus, "minus"},
+  { Mult,  "mult"},
+  { Div,   "div"},
+  { Pow,   "pow"},
+  { Log,   "log"},
+  { Sqrt,  "sqrt"},
+  { Neg,   "neg"},
+  { Sin,   "sin"},
+  { Cos,   "cos"},
+  { Tan,   "tan"},
+  { Sinh,  "sinh"},
+  { Cosh,  "cosh"},
+  { Tanh,  "tanh"},
+  { ASin,  "asin"},
+  { ACos,  "acos"},
+  { ATan,  "atan"},
+  { ASinh, "asinh"},
+  { ACosh, "acosh"},
+  { ATanh, "atanh"},
+  { Exp,   "exp"},
+  { Sign,  "sign"},
+  { Abs,   "abs"}
+};
+
 SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpression> &child_) {
   static bool optimizeExpressions=true; // this is "always" true (except for the initial call, see below)
-  static bool firstCall=true;                              
+  static bool firstCall=true;
   static vector<pair<SymbolicExpression,SymbolicExpression>> optExpr; // list of expression optimizations
   if(firstCall) { // on the first call build the list of expression optimizations
-    firstCall=false;                                       
-    IndependentVariable a;                                 
+    firstCall=false;
+    IndependentVariable a;
     IndependentVariable b;
     SymbolicExpression error(std::shared_ptr<const Vertex>{nullptr});
     // we need to disable the expression optimization during buildup of the expressions to optimize
@@ -546,7 +498,7 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
         }
         // ... then return the optimized expressions with all symbols of m replaced.
         for(auto &x : m)
-          out=substScalar(out, x.first, x.second);
+          out=subst(out, x.first, x.second);
         return out;
       }
     }
@@ -557,14 +509,7 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
     });
     if(allConst) {
       Operation op(op_, child_);
-      vector<ByteCode> byteCode;
-      byteCode.reserve(ByteCode::N+1);// preserve enought memory, we cannot move/copy a ByteCode.
-      map<const Vertex*, vector<AST::ByteCode>::iterator> existingVertex;
-      auto retIt = op.dumpByteCode(byteCode, existingVertex);
-      std::for_each(byteCode.begin(), byteCode.end(), [](const AST::ByteCode &bc){
-        bc.func(bc.retPtr, bc.argsPtr);
-      });
-      double doubleValue = retIt->retValue;
+      double doubleValue=op.eval();
       int intValue=lround(doubleValue);
       if(std::abs(intValue-doubleValue)<2*numeric_limits<double>::epsilon())
         return Constant<int>::create(intValue);
@@ -665,7 +610,14 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
   throw runtime_error("Unknown operation.");
 }
 
-Operation::Operation(Operator op_, const vector<SymbolicExpression> &child_) : op(op_), child(child_) {}
+Operation::Operation(Operator op_, const vector<SymbolicExpression> &child_) : op(op_), child(child_) {
+  for(auto &c : child) {
+    for(auto &x : c->getDependsOn())
+      dependsOn.insert(make_pair(x.first, 0));
+    if(auto s=dynamic_pointer_cast<const AST::Symbol>(c))
+      dependsOn.insert(make_pair(s, 0));
+  }
+}
 
 bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) const {
   if(l.first!=r.first)
@@ -676,41 +628,6 @@ bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) c
     if(ol(l.second[i],r.second[i]) || ol(r.second[i],l.second[i]))
       return ol(l.second[i], r.second[i]);
   return false;
-}
-
-std::vector<ByteCode>::iterator Operation::dumpByteCode(vector<ByteCode> &byteCode,
-                                                     map<const Vertex*, vector<ByteCode>::iterator> &existingVertex) const {
-  assert(child.size() <= ByteCode::N && "If more function arguments are needed you have to increase ByteCode::N at compile time.");
-  auto [lastIt, inserted] = existingVertex.insert(make_pair(this, vector<ByteCode>::iterator()));
-  if(!inserted) return lastIt->second;
-
-  std::vector<vector<ByteCode>::iterator> childItVec;
-  for(auto &c : child) {
-    auto it = c->dumpByteCode(byteCode, existingVertex);
-    childItVec.push_back(it);
-  }
-
-  byteCode.emplace_back();
-  auto it = --byteCode.end();
-  lastIt->second = it;
-  it->func = opMap.at(op).func;
-
-  // optimization for pow with an interger exponent
-  if(op == Pow && child[1]->isConstantInt())
-    it->func = [](double* r, const std::array<double*,ByteCode::N>& a){ *r = std::pow(*a[0], static_cast<int>(*a[1])); };
-
-  auto childIt = childItVec.begin();
-  auto argsPtrIt = it->argsPtr.begin();
-  for(; childIt<childItVec.end(); ++childIt, ++argsPtrIt)
-    *argsPtrIt = (*childIt)->retPtr;
-
-  return --byteCode.end();
-}
-
-void Operation::walkVertex(const function<void(const shared_ptr<const Vertex>&)> &func) const {
-  for(auto &c : child)
-    c->walkVertex(func);
-  func(shared_from_this());
 }
 
 } // end namespace AST
@@ -753,7 +670,7 @@ boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& 
 
     static qi::symbols<char, AST::Operation::Operator> opSym;
     for(auto &x : AST::Operation::opMap)
-      opSym.add(x.second.funcName, x.first);
+      opSym.add(x.second, x.first);
 
     constInt    = *qi::blank >> qi::int_[qi::_val=phx::bind(&AST::Constant<int>::create, qi::_1)];
     constDouble = *qi::blank >> strict_double[qi::_val=phx::bind(&AST::Constant<double>::create, qi::_1)];
@@ -822,7 +739,7 @@ boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& g
 
     static karma::symbols<AST::Operation::Operator, string> opSym;
     for(auto &x : AST::Operation::opMap)
-      opSym.add(x.first, x.second.funcName);
+      opSym.add(x.first, x.second);
 
     constInt    = karma::int_[karma::_1=phx::bind(&getConstInt, karma::_val, karma::_pass)];
     constDouble = doubleBitIdentical[karma::_1=phx::bind(&getConstDouble, karma::_val, karma::_pass)];

@@ -71,38 +71,37 @@ class SymbolicFunction<RET(ARG1, ARG2)> : public virtual Function<RET(ARG1, ARG2
     Arg2S argDir2S;
     Arg2S argDir2S_2;
     RetS retS;
-    std::unique_ptr<Eval<decltype(retS)>> retSEval;
 #ifdef PARDER1
-    std::unique_ptr<Eval<typename ReplaceAT<DRetDArg1, SymbolicExpression>::Type>> pd1Eval;
+    typename ReplaceAT<DRetDArg1, SymbolicExpression>::Type pd1;
 #endif
-    std::unique_ptr<Eval<typename ReplaceAT<DRetDDir1, SymbolicExpression>::Type>> dd1Eval;
+    typename ReplaceAT<DRetDDir1, SymbolicExpression>::Type dd1;
 #ifdef PARDER2
-    std::unique_ptr<Eval<typename ReplaceAT<DRetDArg2, SymbolicExpression>::Type>> pd2Eval;
+    typename ReplaceAT<DRetDArg2, SymbolicExpression>::Type pd2;
 #endif
-    std::unique_ptr<Eval<typename ReplaceAT<DRetDDir2, SymbolicExpression>::Type>> dd2Eval;
+    typename ReplaceAT<DRetDDir2, SymbolicExpression>::Type dd2;
 #ifdef PARDER1PARDER1
-    std::unique_ptr<Eval<typename ReplaceAT<DDRetDDArg1, SymbolicExpression>::Type>> pd1pd1Eval;
+    typename ReplaceAT<DDRetDDArg1, SymbolicExpression>::Type pd1pd1;
 #endif
 #ifdef PARDER1
-    std::unique_ptr<Eval<typename ReplaceAT<DRetDArg1, SymbolicExpression>::Type>> pd1dd1Eval;
+    typename ReplaceAT<DRetDArg1, SymbolicExpression>::Type pd1dd1;
 #endif
-    std::unique_ptr<Eval<typename ReplaceAT<DRetDDir1, SymbolicExpression>::Type>> dd1dd1Eval;
+    typename ReplaceAT<DRetDDir1, SymbolicExpression>::Type dd1dd1;
 #ifdef PARDER2PARDER2
-    std::unique_ptr<Eval<typename ReplaceAT<DDRetDDArg2, SymbolicExpression>::Type>> pd2pd2Eval;
+    typename ReplaceAT<DDRetDDArg2, SymbolicExpression>::Type pd2pd2;
 #endif
 #ifdef PARDER2
-    std::unique_ptr<Eval<typename ReplaceAT<DRetDArg2, SymbolicExpression>::Type>> pd2dd2Eval;
+    typename ReplaceAT<DRetDArg2, SymbolicExpression>::Type pd2dd2;
 #endif
-    std::unique_ptr<Eval<typename ReplaceAT<DRetDDir2, SymbolicExpression>::Type>> dd2dd2Eval;
+    typename ReplaceAT<DRetDDir2, SymbolicExpression>::Type dd2dd2;
 #ifdef PARDER1PARDER2
-    std::unique_ptr<Eval<typename ReplaceAT<DDRetDArg1DArg2, SymbolicExpression>::Type>> pd1pd2Eval;
+    typename ReplaceAT<DDRetDArg1DArg2, SymbolicExpression>::Type pd1pd2;
 #endif
 #ifdef PARDER1
-    std::unique_ptr<Eval<typename ReplaceAT<DRetDArg1, SymbolicExpression>::Type>> pd1dd2Eval;
+    typename ReplaceAT<DRetDArg1, SymbolicExpression>::Type pd1dd2;
 #endif
-    std::unique_ptr<Eval<typename ReplaceAT<DRetDDir2, SymbolicExpression>::Type>> dd2dd1Eval;
+    typename ReplaceAT<DRetDDir2, SymbolicExpression>::Type dd2dd1;
 #ifdef PARDER2
-    std::unique_ptr<Eval<typename ReplaceAT<DRetDArg2, SymbolicExpression>::Type>> pd2dd1Eval;
+    typename ReplaceAT<DRetDArg2, SymbolicExpression>::Type pd2dd1;
 #endif
     bool isParDer1Const = false;
     bool isParDer2Const = false;
@@ -164,38 +163,37 @@ void SymbolicFunction<RET(ARG1, ARG2)>::init() {
   Helper<Arg2S>::initIndep(argDir2S, Helper<Arg2S>::size1(arg2S));
   Helper<Arg2S>::initIndep(argDir2S, Helper<Arg2S>::size1(arg2S));
   Helper<Arg2S>::initIndep(argDir2S_2, Helper<Arg2S>::size1(arg2S));
-  retSEval.reset(new Eval<decltype(retS)>{retS});
 #ifdef PARDER1
-  pd1Eval.reset(new Eval<typename ReplaceAT<DRetDArg1, SymbolicExpression>::Type>{fmatvec::parDer(retS, arg1S)});
+  pd1<<=fmatvec::parDer(retS, arg1S);
 #endif
-  dd1Eval.reset(new Eval<typename ReplaceAT<DRetDDir1, SymbolicExpression>::Type>{fmatvec::dirDer(retS, argDir1S*1, arg1S)});
+  dd1<<=fmatvec::dirDer(retS, argDir1S*1, arg1S);
 #ifdef PARDER2
-  pd2Eval.reset(new Eval<typename ReplaceAT<DRetDArg2, SymbolicExpression>::Type>{fmatvec::parDer(retS, arg2S)});
+  pd2<<=fmatvec::parDer(retS, arg2S);
 #endif
-  dd2Eval.reset(new Eval<typename ReplaceAT<DRetDDir2, SymbolicExpression>::Type>{fmatvec::dirDer(retS, argDir2S*1, arg2S)});
+  dd2<<=fmatvec::dirDer(retS, argDir2S*1, arg2S);
 #ifdef PARDER1PARDER1
-  pd1pd1Eval.reset(new Eval<typename ReplaceAT<DDRetDDArg1, SymbolicExpression>::Type>{fmatvec::parDer(fmatvec::parDer(retS, arg1S), arg1S)});
+  pd1pd1<<=fmatvec::parDer(fmatvec::parDer(retS, arg1S), arg1S);
 #endif
 #ifdef PARDER1
-  pd1dd1Eval.reset(new Eval<typename ReplaceAT<DRetDArg1, SymbolicExpression>::Type>{fmatvec::dirDer(fmatvec::parDer(retS, arg1S), argDir1S*1, arg1S)});
+  pd1dd1<<=fmatvec::dirDer(fmatvec::parDer(retS, arg1S), argDir1S*1, arg1S);
 #endif
-  dd1dd1Eval.reset(new Eval<typename ReplaceAT<DRetDDir1, SymbolicExpression>::Type>{fmatvec::dirDer(fmatvec::dirDer(retS, argDir1S*1, arg1S), argDir1S_2*1, arg1S)});
+  dd1dd1<<=fmatvec::dirDer(fmatvec::dirDer(retS, argDir1S*1, arg1S), argDir1S_2*1, arg1S);
 #ifdef PARDER2PARDER2
-  pd2pd2Eval.reset(new Eval<typename ReplaceAT<DDRetDDArg2, SymbolicExpression>::Type>{fmatvec::parDer(fmatvec::parDer(retS, arg2S), arg2S)});
+  pd2pd2<<=fmatvec::parDer(fmatvec::parDer(retS, arg2S), arg2S);
 #endif
 #ifdef PARDER2
-  pd2dd2Eval.reset(new Eval<typename ReplaceAT<DRetDArg2, SymbolicExpression>::Type>{fmatvec::dirDer(fmatvec::parDer(retS, arg2S), argDir2S*1, arg2S)});
+  pd2dd2<<=fmatvec::dirDer(fmatvec::parDer(retS, arg2S), argDir2S*1, arg2S);
 #endif
-  dd2dd2Eval.reset(new Eval<typename ReplaceAT<DRetDDir2, SymbolicExpression>::Type>{fmatvec::dirDer(fmatvec::dirDer(retS, argDir2S*1, arg2S), argDir2S_2*1, arg2S)});
+  dd2dd2<<=fmatvec::dirDer(fmatvec::dirDer(retS, argDir2S*1, arg2S), argDir2S_2*1, arg2S);
 #ifdef PARDER1PARDER2
-  pd1pd2Eval.reset(new Eval<typename ReplaceAT<DDRetDArg1DArg2, SymbolicExpression>::Type>{fmatvec::parDer(fmatvec::parDer(retS, arg1S), arg2S)});
+  pd1pd2<<=fmatvec::parDer(fmatvec::parDer(retS, arg1S), arg2S);
 #endif
 #ifdef PARDER1
-  pd1dd2Eval.reset(new Eval<typename ReplaceAT<DRetDArg1, SymbolicExpression>::Type>{fmatvec::dirDer(fmatvec::parDer(retS, arg1S), argDir2S*1, arg2S)});
+  pd1dd2<<=fmatvec::dirDer(fmatvec::parDer(retS, arg1S), argDir2S*1, arg2S);
 #endif
-  dd2dd1Eval.reset(new Eval<typename ReplaceAT<DRetDDir2, SymbolicExpression>::Type>{fmatvec::dirDer(fmatvec::dirDer(retS, argDir2S*1, arg2S), argDir1S*1, arg1S)});
+  dd2dd1<<=fmatvec::dirDer(fmatvec::dirDer(retS, argDir2S*1, arg2S), argDir1S*1, arg1S);
 #ifdef PARDER2
-  pd2dd1Eval.reset(new Eval<typename ReplaceAT<DRetDArg2, SymbolicExpression>::Type>{fmatvec::dirDer(fmatvec::parDer(retS, arg2S), argDir1S*1, arg1S)});
+  pd2dd1<<=fmatvec::dirDer(fmatvec::parDer(retS, arg2S), argDir1S*1, arg1S);
 #endif
 }
 
@@ -218,7 +216,7 @@ template<TEMPLATE>
 RET SymbolicFunction<RET(ARG1, ARG2)>::operator()(const ARG1 &arg1, const ARG2 &arg2) {
   arg1S^=arg1;
   arg2S^=arg2;
-  return (*retSEval)();
+  return eval(retS);
 }
 
 #ifdef PARDER1
@@ -226,7 +224,7 @@ template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::parDer1(const ARG1 &arg1, const ARG2 &arg2) -> DRetDArg1 {
   arg1S^=arg1;
   arg2S^=arg2;
-  return (*pd1Eval)();
+  return eval(pd1);
 }
 #endif
 
@@ -235,7 +233,7 @@ auto SymbolicFunction<RET(ARG1, ARG2)>::dirDer1(const ARG1 &arg1Dir, const ARG1 
   argDir1S^=arg1Dir;
   arg1S^=arg1;
   arg2S^=arg2;
-  return (*dd1Eval)();
+  return eval(dd1);
 }
 
 #ifdef PARDER2
@@ -243,7 +241,7 @@ template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::parDer2(const ARG1 &arg1, const ARG2 &arg2) -> DRetDArg2 {
   arg1S^=arg1;
   arg2S^=arg2;
-  return (*pd2Eval)();
+  return eval(pd2);
 }
 #endif
 
@@ -252,7 +250,7 @@ auto SymbolicFunction<RET(ARG1, ARG2)>::dirDer2(const ARG2 &arg2Dir, const ARG1 
   argDir2S^=arg2Dir;
   arg1S^=arg1;
   arg2S^=arg2;
-  return (*dd2Eval)();
+  return eval(dd2);
 }
 
 #ifdef PARDER1PARDER1
@@ -260,7 +258,7 @@ template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::parDer1ParDer1(const ARG1 &arg1, const ARG2 &arg2) -> DDRetDDArg1 {
   arg1S^=arg1;
   arg2S^=arg2;
-  return (*pd1pd1Eval)();
+  return eval(pd1pd1);
 }
 #endif
 
@@ -270,7 +268,7 @@ auto SymbolicFunction<RET(ARG1, ARG2)>::parDer1DirDer1(const ARG1 &arg1Dir, cons
   argDir1S^=arg1Dir;
   arg1S^=arg1;
   arg2S^=arg2;
-  return (*pd1dd1Eval)();
+  return eval(pd1dd1);
 }
 #endif
 
@@ -280,7 +278,7 @@ auto SymbolicFunction<RET(ARG1, ARG2)>::dirDer1DirDer1(const ARG1 &arg1Dir_1, co
   argDir1S_2^=arg1Dir_2;
   arg1S^=arg1;
   arg2S^=arg2;
-  return (*dd1dd1Eval)();
+  return eval(dd1dd1);
 }
 
 #ifdef PARDER2PARDER2
@@ -288,7 +286,7 @@ template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::parDer2ParDer2(const ARG1 &arg1, const ARG2 &arg2) -> DDRetDDArg2 {
   arg1S^=arg1;
   arg2S^=arg2;
-  return (*pd2pd2Eval)();
+  return eval(pd2pd2);
 }
 #endif
 
@@ -298,7 +296,7 @@ auto SymbolicFunction<RET(ARG1, ARG2)>::parDer2DirDer2(const ARG2 &arg2Dir, cons
   argDir2S^=arg2Dir;
   arg1S^=arg1;
   arg2S^=arg2;
-  return (*pd2dd2Eval)();
+  return eval(pd2dd2);
 }
 #endif
 
@@ -308,7 +306,7 @@ auto SymbolicFunction<RET(ARG1, ARG2)>::dirDer2DirDer2(const ARG2 &arg2Dir_1, co
   argDir2S_2^=arg2Dir_2;
   arg1S^=arg1;
   arg2S^=arg2;
-  return (*dd2dd2Eval)();
+  return eval(dd2dd2);
 }
 
 #ifdef PARDER1PARDER2
@@ -316,7 +314,7 @@ template<TEMPLATE>
 auto SymbolicFunction<RET(ARG1, ARG2)>::parDer1ParDer2(const ARG1 &arg1, const ARG2 &arg2) -> DDRetDArg1DArg2 {
   arg1S^=arg1;
   arg2S^=arg2;
-  return (*pd1pd2Eval)();
+  return eval(pd1pd2);
 }
 #endif
 
@@ -326,7 +324,7 @@ auto SymbolicFunction<RET(ARG1, ARG2)>::parDer1DirDer2(const ARG2 &arg2Dir, cons
   argDir2S^=arg2Dir;
   arg1S^=arg1;
   arg2S^=arg2;
-  return (*pd1dd2Eval)();
+  return eval(pd1dd2);
 }
 #endif
 
@@ -336,7 +334,7 @@ auto SymbolicFunction<RET(ARG1, ARG2)>::dirDer2DirDer1(const ARG2 &arg2Dir, cons
   argDir1S^=arg1Dir;
   arg1S^=arg1;
   arg2S^=arg2;
-  return (*dd2dd1Eval)();
+  return eval(dd2dd1);
 }
 
 #ifdef PARDER2
@@ -345,7 +343,7 @@ auto SymbolicFunction<RET(ARG1, ARG2)>::parDer2DirDer1(const ARG1 &arg1Dir, cons
   argDir1S^=arg1Dir;
   arg1S^=arg1;
   arg2S^=arg2;
-  return (*pd2dd1Eval)();
+  return eval(pd2dd1);
 }
 #endif
 

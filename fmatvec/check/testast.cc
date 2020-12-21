@@ -185,14 +185,13 @@ void checkSym(double &pdn0Value,
   SymbolicExpression::evalOperationsCount=0;
 #endif
   cout<<"frist eval"<<endl;
-  Eval pdnEval{pdn};
-  cout<<"pdn.eval = "<<pdnEval()<<endl;
+  cout<<"pdn.eval = "<<eval(pdn)<<endl;
 #ifndef NDEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
   SymbolicExpression::evalOperationsCount=0;
 #endif
   cout<<"second eval with same values for independent variables"<<endl;
-  cout<<"pdn.eval = "<<pdnEval()<<endl;
+  cout<<"pdn.eval = "<<eval(pdn)<<endl;
 #ifndef NDEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
@@ -206,9 +205,7 @@ void checkSym(double &pdn0Value,
   SymbolicExpression::evalOperationsCount=0;
 #endif
   cout<<"third eval with different values for independent variables"<<endl;
-  Eval pdn_rmv{pdn, _rmv};
-  auto [pdnNum, _rmvNum] = pdn_rmv();
-  cout<<"pdn.eval = "<<pdnNum<<endl;
+  cout<<"pdn.eval = "<<eval(pdn)<<endl;
 #ifndef NDEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
@@ -216,7 +213,7 @@ void checkSym(double &pdn0Value,
 #ifndef NDEBUG
   SymbolicExpression::evalOperationsCount=0;
 #endif
-  _rmvNum(0);
+  eval(_rmv(0));
 #ifndef NDEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
@@ -266,15 +263,15 @@ void checkSym(double &pdn0Value,
   // dump all ret* vars to this stream just to avoid set but unused warnings
   {
     stringstream dummy;
-    double retd=Eval{SymbolicExpression()}(); dummy<<retd;
-    Vector<Var, double> retvv=Eval{Vector<Var, SymbolicExpression>(3)}(); dummy<<retvv;
-    Vector<Fixed<3>, double> retvf=Eval{Vector<Fixed<3>, SymbolicExpression>()}(); dummy<<retvf;
-    RowVector<Var, double> retrvv=Eval{RowVector<Var, SymbolicExpression>(3)}(); dummy<<retrvv;
-    RowVector<Fixed<3>, double> retrvf=Eval{RowVector<Fixed<3>, SymbolicExpression>()}(); dummy<<retrvf;
-    Matrix<General, Var, Var, double> retmvv=Eval{Matrix<General, Var, Var, SymbolicExpression>(3,3)}(); dummy<<retmvv;
-    Matrix<General, Fixed<3>, Var, double> retmfv=Eval{Matrix<General, Fixed<3>, Var, SymbolicExpression>(3)}(); dummy<<retmfv;
-    Matrix<General, Var, Fixed<3>, double> retmvf=Eval{Matrix<General, Var, Fixed<3>, SymbolicExpression>(3)}(); dummy<<retmvf;
-    Matrix<General, Fixed<3>, Fixed<3>, double> retmff=Eval{Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression>()}(); dummy<<retmff;
+    double retd=eval(SymbolicExpression()); dummy<<retd;
+    Vector<Var, double> retvv=eval(Vector<Var, SymbolicExpression>(3)); dummy<<retvv;
+    Vector<Fixed<3>, double> retvf=eval(Vector<Fixed<3>, SymbolicExpression>()); dummy<<retvf;
+    RowVector<Var, double> retrvv=eval(RowVector<Var, SymbolicExpression>(3)); dummy<<retrvv;
+    RowVector<Fixed<3>, double> retrvf=eval(RowVector<Fixed<3>, SymbolicExpression>()); dummy<<retrvf;
+    Matrix<General, Var, Var, double> retmvv=eval(Matrix<General, Var, Var, SymbolicExpression>(3,3)); dummy<<retmvv;
+    Matrix<General, Fixed<3>, Var, double> retmfv=eval(Matrix<General, Fixed<3>, Var, SymbolicExpression>(3)); dummy<<retmfv;
+    Matrix<General, Var, Fixed<3>, double> retmvf=eval(Matrix<General, Var, Fixed<3>, SymbolicExpression>(3)); dummy<<retmvf;
+    Matrix<General, Fixed<3>, Fixed<3>, double> retmff=eval(Matrix<General, Fixed<3>, Fixed<3>, SymbolicExpression>()); dummy<<retmff;
   }
 
   // write to stream for later reread
@@ -284,20 +281,7 @@ void checkSym(double &pdn0Value,
     { stringstream ostr; ostr<<a5; a5Ser=ostr.str(); }
     { stringstream ostr; ostr<<a6; a6Ser=ostr.str(); }
     { stringstream ostr; ostr<<pdn(0); pdn0Ser=ostr.str(); }
-    pdn0Value=Eval{pdn(0)}();
-  }
-
-  // check lifetime handling
-  {
-    unique_ptr<Eval<Vector<Fixed<3>, SymbolicExpression>>> e;
-    {
-      IndependentVariable a, b, c;
-      a^=1.1; b^=2.2; c^=3.3;
-      Vector<Fixed<3>, SymbolicExpression> v({a, 2*b, 2+a*c});
-      e.reset(new Eval{v});
-      // everything except e is deleted now
-    }
-    Vec3 ret=(*e)();
+    pdn0Value=eval(pdn(0));
   }
 }
 
@@ -322,7 +306,7 @@ void checkSymReread(double pdn0Value,
   a6^=8.6;
 
   // print evaluated value after reading the expressions from stream
-  cout<<"reread "<<pdn0Value<<" == "<<Eval{pdn0}()<<endl;
+  cout<<"reread "<<pdn0Value<<" == "<<eval(pdn0)<<endl;
 
   // more streamout/in tests
   {
@@ -356,8 +340,8 @@ void checkSymReread(double pdn0Value,
     SymbolicExpression ar;
     SymbolicExpression br;
     istr>>ar>>br;
-    cout<<"reread-precision "<<(a==ar)<<" "<<(Eval{a}()==Eval{ar}())<<endl;
-    cout<<"reread-precision "<<(b==br)<<" "<<(Eval{b}()==Eval{br}())<<endl;
+    cout<<"reread-precision "<<(a==ar)<<" "<<(eval(a)==eval(ar))<<endl;
+    cout<<"reread-precision "<<(b==br)<<" "<<(eval(b)==eval(br))<<endl;
   }
 }
 
@@ -394,7 +378,7 @@ void checkSymRereadExistingIndeps(double pdn0Value,
   a6^=8.6;
 
   // dump output
-  cout<<"reread "<<pdn0Value<<" == "<<Eval{pdn0}()<<endl;
+  cout<<"reread "<<pdn0Value<<" == "<<eval(pdn0)<<endl;
 }
 
 void checkRefMatrix() {

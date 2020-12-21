@@ -38,18 +38,17 @@ class SymbolicFunction<RET(ARG)> : public virtual Function<RET(ARG)> {
     ArgS argDirS;
     ArgS argDirS_2;
     RetS retS;
-    std::unique_ptr<Eval<decltype(retS)>> retSEval;
 #ifdef PARDER
-    std::unique_ptr<Eval<typename ReplaceAT<DRetDArg, SymbolicExpression>::Type>> pdEval;
+    typename ReplaceAT<DRetDArg, SymbolicExpression>::Type pd;
 #endif
-    std::unique_ptr<Eval<typename ReplaceAT<DRetDDir, SymbolicExpression>::Type>> ddEval;
+    typename ReplaceAT<DRetDDir, SymbolicExpression>::Type dd;
 #ifdef PARDERPARDER
-    std::unique_ptr<Eval<typename ReplaceAT<DDRetDDArg, SymbolicExpression>::Type>> pdpdEval;
+    typename ReplaceAT<DDRetDDArg, SymbolicExpression>::Type pdpd;
 #endif
 #ifdef PARDER
-    std::unique_ptr<Eval<typename ReplaceAT<DRetDArg, SymbolicExpression>::Type>> pdddEval;
+    typename ReplaceAT<DRetDArg, SymbolicExpression>::Type pddd;
 #endif
-    std::unique_ptr<Eval<typename ReplaceAT<DRetDDir, SymbolicExpression>::Type>> ddddEval;
+    typename ReplaceAT<DRetDDir, SymbolicExpression>::Type dddd;
     bool isParDerConst = false;
 };
 
@@ -93,18 +92,17 @@ void SymbolicFunction<RET(ARG)>::init() {
   Helper<ArgS>::initIndep(argDirS, Helper<ArgS>::size1(argS));
   Helper<ArgS>::initIndep(argDirS, Helper<ArgS>::size1(argS));
   Helper<ArgS>::initIndep(argDirS_2, Helper<ArgS>::size1(argS));
-  retSEval.reset(new Eval<decltype(retS)>{retS});
 #ifdef PARDER
-  pdEval.reset(new Eval<typename ReplaceAT<DRetDArg, SymbolicExpression>::Type>{fmatvec::parDer(retS, argS)});
+  pd<<=fmatvec::parDer(retS, argS);
 #endif
-  ddEval.reset(new Eval<typename ReplaceAT<DRetDDir, SymbolicExpression>::Type>{fmatvec::dirDer(retS, argDirS*1, argS)});
+  dd<<=fmatvec::dirDer(retS, argDirS*1, argS);
 #ifdef PARDERPARDER
-  pdpdEval.reset(new Eval<typename ReplaceAT<DDRetDDArg, SymbolicExpression>::Type>{fmatvec::parDer(fmatvec::parDer(retS, argS), argS)});
+  pdpd<<=fmatvec::parDer(fmatvec::parDer(retS, argS), argS);
 #endif
 #ifdef PARDER
-  pdddEval.reset(new Eval<typename ReplaceAT<DRetDArg, SymbolicExpression>::Type>{fmatvec::dirDer(fmatvec::parDer(retS, argS), argDirS*1, argS)});
+  pddd<<=fmatvec::dirDer(fmatvec::parDer(retS, argS), argDirS*1, argS);
 #endif
-  ddddEval.reset(new Eval<typename ReplaceAT<DRetDDir, SymbolicExpression>::Type>{fmatvec::dirDer(fmatvec::dirDer(retS, argDirS*1, argS), argDirS_2*1, argS)});
+  dddd<<=fmatvec::dirDer(fmatvec::dirDer(retS, argDirS*1, argS), argDirS_2*1, argS);
 }
 
 template<TEMPLATE>
@@ -119,15 +117,15 @@ int SymbolicFunction<RET(ARG)>::getArgSize() const {
 
 template<TEMPLATE>
 RET SymbolicFunction<RET(ARG)>::operator()(const ARG &arg) {
-  argS^=arg;
-  return (*retSEval)();
+  argS^=arg;//mfmf use something better here, this disables the caching of ast!?
+  return eval(retS);
 }
 
 #ifdef PARDER
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG)>::parDer(const ARG &arg) -> DRetDArg {
   argS^=arg;
-  return (*pdEval)();
+  return eval(pd);
 }
 #endif
 
@@ -135,14 +133,14 @@ template<TEMPLATE>
 auto SymbolicFunction<RET(ARG)>::dirDer(const ARG &argDir, const ARG &arg) -> DRetDDir {
   argDirS^=argDir;
   argS^=arg;
-  return (*ddEval)();
+  return eval(dd);
 }
 
 #ifdef PARDERPARDER
 template<TEMPLATE>
 auto SymbolicFunction<RET(ARG)>::parDerParDer(const ARG &arg) -> DDRetDDArg {
   argS^=arg;
-  return (*pdpdEval)();
+  return eval(pdpd);
 }
 #endif
 
@@ -151,7 +149,7 @@ template<TEMPLATE>
 auto SymbolicFunction<RET(ARG)>::parDerDirDer(const ARG &argDir, const ARG &arg) -> DRetDArg {
   argDirS^=argDir;
   argS^=arg;
-  return (*pdddEval)();
+  return eval(pddd);
 }
 #endif
 
@@ -160,7 +158,7 @@ auto SymbolicFunction<RET(ARG)>::dirDerDirDer(const ARG &argDir_1, const ARG &ar
   argDirS^=argDir_1;
   argDirS_2^=argDir_2;
   argS^=arg;
-  return (*ddddEval)();
+  return eval(dddd);
 }
 
 template<TEMPLATE>
