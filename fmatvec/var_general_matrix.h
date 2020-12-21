@@ -74,26 +74,6 @@ namespace fmatvec {
       explicit Matrix(int m, int n, Init ini=INIT, const AT &a=AT()) :  M(m), N(n), ele(new AT[M*N]) { init(a); }
       explicit Matrix(int m, int n, Eye ini, const AT &a=1) :  M(m), N(n), ele(new AT[M*N]) { init(ini,a); }
 
-      // move
-      Matrix(Matrix<General,Var,Var,AT> &&src) {
-        M=src.M;
-        src.M=0;
-        N=src.N;
-        src.N=0;
-        ele=src.ele;
-        src.ele=nullptr;
-      }
-      Matrix<General,Var,Var,AT>& operator=(Matrix<General,Var,Var,AT> &&src) {
-        FMATVEC_ASSERT(M == src.rows(), AT);
-        FMATVEC_ASSERT(N == src.cols(), AT);
-        src.M=0;
-        src.N=0;
-        delete[]ele;
-        ele=src.ele;
-        src.ele=nullptr;
-        return *this;
-      }
-
       /*! \brief Copy Constructor
        *
        * Constructs a copy of the matrix \em A.
@@ -198,18 +178,6 @@ namespace fmatvec {
       inline Matrix<General,Var,Var,AT>& operator<<=(const Matrix<Type,Row,Col,AT> &A) {
         if(M!=A.rows() || N!=A.cols()) resize(A.rows(),A.cols(),NONINIT);
         return copy(A);
-      }
-      // move
-      template<class Type, class Row, class Col>
-      inline Matrix<General,Var,Var,AT>& operator<<=(Matrix<General,Var,Var,AT> &&src) {
-        M=src.M;
-        src.M=0;
-        N=src.N;
-        src.N=0;
-        delete[]ele;
-        ele=src.ele;
-        src.ele=nullptr;
-        return *this;
       }
 
       template <class AT2>

@@ -68,22 +68,6 @@ namespace fmatvec {
       explicit Matrix(int m, int n, Init ini=INIT, const AT &a=AT()) : M(m), ele(new AT[M*M]) { init(a); }
       explicit Matrix(int m, int n, Eye ini, const AT &a=1) : M(m), ele(new AT[M*M]) { init(ini,a); }
 
-      // move
-      Matrix(Matrix<Symmetric,Var,Var,AT> &&src) {
-        M=src.M;
-        src.M=0;
-        ele=src.ele;
-        src.ele=nullptr;
-      }
-      Matrix<Symmetric,Var,Var,AT>& operator=(Matrix<Symmetric,Var,Var,AT> &&src) {
-        FMATVEC_ASSERT(M == src.M, AT);
-        src.M=0;
-        delete[]ele;
-        ele=src.ele;
-        src.ele=nullptr;
-        return *this;
-      }
-
       /*! \brief Copy Constructor
        *
        * Constructs a copy of the matrix \em A.
@@ -166,16 +150,6 @@ namespace fmatvec {
         FMATVEC_ASSERT(A.rows() == A.cols(), AT);
         if(M!=A.rows()) resize(A.rows(),NONINIT);
         return copy(A);
-      }
-      // move
-      template<class Type, class Row, class Col>
-      inline Matrix<Symmetric,Var,Var,AT>& operator<<=(Matrix<Type,Row,Col,AT> &&src) {
-        M=src.M;
-        src.M=0;
-        delete[]ele;
-        ele=src.ele;
-        src.ele=nullptr;
-        return *this;
       }
 
       //! Resize a var symmetric matrix.

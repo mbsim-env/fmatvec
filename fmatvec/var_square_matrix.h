@@ -58,19 +58,6 @@ namespace fmatvec {
       explicit SquareMatrix(int m, Init ini=INIT, const AT &a=AT()) : Matrix<General,Var,Var,AT>(m,m,ini,a) { } 
       explicit SquareMatrix(int m, Eye ini, const AT &a=1) : Matrix<General,Var,Var,AT>(m,m,ini,a) { } 
 
-      // move
-      SquareMatrix(SquareMatrix<Var,AT> &&src) : Matrix<General,Var,Var,AT>(std::move(src)) {}
-      SquareMatrix<Var,AT>& operator=(SquareMatrix<Var,AT> &&src) {
-        M=src.M;
-        src.M=0;
-        this->N=src.N;
-        src.N=0;
-        delete[]this->ele;
-        this->ele=src.ele;
-        src.ele=nullptr;
-        return *this;
-      }
-
       /*! \brief Copy Constructor
        *
        * See SquareMatrix(const SquareMatrix<AT>&) 
@@ -152,14 +139,6 @@ namespace fmatvec {
         FMATVEC_ASSERT(A.rows() == A.cols(), AT);
 	Matrix<General,Var,Var,AT>::operator<<=(A);
 	return *this;
-      }
-      // move
-      SquareMatrix<Var,AT>& operator<<=(SquareMatrix<Var,AT> &&src) {
-        FMATVEC_ASSERT(src.rows() == src.cols(), AT);
-        delete[]this->ele;
-        this->ele=src.ele;
-        src.ele=nullptr;
-        return *this;
       }
 
       /*! \brief Size.
