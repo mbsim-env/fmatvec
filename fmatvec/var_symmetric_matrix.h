@@ -170,6 +170,7 @@ namespace fmatvec {
       // move
       template<class Type, class Row, class Col>
       inline Matrix<Symmetric,Var,Var,AT>& operator<<=(Matrix<Type,Row,Col,AT> &&src) {
+        FMATVEC_ASSERT(src.rows() == src.cols(), AT);
         M=src.M;
         src.M=0;
         delete[]ele;

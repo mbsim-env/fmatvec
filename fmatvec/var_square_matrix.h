@@ -156,10 +156,8 @@ namespace fmatvec {
       // move
       SquareMatrix<Var,AT>& operator<<=(SquareMatrix<Var,AT> &&src) {
         FMATVEC_ASSERT(src.rows() == src.cols(), AT);
-        delete[]this->ele;
-        this->ele=src.ele;
-        src.ele=nullptr;
-        return *this;
+	Matrix<General,Var,Var,AT>::operator<<=(std::move(src));
+	return *this;
       }
 
       /*! \brief Size.

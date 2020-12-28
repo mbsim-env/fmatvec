@@ -128,7 +128,7 @@ namespace fmatvec {
     return a;
   }
 
-///  // Subtraction
+  // Subtraction
   template <class AT1, class AT2, class Row1, class Row2>
   inline Vector<Var, typename fmatvec::OperatorResult<AT1, AT2>::Type> operator-(const Vector<Row1, AT1> &a, const Vector<Row2, AT2> &b) {
     Vector<Var, typename fmatvec::OperatorResult<AT1, AT2>::Type> c(a.size(), NONINIT);
@@ -161,14 +161,15 @@ namespace fmatvec {
   }
   template <class Row1, class Row2>
   inline Vector<Row1, double> operator-(Vector<Row1, double> &&a, const Vector<Row2, double> &b) {
-    add(a, b);
+    sub(a, b);
     return std::move(a);
   }
   template <class Row1, class Row2>
   inline Vector<Row2, double> operator-(const Vector<Row1, double> &a, Vector<Row2, double> &&b) {
-    Vector<Row2, double> r(operator-(std::move(b)));
-    add(r, a);
-    return r;
+    FMATVEC_ASSERT(a.size() == b.size(), double);
+    for (int i = 0; i < a.size(); i++)
+      b.e(i) = a.e(i) - b.e(i);
+    return std::move(b);
   }
   template <class AT, class Row1, class Row2>
   inline Vector<Row1, AT> operator-=(Vector<Row1, AT> &a, const Vector<Row2, AT> &b) {
@@ -252,7 +253,7 @@ namespace fmatvec {
     return a;
   }
 
-///  // Subtraction
+  // Subtraction
   template <class AT1, class AT2, class Col1, class Col2>
   inline RowVector<Var, typename fmatvec::OperatorResult<AT1, AT2>::Type> operator-(const RowVector<Col1, AT1> &a, const RowVector<Col2, AT2> &b) {
     RowVector<Var, typename fmatvec::OperatorResult<AT1, AT2>::Type> c(a.size(), NONINIT);
@@ -285,14 +286,15 @@ namespace fmatvec {
   }
   template <class Row1, class Row2>
   inline RowVector<Row1, double> operator-(RowVector<Row1, double> &&a, const RowVector<Row2, double> &b) {
-    add(a, b);
+    sub(a, b);
     return std::move(a);
   }
   template <class Row1, class Row2>
   inline RowVector<Row2, double> operator-(const RowVector<Row1, double> &a, RowVector<Row2, double> &&b) {
-    RowVector<Row2, double> r(operator-(std::move(b)));
-    add(r, a);
-    return r;
+    FMATVEC_ASSERT(a.size() == b.size(), double);
+    for (int i = 0; i < a.size(); i++)
+      b.e(i) = a.e(i) - b.e(i);
+    return std::move(b);
   }
   template <class AT, class Col1, class Col2>
   inline RowVector<Col1, AT> operator-=(RowVector<Col1, AT> &a, const RowVector<Col2, AT> &b) {
@@ -736,9 +738,12 @@ namespace fmatvec {
   }
   template <class Type1, class Type2, class Row1, class Row2, class Col1, class Col2>
   inline Matrix<Type2, Row2, Col2, double> operator-(const Matrix<Type1, Row1, Col1, double> &a, Matrix<Type2, Row2, Col2, double> &&b) {
-    Matrix<Type2, Row2, Col2, double> r(operator-(std::move(b)));
-    add(r, a);
-    return r;
+    FMATVEC_ASSERT(a.rows() == b.rows(), double);
+    FMATVEC_ASSERT(a.cols() == b.cols(), double);
+    for (int i = 0; i < a.rows(); i++)
+      for (int j = 0; j < a.cols(); j++)
+        b.e(i, j) = a.e(i, j) - b.e(i, j);
+    return std::move(b);
   }
   template <class AT, class Type1, class Row1, class Col1, class Type2, class Row2, class Col2>
   inline Matrix<Type1, Row1, Col1, AT>& operator-=(Matrix<Type1, Row1, Col1, AT> &A, const Matrix<Type2, Row2, Col2, AT> &B) {
@@ -802,9 +807,11 @@ namespace fmatvec {
   }
   template <class Row1, class Row2>
   inline SquareMatrix<Row2, double> operator-(const SquareMatrix<Row1, double> &A1, SquareMatrix<Row2, double> &&A2) {
-    SquareMatrix<Row2, double> R(operator-(std::move(A2)));
-    add(R, A1);
-    return R;
+    FMATVEC_ASSERT(A1.size() == A2.size(), double);
+    for (int i = 0; i < A1.size(); i++)
+      for (int j = 0; j < A1.size(); j++)
+        A2.e(i, j) = A1.e(i, j) - A2.e(i, j);
+    return std::move(A2);
   }
 
   //////      

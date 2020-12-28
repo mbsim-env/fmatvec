@@ -104,8 +104,14 @@ set(includedir  \${prefix}/include)
 set(LIBDIRS "-L.")
 set(LIBS "-lpthread")
 set(INCDIRS "-I${Boost_INCLUDE_DIRS}")
-foreach(LIB ${BLAS_LAPACK_LIBRARIES} ${Boost_SYSTEM_LIBRARY})
-  string(REGEX MATCH "(.*)/lib(.*)\\.(.*)" LIBTMP "${LIB}") # "." must have double excaping "\\"
+foreach(LIB ${BLAS_LAPACK_LIBRARIES})
+  string(REGEX MATCH "(.*)/lib([^\\.]*)\\.(.*)" LIBTMP "${LIB}") # "." must have double excaping "\\"
+  set(LIBS "${LIBS} -L${CMAKE_MATCH_1} -l${CMAKE_MATCH_2}")
+endforeach()
+foreach(LIB Boost::system)
+  message(WARNING "${LIB}")
+  get_property(LIBLOC TARGET ${LIB} PROPERTY LOCATION)
+  string(REGEX MATCH "(.*)/lib([^\\.]*)\\.(.*)" LIBTMP "${LIBLOC}") # "." must have double excaping "\\"
   set(LIBS "${LIBS} -L${CMAKE_MATCH_1} -l${CMAKE_MATCH_2}")
 endforeach()
 configure_file("fmatvec.pc.in" "fmatvec.pc" @ONLY)
