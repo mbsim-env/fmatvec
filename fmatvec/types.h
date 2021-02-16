@@ -242,7 +242,7 @@ namespace fmatvec {
     #ifndef NDEBUG
       if(!expr) {
         // print with fprintf since printing with higher level functions like cerr may be redirected.
-        fprintf(stderr, (std::string(file)+":"+std::to_string(line)+": "+
+        fprintf(stderr, "%s", (std::string(file)+":"+std::to_string(line)+": "+
                          std::string(func)+": Assertion `"+std::string(exprStr)+"' failed.").c_str());
         std::abort();
       }
