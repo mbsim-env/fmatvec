@@ -1,18 +1,10 @@
 #ifndef _FMATVEC_AST_H_
 #define _FMATVEC_AST_H_
 
-#include <vector>
 #include <map>
 #include <memory>
 #include <boost/uuid/uuid.hpp>
-
-// the following two lines are a workaround for a bug in boost 1.69
-#define BOOST_PENDING_INTEGER_LOG2_HPP
-#include <boost/integer/integer_log2.hpp>
-
 #include <boost/uuid/uuid_generators.hpp>
-#include <boost/math/special_functions/sign.hpp>
-#include <fmatvec/types.h>
 #include <fmatvec/stream.h>
 
 namespace fmatvec {
@@ -26,7 +18,11 @@ namespace AST {
   class Symbol;
   class Operation;
   template<class T> class Constant;
+  FMATVEC_EXPORT SymbolicExpression substScalar(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
 }
+
+template<class... Arg> class Eval;
+class EvalHelper;
 
 //! A symbolic expression.
 //! This class represent an arbitary symbolic expression.
@@ -34,12 +30,14 @@ namespace AST {
 //! or an arbitary expression consisting of a hierarchiy
 //! of operations consisting itself of expressions, symbols or constants.
 class FMATVEC_EXPORT SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
+  template<class... Arg> friend class Eval;
+  friend class EvalHelper;
   friend class AST::Operation;
   friend class AST::Constant<int>;
   friend class AST::Constant<double>;
   friend FMATVEC_EXPORT SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
-  friend FMATVEC_EXPORT double eval(const SymbolicExpression &x);
-  friend FMATVEC_EXPORT SymbolicExpression subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
+  friend SymbolicExpression AST::substScalar(const SymbolicExpression &se,
+                                             const IndependentVariable& a, const SymbolicExpression &b);
   protected:
     template<class T> SymbolicExpression(const shared_ptr<T> &x);
 #ifndef SWIG
@@ -92,7 +90,7 @@ class FMATVEC_EXPORT SymbolicExpression : public std::shared_ptr<const AST::Vert
     SymbolicExpression& operator<<=(const SymbolicExpression &src);
 
 #if !defined(NDEBUG) && !defined(SWIG)
-    static unsigned long evalOperationsCount;
+    static signed long evalOperationsCount;
 #endif
 };
 
@@ -145,20 +143,12 @@ FMATVEC_EXPORT SymbolicExpression operator/(int a, const SymbolicExpression &b);
 //! with respect to indep (indep must be a symbol).
 FMATVEC_EXPORT SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
 
-//! Evaluate the SymbolicExpression.
-//! The returned value depends on the symbolic expression and on the current values of all independent
-//! variables this symbolic expression depends on.
-//! Also see Symbol ant Vertex::getDependsOn().
-inline double eval(const SymbolicExpression &x);
-
 //! Write a SymbolicExpression to a stream using serialization.
 FMATVEC_EXPORT std::ostream& operator<<(std::ostream& s, const SymbolicExpression& se);
 //! Create/initialize a SymbolicExpression from a stream using deserialization.
 FMATVEC_EXPORT std::istream& operator>>(std::istream& s, SymbolicExpression &se);
 //! Create/initialize a IndependentVariable from a stream using deserialization.
 FMATVEC_EXPORT std::istream& operator>>(std::istream& s, IndependentVariable &v);
-//! Substitutes in se the independent variable a with the expression b and returns the new expression.
-FMATVEC_EXPORT SymbolicExpression subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
 
 // function operations overloaded for SymbolicExpression
 FMATVEC_EXPORT SymbolicExpression pow(const SymbolicExpression &a, const SymbolicExpression &b);
@@ -183,6 +173,35 @@ FMATVEC_EXPORT SymbolicExpression abs(const SymbolicExpression &a);
 #ifndef SWIG
 namespace AST { // internal namespace
 
+/* ***** Struct for a "bytecode" for fast runtime evaluation *****
+ * This class uses very low-level technices like raw-pointers to gain maximal performance 
+ * during runtime evaluation.
+ *
+ * This class store a kind of "bytecode" which can be used to evaluate an mathematical expression very fast.
+ * This class is not copyable and not moveable since it uses intern pointers between instances of this class.
+ * For optimal performance this class should be used in continous memory e.g. as std::vector<ByteCode>.
+ * For the same reason, to keep all data near together for best processor memory cache usage, all members
+ * of these class also to not use allocated memory: std::array instead of std::vector is used.
+ * The usage of std::vector<ByteCode> requires that the move-ctor must be provided at compile time
+ * (it cannot be delete'd) but the move-ctor throws at runtime when called to ensure its not used.
+ * Hence std::vector<ByteCode> can only be used without reallocation: std::vector::reserve must be called before use.
+ * To add an element only std::vector::emplace_back() can be used.
+*/
+struct FMATVEC_EXPORT ByteCode {
+  static constexpr size_t N { 2 };
+  ByteCode();
+  ByteCode(const ByteCode &) = delete;
+  ByteCode(ByteCode &&);
+  ByteCode &operator=(const ByteCode &) = delete;
+  ByteCode &operator=(ByteCode &&) = delete;
+  ~ByteCode() = default;
+  std::function<void(double*, const std::array<double*,N>&)> func; // the operation this byteCode entry executes
+  double  retValue; // storage of the return value of the operation: retPtr may point to this value
+  double* retPtr; // a pointer to which the operation can write its result to
+  std::array<double ,N> argsValue; // storage for arguments of the operation: argsPtr may point to these values
+  std::array<double*,N> argsPtr; // pointers from which the operation reads its arguments
+};
+
 // ***** Vertex *****
 
 //! A abstract class for a Vertex of the AST (abstract syntax tree).
@@ -190,10 +209,6 @@ class FMATVEC_EXPORT Vertex {
   friend Operation;
   public:
 
-    //! Evaluate the AST.
-    //! The returned value depends on the AST and on the current values of all independent variables this AST depends on.
-    //! Also see Symbol ant Vertex::getDependsOn().
-    virtual double eval() const=0;
     //! Generate a new AST being the partial derivate of this AST with respect to the variable x.
     virtual SymbolicExpression parDer(const IndependentVariable &x) const=0;
     //! Rreturn true if this Vertex is a constant integer.
@@ -204,8 +219,11 @@ class FMATVEC_EXPORT Vertex {
     //! Returns true if this Vertex is a constant with value 1.
     //! Note that only integer constants can be 1. Double constants are never treated as 1 by this function.
     bool isOne() const;
-    //! Return a list of all variables this AST depends on.
-    const std::map<std::shared_ptr<const Symbol>, unsigned long>& getDependsOn() const;
+
+    virtual std::vector<ByteCode>::iterator dumpByteCode(std::vector<ByteCode> &byteCode,
+                                          std::map<const Vertex*, std::vector<AST::ByteCode>::iterator> &existingVertex) const=0;
+
+    virtual void walkVertex(const std::function<void(const std::shared_ptr<const Vertex>&)> &func) const=0;
 
   protected:
 
@@ -214,9 +232,6 @@ class FMATVEC_EXPORT Vertex {
     // means that true is also returned if the Symbols in this Vertex can be replaced by anything such that the expressions
     // are equal. All these required replacements are stored in m.
     virtual bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const=0;
-
-    // the value of this map (the unsigned long = version) must be mutable
-    mutable std::map<std::shared_ptr<const Symbol>, unsigned long> dependsOn;
 };
 
 inline bool Vertex::isConstantInt() const {
@@ -232,11 +247,14 @@ class FMATVEC_EXPORT Constant : public Vertex, public std::enable_shared_from_th
   public:
 
     static SymbolicExpression create(const T& c_);
-    inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
     inline bool isConstantInt() const override;
     //! Get the constant value of the vertex.
     inline const T& getValue() const;
+    std::vector<ByteCode>::iterator dumpByteCode(std::vector<ByteCode> &byteCode,
+                                  std::map<const Vertex*, std::vector<AST::ByteCode>::iterator> &existingVertex) const override;
+
+    void walkVertex(const std::function<void(const std::shared_ptr<const Vertex>&)> &func) const override;
 
   private:
 
@@ -258,11 +276,6 @@ inline bool Constant<int>::isConstantInt() const {
 }
 
 template<class T>
-double Constant<T>::eval() const {
-  return c;
-}
-
-template<class T>
 const T& Constant<T>::getValue() const {
   return c;
 }
@@ -276,39 +289,30 @@ class FMATVEC_EXPORT Symbol : public Vertex, public std::enable_shared_from_this
   public:
 
     static IndependentVariable create(const boost::uuids::uuid& uuid_=boost::uuids::random_generator()());
-    inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
     //! Set the value of this independent variable.
     //! This has an influence on the evaluation of all ASTs which depend on this independent variable.
     inline void setValue(double x_) const;
-    //! Eeturn the "version" of this variable.
-    //! Each call to Symbol::set increased this "version count". This is used for caching evaluations.
-    inline unsigned long getVersion() const;
 
     std::string getUUIDStr() const;
+
+    std::vector<ByteCode>::iterator dumpByteCode(std::vector<ByteCode> &byteCode,
+                                  std::map<const Vertex*, std::vector<AST::ByteCode>::iterator> &existingVertex) const override;
+
+    void walkVertex(const std::function<void(const std::shared_ptr<const Vertex>&)> &func) const override;
 
   private:
 
     Symbol(const boost::uuids::uuid& uuid_);
     bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
     mutable double x = 0.0;
-    mutable unsigned long version;
     boost::uuids::uuid uuid; // each variable has a uuid (this is only used when the AST is serialized and for caching)
     typedef boost::uuids::uuid CacheKey;
     static std::map<CacheKey, std::weak_ptr<const Symbol>> cache;
 };
 
 void Symbol::setValue(double x_) const {
-  version++;
   x=x_;
-}
-
-double Symbol::eval() const {
-  return x;
-}
-
-unsigned long Symbol::getVersion() const {
-  return version;
 }
 
 // ***** Operation *****
@@ -316,7 +320,8 @@ unsigned long Symbol::getVersion() const {
 //! A vertex of the AST representing an operation.
 class FMATVEC_EXPORT Operation : public Vertex, public std::enable_shared_from_this<Operation> {
   friend SymbolicExpression;
-  friend SymbolicExpression fmatvec::subst(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
+  friend SymbolicExpression fmatvec::AST::substScalar(const SymbolicExpression &se,
+                                                      const IndependentVariable& a, const SymbolicExpression &b);
   friend boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>&
     fmatvec::getBoostSpiritQiRule<SymbolicExpression>();
   friend boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>&
@@ -326,11 +331,14 @@ class FMATVEC_EXPORT Operation : public Vertex, public std::enable_shared_from_t
     //! Defined operations.
     enum Operator { Plus, Minus, Mult, Div, Pow, Log, Sqrt, Neg, Sin, Cos, Tan, Sinh, Cosh, Tanh, ASin, ACos, ATan, ASinh, ACosh, ATanh, Exp, Sign, Abs };
     static SymbolicExpression create(Operator op_, const std::vector<SymbolicExpression> &child_);
-    inline double eval() const override;
     SymbolicExpression parDer(const IndependentVariable &x) const override;
 
     Operator getOp() const { return op; }
     const std::vector<SymbolicExpression>& getChilds() const { return child; }
+    std::vector<ByteCode>::iterator dumpByteCode(std::vector<ByteCode> &byteCode,
+                                  std::map<const Vertex*, std::vector<AST::ByteCode>::iterator> &existingVertex) const override;
+
+    void walkVertex(const std::function<void(const std::shared_ptr<const Vertex>&)> &func) const override;
 
   private:
 
@@ -345,85 +353,15 @@ class FMATVEC_EXPORT Operation : public Vertex, public std::enable_shared_from_t
         std::owner_less<std::weak_ptr<const Vertex>> ol;
     };
     static std::map<CacheKey, std::weak_ptr<const Operation>, CacheKeyComp> cache;
-    mutable double cacheValue;
-    static const std::map<Operator, std::string> opMap;
+
+    struct OpMap {
+      std::string funcName; // used to dump/read the expression using boost spirit/karma: e.g.
+                            // "plus"
+      std::function<void(double*, const std::array<double*,ByteCode::N>&)> func; // used for runtime evaluation: e.g.
+                            // [](double* r, const std::array<double*,N>& a){ *r = *a[0] + *a[1]; }
+    };
+    static const std::map<Operator, OpMap> opMap;
 };
-
-double Operation::eval() const {
-  if(!dependsOn.empty()) {
-    // we eval expressions having no dependency always (such expressions are optimized out during Operation creation)
-    bool useCacheValue=true;
-    for(auto &d : dependsOn) {
-      if(d.first->getVersion() > d.second)
-        useCacheValue=false;
-      d.second=d.first->getVersion();
-    }
-    if(useCacheValue)
-      return cacheValue;
-  }
-#if !defined(NDEBUG) && !defined(SWIG)
-  SymbolicExpression::evalOperationsCount++;
-#endif
-
-  // we do not use "double a=child.size()>=1 ? child[0]->eval() : 0;" here
-  // for optimal performance, to avoid the child.size() call.
-  #define a child[0]->eval() // value of first argument
-  #define b child[1]->eval() // value of second argument
-  switch(op) {
-    case Plus:
-      return cacheValue = a + b;
-    case Minus:
-      return cacheValue = a - b;
-    case Mult:
-      return cacheValue = a * b;
-    case Div:
-      return cacheValue = a / b;
-    case Pow:
-      if(child[1]->isConstantInt())
-        return cacheValue = std::pow(a, static_cast<const Constant<int>*>(child[1].get())->getValue());
-      else
-        return cacheValue = std::pow(a, b);
-    case Log:
-      return cacheValue = std::log(a);
-    case Sqrt:
-      return cacheValue = std::sqrt(a);
-    case Neg:
-      return cacheValue = - a;
-    case Sin:
-      return cacheValue = std::sin(a);
-    case Cos:
-      return cacheValue = std::cos(a);
-    case Tan:
-      return cacheValue = std::tan(a);
-    case Sinh:
-      return cacheValue = std::sinh(a);
-    case Cosh:
-      return cacheValue = std::cosh(a);
-    case Tanh:
-      return cacheValue = std::tanh(a);
-    case ASin:
-      return cacheValue = std::asin(a);
-    case ACos:
-      return cacheValue = std::acos(a);
-    case ATan:
-      return cacheValue = std::atan(a);
-    case ASinh:
-      return cacheValue = std::asinh(a);
-    case ACosh:
-      return cacheValue = std::acosh(a);
-    case ATanh:
-      return cacheValue = std::atanh(a);
-    case Exp:
-      return cacheValue = std::exp(a);
-    case Sign:
-      return cacheValue = boost::math::sign(a);
-    case Abs:
-      return cacheValue = std::abs(a);
-  }
-  #undef a
-  #undef b
-  throw std::runtime_error("Unknown operation.");
-}
 
 } // end namespace AST
 #endif
@@ -431,10 +369,6 @@ double Operation::eval() const {
 IndependentVariable& IndependentVariable::operator^=(double x) {
   static_cast<const AST::Symbol*>(get())->setValue(x);
   return *this;
-}
-
-double eval(const SymbolicExpression &x) {
-  return x->eval();
 }
 
 template<> boost::spirit::qi::rule<boost::spirit::istream_iterator, IndependentVariable()>& getBoostSpiritQiRule<IndependentVariable>();

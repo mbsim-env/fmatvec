@@ -56,7 +56,7 @@ endif()
 #         With boost 1.67 it works as expected
 #     cmake 3.17 finds c:\local\boost_1_72_0 extracted from boost_<version>-bin-msvc-all-32-64.7z
 #     Alternative: set BOOST_INCLUDEDIR to boost installation
-find_package(Boost 1.67 REQUIRED ) # COMPONENTS spirit uuid
+find_package(Boost 1.67 REQUIRED COMPONENTS system) # COMPONENTS spirit uuid dll
 
 # C++ compilation will fail due to missing config.h -> write an empty config.h for the MSVC build
 set(FMATVEC_CONFIG_INCLUDE ${CMAKE_BINARY_DIR}/include)
@@ -105,7 +105,12 @@ set(LIBDIRS "-L.")
 set(LIBS "-lpthread")
 set(INCDIRS "-I${Boost_INCLUDE_DIRS}")
 foreach(LIB ${BLAS_LAPACK_LIBRARIES})
-  string(REGEX MATCH "(.*)/lib(.*)\\.(.*)" LIBTMP "${LIB}") # "." must have double excaping "\\"
+  string(REGEX MATCH "(.*)/lib([^\\.]*)\\.(.*)" LIBTMP "${LIB}") # "." must have double excaping "\\"
+  set(LIBS "${LIBS} -L${CMAKE_MATCH_1} -l${CMAKE_MATCH_2}")
+endforeach()
+foreach(LIB Boost::system)
+  get_property(LIBLOC TARGET ${LIB} PROPERTY LOCATION)
+  string(REGEX MATCH "(.*)/lib([^\\.]*)\\.(.*)" LIBTMP "${LIBLOC}") # "." must have double excaping "\\"
   set(LIBS "${LIBS} -L${CMAKE_MATCH_1} -l${CMAKE_MATCH_2}")
 endforeach()
 configure_file("fmatvec.pc.in" "fmatvec.pc" @ONLY)

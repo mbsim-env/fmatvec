@@ -77,6 +77,10 @@
 #include "mkl_cblas.h"
 #endif
 
+namespace std {
+  template<class T> class shared_ptr;
+}
+
 namespace fmatvec {
 
   /***** initialization types *****/
@@ -238,7 +242,7 @@ namespace fmatvec {
     #ifndef NDEBUG
       if(!expr) {
         // print with fprintf since printing with higher level functions like cerr may be redirected.
-        fprintf(stderr, (std::string(file)+":"+std::to_string(line)+": "+
+        fprintf(stderr, "%s", (std::string(file)+":"+std::to_string(line)+": "+
                          std::string(func)+": Assertion `"+std::string(exprStr)+"' failed.").c_str());
         std::abort();
       }
@@ -252,7 +256,11 @@ namespace fmatvec {
             std::string(func)+": Assertion `"+std::string(exprStr)+"' failed.");
   }
 
+  // tag dispatching
+  struct Transpose {};
+
   class ErrorType;
+  class SymbolicExpression;
   template<class, class> class Vector;
   template<class, class> class RowVector;
   template<class, class, class, class> class Matrix;
@@ -269,6 +277,11 @@ namespace fmatvec {
   
   template<class NewAT>
   struct ReplaceAT<double, NewAT> {
+    using Type = NewAT;
+  };
+
+  template<class NewAT>
+  struct ReplaceAT<SymbolicExpression, NewAT> {
     using Type = NewAT;
   };
   
