@@ -59,8 +59,8 @@ RowVector<IndepShape, ATDep> parDer(const ATDep &dep, const Vector<IndepShape, A
 }
 
 template<class ATDep, class Shape, class ATIndep>
-Matrix<General, Fixed<3>, Fixed<3>, ATDep> parDer(const Matrix<Rotation, Fixed<3>, Fixed<3>, ATDep> &R, const Vector<Shape, ATIndep> &x) {
-  Matrix<General, Fixed<3>, Shape, ATDep> ret;
+Matrix<General, Fixed<3>, Shape, ATDep> parDer(const Matrix<Rotation, Fixed<3>, Fixed<3>, ATDep> &R, const Vector<Shape, ATIndep> &x) {
+  Matrix<General, Fixed<3>, Shape, ATDep> ret(x.size());
   for(int i=0; i<x.size(); ++i)
     ret.set(i, parDer(R, x(i)));
   return ret;
