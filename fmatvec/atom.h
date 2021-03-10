@@ -11,6 +11,8 @@
 
 namespace fmatvec {
 
+class AdoptCurrentMessageStreamsUntilScopeExit;
+
 /*! Top level class.
  * This is the top level class which is used for (at least) all classes
  * which may be created using a object factory.
@@ -19,6 +21,7 @@ namespace fmatvec {
  * be added here.
  */
 class FMATVEC_EXPORT Atom {
+  friend class AdoptCurrentMessageStreamsUntilScopeExit;
   public:
 
     //! Messages can be printed to different message types named here.
@@ -135,6 +138,22 @@ class FMATVEC_EXPORT PrePostfixedStream : public std::ostream {
     StringBuf buffer;
 };
 #endif
+
+//! Adopt the current message streams for the livetime of this object.
+//! This can be used to set the current message streams to an existing object.
+class FMATVEC_EXPORT AdoptCurrentMessageStreamsUntilScopeExit {
+  public:
+    //! Save the current message streams and then set it to be equal to src.
+    //! The current message streams are reset to the saved ones when this object goes out of scope.
+    AdoptCurrentMessageStreamsUntilScopeExit(const Atom* src);
+    ~AdoptCurrentMessageStreamsUntilScopeExit();
+  private:
+    AdoptCurrentMessageStreamsUntilScopeExit(const AdoptCurrentMessageStreamsUntilScopeExit& other) = delete;
+    AdoptCurrentMessageStreamsUntilScopeExit(AdoptCurrentMessageStreamsUntilScopeExit&& other) noexcept = delete;
+    AdoptCurrentMessageStreamsUntilScopeExit& operator=(const AdoptCurrentMessageStreamsUntilScopeExit& other) = delete;
+    AdoptCurrentMessageStreamsUntilScopeExit& operator=(AdoptCurrentMessageStreamsUntilScopeExit&& other) noexcept = delete;
+    std::array<std::pair<std::shared_ptr<bool>, std::shared_ptr<std::ostream>>, Atom::SIZE> savedStreams;
+};
 
 }
 

@@ -105,4 +105,20 @@ int PrePostfixedStream::StringBuf::sync() {
   return 0;
 }
 
+AdoptCurrentMessageStreamsUntilScopeExit::AdoptCurrentMessageStreamsUntilScopeExit(const Atom* src) {
+  for(int t=0; t<Atom::SIZE; ++t) {
+    Atom::MsgType type=static_cast<Atom::MsgType>(t);
+    savedStreams[type].first =Atom::_msgActStatic[type];
+    savedStreams[type].second=Atom::_msgSavedStatic[type];
+    Atom::setCurrentMessageStream(type, src->_msgAct[type], src->_msgSaved[type]);
+  }
+}
+
+AdoptCurrentMessageStreamsUntilScopeExit::~AdoptCurrentMessageStreamsUntilScopeExit() {
+  for(int t=0; t<Atom::SIZE; ++t) {
+    Atom::MsgType type=static_cast<Atom::MsgType>(t);
+    Atom::setCurrentMessageStream(type, savedStreams[type].first, savedStreams[type].second);
+  }
+}
+
 }
