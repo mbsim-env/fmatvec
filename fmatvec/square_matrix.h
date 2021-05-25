@@ -203,7 +203,7 @@ namespace fmatvec {
       for(int r=0; r<size(); r++) {
         ret[r].resize(size());
         for(int c=0; c<size(); c++)
-          ret[r][c]= this->er(r,c);
+          ret[r][c]= e(r,c);
       }
       return ret;
     }
