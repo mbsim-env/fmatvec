@@ -92,6 +92,8 @@ install(FILES
              "${CMAKE_CURRENT_BINARY_DIR}/config/fmatvecConfigVersion.cmake" 
         DESTINATION ${ConfigPackageLocation})
 
+# install license
+install(FILES "COPYING" "NOTICE" DESTINATION ${CMAKE_INSTALL_PREFIX}/share/fmatvec)
 
 ################################################################################
 ###  Installing ################################################################
