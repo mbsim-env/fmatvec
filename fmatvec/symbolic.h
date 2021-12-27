@@ -3,7 +3,6 @@
 
 #include "ast.h"
 #include <set>
-#include <boost/dll.hpp>
 
 namespace fmatvec {
 
