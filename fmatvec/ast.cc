@@ -140,6 +140,10 @@ SymbolicExpression atan(const SymbolicExpression &a) {
   return AST::Operation::create(AST::Operation::ATan, {a});
 }
 
+SymbolicExpression atan2(const SymbolicExpression &y, const SymbolicExpression &x) {
+  return AST::Operation::create(AST::Operation::ATan2, {y, x});
+}
+
 SymbolicExpression asinh(const SymbolicExpression &a) {
   return AST::Operation::create(AST::Operation::ASinh, {a});
 }
@@ -160,8 +164,24 @@ SymbolicExpression sign(const SymbolicExpression &a) {
   return AST::Operation::create(AST::Operation::Sign, {a});
 }
 
+SymbolicExpression heaviside(const SymbolicExpression &a) {
+  return AST::Operation::create(AST::Operation::Heaviside, {a});
+}
+
 SymbolicExpression abs(const SymbolicExpression &a) {
   return AST::Operation::create(AST::Operation::Abs, {a});
+}
+
+SymbolicExpression min(const SymbolicExpression &a, const SymbolicExpression &b) {
+  return AST::Operation::create(AST::Operation::Min, {a, b});
+}
+
+SymbolicExpression max(const SymbolicExpression &a, const SymbolicExpression &b) {
+  return AST::Operation::create(AST::Operation::Max, {a, b});
+}
+
+SymbolicExpression condition(const SymbolicExpression &c, const SymbolicExpression &gt, const SymbolicExpression &lt) {
+  return AST::Operation::create(AST::Operation::Condition, {c, gt, lt});
 }
 
 ostream& operator<<(ostream& s, const SymbolicExpression& se) {
@@ -454,30 +474,35 @@ map<Operation::CacheKey, weak_ptr<const Operation>, Operation::CacheKeyComp> Ope
 //mfmf optimized calls for int arguments
 #define FUNC(expr) [](double* r, const std::array<double*,ByteCode::N>& a){ *r = expr; }
 const std::map<Operation::Operator, Operation::OpMap> Operation::opMap {
-//  Operator Name     Lambda-Function
-  { Plus,  { "plus" , FUNC( *a[0] + *a[1]            ) }},
-  { Minus, { "minus", FUNC( *a[0] - *a[1]            ) }},
-  { Mult,  { "mult" , FUNC( *a[0] * *a[1]            ) }},
-  { Div,   { "div"  , FUNC( *a[0] / *a[1]            ) }},
-  { Pow,   { "pow"  , FUNC( std::pow(*a[0], *a[1])   ) }},
-  { Log,   { "log"  , FUNC( std::log(*a[0])          ) }},
-  { Sqrt,  { "sqrt" , FUNC( std::sqrt(*a[0])         ) }},
-  { Neg,   { "neg"  , FUNC( - *a[0]                  ) }},
-  { Sin,   { "sin"  , FUNC( std::sin(*a[0])          ) }},
-  { Cos,   { "cos"  , FUNC( std::cos(*a[0])          ) }}, 
-  { Tan,   { "tan"  , FUNC( std::tan(*a[0])          ) }}, 
-  { Sinh,  { "sinh" , FUNC( std::sinh(*a[0])         ) }}, 
-  { Cosh,  { "cosh" , FUNC( std::cosh(*a[0])         ) }}, 
-  { Tanh,  { "tanh" , FUNC( std::tanh(*a[0])         ) }}, 
-  { ASin,  { "asin" , FUNC( std::asin(*a[0])         ) }}, 
-  { ACos,  { "acos" , FUNC( std::acos(*a[0])         ) }}, 
-  { ATan,  { "atan" , FUNC( std::atan(*a[0])         ) }}, 
-  { ASinh, { "asinh", FUNC( std::asinh(*a[0])        ) }}, 
-  { ACosh, { "acosh", FUNC( std::acosh(*a[0])        ) }}, 
-  { ATanh, { "atanh", FUNC( std::atanh(*a[0])        ) }}, 
-  { Exp,   { "exp"  , FUNC( std::exp(*a[0])          ) }}, 
-  { Sign,  { "sign" , FUNC( boost::math::sign(*a[0]) ) }}, 
-  { Abs,   { "abs"  , FUNC( std::abs(*a[0])          ) }}  
+//  Operator     Name          Lambda-Function
+  { Plus,      { "plus"      , FUNC( *a[0] + *a[1]                        ) }},
+  { Minus,     { "minus"     , FUNC( *a[0] - *a[1]                        ) }},
+  { Mult,      { "mult"      , FUNC( *a[0] * *a[1]                        ) }},
+  { Div,       { "div"       , FUNC( *a[0] / *a[1]                        ) }},
+  { Pow,       { "pow"       , FUNC( std::pow(*a[0], *a[1])               ) }},
+  { Log,       { "log"       , FUNC( std::log(*a[0])                      ) }},
+  { Sqrt,      { "sqrt"      , FUNC( std::sqrt(*a[0])                     ) }},
+  { Neg,       { "neg"       , FUNC( - *a[0]                              ) }},
+  { Sin,       { "sin"       , FUNC( std::sin(*a[0])                      ) }},
+  { Cos,       { "cos"       , FUNC( std::cos(*a[0])                      ) }}, 
+  { Tan,       { "tan"       , FUNC( std::tan(*a[0])                      ) }}, 
+  { Sinh,      { "sinh"      , FUNC( std::sinh(*a[0])                     ) }}, 
+  { Cosh,      { "cosh"      , FUNC( std::cosh(*a[0])                     ) }}, 
+  { Tanh,      { "tanh"      , FUNC( std::tanh(*a[0])                     ) }}, 
+  { ASin,      { "asin"      , FUNC( std::asin(*a[0])                     ) }}, 
+  { ACos,      { "acos"      , FUNC( std::acos(*a[0])                     ) }}, 
+  { ATan,      { "atan"      , FUNC( std::atan(*a[0])                     ) }}, 
+  { ATan2,     { "atan2"     , FUNC( std::atan2(*a[0], *a[1])             ) }}, 
+  { ASinh,     { "asinh"     , FUNC( std::asinh(*a[0])                    ) }}, 
+  { ACosh,     { "acosh"     , FUNC( std::acosh(*a[0])                    ) }}, 
+  { ATanh,     { "atanh"     , FUNC( std::atanh(*a[0])                    ) }}, 
+  { Exp,       { "exp"       , FUNC( std::exp(*a[0])                      ) }}, 
+  { Sign,      { "sign"      , FUNC( boost::math::sign(*a[0])             ) }}, 
+  { Heaviside, { "heaviside" , FUNC( 0.5 * boost::math::sign(*a[0]) + 0.5 ) }}, 
+  { Abs,       { "abs"       , FUNC( std::abs(*a[0])                      ) }},
+  { Min,       { "min"       , FUNC( std::min(*a[0], *a[1])               ) }}, 
+  { Max,       { "max"       , FUNC( std::max(*a[0], *a[1])               ) }},
+  { Condition, { "condition" , FUNC( *a[0] > 0 ? *a[1] : *a[2]            ) }}, 
 };                                                         
                                                            
 SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpression> &child_) {
@@ -609,8 +634,10 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
   auto v=SymbolicExpression(shared_from_this()); // expression to be differentiated
   auto a=child.size()>=1 ? child[0] : SymbolicExpression(); // expression of first argument
   auto b=child.size()>=2 ? child[1] : SymbolicExpression(); // expression of second argument
+  auto c=child.size()>=3 ? child[2] : SymbolicExpression(); // expression of second argument
   auto ad=child.size()>=1 ? child[0]->parDer(x) : SymbolicExpression(); // pertial derivative of the expression of the first argument wrt the independent x
   auto bd=child.size()>=2 ? child[1]->parDer(x) : SymbolicExpression(); // pertial derivative of the expression of the second argument wrt the independent x
+  auto cd=child.size()>=3 ? child[2]->parDer(x) : SymbolicExpression(); // pertial derivative of the expression of the second argument wrt the independent x
   switch(op) {
     case Plus:
       return ad + bd;
@@ -649,6 +676,8 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
       return - ad / sqrt(1 - pow(a, 2));
     case ATan:
       return ad / (1 + pow(a, 2));
+    case ATan2:
+      return -a * bd / (pow(a, 2) + pow(b, 2)) + ad * b / (pow(a, 2) + pow(b, 2));
     case ASinh:
       return ad / sqrt(pow(a, 2) + 1);
     case ACosh:
@@ -659,8 +688,16 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
       return exp(a) * ad;
     case Sign:
       return 0;
+    case Heaviside:
+      return 0;
     case Abs:
       return sign(a) * ad;
+    case Min:
+      return ad * heaviside(b - a) + bd * heaviside(a - b);
+    case Max:
+      return ad * heaviside(a - b) + bd * heaviside(b - a);
+    case Condition:
+      return condition(a, bd, cd);
   }
   throw runtime_error("Unknown operation.");
 }

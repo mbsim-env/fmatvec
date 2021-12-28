@@ -163,12 +163,17 @@ FMATVEC_EXPORT SymbolicExpression tanh(const SymbolicExpression &a);
 FMATVEC_EXPORT SymbolicExpression asin(const SymbolicExpression &a);
 FMATVEC_EXPORT SymbolicExpression acos(const SymbolicExpression &a);
 FMATVEC_EXPORT SymbolicExpression atan(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression atan2(const SymbolicExpression &y, const SymbolicExpression &x);
 FMATVEC_EXPORT SymbolicExpression asinh(const SymbolicExpression &a);
 FMATVEC_EXPORT SymbolicExpression acosh(const SymbolicExpression &a);
 FMATVEC_EXPORT SymbolicExpression atanh(const SymbolicExpression &a);
 FMATVEC_EXPORT SymbolicExpression exp(const SymbolicExpression &a);
 FMATVEC_EXPORT SymbolicExpression sign(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression heaviside(const SymbolicExpression &a);
 FMATVEC_EXPORT SymbolicExpression abs(const SymbolicExpression &a);
+FMATVEC_EXPORT SymbolicExpression min(const SymbolicExpression &a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression max(const SymbolicExpression &a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression condition(const SymbolicExpression &c, const SymbolicExpression &gt, const SymbolicExpression &lt);
 
 #ifndef SWIG
 namespace AST { // internal namespace
@@ -188,7 +193,7 @@ namespace AST { // internal namespace
  * To add an element only std::vector::emplace_back() can be used.
 */
 struct FMATVEC_EXPORT ByteCode {
-  static constexpr size_t N { 2 };
+  static constexpr size_t N { 3 };
   ByteCode();
   ByteCode(const ByteCode &) = delete;
   ByteCode(ByteCode &&);
@@ -329,7 +334,7 @@ class FMATVEC_EXPORT Operation : public Vertex, public std::enable_shared_from_t
   public:
 
     //! Defined operations.
-    enum Operator { Plus, Minus, Mult, Div, Pow, Log, Sqrt, Neg, Sin, Cos, Tan, Sinh, Cosh, Tanh, ASin, ACos, ATan, ASinh, ACosh, ATanh, Exp, Sign, Abs };
+    enum Operator { Plus, Minus, Mult, Div, Pow, Log, Sqrt, Neg, Sin, Cos, Tan, Sinh, Cosh, Tanh, ASin, ACos, ATan, ATan2, ASinh, ACosh, ATanh, Exp, Sign, Heaviside, Abs, Min, Max, Condition };
     static SymbolicExpression create(Operator op_, const std::vector<SymbolicExpression> &child_);
     SymbolicExpression parDer(const IndependentVariable &x) const override;
 
