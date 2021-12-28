@@ -12,9 +12,13 @@ if( WIN32 )
   endif()
 else()
   find_program(DIFF NAMES diff)
-  find_program(EXEC_LAUNCHER NAMES valgrind)
-  if(EXEC_LAUNCHER)
-    set(EXEC_LAUNCHER_ARGS --gen-suppressions=all --suppressions=${CMAKE_CURRENT_SOURCE_DIR}/valgrindtestast.supp --error-exitcode=200 --num-callers=150 --leak-check=full --show-reachable=yes)
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    find_program(EXEC_LAUNCHER NAMES valgrind)
+    if(EXEC_LAUNCHER)
+      set(EXEC_LAUNCHER_ARGS --gen-suppressions=all --suppressions=${CMAKE_CURRENT_SOURCE_DIR}/valgrindtestast.supp --error-exitcode=200 --num-callers=150 --leak-check=full --show-reachable=yes)
+    else()
+      set(EXEC_LAUNCHER "")
+    endif()
   else()
     set(EXEC_LAUNCHER "")
   endif()
@@ -40,14 +44,24 @@ add_executable(testast
                EXCLUDE_FROM_ALL
                "testast.cc"
                )
+add_executable(testast_performance
+               EXCLUDE_FROM_ALL
+               "testast_performance.cc"
+               )
 
 target_include_directories(testast
    PRIVATE
    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
    $<BUILD_INTERFACE:${FMATVEC_CONFIG_INCLUDE}>
 )
+target_include_directories(testast_performance
+   PRIVATE
+   $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
+   $<BUILD_INTERFACE:${FMATVEC_CONFIG_INCLUDE}>
+)
 
 target_link_libraries(testast fmatvec)
+target_link_libraries(testast_performance fmatvec)
 
 add_executable(testsymfunction
                EXCLUDE_FROM_ALL
@@ -89,6 +103,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   )
   add_dependencies(testast_diff testast_run)
 endif()
+add_custom_target(testast_performance_run
+    COMMAND ${EXEC_LAUNCHER} ${EXEC_LAUNCHER_ARGS} $<TARGET_FILE_DIR:testast_performance>/$<TARGET_FILE_NAME:testast_performance>
+    DEPENDS testast_performance
+    COMMENT "Run testast_performance"
+)
 
 add_custom_target(testfunction_run
     COMMAND ${EXEC_LAUNCHER} ${EXEC_LAUNCHER_ARGS} $<TARGET_FILE_DIR:testfunction>/$<TARGET_FILE_NAME:testfunction> # add_custom_command can take target names and expands to regular platform-specific paths/executable names
@@ -97,7 +116,7 @@ add_custom_target(testfunction_run
 )
 
 add_custom_target(check
-    DEPENDS testfunction_run testsymfunction_diff $<IF:$<CONFIG:Debug>,testast_diff,testast_run>
+    DEPENDS testfunction_run testsymfunction_diff testast_performance_run $<IF:$<CONFIG:Debug>,testast_diff,testast_run>
     COMMENT "Run test binaries"
 )
 
