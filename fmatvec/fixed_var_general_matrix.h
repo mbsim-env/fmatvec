@@ -24,6 +24,7 @@
 
 #include "types.h"
 #include "range.h"
+#include "indices.h"
 #include <cstdlib>
 #include <stdexcept>
 
@@ -427,6 +428,8 @@ namespace fmatvec {
       template<class Col> inline void add(int i, const RowVector<Col,AT> &x);
 
       template<class Type, class Row, class Col> inline void add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+
+      inline const Matrix<General,Var,Var,AT> operator()(const Indices &I, const Indices &J) const;
   };
 
   template <int M, class AT> 
@@ -578,6 +581,20 @@ namespace fmatvec {
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
           e(i,j) += A.e(ii,jj);
+    }
+
+  template <int M, class AT>
+    inline const Matrix<General,Var,Var,AT> Matrix<General,Fixed<M>,Var,AT>::operator()(const Indices &I, const Indices &J) const {
+      FMATVEC_ASSERT(I.max()<rows(), AT);
+      FMATVEC_ASSERT(J.max()<cols(), AT);
+
+      Matrix<General,Var,Var,AT> A(I.size(),J.size(),NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+        for(int j=0; j<A.cols(); j++)
+	A.e(i,j) = e(I[i],J[j]);
+
+      return A;
     }
 
   template <int M, class AT>

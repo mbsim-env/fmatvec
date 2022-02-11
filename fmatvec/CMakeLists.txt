@@ -59,6 +59,7 @@ set(fmatvecHdr
    linear_algebra_double.h
    symbolic.h
    fixed_vector.h
+   indices.h
 )
 
 add_library(fmatvec SHARED ${fmatvecSrc} ${fmatvecHdr})

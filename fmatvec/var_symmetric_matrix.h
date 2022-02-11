@@ -23,6 +23,7 @@
 #define var_symmetric_matrix_h
 
 #include "types.h"
+#include "indices.h"
 
 namespace fmatvec {
 
@@ -313,6 +314,24 @@ namespace fmatvec {
       inline Matrix<Symmetric,Var,Var,AT>& init(Eye eye, const AT &val=1);
       inline Matrix<Symmetric,Var,Var,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
+      /*! \brief Submatrix operator.
+       * */
+      inline const Matrix<General,Var,Var,AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const;
+
+      /*! \brief Submatrix operator.
+       * */
+      inline const Matrix<Symmetric,Var,Var,AT> operator()(const Range<Var,Var> &I) const;
+
+      template<class Type, class Row, class Col> inline void set(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+      template<class Type, class Row, class Col> inline void add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+
+      template<class Row> inline void set(const fmatvec::Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A);
+      template<class Row> inline void add(const fmatvec::Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A);
+
+      inline const Matrix<General,Var,Var,AT> operator()(const Indices &I, const Indices &J) const;
+
+      inline const Matrix<Symmetric,Var,Var,AT> operator()(const Indices &I) const;
+
       /*! \brief Cast to std::vector<std::vector<AT>>.
        *
        * \return The std::vector<std::vector<AT>> representation of the matrix
@@ -342,6 +361,111 @@ namespace fmatvec {
         }
       }
       return *this;
+    }
+
+  template <class AT>
+    inline const Matrix<General,Var,Var,AT> Matrix<Symmetric,Var,Var,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
+      FMATVEC_ASSERT(I.end()<M, AT);
+      FMATVEC_ASSERT(J.end()<M, AT);
+      Matrix<General,Var,Var,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+        for(int j=0; j<A.cols(); j++)
+          A.e(i,j) = e(I.start()+i,J.start()+j);
+
+      return A;
+    }
+
+  template <class AT>
+    inline const Matrix<Symmetric,Var,Var,AT> Matrix<Symmetric,Var,Var,AT>::operator()(const Range<Var,Var> &I) const {
+      FMATVEC_ASSERT(I.end()<M, AT);
+
+      Matrix<Symmetric,Var,Var,AT> A(I.end()-I.start()+1,NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+        for(int j=i; j<A.cols(); j++)
+          A.e(i,j) = e(I.start()+i,I.start()+j);
+
+      return A;
+    }
+
+  template <class AT> template<class Type, class Row, class Col>
+    inline void Matrix<Symmetric,Var,Var,AT>::set(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
+
+      if(I.start()>=J.start()) FMATVEC_ASSERT(I.start()>=J.end(), AT)
+      else FMATVEC_ASSERT(J.start()>=I.end(), AT);
+      FMATVEC_ASSERT(I.end()<rows(), AT);
+      FMATVEC_ASSERT(J.end()<cols(), AT);
+      FMATVEC_ASSERT(I.size()==A.rows(), AT);
+      FMATVEC_ASSERT(J.size()==A.cols(), AT);
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
+          e(i,j) = A.e(ii,jj);
+    }
+
+  template <class AT> template<class Type, class Row, class Col>
+    inline void Matrix<Symmetric,Var,Var,AT>::add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
+
+      if(I.start()>=J.start()) FMATVEC_ASSERT(I.start()>=J.end(), AT)
+      else FMATVEC_ASSERT(J.start()>=I.end(), AT);
+      FMATVEC_ASSERT(I.end()<rows(), AT);
+      FMATVEC_ASSERT(J.end()<cols(), AT);
+      FMATVEC_ASSERT(I.size()==A.rows(), AT);
+      FMATVEC_ASSERT(J.size()==A.cols(), AT);
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
+          e(i,j) += A.e(ii,jj);
+    }
+
+  template <class AT> template<class Row>
+    inline void Matrix<Symmetric,Var,Var,AT>::set(const fmatvec::Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A) {
+
+      FMATVEC_ASSERT(I.end()<size(), AT);
+      FMATVEC_ASSERT(I.size()==A.size(), AT);
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        for(int j=i, jj=ii; j<=I.end(); j++, jj++)
+          e(i,j) = A.e(ii,jj);
+    }
+
+  template <class AT> template<class Row>
+    inline void Matrix<Symmetric,Var,Var,AT>::add(const fmatvec::Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A) {
+
+      FMATVEC_ASSERT(I.end()<size(), AT);
+      FMATVEC_ASSERT(I.size()==A.size(), AT);
+
+      for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
+        for(int j=i, jj=ii; j<=I.end(); j++, jj++)
+          e(i,j) += A.e(ii,jj);
+    }
+
+  template <class AT>
+    inline const Matrix<General,Var,Var,AT> Matrix<Symmetric,Var,Var,AT>::operator()(const Indices &I, const Indices &J) const {
+      FMATVEC_ASSERT(I.max()<size(), AT);
+      FMATVEC_ASSERT(J.max()<size(), AT);
+
+      Matrix<General,Var,Var,AT> A(I.size(),J.size(),NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+        for(int j=0; j<A.cols(); j++)
+	A.e(i,j) = e(I[i],J[j]);
+
+      return A;
+    }
+
+  template <class AT>
+    inline const Matrix<Symmetric,Var,Var,AT> Matrix<Symmetric,Var,Var,AT>::operator()(const Indices &I) const {
+      FMATVEC_ASSERT(I.max()<size(), AT);
+
+      Matrix<Symmetric,Var,Var,AT> A(I.size(),NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+        for(int j=0; j<A.cols(); j++)
+	A.e(i,j) = e(I[i],I[j]);
+
+      return A;
     }
 
   template <class AT>

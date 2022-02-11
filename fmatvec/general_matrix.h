@@ -24,6 +24,7 @@
 
 #include "_memory.h"
 #include "types.h"
+#include "indices.h"
 #include "matrix.h"
 #include <cstdlib>
 #include <stdexcept>
@@ -440,6 +441,12 @@ namespace fmatvec {
 
       template<class Type, class Row, class Col> inline void sub(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
 
+      inline const Matrix<General,Ref,Ref,AT> operator()(const Indices &I, const Indices &J) const;
+
+      template<class Type, class Row, class Col> inline void set(const Indices &I, const Indices &J, const Matrix<Type,Row,Col,AT> &);
+
+      template<class Row> inline void set(const Indices &I, int j, const Vector<Row,AT> &x);
+
       inline void ref(Matrix<General,Ref,Ref,AT> &A, const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J);
 
       inline void ref(Matrix<Symmetric,Ref,Ref,AT> &A, const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J);
@@ -649,6 +656,40 @@ namespace fmatvec {
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         for(int j=J.start(), jj=0; j<=J.end(); j++, jj++)
           e(i,j) -= A.e(ii,jj);
+    }
+
+  template <class AT>
+    inline const Matrix<General,Ref,Ref,AT> Matrix<General,Ref,Ref,AT>::operator()(const Indices &I, const Indices &J) const {
+      FMATVEC_ASSERT(I.max()<rows(), AT);
+      FMATVEC_ASSERT(J.max()<cols(), AT);
+
+      Matrix<General,Ref,Ref,AT> A(I.size(),J.size(),NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+        for(int j=0; j<A.cols(); j++)
+	A.e(i,j) = e(I[i],J[j]);
+
+      return A;
+    }
+
+  template <class AT> template <class Type, class Row, class Col>
+    inline void Matrix<General,Ref,Ref,AT>::set(const Indices &I, const Indices &J, const Matrix<Type,Row,Col,AT> &A) {
+      FMATVEC_ASSERT(I.max()<rows(), AT);
+      FMATVEC_ASSERT(J.max()<cols(), AT);
+      FMATVEC_ASSERT(I.size()==A.rows(), AT);
+      FMATVEC_ASSERT(J.size()==A.cols(), AT);
+      for(int i=0; i<I.size(); i++)
+	for(int j=0; j<J.size(); j++)
+	  e(I[i],J[j]) = A.e(i,j);
+    }
+
+  template <class AT> template<class Row>
+    inline void Matrix<General,Ref,Ref,AT>::set(const Indices &I, int j, const Vector<Row,AT> &x) {
+      FMATVEC_ASSERT(I.max()<rows(), AT);
+      FMATVEC_ASSERT(j<cols(), AT);
+      FMATVEC_ASSERT(I.size()==x.size(), AT);
+      for(int i=0; i<I.size(); i++)
+	e(I[i],j) = x.e(i);
     }
 
   template <class AT>

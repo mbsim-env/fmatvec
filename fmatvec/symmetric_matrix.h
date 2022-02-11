@@ -23,6 +23,7 @@
 #define symmetric_matrix_h
 
 #include "types.h"
+#include "indices.h"
 #include "matrix.h"
 #include "_memory.h"
 
@@ -334,6 +335,10 @@ namespace fmatvec {
       template<class Row> inline void set(const fmatvec::Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A);
       template<class Row> inline void add(const fmatvec::Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A);
 
+      inline const Matrix<General,Ref,Ref,AT> operator()(const Indices &I, const Indices &J) const;
+
+      inline const Matrix<Symmetric,Ref,Ref,AT> operator()(const Indices &I) const;
+
       inline void ref(Matrix<Symmetric,Ref,Ref,AT> &A, const fmatvec::Range<Var,Var> &I);
 
       /*! \brief Cast to std::vector<std::vector<AT>>.
@@ -465,6 +470,33 @@ namespace fmatvec {
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         for(int j=i, jj=ii; j<=I.end(); j++, jj++)
           e(i,j) += A.e(ii,jj);
+    }
+
+  template <class AT>
+    inline const Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Indices &I, const Indices &J) const {
+      FMATVEC_ASSERT(I.max()<size(), AT);
+      FMATVEC_ASSERT(J.max()<size(), AT);
+
+      Matrix<General,Ref,Ref,AT> A(I.size(),J.size(),NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+        for(int j=0; j<A.cols(); j++)
+	A.e(i,j) = e(I[i],J[j]);
+
+      return A;
+    }
+
+  template <class AT>
+    inline const Matrix<Symmetric,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Indices &I) const {
+      FMATVEC_ASSERT(I.max()<size(), AT);
+
+      Matrix<Symmetric,Ref,Ref,AT> A(I.size(),NONINIT);
+
+      for(int i=0; i<A.rows(); i++)
+        for(int j=0; j<A.cols(); j++)
+	A.e(i,j) = e(I[i],I[j]);
+
+      return A;
     }
 
   template <class AT>
