@@ -697,9 +697,9 @@ namespace fmatvec {
   int eigvec(const Matrix<Symmetric, Ref, Ref, double> &A, const Matrix<Symmetric, Ref, Ref, double> &B, SquareMatrix<Ref, double> &eigenvectors, Vector<Ref, double> &eigenvalues) {
     const int dim = A.size();
     auto *w = new double[dim];
-    SquareMatrix<Ref, double> B_(dim);
-    eigenvectors.resize(dim);
-    eigenvalues.resize(dim);
+    SquareMatrix<Ref, double> B_(dim,NONINIT);
+    eigenvectors.resize(dim,NONINIT);
+    eigenvalues.resize(dim,NONINIT);
     for (int z = 0; z < dim; z++)
       for (int s = 0; s <= z; s++) {
         eigenvectors(z, s) = A(z, s);
