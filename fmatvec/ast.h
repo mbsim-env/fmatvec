@@ -2,6 +2,7 @@
 #define _FMATVEC_AST_H_
 
 #include <map>
+#include <array>
 #include <memory>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
