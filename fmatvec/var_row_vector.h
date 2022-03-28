@@ -300,11 +300,13 @@ namespace fmatvec {
 
       inline const RowVector<Var,AT> operator()(const Range<Var,Var> &I) const;
 
-      template <class Row>
-      inline void set(const Range<Var,Var> &I, const RowVector<Row,AT> &x);
+      template <class Row> inline void set(const Range<Var,Var> &I, const RowVector<Row,AT> &x);
 
-      template <class Row>
-      inline void add(const Range<Var,Var> &I, const RowVector<Row,AT> &x);
+      template <class Row> inline void add(const Range<Var,Var> &I, const RowVector<Row,AT> &x);
+
+      inline const RowVector<Var,AT> operator()(const Indices &I) const;
+
+      template<class Row> inline void set(const Indices &I, const RowVector<Row,AT> &x);
   };
 
   template <class AT>
@@ -386,6 +388,27 @@ namespace fmatvec {
       for(int i=I.start(), ii=0; i<=I.end(); i++, ii++)
         e(i) += x.e(ii);
     }
+
+  template <class AT>
+    inline const RowVector<Var,AT> RowVector<Var,AT>::operator()(const Indices &I) const {
+      FMATVEC_ASSERT(I.max()<size(), AT);
+
+      RowVector<Var,AT> x(I.size(),NONINIT);
+
+      for(int i=0; i<x.size(); i++)
+	x.e(i) = e(I[i]);
+
+      return x;
+    }
+
+  template <class AT> template <class Row>
+    inline void RowVector<Var,AT>::set(const Indices &I, const RowVector<Row,AT> &x) {
+      FMATVEC_ASSERT(I.max()<size(), AT);
+      FMATVEC_ASSERT(I.size()==x.size(), AT);
+      for(int i=0; i<I.size(); i++)
+	  e(I[i]) = x.e(i);
+    }
+
 
   /// @cond NO_SHOW
 

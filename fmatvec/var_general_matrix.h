@@ -404,7 +404,7 @@ namespace fmatvec {
 
       inline const Matrix<General,Var,Var,AT> operator()(const Indices &I, const Indices &J) const;
 
-      template<class Type, class Row, class Col> inline void set(const Indices &I, const Indices &J, const Matrix<Type,Row,Col,AT> &);
+      template<class Type, class Row, class Col> inline void set(const Indices &I, const Indices &J, const Matrix<Type,Row,Col,AT> &A);
 
       template<class Row> inline void set(const Indices &I, int j, const Vector<Row,AT> &x);
   };
