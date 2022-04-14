@@ -1,0 +1,25 @@
+name: CI
+on:
+  push:
+jobs:
+  # needs the secret githubAccessToken of mbsim-env/build repo
+  dispatchCI:
+    name: "Dispatch CI"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Dispatch CI to mbsim-env/build"
+        shell: python
+        run: |
+          import requests
+          import json
+          data={"event_type": "ci",
+                "client_payload":
+                  {"repository": "${{github.repository}}",
+                   "ref_name": "${{github.ref_name}}",
+                   "sha": "${{github.sha}}"}
+               }
+          print("Dispatch to mbsim-env/build repo:\n"+json.dumps(data["client_payload"], indent=2))
+          response=requests.post("https://api.github.com/repos/mbsim-env/build/dispatches", json=data,
+                                 headers={"Authorization": "token ${{secrets.githubAccessToken}}"})
+          print("Status-code: "+str(response.status_code))
+          print("Content:\n"+json.dumps(response.json(), indent=2))
