@@ -1,5 +1,7 @@
 #include "ast.h"
 #include "stream_impl.h"
+#include <boost/math_fwd.hpp>
+#include <boost/math/special_functions/sign.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/spirit/include/qi.hpp>
