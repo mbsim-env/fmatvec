@@ -36,6 +36,8 @@
 #include "var_fixed_general_matrix.h"
 #include "fixed_var_general_matrix.h"
 #include "diagonal_matrix.h"
+#include "sparse_matrix.h"
+#include "symmetric_sparse_matrix.h"
 #include <cmath>
 
 namespace fmatvec {
@@ -830,6 +832,29 @@ namespace fmatvec {
     }
   }
 
+  template <class Row2, class Row3, class AT1, class AT2>
+  inline void mult(const Matrix<Sparse, Ref, Ref, AT1> &A, const Vector<Row2, AT2> &x, Vector<Row3, typename fmatvec::OperatorResult<AT1, AT2>::Type> &y) {
+    FMATVEC_ASSERT(A.cols() == x.size(), AT2);
+    for (int i = 0; i < y.size(); i++) {
+      y.e(i) = 0;
+      for (int j = A.Ip()[i]; j < A.Ip()[i+1]; j++)
+	y.e(i) += A()[j]*x.e(A.Jp()[j]);
+    }
+  }
+
+  template <class Row2, class Row3, class AT1, class AT2>
+  inline void mult(const Matrix<SymmetricSparse, Ref, Ref, AT1> &A, const Vector<Row2, AT2> &x, Vector<Row3, typename fmatvec::OperatorResult<AT1, AT2>::Type> &y) {
+    FMATVEC_ASSERT(A.cols() == x.size(), AT2);
+    for (int i = 0; i < y.size(); i++)
+      y.e(i) = A()[A.Ip()[i]]*x.e(A.Jp()[A.Ip()[i]]);
+    for (int i = 0; i < y.size(); i++) {
+      for (int j = A.Ip()[i]+1; j < A.Ip()[i+1]; j++) {
+	y.e(i) += A()[j]*x.e(A.Jp()[j]);
+	y.e(A.Jp()[j]) += A()[j]*x.e(i);
+      }
+    }
+  }
+
   // Matrix-Vector
   template <class AT1, class AT2, class Type1, class Row1, class Col1, class Row2>
   inline Vector<Var, typename OperatorResult<AT1, AT2>::Type> operator*(const Matrix<Type1, Row1, Col1, AT1> &A, const Vector<Row2, AT2> &x) {
@@ -946,6 +971,35 @@ namespace fmatvec {
     FMATVEC_ASSERT(A1.size() == A2.size(), AT2);
     for (int i = 0; i < A3.size(); i++)
       A3.e(i) = A1.e(i) * A2.e(i);
+  }
+
+  template <class Type2, class Row2, class Col2, class Type3, class Row3, class Col3, class AT1, class AT2>
+  inline void mult(const Matrix<Sparse, Ref, Ref, AT1> &A1, const Matrix<Type2, Row2, Col2, AT2> &A2, Matrix<Type3, Row3, Col3, typename fmatvec::OperatorResult<AT1, AT2>::Type> &A3) {
+    FMATVEC_ASSERT(A1.cols() == A2.rows(), AT2);
+    for (int i = 0; i < A3.rows(); i++) {
+      for (int k = 0; k < A3.cols(); k++) {
+        A3.e(i, k) = 0;
+	for (int j = A1.Ip()[i]; j < A1.Ip()[i+1]; j++)
+	  A3.e(i, k) += A1()[j]*A2.e(A1.Jp()[j], k);
+      }
+    }
+  }
+
+  template <class Type2, class Row2, class Col2, class Type3, class Row3, class Col3, class AT1, class AT2>
+  inline void mult(const Matrix<SymmetricSparse, Ref, Ref, AT1> &A1, const Matrix<Type2, Row2, Col2, AT2> &A2, Matrix<Type3, Row3, Col3, typename fmatvec::OperatorResult<AT1, AT2>::Type> &A3) {
+    FMATVEC_ASSERT(A1.size() == A2.rows(), AT2);
+    for (int i = 0; i < A3.rows(); i++) {
+      for (int k = 0; k < A3.cols(); k++)
+	A3.e(i, k) = A1()[A1.Ip()[i]]*A2.e(A1.Jp()[A1.Ip()[i]], k);
+    }
+    for (int i = 0; i < A3.rows(); i++) {
+      for (int k = 0; k < A3.cols(); k++) {
+	for (int j = A1.Ip()[i]+1; j < A1.Ip()[i+1]; j++) {
+	  A3.e(i, k) += A1()[j]*A2.e(A1.Jp()[j], k);
+	  A3.e(A1.Jp()[j], k) += A1()[j]*A2.e(i, k);
+	}
+      }
+    }
   }
 
   template <class AT1, class AT2, class Type1, class Type2, class Row1, class Col1, class Row2, class Col2>
@@ -2017,8 +2071,24 @@ namespace fmatvec {
     return S;
   }
 
+  template <class Row1, class Row2, class Col, class AT>
+  inline Matrix<Symmetric, Col, Col, AT> JTMJ(const Matrix<Symmetric, Row2, Row2, AT> &B, const Matrix<General, Row1, Col, AT> &A) {
+
+    Matrix<Symmetric, Col, Col, AT> S(A.cols(), A.cols(), NONINIT);
+    Matrix<General, Row1, Col, AT> C = B * A;
+
+    for (int i = 0; i < A.cols(); i++) {
+      for (int k = i; k < A.cols(); k++) {
+        S.ej(i, k) = 0;
+        for (int j = 0; j < A.rows(); j++)
+          S.ej(i, k) += A.e(j, i) * C.e(j, k);
+      }
+    }
+    return S;
+  }
+
   template <class Row, class Col, class AT>
-  inline Matrix<Symmetric, Col, Col, AT> JTMJ(const Matrix<Symmetric, Row, Row, AT> &B, const Matrix<General, Row, Col, AT> &A) {
+  inline Matrix<Symmetric, Col, Col, AT> JTMJ(const Matrix<SymmetricSparse, Ref, Ref, AT> &B, const Matrix<General, Row, Col, AT> &A) {
 
     Matrix<Symmetric, Col, Col, AT> S(A.cols(), A.cols(), NONINIT);
     Matrix<General, Row, Col, AT> C = B * A;
@@ -2033,11 +2103,11 @@ namespace fmatvec {
     return S;
   }
 
-  template <class Row, class Col, class AT>
-  inline Matrix<Symmetric, Row, Row, AT> JMJT(const Matrix<General, Row, Col, AT> &A, const Matrix<Symmetric, Col, Col, AT> &B) {
+  template <class Row, class Col1, class Col2, class AT>
+  inline Matrix<Symmetric, Row, Row, AT> JMJT(const Matrix<General, Row, Col1, AT> &A, const Matrix<Symmetric, Col2, Col2, AT> &B) {
 
     Matrix<Symmetric, Row, Row, AT> S(A.rows(), A.rows(), NONINIT);
-    Matrix<General, Row, Col, AT> C = A * B;
+    Matrix<General, Row, Col1, AT> C = A * B;
 
     for (int i = 0; i < S.size(); i++) {
       for (int k = i; k < S.size(); k++) {

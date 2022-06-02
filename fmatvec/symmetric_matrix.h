@@ -369,7 +369,7 @@ namespace fmatvec {
 //       * */
 //      explicit Matrix(const AT &x) : memory(1), ele((AT*)memory.get()), n(1), lda(1) { ele[0] = x; }
 
-      inline int countElements() const;
+      inline int nonZeroElements() const;
   };
 
   template <class AT>
@@ -533,7 +533,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline int Matrix<Symmetric,Ref,Ref,AT>::countElements() const {
+    inline int Matrix<Symmetric,Ref,Ref,AT>::nonZeroElements() const {
       int k = n;
       for (int j = 0; j < n; j++) {
         for (int i = j+1; i < n; i++) {

@@ -338,7 +338,7 @@ namespace fmatvec {
        * */
       explicit inline operator std::vector<std::vector<AT>>() const;
 
-      inline int countElements() const;
+      inline int nonZeroElements() const;
   };
 
   template <class AT>
@@ -498,7 +498,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline int Matrix<Symmetric,Var,Var,AT>::countElements() const {
+    inline int Matrix<Symmetric,Var,Var,AT>::nonZeroElements() const {
       int k = M;
       for (int j = 0; j < M; j++) {
         for (int i = j+1; i < M; i++) {

@@ -47,7 +47,7 @@ namespace fmatvec {
    *  \brief This is the basic matrix class for arbitrary matrices.
    *
    * Template class Matrix with shape type ST and atomic type AT. The first template parameter defines the shape type, the second parameter the
-   * atomic type of the matrix. Valid shape types are General, Symmetric, GeneralBand, Diagonal and Sparse. Valid atomic types are int, float, double, complex<float> and complex<double> 
+   * atomic type of the matrix. Valid shape types are General, Symmetric, GeneralBand, Diagonal, Sparse and SparseSymmetric. Valid atomic types are int, float, double, complex<float> and complex<double>
    * */
   template <class Type, class Row, class Col, class AT> class Matrix {
 

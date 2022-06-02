@@ -33,6 +33,7 @@ namespace fmatvec {
   class Symmetric;
   class GeneralBand;
   class Sparse;
+  class SymmetricSparse;
   class Rotation;
   class Var;
   template<int N> class Fixed;
@@ -99,6 +100,8 @@ namespace fmatvec {
   typedef Matrix<GeneralBand, Ref, Ref, double> BandMat;
 
   typedef Matrix<Sparse, Ref, Ref, double> SparseMat;
+
+  typedef Matrix<SymmetricSparse, Ref, Ref, double> SymSparseMat;
 
   typedef Vector<Ref, int> VecInt;
   typedef Vector<Var, int> VecVI;

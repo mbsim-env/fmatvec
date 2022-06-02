@@ -104,30 +104,6 @@ namespace fmatvec {
   template<int M> class Fixed {
   };
 
-//  class General {
-//  };
-//
-//  class GeneralBand {
-//  };
-//
-//  class Symmetric {
-//  };
-//
-//  class Diagonal {
-//  };
-//
-//  class Sparse {
-//  };
-//
-//  /*! 
-//   *  \brief Basic shape class for matrices.
-//   *
-//   * Class BasicType is the basic shape type.
-//   * */
-//  template<class Shape, class Mem>
-//  class Type {
-//  };
-
   /*! 
    *  \brief Shape class for general matrices.
    *
@@ -177,6 +153,14 @@ namespace fmatvec {
   };
 
   /*! 
+   *  \brief Shape class for sparse matrices.
+   *
+   * Class SymmetricSparse is a shape class for symmetric sparse matrices.
+   * */
+  class SymmetricSparse {
+  };
+
+  /*!
    *  \brief Dummy shape class for square matrices.
    *
    * This is just a dummy since square matrices have a special class interface without a shape.

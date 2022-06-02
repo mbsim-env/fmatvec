@@ -457,7 +457,7 @@ namespace fmatvec {
        * elements are treated as NONZERO!!! (See the storage format for sparse matrix)
        * \return The number of nonzero or diagonal elemets.
        * */
-      int countElements() const;
+      int nonZeroElements() const;
   };
 
   template <class AT> 
@@ -717,7 +717,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    int Matrix<General,Ref,Ref,AT>::countElements() const {
+    int Matrix<General,Ref,Ref,AT>::nonZeroElements() const {
     int k = 0;
     for (int i = 0; i < m; i++) {
       for (int j = 0; j < n; j++) {

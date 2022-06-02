@@ -53,6 +53,7 @@ set(fmatvecHdr
    general_matrix.h
    symbolic_function2_temp.h
    sparse_matrix.h
+   symmetric_sparse_matrix.h
    fixed_symmetric_matrix.h
    symmetric_matrix.h
    var_symmetric_matrix.h
