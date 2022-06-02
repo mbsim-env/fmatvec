@@ -346,11 +346,11 @@ namespace fmatvec {
     Matrix<General,Ref,Ref,AT> Matrix<SymmetricSparse,Ref,Ref,AT>::denseMatrix() const {
     Matrix<General,Ref,Ref,AT> A(rows(),cols());
     for(int i=0; i<rows(); i++)
-      A.e(i,Jp()[Ip()[i]]) = operator()[Ip()[i]];
+      A.e(i,Jp()[Ip()[i]]) = ele[Ip()[i]];
     for(int i=0; i<rows(); i++) {
       for(int j = Ip()[i]+1; j < Ip()[i+1]; j++) {
-	A.e(i,Jp()[j]) = operator()[j];
-	A.e(Jp()[j],i) = operator()[j];
+	A.e(i,Jp()[j]) = ele[j];
+	A.e(Jp()[j],i) = ele[j];
       }
     }
     return A;

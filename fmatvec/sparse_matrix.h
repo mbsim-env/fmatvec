@@ -341,7 +341,7 @@ namespace fmatvec {
       Matrix<General,Ref,Ref,AT> A(rows(),cols());
       for(int i=0; i<rows(); i++) {
         for(int j = Ip()[i]; j < Ip()[i+1]; j++)
-          A.e(i,Jp()[j]) = operator()[j];
+          A.e(i,Jp()[j]) = ele[j];
       }
       return A;
     }
