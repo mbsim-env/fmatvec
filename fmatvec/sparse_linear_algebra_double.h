@@ -1,4 +1,4 @@
-/* Copyright (C) 2003-2005  Martin Förg
+/* Copyright (C) 2003-2022  Martin Förg
 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,13 +19,18 @@
  *
  */
 
-#ifndef linear_algebra_var_fixed_h
-#define linear_algebra_var_fixed_h
+#ifndef sparse_linear_algebra_double_h
+#define sparse_linear_algebra_double_h
 
+#include "vector.h"
 
 namespace fmatvec {
 
+  FMATVEC_EXPORT Vector<Ref, double> slvLU(const Matrix<SymmetricSparse, Ref, Ref, double> &A, const Vector<Ref, double> &x);
 
+  FMATVEC_EXPORT Matrix<General, Ref, Ref, double> slvLU(const Matrix<SymmetricSparse, Ref, Ref, double> &A, const Matrix<General, Ref, Ref, double> &X);
+
+  FMATVEC_EXPORT int eigvec(const Matrix<SymmetricSparse, Ref, Ref, double> &A, const Matrix<SymmetricSparse, Ref, Ref, double> &M, int nev, double sigma, Matrix<General, Ref, Ref, double> &eigenvectors, Vector<Ref, double> &eigenvalues);
 }
 
 #endif

@@ -8,17 +8,18 @@ set( fmatvecSrc
    atom.cc
    linear_algebra_complex.cc
    linear_algebra_double.cc
+   sparse_linear_algebra_double.cc
    stream.cc 
    stream100.cc 
    stream200.cc 
    stream300.cc 
    wrapper.cc 
+   spooles.cc
 )
 
 set(fmatvecHdr
    var_fixed_general_matrix.h
    ast.h
-   linear_algebra_fixed_var.h
    fixed_var_general_matrix.h
    _memory.h
    function.h
@@ -32,9 +33,7 @@ set(fmatvecHdr
    stream.h
    square_matrix.h
    row_vector.h
-   linear_algebra_var.h
    matrix.h
-   linear_algebra_var_fixed.h
    fixed_square_matrix.h
    linear_algebra_complex.h
    diagonal_matrix.h
@@ -45,7 +44,6 @@ set(fmatvecHdr
    fixed_general_matrix.h
    toString.h
    fixed_row_vector.h
-   linear_algebra_fixed.h
    linear_algebra.h
    var_general_matrix.h
    var_vector.h
@@ -61,6 +59,8 @@ set(fmatvecHdr
    symbolic.h
    fixed_vector.h
    indices.h
+   spooles.h
+   sparse_linear_algebra_double.h
 )
 
 add_library(fmatvec SHARED ${fmatvecSrc} ${fmatvecHdr})

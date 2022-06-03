@@ -21,10 +21,6 @@
 
 #include "config.h"
 #include "linear_algebra.h"
-#include "linear_algebra_fixed.h"
-#include "linear_algebra_var.h"
-#include "linear_algebra_fixed_var.h"
-#include "linear_algebra_var_fixed.h"
 #include "linear_algebra_complex.h"
 #include "wrapper.h"
 #include <stdexcept>
