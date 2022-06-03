@@ -105,6 +105,13 @@ namespace fmatvec {
 
         Matrix<SymmetricSparse,Ref,Ref,AT>& resize(int n, int k, Init ini=INIT, const AT &a=AT()) { return resize(m,k,Noinit()).init(a); }
 
+        //! Resize a symmetric sparse matrix
+        void resize(int n, int m) {
+	  if(n!=m)
+	    throw std::runtime_error("A symmetric sparse matrix cannot have different dimensions for rows and columns.");
+          resize(n,n,n*n);
+        }
+
 	/*! \brief Assignment operator
 	 *
 	 * Copies the sparse matrix given by \em A.

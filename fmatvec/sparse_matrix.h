@@ -105,6 +105,11 @@ namespace fmatvec {
 
         Matrix<Sparse,Ref,Ref,AT>& resize(int m, int n, int k, Init ini=INIT, const AT &a=AT()) { return resize(m,n,k,Noinit()).init(a); }
 
+        //! Resize a sparse matrix
+        void resize(int m, int n) {
+          resize(m,n,m*n);
+        }
+
 	/*! \brief Assignment operator
 	 *
 	 * Copies the sparse matrix given by \em A.
