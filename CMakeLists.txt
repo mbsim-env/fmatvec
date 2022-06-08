@@ -58,6 +58,15 @@ endif()
 #     Alternative: set BOOST_INCLUDEDIR to boost installation
 find_package(Boost 1.67 REQUIRED COMPONENTS system) # COMPONENTS spirit uuid dll
 
+find_package(arpack-ng)
+if(arpack-ng_FOUND)
+  add_definitions(-DHAVE_ARPACK)
+endif()
+find_package(spooles)
+if(spooles_FOUND)
+  add_definitions(-DHAVE_SPOOLES)
+endif()
+
 # C++ compilation will fail due to missing config.h -> write an empty config.h for the MSVC build
 set(FMATVEC_CONFIG_INCLUDE ${CMAKE_BINARY_DIR}/include)
 file(WRITE ${FMATVEC_CONFIG_INCLUDE}/config.h "/* DUMMY FILE*/")

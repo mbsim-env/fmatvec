@@ -23,10 +23,10 @@
 #include "sparse_linear_algebra_double.h"
 #include "linear_algebra_double.h"
 #include "linear_algebra.h"
-#ifdef SPOOLES
+#ifdef HAVE_SPOOLES
 #include "spooles.h"
 #endif
-#ifdef ARPACK
+#ifdef HAVE_ARPACK
 #include "arpack.h"
 #endif
 #include <iostream>
@@ -35,7 +35,7 @@ namespace fmatvec {
 
   Vector<Ref, double> slvLU(const Matrix<SymmetricSparse, Ref, Ref, double> &A, const Vector<Ref, double> &x) {
     assert(A.size() == x.size());
-#ifdef SPOOLES
+#ifdef HAVE_SPOOLES
     Spooles spooles(A);
     spooles.factorize();
     return spooles.solve(x);
@@ -46,7 +46,7 @@ namespace fmatvec {
 
   Matrix<General, Ref, Ref, double> slvLU(const Matrix<SymmetricSparse, Ref, Ref, double> &A, const Matrix<General, Ref, Ref, double> &X) {
     assert(A.size() == X.rows());
-#ifdef SPOOLES
+#ifdef HAVE_SPOOLES
     Spooles spooles(A);
     spooles.factorize();
     return spooles.solve(X);
@@ -56,7 +56,7 @@ namespace fmatvec {
   }
 
   int eigvec(const Matrix<SymmetricSparse, Ref, Ref, double> &A, const Matrix<SymmetricSparse, Ref, Ref, double> &M, int nev, double sigma, Matrix<General, Ref, Ref, double> &eigenvectors, Vector<Ref, double> &eigenvalues) {
-#ifdef ARPACK
+#ifdef HAVE_ARPACK
     std::cout << "arpack" << std::endl;
     const char *which = "LM";
     int ido = 0;
@@ -84,7 +84,7 @@ namespace fmatvec {
     double *workl = new double[lworkl];
     int info = 0;
 
-#ifdef SPOOLES
+#ifdef HAVE_SPOOLES
     std::cout << "sparse" << std::endl;
     Spooles spooles(A,M,-sigma);
     spooles.factorize();
@@ -102,7 +102,7 @@ namespace fmatvec {
       if (ido==-1) {
 	Vector<Ref,double> x(n,&workd[ipntr[0]-1]);
 	Vector<Ref,double> y(n,&workd[ipntr[1]-1]);
-#ifdef SPOOLES
+#ifdef HAVE_SPOOLES
 	y = spooles.solve(M*x);
 #else
 	y = slvLUFac(LU,M*x,ipiv);
@@ -112,7 +112,7 @@ namespace fmatvec {
 	Vector<Ref,double> t(n,&workd[ipntr[0]-1]);
 	Vector<Ref,double> x(n,&workd[ipntr[1]-1]);
 	Vector<Ref,double> y(n,&workd[ipntr[2]-1]);
-#ifdef SPOOLES
+#ifdef HAVE_SPOOLES
 	x = spooles.solve(y);
 #else
 	x = slvLUFac(LU,y,ipiv);

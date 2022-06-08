@@ -69,6 +69,8 @@ target_include_directories( fmatvec
    PUBLIC 
    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
    $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
+   $<BUILD_INTERFACE:${ARPACK_INCLUDE_DIRS}>
+   $<BUILD_INTERFACE:${SPOOLES_INCLUDE_DIRS}>
    PRIVATE
    $<BUILD_INTERFACE:${FMATVEC_CONFIG_INCLUDE}>
 )
@@ -83,7 +85,7 @@ if( MSVC )
   )
 endif()
 
-target_link_libraries(fmatvec ${BLAS_LAPACK_LIBRARIES} Boost::system)
+target_link_libraries(fmatvec ${BLAS_LAPACK_LIBRARIES} Boost::system ${ARPACK_LIBRARIES} ${SPOOLES_LIBRARIES})
 if(NOT WIN32)
   target_link_libraries(fmatvec pthread)
 endif()

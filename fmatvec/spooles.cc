@@ -20,7 +20,7 @@
  */
 
 #include "config.h"
-#ifdef SPOOLES
+#ifdef HAVE_SPOOLES
 #include "spooles.h"
 #include "vector.h"
 extern "C" {
