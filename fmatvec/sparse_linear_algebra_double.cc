@@ -21,29 +21,43 @@
 
 #include "config.h"
 #include "sparse_linear_algebra_double.h"
+#include "linear_algebra_double.h"
 #include "linear_algebra.h"
+#ifdef SPOOLES
 #include "spooles.h"
+#endif
+#ifdef ARPACK
 #include "arpack.h"
-//#include <stdexcept>
-//#include <sstream>
+#endif
+#include <iostream>
 
 namespace fmatvec {
 
   Vector<Ref, double> slvLU(const Matrix<SymmetricSparse, Ref, Ref, double> &A, const Vector<Ref, double> &x) {
     assert(A.size() == x.size());
+#ifdef SPOOLES
     Spooles spooles(A);
     spooles.factorize();
     return spooles.solve(x);
+#else
+    return slvLU(SquareMatrix<Ref,double>(A),x);
+#endif
   }
 
   Matrix<General, Ref, Ref, double> slvLU(const Matrix<SymmetricSparse, Ref, Ref, double> &A, const Matrix<General, Ref, Ref, double> &X) {
     assert(A.size() == X.rows());
+#ifdef SPOOLES
     Spooles spooles(A);
     spooles.factorize();
     return spooles.solve(X);
+#else
+    return slvLU(SquareMatrix<Ref,double>(A),X);
+#endif
   }
 
   int eigvec(const Matrix<SymmetricSparse, Ref, Ref, double> &A, const Matrix<SymmetricSparse, Ref, Ref, double> &M, int nev, double sigma, Matrix<General, Ref, Ref, double> &eigenvectors, Vector<Ref, double> &eigenvalues) {
+#ifdef ARPACK
+    std::cout << "arpack" << std::endl;
     const char *which = "LM";
     int ido = 0;
     char bmat = 'G';
@@ -54,7 +68,7 @@ namespace fmatvec {
     for(int i=0; i<n; i++)
       resid[i] = 0;
     int ncv = 2*nev;
-    if (ncv > n)
+    if(ncv>n)
       ncv = n;
     double *v = new double[ldv*ncv];
     int *iparam = new int[11];
@@ -70,22 +84,39 @@ namespace fmatvec {
     double *workl = new double[lworkl];
     int info = 0;
 
-    Vector<Ref,int> ipiv(A.rows(),NONINIT);
+#ifdef SPOOLES
+    std::cout << "sparse" << std::endl;
     Spooles spooles(A,M,-sigma);
     spooles.factorize();
+#else
+    std::cout << "dense" << std::endl;
+    Vector<Ref,int> ipiv(A.rows(),NONINIT);
+    Matrix<SymmetricSparse, Ref, Ref, double> AsM = A;
+    for(int i=0; i<A.nonZeroElements(); i++)
+      AsM()[i] -= sigma*M()[i];
+    SquareMatrix<Ref,double> LU = facLU(SquareMatrix<Ref,double>(AsM),ipiv);
+#endif
 
     while(true) {
       dsaupd_c(&ido, &bmat, n, which, nev, tol, resid, ncv, v, ldv, iparam, ipntr, workd, workl, lworkl, &info);
       if (ido==-1) {
 	Vector<Ref,double> x(n,&workd[ipntr[0]-1]);
 	Vector<Ref,double> y(n,&workd[ipntr[1]-1]);
+#ifdef SPOOLES
 	y = spooles.solve(M*x);
+#else
+	y = slvLUFac(LU,M*x,ipiv);
+#endif
       }
       else if (ido==1) {
 	Vector<Ref,double> t(n,&workd[ipntr[0]-1]);
 	Vector<Ref,double> x(n,&workd[ipntr[1]-1]);
 	Vector<Ref,double> y(n,&workd[ipntr[2]-1]);
+#ifdef SPOOLES
 	x = spooles.solve(y);
+#else
+	x = slvLUFac(LU,y,ipiv);
+#endif
       }
       else if (ido==2) {
 	Vector<Ref,double> x(n,&workd[ipntr[0]-1]);
@@ -112,6 +143,15 @@ namespace fmatvec {
     delete [] select;
 
     return info;
+#else
+    std::cout << "lapack" << std::endl;
+    SquareMatrix<Ref,double> eigenvectors_;
+    Vector<Ref,double> eigenvalues_;
+    int info = eigvec(Matrix<Symmetric,Ref,Ref,double>(A), Matrix<Symmetric,Ref,Ref,double>(M), eigenvectors_, eigenvalues_);
+    eigenvectors <<= eigenvectors_(Range<Var,Var>(0,eigenvectors_.size()-1),Range<Var,Var>(0,nev-1));
+    eigenvalues <<= eigenvalues_(Range<Var,Var>(0,nev-1));
+    return info;
+#endif
   }
 
 }

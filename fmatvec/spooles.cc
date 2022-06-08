@@ -20,6 +20,7 @@
  */
 
 #include "config.h"
+#ifdef SPOOLES
 #include "spooles.h"
 #include "vector.h"
 extern "C" {
@@ -155,3 +156,4 @@ namespace fmatvec {
   }
 
 }
+#endif
