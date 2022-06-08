@@ -261,8 +261,6 @@ namespace fmatvec {
         inline Matrix<Sparse,Ref,Ref,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
         int nonZeroElements() const { return k; }
-
-	Matrix<General,Ref,Ref,AT> denseMatrix() const;
     };
   // ------------------------- Constructors -------------------------------------
   // ----------------------------------------------------------------------------
@@ -339,16 +337,6 @@ namespace fmatvec {
 	ele[i] = val;
       }
       return *this;
-    }
-
-  template <class AT>
-    Matrix<General,Ref,Ref,AT> Matrix<Sparse,Ref,Ref,AT>::denseMatrix() const {
-      Matrix<General,Ref,Ref,AT> A(rows(),cols());
-      for(int i=0; i<rows(); i++) {
-        for(int j = Ip()[i]; j < Ip()[i+1]; j++)
-          A.e(i,Jp()[j]) = ele[j];
-      }
-      return A;
     }
 
 }

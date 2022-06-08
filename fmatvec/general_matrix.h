@@ -80,6 +80,8 @@ namespace fmatvec {
       int lda{0};
 
       template <class Type, class Row, class Col> inline Matrix<General,Ref,Ref,AT>& copy(const Matrix<Type,Row,Col,AT> &A);
+      inline Matrix<General,Ref,Ref,AT>& copy(const Matrix<Sparse,Ref,Ref,AT> &A);
+      inline Matrix<General,Ref,Ref,AT>& copy(const Matrix<SymmetricSparse,Ref,Ref,AT> &A);
 
       const AT* elePtr(int i, int j) const {
 	return ele+i+j*lda;
@@ -577,6 +579,33 @@ namespace fmatvec {
           e(i,j) = A.e(i,j);
       return *this;
     }
+
+  template <class AT>
+    inline Matrix<General,Ref,Ref,AT>& Matrix<General,Ref,Ref,AT>::copy(const Matrix<Sparse,Ref,Ref,AT> &A) {
+      for(int i=0; i<m; i++) {
+	for(int j=0; j<n; j++)
+	  e(i,j) = 0;
+        for(int j=A.Ip()[i]; j<A.Ip()[i+1]; j++)
+          e(i,A.Jp()[j]) = A()[j];
+      }
+      return *this;
+    }
+
+  template <class AT>
+    inline Matrix<General,Ref,Ref,AT>& Matrix<General,Ref,Ref,AT>::copy(const Matrix<SymmetricSparse,Ref,Ref,AT> &A) {
+    for(int i=0; i<m; i++) {
+      for(int j=0; j<n; j++)
+	e(i,j) = 0;
+      e(i,A.Jp()[A.Ip()[i]]) = A()[A.Ip()[i]];
+    }
+    for(int i=0; i<m; i++) {
+      for(int j=A.Ip()[i]+1; j<A.Ip()[i+1]; j++) {
+	e(i,A.Jp()[j]) = A()[j];
+	e(A.Jp()[j],i) = A()[j];
+      }
+    }
+    return *this;
+  }
 
   template <class AT>
     inline const Matrix<General,Ref,Ref,AT> Matrix<General,Ref,Ref,AT>::T() const {

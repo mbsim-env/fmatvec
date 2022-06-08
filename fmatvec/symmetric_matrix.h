@@ -52,6 +52,7 @@ namespace fmatvec {
 
       template <class Type, class Row, class Col> inline Matrix<Symmetric,Ref,Ref,AT>& copy(const Matrix<Type,Row,Col,AT> &A);
       inline Matrix<Symmetric,Ref,Ref,AT>& copy(const Matrix<Symmetric,Ref,Ref,AT> &A);
+      inline Matrix<Symmetric,Ref,Ref,AT>& copy(const Matrix<SymmetricSparse,Ref,Ref,AT> &A);
 
       const AT* elePtr(int i, int j) const {
 	return  j > i ? ele+i*lda+j : ele+i+j*lda; 
@@ -562,6 +563,17 @@ namespace fmatvec {
           ej(i,j) = A.e(i,j);
       return *this;
     }
+
+  template <class AT>
+    inline Matrix<Symmetric,Ref,Ref,AT>& Matrix<Symmetric,Ref,Ref,AT>::copy(const Matrix<SymmetricSparse,Ref,Ref,AT> &A) {
+      for(int i=0; i<n; i++) {
+	for(int j=i; j<n; j++)
+	  ej(i,j) = 0;
+        for(int j=A.Ip()[i]; j<A.Ip()[i+1]; j++)
+          ej(i,A.Jp()[j]) = A()[j];
+      }
+      return *this;
+  }
 
   /// @endcond
 
