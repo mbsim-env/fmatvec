@@ -40,6 +40,7 @@ namespace fmatvec {
     spooles.factorize();
     return spooles.solve(x);
 #else
+    std::cout << "(slvLU): SPOOLES not available, using LAPACK instead!" << std::endl;
     return slvLU(SquareMatrix<Ref,double>(A),x);
 #endif
   }
@@ -51,13 +52,13 @@ namespace fmatvec {
     spooles.factorize();
     return spooles.solve(X);
 #else
+    std::cout << "(slvLU): SPOOLES not available, using LAPACK instead!" << std::endl;
     return slvLU(SquareMatrix<Ref,double>(A),X);
 #endif
   }
 
   int eigvec(const Matrix<SymmetricSparse, Ref, Ref, double> &A, const Matrix<SymmetricSparse, Ref, Ref, double> &M, int nev, double sigma, Matrix<General, Ref, Ref, double> &eigenvectors, Vector<Ref, double> &eigenvalues) {
 #ifdef HAVE_ARPACK
-    std::cout << "arpack" << std::endl;
     const char *which = "LM";
     int ido = 0;
     char bmat = 'G';
@@ -85,11 +86,10 @@ namespace fmatvec {
     int info = 0;
 
 #ifdef HAVE_SPOOLES
-    std::cout << "sparse" << std::endl;
     Spooles spooles(A,M,-sigma);
     spooles.factorize();
 #else
-    std::cout << "dense" << std::endl;
+    std::cout << "(eigvec): SPOOLES not available, using LAPACK instead!" << std::endl;
     Vector<Ref,int> ipiv(A.rows(),NONINIT);
     Matrix<SymmetricSparse, Ref, Ref, double> AsM = A;
     for(int i=0; i<A.nonZeroElements(); i++)
@@ -144,7 +144,7 @@ namespace fmatvec {
 
     return info;
 #else
-    std::cout << "lapack" << std::endl;
+    std::cout << "(eigvec): ARPACK not available, using LAPACK instead!" << std::endl;
     SquareMatrix<Ref,double> eigenvectors_;
     Vector<Ref,double> eigenvalues_;
     int info = eigvec(Matrix<Symmetric,Ref,Ref,double>(A), Matrix<Symmetric,Ref,Ref,double>(M), eigenvectors_, eigenvalues_);
