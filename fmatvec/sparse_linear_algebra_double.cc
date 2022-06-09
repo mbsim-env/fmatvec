@@ -40,7 +40,7 @@ namespace fmatvec {
     spooles.factorize();
     return spooles.solve(x);
 #else
-    std::cout << "(slvLU): SPOOLES not available, using LAPACK instead!" << std::endl;
+    std::cerr << "(slvLU): SPOOLES not available, using LAPACK instead!" << std::endl;
     return slvLU(SquareMatrix<Ref,double>(A),x);
 #endif
   }
@@ -52,7 +52,7 @@ namespace fmatvec {
     spooles.factorize();
     return spooles.solve(X);
 #else
-    std::cout << "(slvLU): SPOOLES not available, using LAPACK instead!" << std::endl;
+    std::cerr << "(slvLU): SPOOLES not available, using LAPACK instead!" << std::endl;
     return slvLU(SquareMatrix<Ref,double>(A),X);
 #endif
   }
@@ -89,7 +89,7 @@ namespace fmatvec {
     Spooles spooles(A,M,-sigma);
     spooles.factorize();
 #else
-    std::cout << "(eigvec): SPOOLES not available, using LAPACK instead!" << std::endl;
+    std::cerr << "(eigvec): SPOOLES not available, using LAPACK instead!" << std::endl;
     Vector<Ref,int> ipiv(A.rows(),NONINIT);
     Matrix<SymmetricSparse, Ref, Ref, double> AsM = A;
     for(int i=0; i<A.nonZeroElements(); i++)
@@ -144,7 +144,7 @@ namespace fmatvec {
 
     return info;
 #else
-    std::cout << "(eigvec): ARPACK not available, using LAPACK instead!" << std::endl;
+    std::cerr << "(eigvec): ARPACK not available, using LAPACK instead!" << std::endl;
     SquareMatrix<Ref,double> eigenvectors_;
     Vector<Ref,double> eigenvalues_;
     int info = eigvec(Matrix<Symmetric,Ref,Ref,double>(A), Matrix<Symmetric,Ref,Ref,double>(M), eigenvectors_, eigenvalues_);
