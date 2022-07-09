@@ -58,12 +58,16 @@ endif()
 #     Alternative: set BOOST_INCLUDEDIR to boost installation
 find_package(Boost 1.67 REQUIRED COMPONENTS system) # COMPONENTS spirit uuid dll
 
-find_package(arpack-ng)
-if(arpack-ng_FOUND)
+if(NOT DEFINED ARPACK_INCLUDE_DIRS OR NOT DEFINED ARPACK_LIBRARIES)
+  find_package(arpack-ng)
+endif()
+if(DEFINED ARPACK_INCLUDE_DIRS OR DEFINED ARPACK_LIBRARIES)
   add_definitions(-DHAVE_ARPACK)
 endif()
-find_package(spooles)
-if(spooles_FOUND)
+if(NOT DEFINED SPOOLES_INCLUDE_DIRS OR NOT DEFINED SPOOLES_LIBRARIES)
+  find_package(spooles)
+endif()
+if(DEFINED SPOOLES_INCLUDE_DIRS OR DEFINED SPOOLES_LIBRARIES)
   add_definitions(-DHAVE_SPOOLES)
 endif()
 
