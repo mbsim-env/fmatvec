@@ -23,34 +23,13 @@ include(GNUInstallDirs)
 
 # Checking for the blas and lapack dependency
 if( WIN32 )
-  # Path with blas and lapack lib/dll needs to be in environment variable LIB
-  # find_package(BLAS) called separately for slightly better error message
-  find_package(BLAS)
-  if(BLAS)
-    find_package(LAPACK)
-    set(BLAS_LAPACK_LIBRARIES ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} )
-  endif()
-
-  if(NOT LAPACK)
-    # fall back to Intel MKL runtime libs
-    message("   ... trying to find Intel MKL runtime libraries instead of LAPACK/BLAS")
-    # get link library
-    find_library(LAPACK_LIBRARIES name "mkl_rt.lib" PATHS $ENV{LIB} ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR} REQUIRED)
-    # ... and runtime libraries needed to be installed
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ".dll")
-    set(mkl_needed_libs "mkl_rt;mkl_intel_thread")
-    foreach(lib ${mkl_needed_libs})
-      find_library(mkl_${lib} name "${lib}" PATHS $ENV{LIB} ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
-      install(FILES ${mkl_${lib}} DESTINATION bin)
-      message("    install mkl_needed_libs: mkl_${lib}= ${mkl_${lib}}")
-    endforeach()
-    set(BLAS_LAPACK_LIBRARIES ${LAPACK_LIBRARIES} )
-  endif()
+  # works with IntelOne integration providing Intel(R) Math Kernel Library 2020 Update 1
+  set(BLA_STATIC ON)
+  set(BLA_VENDOR Intel10_64lp_seq)
   set(Boost_USE_STATIC_LIBS ON)
-else()
-  find_package(LAPACK REQUIRED) # checks for blas and lapack!
-  set(BLAS_LAPACK_LIBRARIES ${LAPACK_LIBRARIES} )
 endif()
+find_package(LAPACK REQUIRED) # checks for blas and lapack!
+set(BLAS_LAPACK_LIBRARIES ${LAPACK_LIBRARIES} )
 # Notes for cmake limitations under Windows:
 #     cmake 3.12.18081601-MSVC_2 fails to find c:\local\boost_1_72_0 (it ONLY detects the coexisting c:\local\boost_1_60_0)
 #         With boost 1.67 it works as expected
@@ -107,8 +86,8 @@ write_basic_package_version_file(
     )
 
 install(FILES 
-             "${CMAKE_CURRENT_BINARY_DIR}/config/fmatvecConfig.cmake" 
-             "${CMAKE_CURRENT_BINARY_DIR}/config/fmatvecConfigVersion.cmake" 
+        "${CMAKE_CURRENT_BINARY_DIR}/config/fmatvecConfig.cmake" 
+        "${CMAKE_CURRENT_BINARY_DIR}/config/fmatvecConfigVersion.cmake" 
         DESTINATION ${ConfigPackageLocation})
 
 # install license

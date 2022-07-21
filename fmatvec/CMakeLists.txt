@@ -103,7 +103,6 @@ if( WIN32 ) # WIN32 diffs in destination for the library (bin on Windows?!?) and
     ARCHIVE DESTINATION lib
     CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
     )
-  install(FILES ${BLAS_LAPACK_LIBRARIES} DESTINATION lib)
 else()
   install(TARGETS fmatvec EXPORT fmatvec
     RUNTIME DESTINATION bin

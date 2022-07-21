@@ -37,15 +37,15 @@ namespace fmatvec {
       Indices(std::initializer_list<int> il) : ind(il) {
 	assert(min()>=0);
       }
-      int size() const { return ind.size(); }
-      int max() const {
-	assert(ind.size());
-	int m = ind[0];
-	for(size_t i=1; i<ind.size(); i++) {
-	  if(ind[i]>m)
-	    m = ind[i];
-	}
-	return m;
+      size_t size() const { return ind.size(); }
+      size_t max() const {
+        assert(ind.size());
+        int m = ind[0];
+        for(size_t i=1; i<ind.size(); i++) {
+          if(ind[i]>m)
+            m = ind[i];
+        }
+        return m;
       }
       int min() const {
 	assert(ind.size());
