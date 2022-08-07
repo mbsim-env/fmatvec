@@ -67,7 +67,7 @@ namespace fmatvec {
 
     qi::rule<It, AT()> &atomicType = getBoostSpiritQiRule<AT>();
     scalar = *qi::space >> atomicType[qi::_val=phx::bind(&scalarToVecVec<AT>, qi::_1)];
-    row = -(atomicType % (+qi::blank | (*qi::blank >> ',' >> *qi::blank)));
+    row = atomicType % (+qi::blank | (*qi::blank >> ',' >> *qi::blank));
     matrix = *qi::space >> '[' >> *qi::space >>
                -(row % (*qi::blank >> (';' | qi::eol) >> *qi::blank))[qi::_val=qi::_1] >>
              *qi::space >> ']';
