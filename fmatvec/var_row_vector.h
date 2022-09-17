@@ -175,8 +175,7 @@ namespace fmatvec {
         return copy(x);
       }
       // move
-      template <class Row>
-      inline RowVector<Var,AT>& operator<<=(RowVector<Row,AT> &&src) {
+      inline RowVector<Var,AT>& operator<<=(RowVector<Var,AT> &&src) {
         N=src.N;
         src.N=0;
         delete[]ele;
@@ -350,14 +349,14 @@ namespace fmatvec {
     inline RowVector<Var,AT>::operator std::vector<AT>() const {
       std::vector<AT> ret(size());
       for(int i=0; i<size(); ++i)
-        ret[i] = operator()(i);
+        ret[i] = e(i);
       return ret;
     }
 
   template <class AT>
-    inline RowVector<Var,AT>::RowVector(const std::vector<AT> &v) : Matrix<General,Fixed<1>,Var,AT>(1, v.size()) {
+    inline RowVector<Var,AT>::RowVector(const std::vector<AT> &v) : Matrix<General,Fixed<1>,Var,AT>(1,static_cast<int>(v.size()),NONINIT) {
       for(int i=0; i<size(); ++i)
-        operator()(i) = v[i];
+        e(i) = v[i];
     }
 
   template <class AT>

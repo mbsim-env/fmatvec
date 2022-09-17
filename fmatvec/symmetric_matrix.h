@@ -511,23 +511,25 @@ namespace fmatvec {
 
   template <class AT>
     inline Matrix<Symmetric,Ref,Ref,AT>::operator std::vector<std::vector<AT>>() const {
-      std::vector<std::vector<AT>> ret(rows());
+      std::vector<std::vector<AT>> ret(rows(),std::vector<AT>(cols()));
       for(int r=0; r<rows(); r++) {
-        ret[r].resize(cols());
-        for(int c=0; c<cols(); c++)
-          ret[r][c]=operator()(r,c);
+        for(int c=r; c<cols(); c++) {
+          ret[r][c]=ej(r,c);
+	  if(c>r)
+	    ret[c][r]=ej(r,c);
+	}
       }
       return ret;
     }
 
   template <class AT>
-    Matrix<Symmetric,Ref,Ref,AT>::Matrix(const std::vector<std::vector<AT>> &m) : Matrix<Symmetric,Ref,Ref,AT>(static_cast<int>(m.size())) {
+    Matrix<Symmetric,Ref,Ref,AT>::Matrix(const std::vector<std::vector<AT>> &m) : memory(m.size()*m.size()), ele((AT*)memory.get()), n(static_cast<int>(m.size())), lda(static_cast<int>(m.size())) {
       for(int r=0; r<rows(); r++) {
         if(static_cast<int>(m[r].size())!=cols())
           throw std::runtime_error("The rows of the input have different length.");
-        for(int c=0; c<cols(); c++) {
-          e(r,c)=m[r][c];
-          if(r>c && abs(m[r][c]-m[c][r])>abs(m[r][c])*1e-13+1e-13)
+        for(int c=r; c<cols(); c++) {
+          ej(r,c)=m[r][c];
+          if(c>r && abs(m[r][c]-m[c][r])>abs(m[r][c])*1e-13+1e-13)
             throw std::runtime_error("The input is not symmetric.");
         }
       }

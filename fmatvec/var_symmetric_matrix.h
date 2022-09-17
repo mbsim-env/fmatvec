@@ -169,8 +169,7 @@ namespace fmatvec {
         return copy(A);
       }
       // move
-      template<class Type, class Row, class Col>
-      inline Matrix<Symmetric,Var,Var,AT>& operator<<=(Matrix<Type,Row,Col,AT> &&src) {
+      inline Matrix<Symmetric,Var,Var,AT>& operator<<=(Matrix<Symmetric,Var,Var,AT> &&src) {
         FMATVEC_ASSERT(src.rows() == src.cols(), AT);
         M=src.M;
         src.M=0;
@@ -338,6 +337,13 @@ namespace fmatvec {
        * */
       explicit inline operator std::vector<std::vector<AT>>() const;
 
+      /*! \brief std::vector<std::vector<AT>> Constructor.
+       * Constructs and initializes a matrix with a std::vector<std::vector<AT>> object.
+       * An FMATVEC_ASSERT checks for constant length of each ro, UseExceptions<AT>::EXw.
+       * \param m The std::vector<std::vector<AT>> the matrix will be initialized with.
+       * */
+      explicit Matrix(const std::vector<std::vector<AT>> &m);
+
       inline int nonZeroElements() const;
   };
 
@@ -470,13 +476,28 @@ namespace fmatvec {
 
   template <class AT>
     inline Matrix<Symmetric,Var,Var,AT>::operator std::vector<std::vector<AT>>() const {
-      std::vector<std::vector<AT>> ret(rows());
+      std::vector<std::vector<AT>> ret(rows(),std::vector<AT>(cols()));
       for(int r=0; r<rows(); r++) {
-        ret[r].resize(cols());
-        for(int c=0; c<cols(); c++)
-          ret[r][c]=operator()(r,c);
+        for(int c=r; c<cols(); c++) {
+          ret[r][c]=ej(r,c);
+	  if(c>r)
+	    ret[c][r]=ej(r,c);
+	}
       }
       return ret;
+    }
+
+  template <class AT>
+    inline Matrix<Symmetric,Var,Var,AT>::Matrix(const std::vector<std::vector<AT>> &m) : M(static_cast<int>(m.size())), ele(new AT[M*M]) {
+      for(int r=0; r<rows(); r++) {
+        if(static_cast<int>(m[r].size())!=cols())
+          throw std::runtime_error("The rows of the input have different length.");
+        for(int c=r; c<cols(); c++) {
+          ej(r,c)=m[r][c];
+          if(c>r && abs(m[r][c]-m[c][r])>abs(m[r][c])*1e-13+1e-13)
+            throw std::runtime_error("The input is not symmetric.");
+	}
+      }
     }
 
   /// @cond NO_SHOW

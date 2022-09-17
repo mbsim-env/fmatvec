@@ -294,14 +294,14 @@ namespace fmatvec {
    inline Vector<Fixed<M>,AT>::operator std::vector<AT>() const {
       std::vector<AT> ret(size());
       for(int i=0; i<size(); ++i)
-        ret[i] = operator()(i);
+        ret[i] = e(i);
       return ret;
     }
 
   template <int M, class AT>
-    inline Vector<Fixed<M>,AT>::Vector(const std::vector<AT> &v) : Matrix<General,Fixed<M>,Fixed<1>,AT>() {
+    inline Vector<Fixed<M>,AT>::Vector(const std::vector<AT> &v) : Matrix<General,Fixed<M>,Fixed<1>,AT>(NONINIT) {
       for(int i=0; i<size(); ++i)
-        operator()(i) = v[i];
+        e(i) = v[i];
     }
 
   /// @cond NO_SHOW

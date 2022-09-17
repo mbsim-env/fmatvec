@@ -207,22 +207,21 @@ namespace fmatvec {
        * \return A reference to the calling matrix.
        * */
       template<class Type, class Row, class Col>
-        inline Matrix<General,Fixed<M>,Var,AT>& operator<<=(const Matrix<Type,Row,Col,AT> &A) {
-          FMATVEC_ASSERT(M == A.rows(), AT);
-          if(N!=A.cols()) resize(A.cols(),NONINIT);
-          return copy(A);
-        }
+      inline Matrix<General,Fixed<M>,Var,AT>& operator<<=(const Matrix<Type,Row,Col,AT> &A) {
+	FMATVEC_ASSERT(M == A.rows(), AT);
+	if(N!=A.cols()) resize(A.cols(),NONINIT);
+	return copy(A);
+      }
       // move
-      template<class Type, class Row, class Col>
-        inline Matrix<General,Fixed<M>,Var,AT>& operator<<=(Matrix<General,Fixed<M>,Var,AT> &&src) {
-          FMATVEC_ASSERT(M == src.rows(), AT);
-          N=src.N;
-          src.N=0;
-          delete[]ele;
-          ele=src.ele;
-          src.ele=nullptr;
-          return *this;
-        }
+      inline Matrix<General,Fixed<M>,Var,AT>& operator<<=(Matrix<General,Fixed<M>,Var,AT> &&src) {
+	FMATVEC_ASSERT(M == src.rows(), AT);
+	N=src.N;
+	src.N=0;
+	delete[]ele;
+	ele=src.ele;
+	src.ele=nullptr;
+	return *this;
+      }
 
       /*! \brief Element operator
        *
@@ -599,9 +598,8 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline Matrix<General,Fixed<M>,Var,AT>::operator std::vector<std::vector<AT>>() const {
-      std::vector<std::vector<AT>> ret(rows());
+      std::vector<std::vector<AT>> ret(rows(),std::vector<AT>(cols()));
       for(int r=0; r<rows(); r++) {
-        ret[r].resize(cols());
         for(int c=0; c<cols(); c++)
           ret[r][c]=e(r,c);
       }
