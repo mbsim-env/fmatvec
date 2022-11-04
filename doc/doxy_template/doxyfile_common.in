@@ -1,4 +1,10 @@
+HTML_HEADER            = @prefix@/share/fmatvec/doxy_template/header.html
 HTML_FOOTER            = @prefix@/share/fmatvec/doxy_template/footer.html
+GENERATE_TREEVIEW      = YES
+DISABLE_INDEX          = NO
+FULL_SIDEBAR           = NO
+HTML_EXTRA_STYLESHEET  = @prefix@/share/fmatvec/doxy_template/doxygen-awesome.css
+HTML_EXTRA_FILES       = @prefix@/share/fmatvec/doxy_template/doxygen-awesome-darkmode-toggle.js @prefix@/share/fmatvec/doxy_template/doxygen-awesome-interactive-toc.js
 GENERATE_LATEX         = NO
 EXTRACT_PRIVATE        = YES
 USE_MATHJAX            = YES
