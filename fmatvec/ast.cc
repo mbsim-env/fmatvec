@@ -473,7 +473,7 @@ void Symbol::walkVertex(const function<void(const shared_ptr<const Vertex>&)> &f
 
 map<Operation::CacheKey, weak_ptr<const Operation>, Operation::CacheKeyComp> Operation::cache;
 
-//mfmf optimized calls for int arguments
+//MISSING: optimized calls for int arguments
 #define FUNC(expr) [](double* r, const std::array<double*,ByteCode::N>& arg) { \
   auto &a=*arg[0]; /* first argument */ \
   auto &b=*arg[1]; /* second argument */ \
