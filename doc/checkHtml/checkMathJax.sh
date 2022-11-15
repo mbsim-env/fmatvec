@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+set -o pipefail
+
 DIR=$(dirname $0)
 
 if ! which node &> /dev/null; then
