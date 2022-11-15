@@ -299,6 +299,19 @@ void checkSym(double &pdn0Value,
     }
     Vec3 ret=(*e)();
   }
+
+  // check condition function (test also optimization of 0 and 0.0)
+  {
+    SymbolicExpression cond=condition(2*a5-0.0+0-6, sin(a6), cos(a6));
+    cout<<"condition = "<<cond<<endl;
+    Eval condEval{cond};
+    a5^=+30.0;
+    a6^=2.0;
+    cout<<"cond.eval = "<<condEval()<<endl;
+    a5^=-30.0;
+    a6^=2.0;
+    cout<<"cond.eval = "<<condEval()<<endl;
+  }
 }
 
 void checkSymReread(double pdn0Value,

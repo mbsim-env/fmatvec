@@ -24,6 +24,7 @@
 
 //#include "matrix.h"
 #include "types.h"
+#include <cassert>
 
 namespace fmatvec {
 

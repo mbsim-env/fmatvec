@@ -18,6 +18,18 @@ $mathjax
 $extrastylesheet
 <!--START: ADDED BY FMATVEC-->
 <meta name="color-scheme" content="light dark">
+<style>
+  @media (prefers-color-scheme: dark) {
+    html:not(.light-mode) div.contents div.image > object[data$=".svg"],
+    html:not(.light-mode) div.contents div.image > img[src$=".svg"] {
+      filter: hue-rotate(180deg) invert();
+    }
+  }
+  html.dark-mode div.contents div.image > object[data$=".svg"],
+  html.dark-mode div.contents div.image > img[src$=".svg"] {
+    filter: hue-rotate(180deg) invert();
+  }
+</style>
 <script type="text/javascript" src="$relpath^doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript">DoxygenAwesomeDarkModeToggle.init()</script>
 <script type="text/javascript" src="$relpath^doxygen-awesome-interactive-toc.js"></script>
