@@ -23,6 +23,7 @@
 #define var_general_matrix_h
 
 #include "types.h"
+#include "range.h"
 #include "indices.h"
 #include <cstdlib>
 #include <stdexcept>

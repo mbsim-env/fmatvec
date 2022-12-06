@@ -23,6 +23,8 @@
 #define fixed_general_matrix_h
 
 #include "types.h"
+#include "range.h"
+#include <vector>
 #include <cstdlib>
 #include <stdexcept>
 

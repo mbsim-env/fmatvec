@@ -23,6 +23,7 @@
 #define fixed_symmetric_matrix_h
 
 #include "types.h"
+#include <vector>
 
 namespace fmatvec {
 
