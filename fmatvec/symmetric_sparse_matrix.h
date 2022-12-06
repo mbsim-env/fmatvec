@@ -51,7 +51,7 @@ namespace fmatvec {
 	Memory<int> memI, memJ;
 	AT *ele;
 	int *I{nullptr}, *J{nullptr};
-	int m{0}, n{0}, k{0};
+	int n{0}, k{0};
 
         template <class Type, class Row, class Col> inline Matrix<SymmetricSparse,Ref,Ref,AT>& copy(const Matrix<Type,Row,Col,AT> &A);
 	template <class Row> inline Matrix<SymmetricSparse,Ref,Ref,AT>& copy(const Matrix<Symmetric,Row,Row,AT> &A);
@@ -72,19 +72,19 @@ namespace fmatvec {
 	 * */
 	explicit Matrix() : memEle(),  ele(0) { }
 
-        explicit Matrix(int n_, int k_, Noinit) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) { }
-        explicit Matrix(int n_, int k_, Init ini=INIT, const AT &a=AT()) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(n_), n(n_), k(k_) {  init(a); }
+        explicit Matrix(int n_, int k_, Noinit) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), n(n_), k(k_) { }
+        explicit Matrix(int n_, int k_, Init ini=INIT, const AT &a=AT()) : memEle(k_), memI(n_+1), memJ(k_), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), n(n_), k(k_) {  init(a); }
 
 	/*! \brief Copy Constructor
 	 *
 	 * Constructs a reference to the matrix \em A.
 	 * \param A The matrix that will be referenced.
 	 * */
-	Matrix(const Matrix<SymmetricSparse,Ref,Ref,AT> &A) : memEle(A.k), memI(A.n+1), memJ(A.k), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), m(A.m), n(A.n), k(A.k) {
+	Matrix(const Matrix<SymmetricSparse,Ref,Ref,AT> &A) : memEle(A.k), memI(A.n+1), memJ(A.k), ele((AT*)memEle.get()), I((int*)memI.get()), J((int*)memJ.get()), n(A.n), k(A.k) {
           copy(A);
 	}
 
-        explicit Matrix(int n_, int k_, int *I_, int *J_, Init ini=INIT, const AT &a=AT()) : memEle(k_), memI(), memJ(), ele((AT*)memEle.get()), I(I_), J(J_), m(n_), n(n_), k(k_) {
+        explicit Matrix(int n_, int k_, int *I_, int *J_, Init ini=INIT, const AT &a=AT()) : memEle(k_), memI(), memJ(), ele((AT*)memEle.get()), I(I_), J(J_), n(n_), k(k_) {
 	  init(a);
         }
 
@@ -93,9 +93,9 @@ namespace fmatvec {
 	~Matrix() = default;
 
         Matrix<SymmetricSparse,Ref,Ref,AT>& resize(int n_, int k_, Noinit) {
-            m = n_; n = n_; k = k_;
+            n = n_; k = k_;
             memEle.resize(k);
-            memI.resize(m+1);
+            memI.resize(n+1);
             memJ.resize(k);
             ele = (AT*)memEle.get();
             I = (int*)memI.get();
@@ -103,7 +103,7 @@ namespace fmatvec {
             return *this;
         }
 
-        Matrix<SymmetricSparse,Ref,Ref,AT>& resize(int n, int k, Init ini=INIT, const AT &a=AT()) { return resize(m,k,Noinit()).init(a); }
+        Matrix<SymmetricSparse,Ref,Ref,AT>& resize(int n, int k, Init ini=INIT, const AT &a=AT()) { return resize(n,k,Noinit()).init(a); }
 
         //! Resize a symmetric sparse matrix
         void resize(int n, int m) {
@@ -119,7 +119,7 @@ namespace fmatvec {
 	 * \return A reference to the calling matrix.
 	 * */
 	inline Matrix<SymmetricSparse,Ref,Ref,AT>& operator=(const Matrix<SymmetricSparse,Ref,Ref,AT> &A) {
-          FMATVEC_ASSERT(m == A.m, AT);
+          FMATVEC_ASSERT(n == A.n, AT);
           FMATVEC_ASSERT(k == A.k, AT);
           return copy(A);
         }
@@ -133,7 +133,7 @@ namespace fmatvec {
         template<class Type, class Row, class Col>
 	inline Matrix<SymmetricSparse,Ref,Ref,AT>& operator=(const Matrix<Type,Row,Col,AT> &A) {
           FMATVEC_ASSERT(A.rows() == A.cols(), AT);
-          FMATVEC_ASSERT(m == A.cols(), AT);
+          FMATVEC_ASSERT(n == A.cols(), AT);
           FMATVEC_ASSERT(k == A.nonZeroElements(), AT);
           return copy(A);
         }
@@ -145,7 +145,6 @@ namespace fmatvec {
 	 * \return A reference to the calling matrix.
 	 * */
         inline Matrix<SymmetricSparse,Ref,Ref,AT>& operator&=(Matrix<SymmetricSparse,Ref,Ref,AT> &A) {
-          m=A.m;
           n=A.n;
           k=A.k;
           memEle = A.memEle;
@@ -168,7 +167,7 @@ namespace fmatvec {
 	inline Matrix<SymmetricSparse,Ref,Ref,AT>& operator<<=(const Matrix<Type,Row,Col,AT> &A) {
           FMATVEC_ASSERT(A.rows() == A.cols(), AT);
           int k_ = A.nonZeroElements();
-          if(m!=A.rows() || k!=k_) resize(A.rows(),k_,NONINIT);
+          if(n!=A.rows() || k!=k_) resize(A.rows(),k_,NONINIT);
           return copy(A);
         }
 
@@ -190,16 +189,37 @@ namespace fmatvec {
 	}
 
         AT& operator()(int i, int j) {
-          throw std::runtime_error("Matrix<SymmetricSparse, Ref, Ref, AT>::operator(int i, int j) is not implemented.");
-        }
+	  FMATVEC_ASSERT(i>=0, AT);
+	  FMATVEC_ASSERT(j>=0, AT);
+	  FMATVEC_ASSERT(i<n, AT);
+	  FMATVEC_ASSERT(j<n, AT);
+
+	  return e(i,j);
+	}
 
         const AT& operator()(int i, int j) const {
-          throw std::runtime_error("Matrix<SymmetricSparse, Ref, Ref, AT>::operator(int i, int j) const is not implemented.");
-        }
+	  FMATVEC_ASSERT(i>=0, AT);
+	  FMATVEC_ASSERT(j>=0, AT);
+	  FMATVEC_ASSERT(i<n, AT);
+	  FMATVEC_ASSERT(j<n, AT);
 
-        int ldim() {
-          throw std::runtime_error("Matrix<SymmetricSparse, Ref, Ref, AT>::ldim() cannot be called.");
-        }
+	  return e(i,j);
+	}
+
+	AT& e(int i, int j) {
+	  return ele[pos(i,j)];
+	}
+
+	const AT& e(int i, int j) const {
+	  return ele[pos(i,j)];
+	}
+
+	int pos(int i, int j) const {
+	  for(int k=I[i]; k<I[i+1]; k++)
+	    if(J[k]==j)
+	      return k;
+	  return 0;
+	}
 
 	/*! \brief Pointer operator.
 	 *
@@ -243,7 +263,7 @@ namespace fmatvec {
 	 *
 	 * \return The number of rows of the matrix
 	 * */
-	int rows() const {return m;}
+	int rows() const {return n;}
 
 	/*! \brief Number of columns.
 	 *
@@ -278,20 +298,20 @@ namespace fmatvec {
       int k=0;
       int i;
       for(i=0; i<A.rows(); i++) {
-	ele[k]=A(i,i);
+	ele[k]=A.e(i,i);
 	J[k]=i;
 	I[i]=k++;
 	for(int j=0; j<i; j++) {
 	  // TODO eps
-	  if(fabs(A(i,j))>1e-16) {
-	    ele[k]=A(i,j);
+	  if(fabs(A.e(i,j))>1e-16) {
+	    ele[k]=A.e(i,j);
 	    J[k++]=j;
 	  }
 	}
 	for(int j=i+1; j<A.cols(); j++) {
 	  // TODO eps
-	  if(fabs(A(i,j))>1e-16) {
-	    ele[k]=A(i,j);
+	  if(fabs(A.e(i,j))>1e-16) {
+	    ele[k]=A.e(i,j);
 	    J[k++]=j;
 	  }
 	}
@@ -305,20 +325,13 @@ namespace fmatvec {
       int k=0;
       int i;
       for(i=0; i<A.size(); i++) {
-        ele[k]=A(i,i);
+        ele[k]=A.ej(i,i);
         J[k]=i;
         I[i]=k++;
-        for(int j=0; j<i; j++) {
-          // TODO eps
-          if(fabs(A(i,j))>1e-16) {
-            ele[k]=A(i,j);
-            J[k++]=j;
-          }
-        }
         for(int j=i+1; j<A.size(); j++) {
           // TODO eps
-          if(fabs(A(i,j))>1e-16) {
-            ele[k]=A(i,j);
+          if(fabs(A.ej(i,j))>1e-16) {
+            ele[k]=A.ej(i,j);
             J[k++]=j;
           }
         }
@@ -329,7 +342,7 @@ namespace fmatvec {
 
   template <class AT>
     inline Matrix<SymmetricSparse,Ref,Ref,AT>& Matrix<SymmetricSparse,Ref,Ref,AT>::copy(const Matrix<SymmetricSparse,Ref,Ref,AT> &A) {
-      for(int i=0; i<=m; i++) {
+      for(int i=0; i<=n; i++) {
 	I[i] = A.I[i];
       }
       for(int i=0; i<k; i++) {
