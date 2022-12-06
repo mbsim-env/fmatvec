@@ -221,6 +221,10 @@ namespace fmatvec {
 	  return 0;
 	}
 
+	int ldim() {
+          throw std::runtime_error("Matrix<SymmetricSparse, Ref, Ref, AT>::ldim() cannot be called.");
+        }
+
 	/*! \brief Pointer operator.
 	 *
 	 * See Ip() 
