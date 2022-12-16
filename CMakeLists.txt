@@ -17,6 +17,11 @@ endif()
 # Adhere to GNU filesystem layout conventions
 include(GNUInstallDirs)
 
+# clang compile DB
+set(CMAKE_EXPORT_COMPILE_COMMANDS True)
+execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
+  ${CMAKE_BINARY_DIR}/compile_commands.json ${CMAKE_SOURCE_DIR}/compile_commands.json)
+
 ################################################################################
 ### Search for dependencies ####################################################
 ################################################################################
