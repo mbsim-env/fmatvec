@@ -42,8 +42,8 @@ namespace fmatvec {
 
     public:
       static constexpr bool isVector {false};
-      typedef AT value_type;
-      typedef General shape_type;
+      using value_type = AT;
+      using shape_type = General;
 
  /// @cond NO_SHOW
 
@@ -69,13 +69,13 @@ namespace fmatvec {
       explicit Matrix(int m, int n, Eye ini, const AT &a=1) : M(m), ele(new AT[M*N]) {  FMATVEC_ASSERT(n==N, AT); init(ini,a); }
 
       // move
-      Matrix(Matrix<General,Var,Fixed<N>,AT> &&src) {
+      Matrix(Matrix<General,Var,Fixed<N>,AT> &&src)  noexcept {
         M=src.M;
         src.M=0;
         ele=src.ele;
         src.ele=nullptr;
       }
-      Matrix<General,Var,Fixed<N>,AT>& operator=(Matrix<General,Var,Fixed<N>,AT> &&src) {
+      Matrix<General,Var,Fixed<N>,AT>& operator=(Matrix<General,Var,Fixed<N>,AT> &&src)  noexcept {
         FMATVEC_ASSERT(M == src.rows(), AT);
         src.M=0;
         delete[]ele;
@@ -130,8 +130,8 @@ namespace fmatvec {
       Matrix(const std::string &strs);
       Matrix(const char *strs);
 
-      typedef AT* iterator;
-      typedef const AT* const_iterator;
+      using iterator = AT *;
+      using const_iterator = const AT *;
       iterator begin() { return &ele[0]; }
       iterator end() { return &ele[M*N]; }
       const_iterator begin() const { return &ele[0]; }

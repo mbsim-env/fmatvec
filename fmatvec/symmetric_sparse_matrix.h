@@ -63,8 +63,8 @@ namespace fmatvec {
       public:
         static constexpr bool isVector {false};
 
-        typedef AT value_type;
-        typedef SymmetricSparse shape_type;
+        using value_type = AT;
+        using shape_type = SymmetricSparse;
 
 	/*! \brief Standard constructor
 	 *

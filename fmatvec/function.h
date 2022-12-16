@@ -11,11 +11,11 @@ namespace fmatvec {
  * a assign operator (=) with a double or Vec.
  */
 class ErrorType {
+  public:
 #if !defined(SWIG) && !defined(MBSIM_COMPILE_SWIG)
-  ErrorType() = delete;
+    ErrorType() = delete;
 #else
   // SWIG instantiats everything. Hence, we allow this for SWIG but throw a runtime error
-  public:
     ErrorType() {
       throw std::runtime_error("Impossible type.");
     }
@@ -106,7 +106,7 @@ struct StaticSize<SquareMatrix<Shape, AT>> {
  */
 template<typename Dep, typename Indep>
 struct Der {
-  typedef ErrorType type;
+  using type = ErrorType;
 };
 
 /*! Defines the type of the derivative of a value of type Dep with respect to a scalar as type Dep.
@@ -114,7 +114,7 @@ struct Der {
  */
 template<typename Dep>
 struct Der<Dep, double> {
-  typedef Dep type;
+  using type = Dep;
 };
 
 /*! Defines the type of the derivative of a scalar with respect to a vector as row vector.
@@ -124,7 +124,7 @@ struct Der<Dep, double> {
  */
 template<typename IndepVecShape>
 struct Der<double, Vector<IndepVecShape, double>> {
-  typedef RowVector<IndepVecShape, double> type;
+  using type = RowVector<IndepVecShape, double>;
 };
 
 /*! Defines the type of the derivative of a vector with respect to a vector as matrix.
@@ -134,7 +134,7 @@ struct Der<double, Vector<IndepVecShape, double>> {
  */
 template<typename DepVecShape, typename IndepVecShape>
 struct Der<Vector<DepVecShape, double>, Vector<IndepVecShape, double>> {
-  typedef Matrix<General, DepVecShape, IndepVecShape, double> type;
+  using type = Matrix<General, DepVecShape, IndepVecShape, double>;
 };
 
 /*! Defines the type of the derivative of a rotation matrix with respect to a scalar as vector.
@@ -149,7 +149,7 @@ struct Der<Vector<DepVecShape, double>, Vector<IndepVecShape, double>> {
  */
 template<>
 struct Der<Matrix<Rotation, Fixed<3>, Fixed<3>, double>, double> {
-  typedef Vector<Fixed<3>, double> type;
+  using type = Vector<Fixed<3>, double>;
 };
 
 /*! Defines the type of the derivative of a rotation matrix with respect to a vector as matrix.
@@ -168,7 +168,7 @@ struct Der<Matrix<Rotation, Fixed<3>, Fixed<3>, double>, double> {
  */
 template<typename IndepVecShape>
 struct Der<Matrix<Rotation, Fixed<3>, Fixed<3>, double>, Vector<IndepVecShape, double>> {
-  typedef Matrix<General, Fixed<3>, IndepVecShape, double> type;
+  using type = Matrix<General, Fixed<3>, IndepVecShape, double>;
 };
 
 /*! Defines the resulting type of the directional derivative of a value of type Dep with respect to a value of type Indep.
@@ -176,7 +176,7 @@ struct Der<Matrix<Rotation, Fixed<3>, Fixed<3>, double>, Vector<IndepVecShape, d
  */
 template<typename Dep, typename Indep>
 struct DirDer {
-  typedef Dep type;
+  using type = Dep;
 };
 
 /*! Defines the resulting type of the directional derivative of a value of type Dep with respect to a value of type Indep.
@@ -184,7 +184,7 @@ struct DirDer {
  */
 template<typename Indep>
 struct DirDer<Matrix<Rotation, Fixed<3>, Fixed<3>, double>, Indep> {
-  typedef Vector<Fixed<3>, double> type;
+  using type = Vector<Fixed<3>, double>;
 };
 
 /*! A function object of arbitary type (defined like in std::function).

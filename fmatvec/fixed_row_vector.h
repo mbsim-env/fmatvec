@@ -42,10 +42,10 @@ namespace fmatvec {
     public:
       static constexpr bool isVector {true};
 
-      typedef AT* iterator;
-      typedef const AT* const_iterator;
+      using iterator = AT *;
+      using const_iterator = const AT *;
 
-      typedef AT value_type;
+      using value_type = AT;
 
     /// @cond NO_SHOW
     

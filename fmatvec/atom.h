@@ -128,7 +128,7 @@ class FMATVEC_EXPORT PrePostfixedStream : public std::ostream {
   private:
     class FMATVEC_EXPORT StringBuf : public std::stringbuf {
       public:
-        StringBuf(const std::string &prefix_, const std::string &postfix_, const std::function<void(const std::string &)> &f_);
+        StringBuf(std::string prefix_, std::string postfix_, const std::function<void(const std::string &)> &f_);
       protected:
         int sync() override;
         std::string prefix;
@@ -147,11 +147,11 @@ class FMATVEC_EXPORT AdoptCurrentMessageStreamsUntilScopeExit {
     //! The current message streams are reset to the saved ones when this object goes out of scope.
     AdoptCurrentMessageStreamsUntilScopeExit(const Atom* src);
     ~AdoptCurrentMessageStreamsUntilScopeExit();
-  private:
     AdoptCurrentMessageStreamsUntilScopeExit(const AdoptCurrentMessageStreamsUntilScopeExit& other) = delete;
     AdoptCurrentMessageStreamsUntilScopeExit(AdoptCurrentMessageStreamsUntilScopeExit&& other) noexcept = delete;
     AdoptCurrentMessageStreamsUntilScopeExit& operator=(const AdoptCurrentMessageStreamsUntilScopeExit& other) = delete;
     AdoptCurrentMessageStreamsUntilScopeExit& operator=(AdoptCurrentMessageStreamsUntilScopeExit&& other) noexcept = delete;
+  private:
     std::array<std::pair<std::shared_ptr<bool>, std::shared_ptr<std::ostream>>, Atom::SIZE> savedStreams;
 };
 

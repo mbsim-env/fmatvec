@@ -59,7 +59,7 @@
 
 #include <complex>
 
-typedef std::complex<double> doublecomplex;
+using doublecomplex = std::complex<double>;
 
 #if defined(HAVE_LIBBLAS)
 namespace fmatvec {

@@ -327,7 +327,7 @@ ByteCode::ByteCode() {
     argsPtr[i] = &argsValue[i];
 }
 
-ByteCode::ByteCode(ByteCode &&) {
+ByteCode::ByteCode(ByteCode &&) noexcept {
   assert(0 && "ByteCode cannot be moved or copied. But the move-ctor is defined to allow in-place construction e.g. using emplace_back.");
 }
 

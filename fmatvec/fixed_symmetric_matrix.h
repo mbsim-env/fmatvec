@@ -50,8 +50,8 @@ namespace fmatvec {
 
     public:
       static constexpr bool isVector {false};
-      typedef AT value_type;
-      typedef Symmetric shape_type;
+      using value_type = AT;
+      using shape_type = Symmetric;
 
       explicit Matrix(Noinit ini) { }
       explicit Matrix(Init ini=INIT, const AT &a=AT()) { init(a); }

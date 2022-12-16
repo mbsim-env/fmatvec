@@ -1427,7 +1427,7 @@ namespace fmatvec {
   inline Matrix<Diagonal, Ref, Ref, double> operator*(const double &alpha, Matrix<Diagonal, Ref, Ref, double> &&A) {
     for (int i = 0; i < A.rows(); i++)
       A.e(i) *= alpha;
-    return std::move(A);
+    return A;
   }
 
   template <class AT1, class AT2>
@@ -1441,7 +1441,7 @@ namespace fmatvec {
   inline Matrix<Diagonal, Ref, Ref, double> operator*(Matrix<Diagonal, Ref, Ref, double> &&A, const double &alpha) {
     for (int i = 0; i < A.size(); i++)
       A.e(i) *= alpha;
-    return std::move(A);
+    return A;
   }
 
   template <class Type, class Row, class Col, class AT1, class AT2>
