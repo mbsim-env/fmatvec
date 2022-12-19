@@ -529,7 +529,7 @@ namespace fmatvec {
           throw std::runtime_error("The rows of the input have different length.");
         for(int c=r; c<cols(); c++) {
           ej(r,c)=m[r][c];
-          if(c>r && abs(m[r][c]-m[c][r])>abs(m[r][c])*1e-13+1e-13)
+          if(c>r && abs(m[r][c]-m[c][r])>abs(m[r][c]*1e-13+1e-13))
             throw std::runtime_error("The input is not symmetric.");
         }
       }
