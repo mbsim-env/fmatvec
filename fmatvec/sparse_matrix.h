@@ -63,8 +63,8 @@ namespace fmatvec {
       public:
         static constexpr bool isVector {false};
 
-        typedef AT value_type;
-        typedef Sparse shape_type;
+        using value_type = AT;
+        using shape_type = Sparse;
 
 	/*! \brief Standard constructor
 	 *
@@ -188,12 +188,37 @@ namespace fmatvec {
 	}
 
         AT& operator()(int i, int j) {
-          throw std::runtime_error("Matrix<Sparse, Ref, Ref, AT>::operator(int i, int j) is not implemented.");
-        }
+	  FMATVEC_ASSERT(i>=0, AT);
+	  FMATVEC_ASSERT(j>=0, AT);
+	  FMATVEC_ASSERT(i<m, AT);
+	  FMATVEC_ASSERT(j<n, AT);
+
+	  return e(i,j);
+	}
 
         const AT& operator()(int i, int j) const {
-          throw std::runtime_error("Matrix<Sparse, Ref, Ref, AT>::operator(int i, int j) const is not implemented.");
-        }
+	  FMATVEC_ASSERT(i>=0, AT);
+	  FMATVEC_ASSERT(j>=0, AT);
+	  FMATVEC_ASSERT(i<m, AT);
+	  FMATVEC_ASSERT(j<n, AT);
+
+	  return e(i,j);
+	}
+
+	AT& e(int i, int j) {
+	  return ele[pos(i,j)];
+	}
+
+	const AT& e(int i, int j) const {
+	  return ele[pos(i,j)];
+	}
+
+	int pos(int i, int j) const {
+	  for(int k=I[i]; k<I[i+1]; k++)
+	    if(J[k]==j)
+	      return k;
+	  return 0;
+	}
 
         int ldim() {
           throw std::runtime_error("Matrix<Sparse, Ref, Ref, AT>::ldim() cannot be called.");
@@ -270,20 +295,20 @@ namespace fmatvec {
       int k=0;
       int i;
       for(i=0; i<A.rows(); i++) {
-	ele[k]=A(i,i);
+	ele[k]=A.e(i,i);
 	J[k]=i;
 	I[i]=k++;
 	for(int j=0; j<i; j++) {
 	  // TODO eps
-	  if(fabs(A(i,j))>1e-16) {
-	    ele[k]=A(i,j);
+	  if(fabs(A.e(i,j))>1e-16) {
+	    ele[k]=A.e(i,j);
 	    J[k++]=j;
 	  }
 	}
 	for(int j=i+1; j<A.cols(); j++) {
 	  // TODO eps
-	  if(fabs(A(i,j))>1e-16) {
-	    ele[k]=A(i,j);
+	  if(fabs(A.e(i,j))>1e-16) {
+	    ele[k]=A.e(i,j);
 	    J[k++]=j;
 	  }
 	}
@@ -297,20 +322,20 @@ namespace fmatvec {
       int k=0;
       int i;
       for(i=0; i<A.size(); i++) {
-        ele[k]=A(i,i);
+        ele[k]=A.ej(i,i);
         J[k]=i;
         I[i]=k++;
         for(int j=0; j<i; j++) {
           // TODO eps
-          if(fabs(A(i,j))>1e-16) {
-            ele[k]=A(i,j);
+          if(fabs(A.ei(i,j))>1e-16) {
+            ele[k]=A.ei(i,j);
             J[k++]=j;
           }
         }
         for(int j=i+1; j<A.size(); j++) {
           // TODO eps
-          if(fabs(A(i,j))>1e-16) {
-            ele[k]=A(i,j);
+          if(fabs(A.ej(i,j))>1e-16) {
+            ele[k]=A.ej(i,j);
             J[k++]=j;
           }
         }

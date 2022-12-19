@@ -44,10 +44,10 @@ namespace fmatvec {
     public:
     static constexpr bool isVector {true};
 
-    typedef AT* iterator;
-    typedef const AT* const_iterator;
+    using iterator = AT *;
+    using const_iterator = const AT *;
 
-    typedef AT value_type;
+    using value_type = AT;
 
     /// @cond NO_SHOW
 
@@ -66,8 +66,8 @@ namespace fmatvec {
       explicit Vector() : Matrix<General,Var,Fixed<1>,AT>() { }
 
       // move
-      Vector(Vector<Var,AT> &&src) : Matrix<General,Var,Fixed<1>,AT>(std::move(src)) {}
-      Vector<Var,AT>& operator=(Vector<Var,AT> &&src) {
+      Vector(Vector<Var,AT> &&src)  noexcept : Matrix<General,Var,Fixed<1>,AT>(std::move(src)) {}
+      Vector<Var,AT>& operator=(Vector<Var,AT> &&src)  noexcept {
         FMATVEC_ASSERT(M == src.size(), AT);
         src.M=0;
         delete[]ele;

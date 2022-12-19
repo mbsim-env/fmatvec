@@ -61,8 +61,8 @@ namespace fmatvec {
     public:
       static constexpr bool isVector {false};
 
-      typedef AT value_type;
-      typedef Diagonal shape_type;
+      using value_type = AT;
+      using shape_type = Diagonal;
 
       /*! \brief Standard constructor
        *

@@ -42,8 +42,8 @@ namespace fmatvec {
     public:
       static constexpr bool isVector {false};
 
-      typedef AT value_type;
-      typedef Square shape_type;
+      using value_type = AT;
+      using shape_type = Square;
 
       /*! \brief Standard constructor
        *
@@ -59,8 +59,8 @@ namespace fmatvec {
       explicit SquareMatrix(int m, Eye ini, const AT &a=1) : Matrix<General,Var,Var,AT>(m,m,ini,a) { } 
 
       // move
-      SquareMatrix(SquareMatrix<Var,AT> &&src) : Matrix<General,Var,Var,AT>(std::move(src)) {}
-      SquareMatrix<Var,AT>& operator=(SquareMatrix<Var,AT> &&src) {
+      SquareMatrix(SquareMatrix<Var,AT> &&src)  noexcept : Matrix<General,Var,Var,AT>(std::move(src)) {}
+      SquareMatrix<Var,AT>& operator=(SquareMatrix<Var,AT> &&src)  noexcept {
         M=src.M;
         src.M=0;
         this->N=src.N;

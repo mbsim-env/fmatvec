@@ -44,8 +44,8 @@ namespace fmatvec {
     public:
       static constexpr bool isVector {false};
 
-      typedef AT value_type;
-      typedef General shape_type;
+      using value_type = AT;
+      using shape_type = General;
 
  /// @cond NO_SHOW
 
@@ -58,7 +58,7 @@ namespace fmatvec {
 
       template<bool Const>
       class Iterator {
-        typedef Matrix<General,Ref,Ref,AT> Mat;
+        using Mat = Matrix<General, Ref, Ref, AT>;
         public:
           Iterator(std::conditional_t<Const, const Mat, Mat> &mat_, int row_, int col_) : mat(mat_), row(row_), col(col_) {}
           bool operator!=(const Iterator& x) const { return row!=x.row || col!=x.col; }
@@ -169,8 +169,8 @@ namespace fmatvec {
        * */
       ~Matrix() = default;
 
-      typedef Iterator<false> iterator;
-      typedef Iterator<true> const_iterator;
+      using iterator = Iterator<false>;
+      using const_iterator = Iterator<true>;
       iterator begin() { return iterator(*this,0,0); }
       iterator end() { return iterator(*this,0,n); }
       const_iterator begin() const { return const_iterator(*this,0,0); }

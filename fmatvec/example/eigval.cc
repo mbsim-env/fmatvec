@@ -16,8 +16,8 @@ int main() {
   assert(feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)!=-1);
 #endif
 
-  double in[4]{2.0, 30.0, 20.0, 4.0};
-  const SquareMatrix<Ref, double> A(2, in);
+  array<double,4> in{2.0, 30.0, 20.0, 4.0};
+  const SquareMatrix<Ref, double> A(2, in.data());
   Vector<Ref, std::complex<double>> eigenValues = eigval(A);
 
   // https://www.arndt-bruenner.de/mathe/scripts/engl_eigenwert2.htm

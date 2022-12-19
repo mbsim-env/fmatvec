@@ -6,6 +6,7 @@ config.guess
 config.h.in
 config.sub
 configure
+compile_commands.json
 depcomp
 doc/Makefile.in
 fmatvec/Makefile.in

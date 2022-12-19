@@ -96,8 +96,8 @@ PrePostfixedStream::PrePostfixedStream(const string &prefix, const string &postf
   rdbuf(&buffer);
 }
 
-PrePostfixedStream::StringBuf::StringBuf(const string &prefix_, const string &postfix_, const function<void(const string&)> &f_) :
-  stringbuf(ios_base::out), prefix(prefix_), postfix(postfix_), f(f_) {}
+PrePostfixedStream::StringBuf::StringBuf(string prefix_, string postfix_, const function<void(const string&)> &f_) :
+  stringbuf(ios_base::out), prefix(std::move(prefix_)), postfix(std::move(postfix_)), f(f_) {}
 
 int PrePostfixedStream::StringBuf::sync() {
   f(prefix+str()+postfix);
@@ -107,7 +107,7 @@ int PrePostfixedStream::StringBuf::sync() {
 
 AdoptCurrentMessageStreamsUntilScopeExit::AdoptCurrentMessageStreamsUntilScopeExit(const Atom* src) {
   for(int t=0; t<Atom::SIZE; ++t) {
-    Atom::MsgType type=static_cast<Atom::MsgType>(t);
+    auto type=static_cast<Atom::MsgType>(t);
     savedStreams[type].first =Atom::_msgActStatic[type];
     savedStreams[type].second=Atom::_msgSavedStatic[type];
     Atom::setCurrentMessageStream(type, src->_msgAct[type], src->_msgSaved[type]);
@@ -116,7 +116,7 @@ AdoptCurrentMessageStreamsUntilScopeExit::AdoptCurrentMessageStreamsUntilScopeEx
 
 AdoptCurrentMessageStreamsUntilScopeExit::~AdoptCurrentMessageStreamsUntilScopeExit() {
   for(int t=0; t<Atom::SIZE; ++t) {
-    Atom::MsgType type=static_cast<Atom::MsgType>(t);
+    auto type=static_cast<Atom::MsgType>(t);
     Atom::setCurrentMessageStream(type, savedStreams[type].first, savedStreams[type].second);
   }
 }

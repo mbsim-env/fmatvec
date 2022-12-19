@@ -50,8 +50,8 @@ namespace fmatvec {
 
     public:
       static constexpr bool isVector {false};
-      typedef AT value_type;
-      typedef Symmetric shape_type;
+      using value_type = AT;
+      using shape_type = Symmetric;
 
       explicit Matrix(Noinit ini) { }
       explicit Matrix(Init ini=INIT, const AT &a=AT()) { init(a); }
@@ -330,7 +330,7 @@ namespace fmatvec {
         for(int c=r; c<cols(); c++) {
           using std::abs;
           ej(r,c)=m[r][c];
-          if(c>r && abs(m[r][c]-m[c][r])>abs(m[r][c])*1e-13+1e-13)
+          if(c>r && abs(m[r][c]-m[c][r])>abs(m[r][c]*1e-13+1e-13))
             throw std::runtime_error("The input is not symmetric.");
         }
       }

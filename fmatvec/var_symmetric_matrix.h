@@ -53,8 +53,8 @@ namespace fmatvec {
 
     public:
       static constexpr bool isVector {false};
-      typedef AT value_type;
-      typedef Symmetric shape_type;
+      using value_type = AT;
+      using shape_type = Symmetric;
 
       /*! \brief Standard constructor
        *
@@ -71,13 +71,13 @@ namespace fmatvec {
       explicit Matrix(int m, int n, Eye ini, const AT &a=1) : M(m), ele(new AT[M*M]) { init(ini,a); }
 
       // move
-      Matrix(Matrix<Symmetric,Var,Var,AT> &&src) {
+      Matrix(Matrix<Symmetric,Var,Var,AT> &&src)  noexcept {
         M=src.M;
         src.M=0;
         ele=src.ele;
         src.ele=nullptr;
       }
-      Matrix<Symmetric,Var,Var,AT>& operator=(Matrix<Symmetric,Var,Var,AT> &&src) {
+      Matrix<Symmetric,Var,Var,AT>& operator=(Matrix<Symmetric,Var,Var,AT> &&src)  noexcept {
         FMATVEC_ASSERT(M == src.M, AT);
         src.M=0;
         delete[]ele;
@@ -495,7 +495,7 @@ namespace fmatvec {
           throw std::runtime_error("The rows of the input have different length.");
         for(int c=r; c<cols(); c++) {
           ej(r,c)=m[r][c];
-          if(c>r && abs(m[r][c]-m[c][r])>abs(m[r][c])*1e-13+1e-13)
+          if(c>r && abs(m[r][c]-m[c][r])>abs(m[r][c]*1e-13+1e-13))
             throw std::runtime_error("The input is not symmetric.");
 	}
       }

@@ -59,7 +59,7 @@ namespace fmatvec {
    * \param eigenvalues A vector, containing the nev eigenvalues closest to sigma at the end of the function.
    * \return void
    * */
-  FMATVEC_EXPORT int eigvec(const Matrix<SymmetricSparse, Ref, Ref, double> &A, const Matrix<SymmetricSparse, Ref, Ref, double> &M, int nev, double sigma, Matrix<General, Ref, Ref, double> &eigenvectors, Vector<Ref, double> &eigenvalues);
+  FMATVEC_EXPORT int eigvec(const Matrix<SymmetricSparse, Ref, Ref, double> &A, const Matrix<SymmetricSparse, Ref, Ref, double> &M, int nev, double sigma, Matrix<General, Ref, Ref, double> &eigenvectors, Vector<Ref, double> &eigenvalues, double tol_=0);
 }
 
 #endif

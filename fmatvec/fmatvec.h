@@ -55,128 +55,128 @@ namespace fmatvec {
    *  
    *  Mat is an abbreviation for general matrices of type double.
    * */
-  typedef Matrix<General, Ref, Ref, double> Mat;
+  using Mat = Matrix<General, Ref, Ref, double>;
 
   /*! 
    *  \brief Vector
    *  
    *  Vec is an abbreviation for vectors of type double.
    * */
-  typedef Vector<Ref, double> Vec;
+  using Vec = Vector<Ref, double>;
 
   /*! 
    *  \brief Row vector
    *  
    *  RowVec is an abbreviation for row vectors of type double.
    * */
-  typedef RowVector<Ref, double> RowVec;
+  using RowVec = RowVector<Ref, double>;
 
   /*! 
    *  \brief Square matrix
    *  
    *  SqrMat is an abbreviation for square matrices of type double.
    * */
-  typedef SquareMatrix<Ref, double> SqrMat;
+  using SqrMat = SquareMatrix<Ref, double>;
 
   /*! 
    *  \brief Diagonal matrix
    *  
    *  DiagMat is an abbreviation for diagonal matrices of type double.
    * */
-  typedef Matrix<Diagonal, Ref, Ref, double> DiagMat;
+  using DiagMat = Matrix<Diagonal, Ref, Ref, double>;
 
   /*! 
    *  \brief Symmetric matrix
    *  
    *  SymMat is an abbreviation for symmetric matrices of type double.
    * */
-  typedef Matrix<Symmetric, Ref, Ref, double> SymMat;
+  using SymMat = Matrix<Symmetric, Ref, Ref, double>;
 
   /*! 
    *  \brief Band matrix
    *  
    *  BandMat is an abbreviation for band matrices of type double.
    * */
-  typedef Matrix<GeneralBand, Ref, Ref, double> BandMat;
+  using BandMat = Matrix<GeneralBand, Ref, Ref, double>;
 
-  typedef Matrix<Sparse, Ref, Ref, double> SparseMat;
+  using SparseMat = Matrix<Sparse, Ref, Ref, double>;
 
-  typedef Matrix<SymmetricSparse, Ref, Ref, double> SymSparseMat;
+  using SymSparseMat = Matrix<SymmetricSparse, Ref, Ref, double>;
 
-  typedef Vector<Ref, int> VecInt;
-  typedef Vector<Var, int> VecVI;
+  using VecInt = Vector<Ref, int>;
+  using VecVI = Vector<Var, int>;
 
   /* Typedefs for Fixed types */
 
   //Column Vectors
-  typedef Vector<Fixed<1>, double> Vec1;
-  typedef Vector<Fixed<2>, double> Vec2;
-  typedef Vector<Fixed<2>, int> Vec2I;
-  typedef Vector<Fixed<3>, double> Vec3;
-  typedef Vector<Fixed<4>, double> Vec4;
+  using Vec1 = Vector<Fixed<1>, double>;
+  using Vec2 = Vector<Fixed<2>, double>;
+  using Vec2I = Vector<Fixed<2>, int>;
+  using Vec3 = Vector<Fixed<3>, double>;
+  using Vec4 = Vector<Fixed<4>, double>;
 
-  typedef Vector<Fixed<11>, double> Vec11;
-  typedef Vector<Fixed<16>, double> Vec16;
+  using Vec11 = Vector<Fixed<11>, double>;
+  using Vec16 = Vector<Fixed<16>, double>;
 
   //Row Vectors
-  typedef RowVector<Fixed<1>, double> RowVec1;
-  typedef RowVector<Fixed<2>, double> RowVec2;
-  typedef RowVector<Fixed<3>, double> RowVec3;
-  typedef RowVector<Fixed<4>, double> RowVec4;
+  using RowVec1 = RowVector<Fixed<1>, double>;
+  using RowVec2 = RowVector<Fixed<2>, double>;
+  using RowVec3 = RowVector<Fixed<3>, double>;
+  using RowVec4 = RowVector<Fixed<4>, double>;
 
-  typedef RowVector<Fixed<11>, double> RowVec11;
-  typedef RowVector<Fixed<16>, double> RowVec16;
+  using RowVec11 = RowVector<Fixed<11>, double>;
+  using RowVec16 = RowVector<Fixed<16>, double>;
 
   //General Matrices
-  typedef Matrix<General, Fixed<3>, Fixed<3>, double> Mat3x3;
-  typedef Matrix<General, Fixed<3>, Fixed<2>, double> Mat3x2;
-  typedef Matrix<General, Fixed<3>, Fixed<11>, double> Mat3x11;
-  typedef Matrix<General, Fixed<3>, Fixed<16>, double> Mat3x16;
+  using Mat3x3 = Matrix<General, Fixed<3>, Fixed<3>, double>;
+  using Mat3x2 = Matrix<General, Fixed<3>, Fixed<2>, double>;
+  using Mat3x11 = Matrix<General, Fixed<3>, Fixed<11>, double>;
+  using Mat3x16 = Matrix<General, Fixed<3>, Fixed<16>, double>;
 
-  typedef Matrix<General, Fixed<4>, Fixed<16>, double> Mat4x16;
+  using Mat4x16 = Matrix<General, Fixed<4>, Fixed<16>, double>;
 
-  typedef Matrix<General, Fixed<16>, Fixed<3>, double> Mat16x3;
-  typedef Matrix<General, Fixed<16>, Fixed<4>, double> Mat16x4;
+  using Mat16x3 = Matrix<General, Fixed<16>, Fixed<3>, double>;
+  using Mat16x4 = Matrix<General, Fixed<16>, Fixed<4>, double>;
 
   //Square Matrices
-  typedef SquareMatrix<Fixed<1>, double> SqrMat1;
-  typedef SquareMatrix<Fixed<2>, double> SqrMat2;
-  typedef SquareMatrix<Fixed<3>, double> SqrMat3;
-  typedef SquareMatrix<Fixed<11>, double> SqrMat11;
-  typedef SquareMatrix<Fixed<16>, double> SqrMat16;
+  using SqrMat1 = SquareMatrix<Fixed<1>, double>;
+  using SqrMat2 = SquareMatrix<Fixed<2>, double>;
+  using SqrMat3 = SquareMatrix<Fixed<3>, double>;
+  using SqrMat11 = SquareMatrix<Fixed<11>, double>;
+  using SqrMat16 = SquareMatrix<Fixed<16>, double>;
 
   //Symmetric Matrices
-  typedef Matrix<Symmetric, Fixed<3>, Fixed<3>, double> SymMat3;
-  typedef Matrix<Symmetric, Fixed<4>, Fixed<4>, double> SymMat4;
+  using SymMat3 = Matrix<Symmetric, Fixed<3>, Fixed<3>, double>;
+  using SymMat4 = Matrix<Symmetric, Fixed<4>, Fixed<4>, double>;
 
-  typedef Matrix<Symmetric, Var, Var, double> SymMatV;
+  using SymMatV = Matrix<Symmetric, Var, Var, double>;
 
-  typedef Matrix<General, Var, Var, double> MatV;
+  using MatV = Matrix<General, Var, Var, double>;
 
-  typedef Matrix<General, Var, Var, int> MatVI;
+  using MatVI = Matrix<General, Var, Var, int>;
 
-  typedef SquareMatrix<Var, double> SqrMatV;
+  using SqrMatV = SquareMatrix<Var, double>;
 
-  typedef Vector<Var, double> VecV;
+  using VecV = Vector<Var, double>;
 
-  typedef RowVector<Var, double> RowVecV;
-  typedef RowVector<Var, int> RowVecVI;
+  using RowVecV = RowVector<Var, double>;
+  using RowVecVI = RowVector<Var, int>;
 
   //Rotation Matrices
-  typedef Matrix<Rotation, Fixed<3>, Fixed<3>, double> RotMat3;
+  using RotMat3 = Matrix<Rotation, Fixed<3>, Fixed<3>, double>;
 
   /*Typedefs for mixed size */
 
-  typedef Matrix<General, Fixed<2>, Var, double> Mat2xV;
-  typedef Matrix<General, Var, Fixed<2>, int> MatVx2I;
-  typedef Matrix<General, Fixed<3>, Var, double> Mat3xV;
-  typedef Matrix<General, Fixed<3>, Var, int> Mat3xVI;
+  using Mat2xV = Matrix<General, Fixed<2>, Var, double>;
+  using MatVx2I = Matrix<General, Var, Fixed<2>, int>;
+  using Mat3xV = Matrix<General, Fixed<3>, Var, double>;
+  using Mat3xVI = Matrix<General, Fixed<3>, Var, int>;
 
-  typedef Matrix<General, Var, Fixed<2>, double> MatVx2;
-  typedef Matrix<General, Var, Fixed<3>, double> MatVx3;
-  typedef Matrix<General, Var, Fixed<3>, int> MatVx3I;
+  using MatVx2 = Matrix<General, Var, Fixed<2>, double>;
+  using MatVx3 = Matrix<General, Var, Fixed<3>, double>;
+  using MatVx3I = Matrix<General, Var, Fixed<3>, int>;
 
-  typedef Range<Var,Var> RangeV;
+  using RangeV = Range<Var, Var>;
 
 }
 

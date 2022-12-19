@@ -43,10 +43,10 @@ namespace fmatvec {
     public:
       static constexpr bool isVector {false};
 
-      typedef AT* iterator;
-      typedef const AT* const_iterator;
-      typedef AT value_type;
-      typedef General shape_type;
+      using iterator = AT *;
+      using const_iterator = const AT *;
+      using value_type = AT;
+      using shape_type = General;
 
  /// @cond NO_SHOW
 
@@ -597,8 +597,8 @@ namespace fmatvec {
   template<int M, class AT>
   class Matrix<Rotation,Fixed<M>,Fixed<M>,AT> : public Matrix<General,Fixed<M>,Fixed<M>,AT> {
     public:
-      typedef AT value_type;
-      typedef Rotation shape_type;
+      using value_type = AT;
+      using shape_type = Rotation;
       // Constructors are not inherited. Hence we must redefine all ctors here.
 
       Matrix(Noinit ini) { }

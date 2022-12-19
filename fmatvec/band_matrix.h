@@ -56,8 +56,8 @@ namespace fmatvec {
     public:
       static constexpr bool isVector {false};
 
-      typedef AT value_type;
-      typedef GeneralBand shape_type;
+      using value_type = AT;
+      using shape_type = GeneralBand;
 
       /*! \brief Standard constructor
        *

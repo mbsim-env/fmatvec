@@ -28,11 +28,9 @@
 #include <boost/spirit/home/qi/nonterminal/nonterminal_fwd.hpp>
 #include <boost/spirit/home/karma/nonterminal/nonterminal_fwd.hpp>
 
-namespace boost {
-  namespace spirit {
-    template<typename Elem, typename Traits> class basic_istream_iterator;
-    typedef basic_istream_iterator<char, std::char_traits<char>> istream_iterator;
-  }
+namespace boost::spirit {
+  template<typename Elem, typename Traits> class basic_istream_iterator;
+  using istream_iterator = basic_istream_iterator<char, std::char_traits<char>>;
 }
 
 namespace fmatvec {
