@@ -57,14 +57,14 @@ namespace fmatvec {
 #endif
   }
 
-  int eigvec(const Matrix<SymmetricSparse, Ref, Ref, double> &A, const Matrix<SymmetricSparse, Ref, Ref, double> &M, int nev, double sigma, Matrix<General, Ref, Ref, double> &eigenvectors, Vector<Ref, double> &eigenvalues) {
+  int eigvec(const Matrix<SymmetricSparse, Ref, Ref, double> &A, const Matrix<SymmetricSparse, Ref, Ref, double> &M, int nev, double sigma, Matrix<General, Ref, Ref, double> &eigenvectors, Vector<Ref, double> &eigenvalues, double tol_) {
 #ifdef HAVE_ARPACK
     const char *which = "LM";
     int ido = 0;
     char bmat = 'G';
     int n = A.rows();
     int ldv=n;
-    double tol = 0;
+    double tol = tol_;
     double* resid = new double[n];
     for(int i=0; i<n; i++)
       resid[i] = 0;
