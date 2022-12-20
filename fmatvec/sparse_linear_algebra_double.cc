@@ -76,7 +76,7 @@ namespace fmatvec {
     for(int i=0; i<11; i++)
       iparam[i] = 0;
     iparam[0] = 1;
-    iparam[2] = 300;
+    iparam[2] = 1000;
     iparam[3] = 1;
     iparam[6] = 3;
     int *ipntr = new int[11];
