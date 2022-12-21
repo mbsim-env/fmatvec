@@ -29,7 +29,6 @@
 #ifdef HAVE_ARPACK
 #include "arpack.h"
 #endif
-#include <iostream>
 
 namespace fmatvec {
 
@@ -68,7 +67,7 @@ namespace fmatvec {
     double* resid = new double[n];
     for(int i=0; i<n; i++)
       resid[i] = 0;
-    int ncv = 2*nev;
+    int ncv = 5*nev;
     if(ncv>n)
       ncv = n;
     double *v = new double[ldv*ncv];
