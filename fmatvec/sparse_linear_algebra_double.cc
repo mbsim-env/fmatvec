@@ -23,6 +23,7 @@
 #include "sparse_linear_algebra_double.h"
 #include "linear_algebra_double.h"
 #include "linear_algebra.h"
+#include <iostream>
 #ifdef HAVE_SPOOLES
 #include "spooles.h"
 #endif
