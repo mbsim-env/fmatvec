@@ -395,8 +395,17 @@ namespace fmatvec {
 
   template <int N, class AT>
     inline Matrix<General,Var,Fixed<N>,AT>&  Matrix<General,Var,Fixed<N>,AT>::init(const AT &val) {
+      #if __GNUC__ >= 11
+        // gcc >= 11 triggers a false positive on this code due to init(val) calls from ctor setting M=0
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Warray-bounds"
+        #pragma GCC diagnostic ignored "-Wstringop-overflow"
+      #endif
       for(int i=0; i<M*N; i++) 
         e(i) = val;
+      #if __GNUC__ >= 11
+        #pragma GCC diagnostic pop
+      #endif
       return *this;
     }
 

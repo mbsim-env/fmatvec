@@ -278,11 +278,19 @@ namespace fmatvec {
       }
 
       void unlock() {
+        #if __GNUC__ >= 11
+          // gcc >= 11 triggers a false positive on this code
+          #pragma GCC diagnostic push
+          #pragma GCC diagnostic ignored "-Wuse-after-free"
+        #endif
         size_t refLocal;
         FMATVEC_SYNCPREDEC(refLocal, *ref, fmatvec_refLock)
         if(!refLocal) {
           delete[]reinterpret_cast<AT*>(ref);
         }
+        #if __GNUC__ >= 11
+          #pragma GCC diagnostic pop
+        #endif
       }
 
     public:
