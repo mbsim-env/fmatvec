@@ -278,8 +278,8 @@ namespace fmatvec {
       }
 
       void unlock() {
-        #if __GNUC__ >= 11
-          // gcc >= 11 triggers a false positive on this code
+        #if __GNUC__ >= 12
+          // gcc >= 12 triggers a false positive on this code
           #pragma GCC diagnostic push
           #pragma GCC diagnostic ignored "-Wuse-after-free"
         #endif
@@ -288,7 +288,7 @@ namespace fmatvec {
         if(!refLocal) {
           delete[]reinterpret_cast<AT*>(ref);
         }
-        #if __GNUC__ >= 11
+        #if __GNUC__ >= 12
           #pragma GCC diagnostic pop
         #endif
       }
