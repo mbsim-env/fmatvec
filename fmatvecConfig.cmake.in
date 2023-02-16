@@ -28,11 +28,13 @@ if(NOT TARGET fmatvec-shared AND NOT fmatvec_BINARY_DIR)
    include("${fmatvec_CMAKE_DIR}/fmatvec.cmake")
 endif()
 
-find_library(fmatvec_LIBRARIES fmatvec HINTS "@CMAKE_INSTALL_FULL_LIBDIR@")
+# when installed, we currently are in file ${fmatvec_INSTALL_DIR}/lib/cmake/fmatvec/fmatvec.cmake
+set(fmatvec_INSTALL_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../")
+find_library(fmatvec_LIBRARIES fmatvec PATHS "${fmatvec_INSTALL_DIR}" NO_DEFAULT_PATH)
 set(fmatvec_LIBRARY   ${fmatvec_LIBRARIES})
+set(fmatvec_LIBRARY_DIR ${fmatvec_INSTALL_DIR}/lib)
 set(fmatvec_LIBRARIES ${fmatvec_LIBRARIES} "@fmatvec_needed_libraries@")
-set(fmatvec_LIBS      ${fmatvec_LIBRARIES} "@fmatvec_needed_libraries@")
-set(fmatvec_INCLUDE_DIRS "@CMAKE_INSTALL_FULL_INCLUDEDIR@" "@fmatvec_needed_includes@")
+set(fmatvec_INCLUDE_DIRS "${fmatvec_INSTALL_DIR}/include" "@fmatvec_needed_includes@")
 
 # currently skip that but (try to) remember it for later integration
 # include(@CMAKE_INSTALL_FULL_INCLUDEDIR@/fmatvec/cmake_utils/use_cpp_11.cmake)

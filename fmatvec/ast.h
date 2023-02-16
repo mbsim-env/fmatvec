@@ -197,7 +197,7 @@ struct FMATVEC_EXPORT ByteCode {
   static constexpr size_t N { 3 };
   ByteCode();
   ByteCode(const ByteCode &) = delete;
-  ByteCode(ByteCode &&);
+  ByteCode(ByteCode &&) noexcept;
   ByteCode &operator=(const ByteCode &) = delete;
   ByteCode &operator=(ByteCode &&) = delete;
   ~ByteCode() = default;
@@ -267,7 +267,7 @@ class FMATVEC_EXPORT Constant : public Vertex, public std::enable_shared_from_th
     Constant(const T& c_);
     const T c;
     bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
-    typedef T CacheKey;
+    using CacheKey = T;
     static std::map<CacheKey, std::weak_ptr<const Constant>> cache;
 };
 
@@ -313,7 +313,7 @@ class FMATVEC_EXPORT Symbol : public Vertex, public std::enable_shared_from_this
     bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
     mutable double x = 0.0;
     boost::uuids::uuid uuid; // each variable has a uuid (this is only used when the AST is serialized and for caching)
-    typedef boost::uuids::uuid CacheKey;
+    using CacheKey = boost::uuids::uuid;
     static std::map<CacheKey, std::weak_ptr<const Symbol>> cache;
 };
 
@@ -352,7 +352,7 @@ class FMATVEC_EXPORT Operation : public Vertex, public std::enable_shared_from_t
     bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
     Operator op;
     std::vector<SymbolicExpression> child;
-    typedef std::pair<Operator, std::vector<std::weak_ptr<const Vertex>>> CacheKey;
+    using CacheKey = std::pair<Operator, std::vector<std::weak_ptr<const Vertex>>>;
     struct CacheKeyComp {
       bool operator()(const CacheKey& l, const CacheKey& r) const;
       private:

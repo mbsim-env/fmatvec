@@ -63,8 +63,8 @@ namespace fmatvec {
 
     public:
       static constexpr bool isVector {false};
-      typedef AT value_type;
-      typedef Type shape_type;
+      using value_type = AT;
+      using shape_type = Type;
 //      /*! \brief Standard constructor
 //       * 
 //       * The standard constructor.
@@ -153,9 +153,8 @@ namespace fmatvec {
 
   template <class Type, class Row, class Col, class AT>
     Matrix<Type,Row,Col,AT>::operator std::vector<std::vector<AT>>() const {
-      std::vector<std::vector<AT>> ret(rows());
+      std::vector<std::vector<AT>> ret(rows(),std::vector<AT>(cols()));
       for(int r=0; r<rows(); r++) {
-	ret[r].resize(cols());
 	for(int c=0; c<cols(); c++)
 	  ret[r][c]=e(r,c);
       }

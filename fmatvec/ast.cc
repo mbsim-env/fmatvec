@@ -327,7 +327,7 @@ ByteCode::ByteCode() {
     argsPtr[i] = &argsValue[i];
 }
 
-ByteCode::ByteCode(ByteCode &&) {
+ByteCode::ByteCode(ByteCode &&) noexcept {
   assert(0 && "ByteCode cannot be moved or copied. But the move-ctor is defined to allow in-place construction e.g. using emplace_back.");
 }
 
@@ -473,7 +473,7 @@ void Symbol::walkVertex(const function<void(const shared_ptr<const Vertex>&)> &f
 
 map<Operation::CacheKey, weak_ptr<const Operation>, Operation::CacheKeyComp> Operation::cache;
 
-//mfmf optimized calls for int arguments
+//MISSING: optimized calls for int arguments
 #define FUNC(expr) [](double* r, const std::array<double*,ByteCode::N>& arg) { \
   auto &a=*arg[0]; /* first argument */ \
   auto &b=*arg[1]; /* second argument */ \
@@ -526,34 +526,56 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
     optExpr={
       // list of expressions (the left ones) to optimize; the right ones are the optimized expressions
       // which must mathematically equal the left ones but are simpler.
-      { 0+a       , a},
-      { a+0       , a},
-      { a-0       , a},
-      { a-a       , 0},
-      { 0*a       , 0},
-      { a*0       , 0},
-      { 1*a       , a},
-      { -1*a      , -a},
-      { a*1       , a},
-      { a*(-1)    , -a},
-      { a*a       , pow(a,2)},
-      { a/0       , error},
-      { 0/a       , 0},
-      { a/a       , 1},
-      { a/1       , a},
-      { a/-1      , -a},
-      { pow(a,1)  , a},
-      { pow(a,-1) , 1/a},
-      { pow(a,0)  , 1},
-      { pow(a,b)*a, pow(a,b+1)},
-      { a*pow(a,b), pow(a,b+1)},
-      { pow(a,b)/a, pow(a,b-1)},
-      { log(0)    , error},
-      { sqrt(-1)  , error},
-      { acosh(-1) , error},
-      { acosh(0)  , error},
-      { atanh(-1) , error},
-      { atanh(1)  , error},
+      {    0 + a       ,  a},
+      {  0.0 + a       ,  a},
+      {    a + 0       ,  a},
+      {    a + 0.0     ,  a},
+      {    a - 0       ,  a},
+      {    a - 0.0     ,  a},
+      {    a - a       ,  0},
+      {    0 * a       ,  0},
+      {  0.0 * a       ,  0},
+      {    a * 0       ,  0},
+      {    a * 0.0     ,  0},
+      {    1 * a       ,  a},
+      {  1.0 * a       ,  a},
+      { -1   * a       , -a},
+      { -1.0 * a       , -a},
+      {    a * 1       ,  a},
+      {    a * 1.0     ,  a},
+      {    a * (-1)    , -a},
+      {    a * (-1.0)  , -a},
+      {    a * a       , pow(a,2)},
+      {    a / 0       , error},
+      {    a / 0.0     , error},
+      {    0 / a       ,  0},
+      {  0.0 / a       ,  0},
+      {    a / a       ,  1},
+      {    a / 1       ,  a},
+      {    a / 1.0     ,  a},
+      {    a / -1      , -a},
+      {    a / -1.0    , -a},
+      { pow(a,1)       , a},
+      { pow(a,1.0)     , a},
+      { pow(a,-1)      , 1/a},
+      { pow(a,-1.0)    , 1/a},
+      { pow(a,0)       , 1},
+      { pow(a,0.0)     , 1},
+      { pow(a,b)*a     , pow(a,b+1)},
+      { a*pow(a,b)     , pow(a,b+1)},
+      { pow(a,b)/a     , pow(a,b-1)},
+      { log(0)         , error},
+      { log(0.0)       , error},
+      { sqrt(-1)       , error},
+      { sqrt(-1.0)     , error},
+      { acosh(-1)      , error},
+      { acosh(-1.0)    , error},
+      { acosh(0)       , error},
+      { acosh(0.0)     , error},
+      { atanh(-1)      , error},
+      { atanh(-1.0)    , error},
+      { atanh(1)       , error},
+      { atanh(1.0)     , error},
     };
     // now enable the optimizations again
     optimizeExpressions=true;

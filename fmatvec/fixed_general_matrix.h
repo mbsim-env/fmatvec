@@ -23,6 +23,8 @@
 #define fixed_general_matrix_h
 
 #include "types.h"
+#include "range.h"
+#include <vector>
 #include <cstdlib>
 #include <stdexcept>
 
@@ -41,10 +43,10 @@ namespace fmatvec {
     public:
       static constexpr bool isVector {false};
 
-      typedef AT* iterator;
-      typedef const AT* const_iterator;
-      typedef AT value_type;
-      typedef General shape_type;
+      using iterator = AT *;
+      using const_iterator = const AT *;
+      using value_type = AT;
+      using shape_type = General;
 
  /// @cond NO_SHOW
 
@@ -541,9 +543,8 @@ namespace fmatvec {
 
   template <int M, int N, class AT>
     inline Matrix<General,Fixed<M>,Fixed<N>,AT>::operator std::vector<std::vector<AT>>() const {
-      std::vector<std::vector<AT>> ret(rows());
+      std::vector<std::vector<AT>> ret(rows(),std::vector<AT>(cols()));
       for(int r=0; r<rows(); r++) {
-        ret[r].resize(cols());
         for(int c=0; c<cols(); c++)
           ret[r][c]=e(r,c);
       }
@@ -596,8 +597,8 @@ namespace fmatvec {
   template<int M, class AT>
   class Matrix<Rotation,Fixed<M>,Fixed<M>,AT> : public Matrix<General,Fixed<M>,Fixed<M>,AT> {
     public:
-      typedef AT value_type;
-      typedef Rotation shape_type;
+      using value_type = AT;
+      using shape_type = Rotation;
       // Constructors are not inherited. Hence we must redefine all ctors here.
 
       Matrix(Noinit ini) { }

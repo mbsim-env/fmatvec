@@ -61,8 +61,8 @@ namespace fmatvec {
     public:
       static constexpr bool isVector {false};
 
-      typedef AT value_type;
-      typedef Diagonal shape_type;
+      using value_type = AT;
+      using shape_type = Diagonal;
 
       /*! \brief Standard constructor
        *
@@ -85,7 +85,7 @@ namespace fmatvec {
        * Constructs a copy of the diagonal matrix \em A.
        * \param A The matrix that will be copied.
        * */
-      Matrix(const Matrix<Diagonal,Ref,Ref,AT> &A) : memory(A.n), ele((AT*)memory.get()) ,n(A.n) {
+      Matrix(const Matrix<Diagonal,Ref,Ref,AT> &A) : memory(A.n), ele((AT*)memory.get()), n(A.n) {
         copy(A);
       }
 
@@ -95,7 +95,7 @@ namespace fmatvec {
        * \param A The matrix that will be copied.
        * */
       template<class Type, class Row, class Col>
-        Matrix(const Matrix<Type,Row,Col,AT> &A) : memory(A.rows()), ele((AT*)memory.get()) ,n(A.rows()) {
+        Matrix(const Matrix<Type,Row,Col,AT> &A) : memory(A.rows()), ele((AT*)memory.get()), n(A.rows()) {
           FMATVEC_ASSERT(A.rows() == A.cols(), AT);
           copy(A);
         }
@@ -281,18 +281,18 @@ namespace fmatvec {
       inline Matrix<Diagonal,Ref,Ref,AT>& init(Eye, const AT &a=1) { return init(a); }
       inline Matrix<Diagonal,Ref,Ref,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
+      /*! \brief Cast to std::vector<std::vector<AT>>.
+       *
+       * \return The std::vector<std::vector<AT>> representation of the matrix
+       * */
+      explicit operator std::vector<std::vector<AT>>() const;
+
       /*! \brief std::vector<std::vector<AT>> Constructor.
        * Constructs and initializes a matrix with a std::vector<std::vector<AT>> object.
        * An FMATVEC_ASSERT checks for constant length of each row.
        * \param m The std::vector<std::vector<AT>> the matrix will be initialized with.
        * */
       explicit Matrix<Diagonal,Ref,Ref,AT>(const std::vector<std::vector<AT>> &m);
-
-      /*! \brief Cast to std::vector<std::vector<AT>>.
-       *
-       * \return The std::vector<std::vector<AT>> representation of the matrix
-       * */
-      explicit operator std::vector<std::vector<AT>>() const;
 
 //      /*! \brief Cast to AT.
 //       *
@@ -311,7 +311,16 @@ namespace fmatvec {
   };
 
   template <class AT>
-    Matrix<Diagonal,Ref,Ref,AT>::Matrix(const std::vector<std::vector<AT>> &m) : Matrix<Diagonal,Ref,Ref,AT>(static_cast<int>(m.size())) {
+    Matrix<Diagonal,Ref,Ref,AT>::operator std::vector<std::vector<AT>>() const {
+      std::vector<std::vector<AT>> ret(rows(),std::vector<AT>(cols(),AT()));
+      for(int r=0; r<rows(); r++) {
+	ret[r][r]=e(r);
+      }
+      return ret;
+    }
+
+  template <class AT>
+    Matrix<Diagonal,Ref,Ref,AT>::Matrix(const std::vector<std::vector<AT>> &m) :  memory(m.size()), ele((AT*)memory.get()), n(static_cast<int>(m.size())) {
       for(size_t r=0; r<m.size(); ++r) {
         if(n!=static_cast<int>(m[r].size()))
           throw std::runtime_error("The rows of the input have different lenght.");
@@ -323,7 +332,6 @@ namespace fmatvec {
         }
       }
     }
-
 
   template <class AT>
     Matrix<Diagonal,Ref,Ref,AT>&  Matrix<Diagonal,Ref,Ref,AT>::init(const AT &val) {
@@ -337,17 +345,6 @@ namespace fmatvec {
       for(int i=0; i<n; i++)
         e(i) = A.e(i);
       return *this;
-    }
-
-  template <class AT>
-    Matrix<Diagonal,Ref,Ref,AT>::operator std::vector<std::vector<AT>>() const {
-      std::vector<std::vector<AT>> ret(rows());
-      for(int r=0; r<rows(); r++) {
-        ret[r].resize(cols());
-        for(int c=0; c<cols(); c++)
-          ret[r][c]=e(r,c);
-      }
-      return ret;
     }
 
 }

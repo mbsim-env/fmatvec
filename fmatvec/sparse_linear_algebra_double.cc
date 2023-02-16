@@ -23,13 +23,13 @@
 #include "sparse_linear_algebra_double.h"
 #include "linear_algebra_double.h"
 #include "linear_algebra.h"
+#include <iostream>
 #ifdef HAVE_SPOOLES
 #include "spooles.h"
 #endif
 #ifdef HAVE_ARPACK
 #include "arpack.h"
 #endif
-#include <iostream>
 
 namespace fmatvec {
 
@@ -57,18 +57,18 @@ namespace fmatvec {
 #endif
   }
 
-  int eigvec(const Matrix<SymmetricSparse, Ref, Ref, double> &A, const Matrix<SymmetricSparse, Ref, Ref, double> &M, int nev, double sigma, Matrix<General, Ref, Ref, double> &eigenvectors, Vector<Ref, double> &eigenvalues) {
+  int eigvec(const Matrix<SymmetricSparse, Ref, Ref, double> &A, const Matrix<SymmetricSparse, Ref, Ref, double> &M, int nev, double sigma, Matrix<General, Ref, Ref, double> &eigenvectors, Vector<Ref, double> &eigenvalues, double tol_) {
 #ifdef HAVE_ARPACK
     const char *which = "LM";
     int ido = 0;
     char bmat = 'G';
     int n = A.rows();
     int ldv=n;
-    double tol = 0;
+    double tol = tol_;
     double* resid = new double[n];
     for(int i=0; i<n; i++)
       resid[i] = 0;
-    int ncv = 2*nev;
+    int ncv = 5*nev;
     if(ncv>n)
       ncv = n;
     double *v = new double[ldv*ncv];
@@ -76,7 +76,7 @@ namespace fmatvec {
     for(int i=0; i<11; i++)
       iparam[i] = 0;
     iparam[0] = 1;
-    iparam[2] = 300;
+    iparam[2] = 1000;
     iparam[3] = 1;
     iparam[6] = 3;
     int *ipntr = new int[11];

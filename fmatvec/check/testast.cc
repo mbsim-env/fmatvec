@@ -17,8 +17,8 @@ void checkDoubleComplex() {
 
 void checkComplex() {
   // check operators for mat/vec with double /complex<double>
-  typedef Vector<Var, complex<double>> VecComplex;
-  typedef Matrix<General, Var, Var, complex<double>> MatComplex;
+  using VecComplex = Vector<Var, complex<double>>;
+  using MatComplex = Matrix<General, Var, Var, complex<double>>;
 
   VecComplex v2;
   VecComplex v(3);
@@ -92,9 +92,9 @@ void checkSym(double &pdn0Value,
     Vector<Ref, IndependentVariable> vr_indep(3);
   }
 
-  typedef Vector<Var, SymbolicExpression> VecSymExpr;
-  typedef Vector<Var, IndependentVariable> VecIndep;
-  typedef Matrix<General, Var, Var, SymbolicExpression> MatSymExpr;
+  using VecSymExpr = Vector<Var, SymbolicExpression>;
+  using VecIndep = Vector<Var, IndependentVariable>;
+  using MatSymExpr = Matrix<General, Var, Var, SymbolicExpression>;
 
   {
     VecSymExpr v2;
@@ -294,10 +294,23 @@ void checkSym(double &pdn0Value,
       IndependentVariable a, b, c;
       a^=1.1; b^=2.2; c^=3.3;
       Vector<Fixed<3>, SymbolicExpression> v({a, 2*b, 2+a*c});
-      e.reset(new Eval{v});
+      e=std::make_unique<Eval<Vector<Fixed<3>, SymbolicExpression>>>(v);
       // everything except e is deleted now
     }
     Vec3 ret=(*e)();
+  }
+
+  // check condition function (test also optimization of 0 and 0.0)
+  {
+    SymbolicExpression cond=condition(2*a5-0.0+0-6, sin(a6), cos(a6));
+    cout<<"condition = "<<cond<<endl;
+    Eval condEval{cond};
+    a5^=+30.0;
+    a6^=2.0;
+    cout<<"cond.eval = "<<condEval()<<endl;
+    a5^=-30.0;
+    a6^=2.0;
+    cout<<"cond.eval = "<<condEval()<<endl;
   }
 }
 

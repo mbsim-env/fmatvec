@@ -39,8 +39,8 @@ namespace fmatvec {
 
     public:
       static constexpr bool isVector {false};
-      typedef AT value_type;
-      typedef Square shape_type;
+      using value_type = AT;
+      using shape_type = Square;
 
 //      template<class Ini=All<AT>>
 //      SquareMatrix(Ini ini=All<AT>()) : Matrix<General,Fixed<M>,Fixed<M>,AT>(ini) { }
@@ -122,6 +122,13 @@ namespace fmatvec {
        * */
       explicit inline operator std::vector<std::vector<AT>>() const;
 
+      /*! \brief std::vector<std::vector<AT>> Constructor.
+       * Constructs and initializes a matrix with a std::vector<std::vector<AT>> object.
+       * An FMATVEC_ASSERT checks for constant length of each ro, UseExceptions<AT>::EXw.
+       * \param m The std::vector<std::vector<AT>> the matrix will be initialized with.
+       * */
+      explicit SquareMatrix(const std::vector<std::vector<AT>> &m);
+
       inline const SquareMatrix<Fixed<M>,AT> T() const;
   };
 
@@ -136,13 +143,22 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline SquareMatrix<Fixed<M>,AT>::operator std::vector<std::vector<AT>>() const {
-      std::vector<std::vector<AT>> ret(size());
+      std::vector<std::vector<AT>> ret(rows(),std::vector<AT>(cols()));
       for(int r=0; r<size(); r++) {
-        ret[r].resize(size());
         for(int c=0; c<size(); c++)
           ret[r][c]= e(r,c);
       }
       return ret;
+    }
+
+  template <int M, class AT>
+    inline SquareMatrix<Fixed<M>,AT>::SquareMatrix(const std::vector<std::vector<AT>> &m) : Matrix<General,Fixed<M>,Fixed<M>,AT>(NONINIT) {
+      for(int r=0; r<rows(); r++) {
+        if(static_cast<int>(m[r].size())!=cols())
+          throw std::runtime_error("The rows of the input have different length.");
+        for(int c=0; c<cols(); c++)
+          e(r,c)=m[r][c];
+      }
     }
 
 }

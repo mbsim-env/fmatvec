@@ -17,6 +17,11 @@ endif()
 # Adhere to GNU filesystem layout conventions
 include(GNUInstallDirs)
 
+# clang compile DB
+set(CMAKE_EXPORT_COMPILE_COMMANDS True)
+execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
+  ${CMAKE_BINARY_DIR}/compile_commands.json ${CMAKE_SOURCE_DIR}/compile_commands.json)
+
 ################################################################################
 ### Search for dependencies ####################################################
 ################################################################################
@@ -44,7 +49,18 @@ if(DEFINED ARPACK_INCLUDE_DIRS OR DEFINED ARPACK_LIBRARIES)
   add_definitions(-DHAVE_ARPACK)
   message(INFO " arpack library found.")
 else()
-  message(WARNING "arpack library not found: large sparse eigenvalue solve is done using memory/CPU expensive dense routines.")
+  find_package(PkgConfig QUIET)
+  if(PkgConfig_FOUND)
+    pkg_check_modules(ARPACK REQUIRED arpack)
+    if(ARPACK_FOUND)
+      add_definitions(-DHAVE_ARPACK)
+      message(INFO " arpack library found.")
+    else()
+      message(WARNING "arpack library not found: large sparse eigenvalue solve is done using memory/CPU expensive dense routines.")
+    endif()
+  else()
+    message(WARNING "arpack library not found: large sparse eigenvalue solve is done using memory/CPU expensive dense routines.")
+  endif()
 endif()
 if(NOT DEFINED SPOOLES_INCLUDE_DIRS OR NOT DEFINED SPOOLES_LIBRARIES)
   find_package(spooles QUIET)

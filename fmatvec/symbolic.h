@@ -197,8 +197,7 @@ class Eval {
 };
 
 template<class... Arg>
-Eval<Arg...>::~Eval() {
-}
+Eval<Arg...>::~Eval() = default;
 
 template<class... Arg>
 Eval<Arg...>::Eval(const Arg&... arg) {

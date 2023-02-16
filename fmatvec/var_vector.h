@@ -44,10 +44,10 @@ namespace fmatvec {
     public:
     static constexpr bool isVector {true};
 
-    typedef AT* iterator;
-    typedef const AT* const_iterator;
+    using iterator = AT *;
+    using const_iterator = const AT *;
 
-    typedef AT value_type;
+    using value_type = AT;
 
     /// @cond NO_SHOW
 
@@ -66,8 +66,8 @@ namespace fmatvec {
       explicit Vector() : Matrix<General,Var,Fixed<1>,AT>() { }
 
       // move
-      Vector(Vector<Var,AT> &&src) : Matrix<General,Var,Fixed<1>,AT>(std::move(src)) {}
-      Vector<Var,AT>& operator=(Vector<Var,AT> &&src) {
+      Vector(Vector<Var,AT> &&src)  noexcept : Matrix<General,Var,Fixed<1>,AT>(std::move(src)) {}
+      Vector<Var,AT>& operator=(Vector<Var,AT> &&src)  noexcept {
         FMATVEC_ASSERT(M == src.size(), AT);
         src.M=0;
         delete[]ele;
@@ -174,8 +174,7 @@ namespace fmatvec {
         return copy(x);
       }
       // move
-      template <class Row>
-      inline Vector<Var,AT>& operator<<=(Vector<Row,AT> &&src) {
+      inline Vector<Var,AT>& operator<<=(Vector<Var,AT> &&src) {
         M=src.M;
         src.M=0;
         delete[]ele;
@@ -357,14 +356,14 @@ namespace fmatvec {
     inline Vector<Var,AT>::operator std::vector<AT>() const {
       std::vector<AT> ret(size());
       for(int i=0; i<size(); ++i)
-        ret[i] = operator()(i);
+        ret[i] = e(i);
       return ret;
     }
 
   template <class AT>
-    inline Vector<Var,AT>::Vector(const std::vector<AT> &v) : Matrix<General,Var,Fixed<1>,AT>(static_cast<int>(v.size()),1) {
+    inline Vector<Var,AT>::Vector(const std::vector<AT> &v) : Matrix<General,Var,Fixed<1>,AT>(static_cast<int>(v.size()),1,NONINIT) {
       for(int i=0; i<size(); ++i)
-        operator()(i) = v[i];
+        e(i) = v[i];
     }
 
   template <class AT>

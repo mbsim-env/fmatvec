@@ -42,10 +42,10 @@ namespace fmatvec {
     public:
       static constexpr bool isVector {true};
 
-      typedef AT* iterator;
-      typedef const AT* const_iterator;
+      using iterator = AT *;
+      using const_iterator = const AT *;
 
-      typedef AT value_type;
+      using value_type = AT;
 
     /// @cond NO_SHOW
     
@@ -210,6 +210,18 @@ namespace fmatvec {
 
       using Matrix<General,Fixed<1>,Fixed<N>,AT>::operator();
 
+      /*! \brief Cast to std::vector<AT>.
+       *
+       * \return The std::vector<AT> representation of the vector
+       * */
+      explicit inline operator std::vector<AT>() const;
+
+      /*! \brief std::vector<AT> Constructor.
+       * Constructs and initializes a vector with a std::vector<AT> object.
+       * \param v The std::vector<AT> the vector will be initialized with.
+       * */
+      explicit inline RowVector(const std::vector<AT> &v);
+
 //      /*! \brief Cast to AT.
 //       *
 //       * \return The AT representation of the vector
@@ -241,6 +253,20 @@ namespace fmatvec {
       for(int i=0; i<N; i++)
         x.e(i) = e(i);
       return x;
+    }
+
+  template <int N, class AT>
+   inline RowVector<Fixed<N>,AT>::operator std::vector<AT>() const {
+      std::vector<AT> ret(size());
+      for(int i=0; i<size(); ++i)
+        ret[i] = e(i);
+      return ret;
+    }
+
+  template <int N, class AT>
+    inline RowVector<Fixed<N>,AT>::RowVector(const std::vector<AT> &v) : Matrix<General,Fixed<1>,Fixed<N>,AT>(NONINIT) {
+      for(int i=0; i<size(); ++i)
+        e(i) = v[i];
     }
 
    /// @cond NO_SHOW

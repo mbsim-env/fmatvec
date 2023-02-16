@@ -44,8 +44,8 @@ namespace fmatvec {
     public:
       static constexpr bool isVector {false};
 
-      typedef AT value_type;
-      typedef General shape_type;
+      using value_type = AT;
+      using shape_type = General;
 
  /// @cond NO_SHOW
 
@@ -58,7 +58,7 @@ namespace fmatvec {
 
       template<bool Const>
       class Iterator {
-        typedef Matrix<General,Ref,Ref,AT> Mat;
+        using Mat = Matrix<General, Ref, Ref, AT>;
         public:
           Iterator(std::conditional_t<Const, const Mat, Mat> &mat_, int row_, int col_) : mat(mat_), row(row_), col(col_) {}
           bool operator!=(const Iterator& x) const { return row!=x.row || col!=x.col; }
@@ -169,8 +169,8 @@ namespace fmatvec {
        * */
       ~Matrix() = default;
 
-      typedef Iterator<false> iterator;
-      typedef Iterator<true> const_iterator;
+      using iterator = Iterator<false>;
+      using const_iterator = Iterator<true>;
       iterator begin() { return iterator(*this,0,0); }
       iterator end() { return iterator(*this,0,n); }
       const_iterator begin() const { return const_iterator(*this,0,0); }
@@ -551,9 +551,8 @@ namespace fmatvec {
 
   template <class AT>
     inline Matrix<General,Ref,Ref,AT>::operator std::vector<std::vector<AT>>() const {
-      std::vector<std::vector<AT>> ret(rows());
+      std::vector<std::vector<AT>> ret(rows(),std::vector<AT>(cols()));
       for(int r=0; r<rows(); r++) {
-        ret[r].resize(cols());
         for(int c=0; c<cols(); c++)
           ret[r][c]= e(r,c);
       }
@@ -561,7 +560,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<General,Ref,Ref,AT>::Matrix(const std::vector<std::vector<AT>> &m) : memory(m.size()*m[0].size()), ele((AT*)memory.get()), m(static_cast<int>(m.size())), n(static_cast<int>(m[0].size())), lda(static_cast<int>(m.size())) {
+    inline Matrix<General,Ref,Ref,AT>::Matrix(const std::vector<std::vector<AT>> &m) : memory(m.size()>0?m.size()*m[0].size():0), ele((AT*)memory.get()), m(static_cast<int>(m.size())), n(static_cast<int>(m.size()>0?m[0].size():0)), lda(static_cast<int>(m.size())) {
       for(int r=0; r<rows(); r++) {
         if(static_cast<int>(m[r].size())!=cols())
           throw std::runtime_error("The rows of the input have different length.");

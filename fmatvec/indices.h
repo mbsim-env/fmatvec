@@ -23,6 +23,7 @@
 #define indices_h
 
 #include <cassert>
+#include <utility>
 #include <vector>
 
 namespace fmatvec {
@@ -31,7 +32,7 @@ namespace fmatvec {
     public:
       Indices() = default;
       Indices(int size) { ind.resize(size); }
-      Indices(const std::vector<int> &ind_) : ind(ind_) {
+      Indices(std::vector<int> ind_) : ind(std::move(ind_)) {
 	assert(min()>=0);
       }
       Indices(std::initializer_list<int> il) : ind(il) {

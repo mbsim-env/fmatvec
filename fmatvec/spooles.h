@@ -25,11 +25,11 @@
 #include "sparse_matrix.h"
 #include "symmetric_sparse_matrix.h"
 
-typedef struct _IV   IV;
-typedef struct _InpMtx InpMtx;
-typedef struct _FrontMtx FrontMtx;
-typedef struct _SubMtxManager SubMtxManager;
-typedef struct _ETree ETree;
+using IV = struct _IV;
+using InpMtx = struct _InpMtx;
+using FrontMtx = struct _FrontMtx;
+using SubMtxManager = struct _SubMtxManager;
+using ETree = struct _ETree;
 
 namespace fmatvec {
 

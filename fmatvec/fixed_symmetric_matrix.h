@@ -23,6 +23,7 @@
 #define fixed_symmetric_matrix_h
 
 #include "types.h"
+#include <vector>
 
 namespace fmatvec {
 
@@ -49,8 +50,8 @@ namespace fmatvec {
 
     public:
       static constexpr bool isVector {false};
-      typedef AT value_type;
-      typedef Symmetric shape_type;
+      using value_type = AT;
+      using shape_type = Symmetric;
 
       explicit Matrix(Noinit ini) { }
       explicit Matrix(Init ini=INIT, const AT &a=AT()) { init(a); }
@@ -308,11 +309,13 @@ namespace fmatvec {
 
   template <int M, class AT>
     inline Matrix<Symmetric,Fixed<M>,Fixed<M>,AT>::operator std::vector<std::vector<AT>>() const {
-      std::vector<std::vector<AT>> ret(rows());
+      std::vector<std::vector<AT>> ret(rows(),std::vector<AT>(cols()));
       for(int r=0; r<rows(); r++) {
-        ret[r].resize(cols());
-        for(int c=0; c<cols(); c++)
-          ret[r][c]=operator()(r,c);
+        for(int c=r; c<cols(); c++) {
+          ret[r][c]=ej(r,c);
+	  if(c>r)
+	    ret[c][r]=ej(r,c);
+	}
       }
       return ret;
     }
@@ -324,10 +327,10 @@ namespace fmatvec {
       for(int r=0; r<rows(); r++) {
         if(static_cast<int>(m[r].size())!=cols())
           throw std::runtime_error("The rows of the input have different length.");
-        for(int c=0; c<cols(); c++) {
+        for(int c=r; c<cols(); c++) {
           using std::abs;
-          e(r,c)=m[r][c];
-          if(r>c && abs(m[r][c]-m[c][r])>abs(m[r][c])*1e-13+1e-13)
+          ej(r,c)=m[r][c];
+          if(c>r && abs(m[r][c]-m[c][r])>abs(m[r][c]*1e-13+1e-13))
             throw std::runtime_error("The input is not symmetric.");
         }
       }

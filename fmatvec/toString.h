@@ -33,6 +33,7 @@
 #include <string>
 #include <sstream>
 #include <limits>
+#include <vector>
 
 namespace fmatvec {
 
