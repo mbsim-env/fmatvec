@@ -1837,6 +1837,7 @@ namespace fmatvec {
    * */
   template <class Row, class AT>
   SquareMatrix<Row, AT> tilde(const Vector<Row, AT> &x) {
+    assert(x.size()==3);
 
     SquareMatrix<Row, AT> B(x.size(), NONINIT);
 
@@ -1851,6 +1852,38 @@ namespace fmatvec {
     B.e(2, 1) = x.e(0);
 
     return B;
+  }
+
+  /*! \brief Inverse tilde operator
+   *
+   *  Example:
+   * \code
+   * tilde(x);
+   * \endcode
+   *  \f[
+   *  T = \begin{pmatrix} 0 & -x_3 & x_2 \\ x_3 &  0 & -x_1 \\ -x_2 & x_1 & 0\end{pmatrix} \quad \Rightarrow \quad
+   *  \tilde T = \begin{pmatrix}x_1 \\ x_2 \\ x_3\end{pmatrix}
+   *  \f]
+   *  Only in debug builds the consistency of the matrix T is checked with respect to tol.
+   * */
+  template <class Row, class AT>
+  Vector<Row, AT> tilde(const SquareMatrix<Row, AT> &T, double tol = 1e-6) {
+    FMATVEC_ASSERT(T.rows()==3, AT);
+
+    Vector<Fixed<3>, AT> x(NONINIT);
+
+    x.e(0) =  T.e(2, 1);
+    x.e(1) =  T.e(0, 2);
+    x.e(2) =  T.e(1, 0);
+
+    FMATVEC_ASSERT(std::abs(T.e(0, 0)) < tol, AT);
+    FMATVEC_ASSERT(std::abs(T.e(1, 1)) < tol, AT);
+    FMATVEC_ASSERT(std::abs(T.e(2, 2)) < tol, AT);
+    FMATVEC_ASSERT(std::abs(x.e(0) + T.e(1, 2)) < tol, AT);
+    FMATVEC_ASSERT(std::abs(x.e(1) + T.e(2, 0)) < tol, AT);
+    FMATVEC_ASSERT(std::abs(x.e(2) + T.e(0, 1)) < tol, AT);
+
+    return x;
   }
 
   /*! \brief Matrix-matrix comparison.
