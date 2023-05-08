@@ -412,7 +412,7 @@ namespace fmatvec {
       FMATVEC_ASSERT(I.max()<size(), AT);
       FMATVEC_ASSERT(I.size()==x.size(), AT);
       for(int i=0; i<I.size(); i++)
-	  e(I[i]) = x.e(i);
+	e(I[i]) = x.e(i);
     }
 
   /// @cond NO_SHOW
