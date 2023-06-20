@@ -25,6 +25,7 @@
 #include <cassert>
 #include <utility>
 #include <vector>
+#include <climits>
 
 namespace fmatvec {
 
@@ -39,8 +40,9 @@ namespace fmatvec {
 	assert(min()>=0);
       }
       size_t size() const { return ind.size(); }
-      size_t max() const {
-        assert(ind.size());
+      int max() const {
+	if(not ind.size())
+	  return -1;
         int m = ind[0];
         for(size_t i=1; i<ind.size(); i++) {
           if(ind[i]>m)
@@ -49,7 +51,8 @@ namespace fmatvec {
         return m;
       }
       int min() const {
-	assert(ind.size());
+	if(not ind.size())
+	  return INT_MAX;
 	int m = ind[0];
 	for(size_t i=1; i<ind.size(); i++) {
 	  if(ind[i]<m)

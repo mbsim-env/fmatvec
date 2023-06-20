@@ -482,7 +482,7 @@ namespace fmatvec {
 
       for(int i=0; i<A.rows(); i++)
         for(int j=0; j<A.cols(); j++)
-	A.e(i,j) = e(I[i],J[j]);
+	  A.e(i,j) = e(I[i],J[j]);
 
       return A;
     }
@@ -495,7 +495,7 @@ namespace fmatvec {
 
       for(int i=0; i<A.rows(); i++)
         for(int j=0; j<A.cols(); j++)
-	A.e(i,j) = e(I[i],I[j]);
+	  A.e(i,j) = e(I[i],I[j]);
 
       return A;
     }
