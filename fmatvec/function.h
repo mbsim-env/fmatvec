@@ -4,6 +4,7 @@
 #include <fmatvec/fmatvec.h>
 #include <fmatvec/atom.h>
 #include <stdexcept>
+#include <boost/mpl/list.hpp>
 
 namespace fmatvec {
 
@@ -209,6 +210,8 @@ class Function<Ret(Arg)> : virtual public Atom {
     using DRetDArg = typename Der<Ret, Arg>::type;
     using DRetDDir = typename DirDer<Ret, Arg>::type;
     using DDRetDDArg = typename Der<DRetDArg, Arg>::type;
+    using RetType = Ret;
+    using ArgType = boost::mpl::list<Arg>;
 
     //! Compile time size of the return value: =0 == unknown compile time size
     enum { retSize1 = StaticSize<Ret>::size1, retSize2 = StaticSize<Ret>::size2 };
@@ -276,6 +279,8 @@ class Function<Ret(Arg1, Arg2)> : virtual public Atom {
     using DDRetDDArg1 = typename Der<DRetDArg1, Arg1>::type;
     using DDRetDDArg2 = typename Der<DRetDArg2, Arg2>::type;
     using DDRetDArg1DArg2 = typename Der<DRetDArg1, Arg2>::type;
+    using RetType = Ret;
+    using ArgType = boost::mpl::list<Arg1, Arg2>;
 
     //! Compile time size of the return value: =0 == unknown compile time size
     enum { retSize1 = StaticSize<Ret>::size1, retSize2 = StaticSize<Ret>::size2 };
