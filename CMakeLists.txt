@@ -137,12 +137,16 @@ set(LIBS "-lpthread")
 set(INCDIRS "-I${Boost_INCLUDE_DIRS}")
 foreach(LIB ${BLAS_LAPACK_LIBRARIES})
   string(REGEX MATCH "(.*)/lib([^\\.]*)\\.(.*)" LIBTMP "${LIB}") # "." must have double excaping "\\"
-  set(LIBS "${LIBS} -L${CMAKE_MATCH_1} -l${CMAKE_MATCH_2}")
+  if(NOT "${CMAKE_MATCH_1}" STREQUAL "" AND NOT "${CMAKE_MATCH_2}" STREQUAL "")
+    set(LIBS "${LIBS} -L${CMAKE_MATCH_1} -l${CMAKE_MATCH_2}")
+  endif()
 endforeach()
 foreach(LIB Boost::system)
   get_property(LIBLOC TARGET ${LIB} PROPERTY LOCATION)
   string(REGEX MATCH "(.*)/lib([^\\.]*)\\.(.*)" LIBTMP "${LIBLOC}") # "." must have double excaping "\\"
-  set(LIBS "${LIBS} -L${CMAKE_MATCH_1} -l${CMAKE_MATCH_2}")
+  if(NOT "${CMAKE_MATCH_1}" STREQUAL "" AND NOT "${CMAKE_MATCH_2}" STREQUAL "")
+    set(LIBS "${LIBS} -L${CMAKE_MATCH_1} -l${CMAKE_MATCH_2}")
+  endif()
 endforeach()
 configure_file("fmatvec.pc.in" "fmatvec.pc" @ONLY)
 install(FILES       "${CMAKE_CURRENT_BINARY_DIR}/fmatvec.pc"
