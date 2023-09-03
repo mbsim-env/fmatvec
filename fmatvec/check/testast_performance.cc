@@ -6,6 +6,9 @@ using namespace std;
 using namespace fmatvec;
 
 int main() {
+
+  cout<<setprecision(12);
+
   IndependentVariable a;
   IndependentVariable b;
   IndependentVariable c;

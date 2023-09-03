@@ -31,12 +31,12 @@ if( WIN32 )
   # Path with blas and lapack lib/dll needs to be in environment variable LIB
   # find_package(BLAS) called separately for slightly better error message
   find_package(BLAS QUIET)
-  if(BLAS)
+  if(BLAS_FOUND)
     find_package(LAPACK QUIET)
     set(BLAS_LAPACK_LIBRARIES ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} )
   endif()
 
-  if(NOT LAPACK)
+  if(NOT LAPACK_FOUND)
     # fall back to Intel MKL runtime libs
     message("Trying to find Intel MKL runtime libraries instead of LAPACK/BLAS")
     # works with IntelOne integration providing Intel(R) Math Kernel Library 2020 Update 1

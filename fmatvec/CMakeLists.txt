@@ -86,6 +86,7 @@ if( MSVC )
 endif()
 
 target_link_libraries(fmatvec ${BLAS_LAPACK_LIBRARIES} Boost::system ${ARPACK_LIBRARIES} ${SPOOLES_LIBRARIES})
+target_link_libraries(fmatvec bcrypt)
 if(NOT WIN32)
   target_link_libraries(fmatvec pthread)
 endif()

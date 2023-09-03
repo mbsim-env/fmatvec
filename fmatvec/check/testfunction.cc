@@ -129,6 +129,8 @@ int main() {
   assert(feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)!=-1);
 #endif
 
+  cout<<setprecision(12);
+
   // define some arbitary argument for the following function calles
   VecV q(2);
   q(0)=3.5;

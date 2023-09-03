@@ -428,6 +428,8 @@ int main() {
   assert(feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)!=-1);
 #endif
 
+  cout<<setprecision(12);
+
   checkDoubleComplex();
   checkComplex();
   double pdn0Value;

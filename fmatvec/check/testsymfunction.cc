@@ -6,10 +6,33 @@
 using namespace std;
 using namespace fmatvec;
 
+void dumpS(const double &s) {
+  cout<<s<<endl;
+}
+
+template<class V>
+void dumpV(const V &v) {
+  cout<<"[";
+  for(int i=0; i<v.size(); ++i)
+    cout<<(i==0?"":", ")<<v(i);
+  cout<<"]"<<endl;
+}
+
+template<class M>
+void dumpM(const M &m) {
+  cout<<"[";
+  for(int r=0; r<m.rows(); ++r)
+    for(int c=0; c<m.cols(); ++c)
+      cout<<(r==0?"":((c==0?"; ":", ")))<<m(r,c);
+  cout<<"]"<<endl;
+}
+
 int main() {
 #ifndef _WIN32
   assert(feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)!=-1);
 #endif
+
+  cout<<setprecision(12);
 
   {
     IndependentVariable x;
@@ -32,41 +55,41 @@ int main() {
     double argd=5.6;
     double argd2=7.8;
 
-    cout<<funcS(arg)<<endl;
-    cout<<funcV(arg)<<endl;
-    cout<<funcRV(arg)<<endl;
-    cout<<funcM(arg)<<endl;
-    cout<<funcR(arg)<<endl;
+    dumpS(funcS(arg));
+    dumpV(funcV(arg));
+    dumpV(funcRV(arg));
+    dumpM(funcM(arg));
+    dumpM(funcR(arg));
 
-    cout<<funcS.parDer(arg)<<endl;
-    cout<<funcV.parDer(arg)<<endl;
-    cout<<funcRV.parDer(arg)<<endl;
-    cout<<funcM.parDer(arg)<<endl;
-    cout<<funcR.parDer(arg)<<endl;
+    dumpS(funcS.parDer(arg));
+    dumpV(funcV.parDer(arg));
+    dumpV(funcRV.parDer(arg));
+    dumpM(funcM.parDer(arg));
+    dumpM(funcR.parDer(arg));
 
-    cout<<funcS.dirDer(argd, arg)<<endl;
-    cout<<funcV.dirDer(argd, arg)<<endl;
-    cout<<funcRV.dirDer(argd, arg)<<endl;
-    cout<<funcM.dirDer(argd, arg)<<endl;
-    cout<<funcR.dirDer(argd, arg)<<endl;
+    dumpS(funcS.dirDer(argd, arg));
+    dumpV(funcV.dirDer(argd, arg));
+    dumpV(funcRV.dirDer(argd, arg));
+    dumpM(funcM.dirDer(argd, arg));
+    dumpM(funcR.dirDer(argd, arg));
 
-    cout<<funcS.parDerParDer(arg)<<endl;
-    cout<<funcV.parDerParDer(arg)<<endl;
-    cout<<funcRV.parDerParDer(arg)<<endl;
-    cout<<funcM.parDerParDer(arg)<<endl;
-    cout<<funcR.parDerParDer(arg)<<endl;
+    dumpS(funcS.parDerParDer(arg));
+    dumpV(funcV.parDerParDer(arg));
+    dumpV(funcRV.parDerParDer(arg));
+    dumpM(funcM.parDerParDer(arg));
+    dumpM(funcR.parDerParDer(arg));
 
-    cout<<funcS.parDerDirDer(argd, arg)<<endl;
-    cout<<funcV.parDerDirDer(argd, arg)<<endl;
-    cout<<funcRV.parDerDirDer(argd, arg)<<endl;
-    cout<<funcM.parDerDirDer(argd, arg)<<endl;
-    cout<<funcR.parDerDirDer(argd, arg)<<endl;
+    dumpS(funcS.parDerDirDer(argd, arg));
+    dumpV(funcV.parDerDirDer(argd, arg));
+    dumpV(funcRV.parDerDirDer(argd, arg));
+    dumpM(funcM.parDerDirDer(argd, arg));
+    dumpM(funcR.parDerDirDer(argd, arg));
 
-    cout<<funcS.dirDerDirDer(argd, argd2, arg)<<endl;
-    cout<<funcV.dirDerDirDer(argd, argd2, arg)<<endl;
-    cout<<funcRV.dirDerDirDer(argd, argd2, arg)<<endl;
-    cout<<funcM.dirDerDirDer(argd, argd2, arg)<<endl;
-    cout<<funcR.dirDerDirDer(argd, argd2, arg)<<endl;
+    dumpS(funcS.dirDerDirDer(argd, argd2, arg));
+    dumpV(funcV.dirDerDirDer(argd, argd2, arg));
+    dumpV(funcRV.dirDerDirDer(argd, argd2, arg));
+    dumpM(funcM.dirDerDirDer(argd, argd2, arg));
+    dumpM(funcR.dirDerDirDer(argd, argd2, arg));
   }
 
   {
@@ -90,41 +113,41 @@ int main() {
     Vec3 argd({5.6, 6.7, 7.8});
     Vec3 argd2({7.8, 8.9, 9.1});
 
-    cout<<funcS(arg)<<endl;
-    cout<<funcV(arg)<<endl;
-    cout<<funcRV(arg)<<endl;
-    cout<<funcM(arg)<<endl;
-    cout<<funcR(arg)<<endl;
+    dumpS(funcS(arg));
+    dumpV(funcV(arg));
+    dumpV(funcRV(arg));
+    dumpM(funcM(arg));
+    dumpM(funcR(arg));
 
-    cout<<funcS.parDer(arg)<<endl;
-    cout<<funcV.parDer(arg)<<endl;
-//    cout<<funcRV.parDer(arg)<<endl;
-//    cout<<funcM.parDer(arg)<<endl;
-    cout<<funcR.parDer(arg)<<endl;
+    dumpV(funcS.parDer(arg));
+    dumpM(funcV.parDer(arg));
+//    dumpV(funcRV.parDer(arg));
+//    dumpM(funcM.parDer(arg));
+    dumpM(funcR.parDer(arg));
 
-    cout<<funcS.dirDer(argd, arg)<<endl;
-    cout<<funcV.dirDer(argd, arg)<<endl;
-    cout<<funcRV.dirDer(argd, arg)<<endl;
-    cout<<funcM.dirDer(argd, arg)<<endl;
-    cout<<funcR.dirDer(argd, arg)<<endl;
+    dumpS(funcS.dirDer(argd, arg));
+    dumpV(funcV.dirDer(argd, arg));
+    dumpV(funcRV.dirDer(argd, arg));
+    dumpM(funcM.dirDer(argd, arg));
+    dumpM(funcR.dirDer(argd, arg));
 
-//    cout<<funcS.parDerParDer(arg)<<endl;
-//    cout<<funcV.parDerParDer(arg)<<endl;
-//    cout<<funcRV.parDerParDer(arg)<<endl;
-//    cout<<funcM.parDerParDer(arg)<<endl;
-//    cout<<funcR.parDerParDer(arg)<<endl;
+//    dumpS(funcS.parDerParDer(arg));
+//    dumpV(funcV.parDerParDer(arg));
+//    dumpV(funcRV.parDerParDer(arg));
+//    dumpM(funcM.parDerParDer(arg));
+//    dumpM(funcR.parDerParDer(arg));
 
-    cout<<funcS.parDerDirDer(argd, arg)<<endl;
-    cout<<funcV.parDerDirDer(argd, arg)<<endl;
-//    cout<<funcRV.parDerDirDer(argd, arg)<<endl;
-//    cout<<funcM.parDerDirDer(argd, arg)<<endl;
-    cout<<funcR.parDerDirDer(argd, arg)<<endl;
+    dumpV(funcS.parDerDirDer(argd, arg));
+    dumpM(funcV.parDerDirDer(argd, arg));
+//    dumpV(funcRV.parDerDirDer(argd, arg));
+//    dumpM(funcM.parDerDirDer(argd, arg));
+    dumpM(funcR.parDerDirDer(argd, arg));
 
-    cout<<funcS.dirDerDirDer(argd, argd2, arg)<<endl;
-    cout<<funcV.dirDerDirDer(argd, argd2, arg)<<endl;
-    cout<<funcRV.dirDerDirDer(argd, argd2, arg)<<endl;
-    cout<<funcM.dirDerDirDer(argd, argd2, arg)<<endl;
-    cout<<funcR.dirDerDirDer(argd, argd2, arg)<<endl;
+    dumpS(funcS.dirDerDirDer(argd, argd2, arg));
+    dumpV(funcV.dirDerDirDer(argd, argd2, arg));
+    dumpV(funcRV.dirDerDirDer(argd, argd2, arg));
+    dumpM(funcM.dirDerDirDer(argd, argd2, arg));
+    dumpM(funcR.dirDerDirDer(argd, argd2, arg));
   }
 
   {
