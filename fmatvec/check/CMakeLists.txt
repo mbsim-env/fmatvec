@@ -80,7 +80,7 @@ target_link_libraries(testsymfunction fmatvec)
 # define tests, each taking steps run and diff as individual parts
 ################################################################################
 add_custom_target(testsymfunction_run
-    COMMAND ${CMAKE_COMMAND} -E env --modify PATH=path_list_prepend:$<$<BOOL:${WIN32}>:$<TARGET_FILE_DIR:fmatvec>> ${EXEC_LAUNCHER} ${EXEC_LAUNCHER_ARGS} $<TARGET_FILE_DIR:testsymfunction>/$<TARGET_FILE_NAME:testsymfunction>  > testsymfunction.out # add_custom_command can take target names and expands to regular platform-specific paths/executable names
+    COMMAND ${CMAKE_COMMAND} -E env PATH=$ENV{PATH}:$<$<BOOL:${WIN32}>:$<TARGET_FILE_DIR:fmatvec>> ${EXEC_LAUNCHER} ${EXEC_LAUNCHER_ARGS} $<TARGET_FILE_DIR:testsymfunction>/$<TARGET_FILE_NAME:testsymfunction>  > testsymfunction.out # add_custom_command can take target names and expands to regular platform-specific paths/executable names
     DEPENDS testsymfunction
     COMMENT "Run testsymfunction"
 )
@@ -92,7 +92,7 @@ add_custom_target(testsymfunction_diff
 add_dependencies(testsymfunction_diff testsymfunction_run)
 
 add_custom_target(testast_run
-    COMMAND ${CMAKE_COMMAND} -E env --modify PATH=path_list_prepend:$<$<BOOL:${WIN32}>:$<TARGET_FILE_DIR:fmatvec>> FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID=1 ${EXEC_LAUNCHER} ${EXEC_LAUNCHER_ARGS} $<TARGET_FILE_DIR:testast>/$<TARGET_FILE_NAME:testast> > testast.out # add_custom_command can take target names and expands to regular platform-specific paths/executable names
+    COMMAND ${CMAKE_COMMAND} -E env PATH=$ENV{PATH}:$<$<BOOL:${WIN32}>:$<TARGET_FILE_DIR:fmatvec>> FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID=1 ${EXEC_LAUNCHER} ${EXEC_LAUNCHER_ARGS} $<TARGET_FILE_DIR:testast>/$<TARGET_FILE_NAME:testast> > testast.out # add_custom_command can take target names and expands to regular platform-specific paths/executable names
     DEPENDS testast
     COMMENT "Run testast"
 )
@@ -104,13 +104,13 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_dependencies(testast_diff testast_run)
 endif()
 add_custom_target(testast_performance_run
-    COMMAND ${CMAKE_COMMAND} -E env --modify PATH=path_list_prepend:$<$<BOOL:${WIN32}>:$<TARGET_FILE_DIR:fmatvec>> ${EXEC_LAUNCHER} ${EXEC_LAUNCHER_ARGS} $<TARGET_FILE_DIR:testast_performance>/$<TARGET_FILE_NAME:testast_performance>
+    COMMAND ${CMAKE_COMMAND} -E env PATH=$ENV{PATH}:$<$<BOOL:${WIN32}>:$<TARGET_FILE_DIR:fmatvec>> ${EXEC_LAUNCHER} ${EXEC_LAUNCHER_ARGS} $<TARGET_FILE_DIR:testast_performance>/$<TARGET_FILE_NAME:testast_performance>
     DEPENDS testast_performance
     COMMENT "Run testast_performance"
 )
 
 add_custom_target(testfunction_run
-    COMMAND ${CMAKE_COMMAND} -E env --modify PATH=path_list_prepend:$<$<BOOL:${WIN32}>:$<TARGET_FILE_DIR:fmatvec>> ${EXEC_LAUNCHER} ${EXEC_LAUNCHER_ARGS} $<TARGET_FILE_DIR:testfunction>/$<TARGET_FILE_NAME:testfunction> # add_custom_command can take target names and expands to regular platform-specific paths/executable names
+    COMMAND ${CMAKE_COMMAND} -E env PATH=$ENV{PATH}:$<$<BOOL:${WIN32}>:$<TARGET_FILE_DIR:fmatvec>> ${EXEC_LAUNCHER} ${EXEC_LAUNCHER_ARGS} $<TARGET_FILE_DIR:testfunction>/$<TARGET_FILE_NAME:testfunction> # add_custom_command can take target names and expands to regular platform-specific paths/executable names
     COMMENT "Run testfunction"
     DEPENDS testfunction
 )
