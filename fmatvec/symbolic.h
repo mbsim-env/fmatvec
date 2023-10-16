@@ -294,7 +294,7 @@ void Eval<Arg...>::ctorByteCode(const Arg&... arg) {
 
 template<class... Arg>
 void Eval<Arg...>::callByteCode() const {
-#if !defined(NDEBUG) && !defined(SWIG)
+#if defined(FMATVEC_DEBUG) && !defined(SWIG)
   SymbolicExpression::evalOperationsCount = byteCode.size();
 #endif
   std::for_each(byteCode.begin(), byteCode.end(), [](const AST::ByteCode &bc){
