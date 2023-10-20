@@ -90,7 +90,7 @@ class FMATVEC_EXPORT SymbolicExpression : public std::shared_ptr<const AST::Vert
     // type like assign
     SymbolicExpression& operator<<=(const SymbolicExpression &src);
 
-#if !defined(NDEBUG) && !defined(SWIG)
+#if defined(FMATVEC_DEBUG) && !defined(SWIG)
     static signed long evalOperationsCount;
 #endif
 };

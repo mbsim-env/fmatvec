@@ -65,6 +65,13 @@ set(fmatvecHdr
 
 add_library(fmatvec SHARED ${fmatvecSrc} ${fmatvecHdr})
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  target_compile_definitions(fmatvec
+    PUBLIC
+    FMATVEC_DEBUG
+  )
+endif()
+
 target_include_directories( fmatvec 
    PUBLIC 
    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>

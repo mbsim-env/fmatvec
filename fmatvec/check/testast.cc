@@ -181,19 +181,19 @@ void checkSym(double &pdn0Value,
   a_^=4.4;
   a5^=5.5;
   a6^=6.6;
-#ifndef NDEBUG
+#ifdef FMATVEC_DEBUG
   SymbolicExpression::evalOperationsCount=0;
 #endif
   cout<<"frist eval"<<endl;
   Eval pdnEval{pdn};
   cout<<"pdn.eval = "<<pdnEval()<<endl;
-#ifndef NDEBUG
+#ifdef FMATVEC_DEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
   SymbolicExpression::evalOperationsCount=0;
 #endif
   cout<<"second eval with same values for independent variables"<<endl;
   cout<<"pdn.eval = "<<pdnEval()<<endl;
-#ifndef NDEBUG
+#ifdef FMATVEC_DEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
 
@@ -202,22 +202,22 @@ void checkSym(double &pdn0Value,
   a_^=6.4;
   a5^=7.5;
   a6^=8.6;
-#ifndef NDEBUG
+#ifdef FMATVEC_DEBUG
   SymbolicExpression::evalOperationsCount=0;
 #endif
   cout<<"third eval with different values for independent variables"<<endl;
   Eval pdn_rmv{pdn, _rmv};
   auto [pdnNum, _rmvNum] = pdn_rmv();
   cout<<"pdn.eval = "<<pdnNum<<endl;
-#ifndef NDEBUG
+#ifdef FMATVEC_DEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
 
-#ifndef NDEBUG
+#ifdef FMATVEC_DEBUG
   SymbolicExpression::evalOperationsCount=0;
 #endif
   _rmvNum(0);
-#ifndef NDEBUG
+#ifdef FMATVEC_DEBUG
   cout<<"number of operations evaluated = "<<SymbolicExpression::evalOperationsCount<<endl;
 #endif
 
