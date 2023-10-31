@@ -1854,6 +1854,8 @@ namespace fmatvec {
     return B;
   }
 
+  FMATVEC_EXPORT extern double tildeEPS;
+
   /*! \brief Inverse tilde operator
    *
    *  Example:
@@ -1865,9 +1867,11 @@ namespace fmatvec {
    *  \tilde T = \begin{pmatrix}x_1 \\ x_2 \\ x_3\end{pmatrix}
    *  \f]
    *  Only in debug builds the consistency of the matrix T is checked with respect to tol.
+   *  tol can be passed as optional parameter or set globally using the static variable fmatvec::tildeEPS.
+   *  Use fmatvec::tildeEPS with care since it affects all subsequent calls to tilde! (but its anyway only for debugging)
    * */
   template <class Row, class AT>
-  Vector<Row, AT> tilde(const SquareMatrix<Row, AT> &T, double tol = 1e-6) {
+  Vector<Row, AT> tilde(const SquareMatrix<Row, AT> &T, double tol = tildeEPS) {
     FMATVEC_ASSERT(T.rows()==3, AT);
 
     Vector<Fixed<3>, AT> x(NONINIT);
