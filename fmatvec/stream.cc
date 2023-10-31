@@ -58,6 +58,41 @@ namespace fmatvec {
     struct DoublePolicy : boost::spirit::karma::real_policies<double> {
       static constexpr int floatfield(double n) { return fmtflags::scientific; }
       static constexpr unsigned precision(double n) { return std::numeric_limits<double>::digits10+1; }
+      // BEGIN: added bugfix from https://github.com/boostorg/spirit/issues/529
+      // computes the number of digits left of the decimal in base 10
+      static unsigned int intDigits(double n) {
+          if (n < 0)
+              n = std::abs(n);
+  
+          // need to do this in 64-bit to be able to represent large enough numbers
+          const uint64_t limit = UINT64_MAX / 10;
+          uint64_t num = floor(n);
+          for (uint64_t x = 10, i = 1;; x *= 10, i++) {
+              if (num < x)
+                  return i;
+              if (x > limit)
+                  return i + 1;
+          }
+      }
+  
+      // Output the fractional part of the number
+      //
+      // By default, if the fractional part is zero we do nothing, unless the policy
+      // was explicitly told to do so
+      bool fraction_part(boost::spirit::karma::detail::output_iterator<std::ostream_iterator<char>, mpl_::int_<15>, boost::spirit::unused_type>& sink, double n, unsigned int precision_, unsigned int precision) const
+      {
+          // Inline code for karma::real_policies<double>::fraction_part() and change it to use
+          // a method to calculate number of digits for n that doesn't overflow when n is very large.
+          unsigned int digits = boost::spirit::traits::test_zero(n) ? 1 : intDigits(n);
+          
+          bool r = true;
+          for (/**/; r && digits < precision_; digits = digits + 1)
+              r = boost::spirit::karma::char_inserter<>::call(sink, '0');
+          if (precision && r)
+              r = boost::spirit::karma::int_inserter<10>::call(sink, n);
+          return r;
+      }
+      // END: added bugfix from https://github.com/boostorg/spirit/issues/529
     };
     static const boost::spirit::karma::real_generator<double, DoublePolicy> doubleBitIdentical;
     static boost::spirit::karma::rule<std::ostream_iterator<char>, double()> mydouble=doubleBitIdentical;
