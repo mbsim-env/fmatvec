@@ -39,6 +39,10 @@
 #include "sparse_matrix.h"
 #include "symmetric_sparse_matrix.h"
 #include <cmath>
+#ifndef NDEBUG
+  #include <iostream>
+  #include <boost/stacktrace.hpp>
+#endif
 
 namespace fmatvec {
 
@@ -1880,12 +1884,19 @@ namespace fmatvec {
     x.e(1) =  T.e(0, 2);
     x.e(2) =  T.e(1, 0);
 
-    FMATVEC_ASSERT(std::abs(T.e(0, 0)) < tol, AT);
-    FMATVEC_ASSERT(std::abs(T.e(1, 1)) < tol, AT);
-    FMATVEC_ASSERT(std::abs(T.e(2, 2)) < tol, AT);
-    FMATVEC_ASSERT(std::abs(x.e(0) + T.e(1, 2)) < tol, AT);
-    FMATVEC_ASSERT(std::abs(x.e(1) + T.e(2, 0)) < tol, AT);
-    FMATVEC_ASSERT(std::abs(x.e(2) + T.e(0, 1)) < tol, AT);
+    #ifndef NDEBUG
+    if(std::abs(T.e(0, 0)) >= tol ||
+       std::abs(T.e(1, 1)) >= tol ||
+       std::abs(T.e(2, 2)) >= tol ||
+       std::abs(x.e(0) + T.e(1, 2)) >= tol ||
+       std::abs(x.e(1) + T.e(2, 0)) >= tol ||
+       std::abs(x.e(2) + T.e(0, 1)) >= tol)  {
+      std::cerr<<"fmatvec::tilde called with a none screw symmetric matrix:"<<std::endl
+               <<T<<std::endl
+               <<boost::stacktrace::stacktrace()<<std::endl;
+      std::abort();
+    }
+    #endif
 
     return x;
   }
