@@ -79,7 +79,12 @@ namespace fmatvec {
       //
       // By default, if the fractional part is zero we do nothing, unless the policy
       // was explicitly told to do so
-      bool fraction_part(boost::spirit::karma::detail::output_iterator<std::ostream_iterator<char>, mpl_::int_<15>, boost::spirit::unused_type>& sink, double n, unsigned int precision_, unsigned int precision) const
+      #if !defined(BOOST_MPL_CFG_NO_ADL_BARRIER_NAMESPACE)
+        #define BOOST_MPL_AUX_ADL_BARRIER_NAMESPACE mpl_
+      #else
+        #define BOOST_MPL_AUX_ADL_BARRIER_NAMESPACE boost::mpl
+      #endif
+      bool fraction_part(boost::spirit::karma::detail::output_iterator<std::ostream_iterator<char>, BOOST_MPL_AUX_ADL_BARRIER_NAMESPACE::int_<15>, boost::spirit::unused_type>& sink, double n, unsigned int precision_, unsigned int precision) const
       {
           // Inline code for karma::real_policies<double>::fraction_part() and change it to use
           // a method to calculate number of digits for n that doesn't overflow when n is very large.

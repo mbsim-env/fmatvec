@@ -21,6 +21,9 @@
 
 #ifndef linear_algebra_h
 #define linear_algebra_h
+#ifdef _WIN32
+#define NOMINMAX
+#endif
 
 #include "square_matrix.h"
 #include "vector.h"
