@@ -21,7 +21,7 @@
 
 #ifndef linear_algebra_h
 #define linear_algebra_h
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(NOMINMAX)
 #define NOMINMAX
 #endif
 
