@@ -18,6 +18,7 @@
 #      - fmatvec_VERSION                  : The version of this fmatvec build.
 #      - fmatvec_VERSION_MAJOR            : Major version part of this fmatvec revision.
 #      - fmatvec_VERSION_MINOR            : Minor version part of this fmatvec revision.
+#      - fmatvec_INTEL_REDIST_LIBS        : probably empty list of libraries from the Intel redistributable package
 #
 # ===================================================================================
 
@@ -35,8 +36,9 @@ endif()
 set(fmatvec_INSTALL_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../")
 find_library(fmatvec_LIBRARY fmatvec PATHS "${fmatvec_INSTALL_DIR}" PATH_SUFFIXES ./ lib REQUIRED NO_DEFAULT_PATH)
 set(fmatvec_LIBRARY_DIR ${fmatvec_INSTALL_DIR}/lib)
-set(fmatvec_LIBRARIES ${fmatvec_LIBRARY} "@fmatvec_needed_libraries@")
-set(fmatvec_INCLUDE_DIRS "${fmatvec_INSTALL_DIR}/include" "@fmatvec_needed_includes@")
+set(fmatvec_LIBRARIES "${fmatvec_LIBRARY};@fmatvec_needed_libraries@")
+set(fmatvec_INCLUDE_DIRS "${fmatvec_INSTALL_DIR}/include;@fmatvec_needed_includes@")
+set(fmatvec_INTEL_REDIST_LIBS "@INTEL_REDIST_LIBS@")
 
 # currently skip that but (try to) remember it for later integration
 # include(@CMAKE_INSTALL_FULL_INCLUDEDIR@/fmatvec/cmake_utils/use_cpp_11.cmake)

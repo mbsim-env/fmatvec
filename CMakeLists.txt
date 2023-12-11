@@ -103,6 +103,15 @@ add_subdirectory(doc)
 
 
 set(ConfigPackageLocation "${CMAKE_INSTALL_LIBDIR}/cmake/fmatvec")
+
+# ATTENTION: InstallRequiredSystemLibraries does not intall Intel runtime libs, so generate list of required libs from the Intel redistributable package
+if( WIN32 )
+  find_file(mkl_intel_thread_dll mkl_intel_thread.2.dll PATHS $ENV{MKL_ROOT} REQUIRED NO_CACHE)
+  set( INTEL_REDIST_LIBS ${mkl_intel_thread_dll})
+else()
+  set( INTEL_REDIST_LIBS "")
+endif()
+
 install(EXPORT fmatvec
      NAMESPACE fmatvec::
      DESTINATION ${ConfigPackageLocation})
