@@ -44,6 +44,7 @@ if( WIN32 )
     set(BLA_VENDOR Intel10_64lp_seq)
     find_package(LAPACK REQUIRED) # checks for blas and lapack!
     set(BLAS_LAPACK_LIBRARIES ${LAPACK_LIBRARIES} )
+    set(BLA_INTEL_FOUND TRUE)
   endif()
   set(Boost_USE_STATIC_LIBS ON)
 else()
@@ -104,8 +105,8 @@ add_subdirectory(doc)
 
 set(ConfigPackageLocation "${CMAKE_INSTALL_LIBDIR}/cmake/fmatvec")
 
+if( WIN32 AND ${BLA_INTEL_FOUND} )
 # ATTENTION: InstallRequiredSystemLibraries does not intall Intel runtime libs, so generate list of required libs from the Intel redistributable package
-if( WIN32 )
   find_file(mkl_intel_thread_dll mkl_intel_thread.2.dll PATHS $ENV{MKL_ROOT} REQUIRED NO_CACHE)
   set( INTEL_REDIST_LIBS ${mkl_intel_thread_dll})
 else()
