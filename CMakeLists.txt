@@ -28,29 +28,19 @@ execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
 
 # Checking for the blas and lapack dependency
 if( WIN32 )
-  # Path with blas and lapack lib/dll needs to be in environment variable LIB
-  # find_package(BLAS) called separately for slightly better error message
-  find_package(BLAS QUIET)
-  if(BLAS_FOUND)
-    find_package(LAPACK QUIET)
-    set(BLAS_LAPACK_LIBRARIES ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} )
-  endif()
-
-  if(NOT LAPACK_FOUND)
-    # fall back to Intel MKL runtime libs
-    message("Trying to find Intel MKL runtime libraries instead of LAPACK/BLAS")
-    # works with IntelOne integration providing Intel(R) Math Kernel Library 2020 Update 1
-    set(BLA_STATIC ON)
-    set(BLA_VENDOR Intel10_64lp_seq)
-    find_package(LAPACK REQUIRED) # checks for blas and lapack!
-    set(BLAS_LAPACK_LIBRARIES ${LAPACK_LIBRARIES} )
-    set(BLA_INTEL_FOUND TRUE)
-  endif()
   set(Boost_USE_STATIC_LIBS ON)
-else()
-  find_package(LAPACK REQUIRED) # checks for blas and lapack!
-  set(BLAS_LAPACK_LIBRARIES ${LAPACK_LIBRARIES} )
 endif()
+
+if( USE_STATIC_INTEL_MKL )
+  # use Intel MKL on the windows side
+  message("Enforce usage of static Intel MKL instead of arbitrary LAPACK/BLAS")
+  # works with IntelOne integration providing Intel(R) Math Kernel Library 2020 Update 1
+  set(BLA_STATIC ON)
+  set(BLA_VENDOR Intel10_64lp_seq)
+endif()
+find_package(LAPACK REQUIRED) # checks for blas and lapack!
+set(BLAS_LAPACK_LIBRARIES ${LAPACK_LIBRARIES} )
+
 # Notes for cmake limitations under Windows:
 #     cmake 3.12.18081601-MSVC_2 fails to find c:\local\boost_1_72_0 (it ONLY detects the coexisting c:\local\boost_1_60_0)
 #         With boost 1.67 it works as expected
@@ -104,14 +94,6 @@ add_subdirectory(doc)
 
 
 set(ConfigPackageLocation "${CMAKE_INSTALL_LIBDIR}/cmake/fmatvec")
-
-if( WIN32 AND ${BLA_INTEL_FOUND} )
-# ATTENTION: InstallRequiredSystemLibraries does not intall Intel runtime libs, so generate list of required libs from the Intel redistributable package
-  find_file(mkl_intel_thread_dll mkl_intel_thread.2.dll PATHS $ENV{MKL_ROOT} REQUIRED NO_CACHE)
-  set( INTEL_REDIST_LIBS ${mkl_intel_thread_dll})
-else()
-  set( INTEL_REDIST_LIBS "")
-endif()
 
 install(EXPORT fmatvec
      NAMESPACE fmatvec::

@@ -38,7 +38,6 @@ find_library(fmatvec_LIBRARY fmatvec PATHS "${fmatvec_INSTALL_DIR}" PATH_SUFFIXE
 set(fmatvec_LIBRARY_DIR ${fmatvec_INSTALL_DIR}/lib)
 set(fmatvec_LIBRARIES "${fmatvec_LIBRARY};@fmatvec_needed_libraries@")
 set(fmatvec_INCLUDE_DIRS "${fmatvec_INSTALL_DIR}/include;@fmatvec_needed_includes@")
-set(fmatvec_INTEL_REDIST_LIBS "@INTEL_REDIST_LIBS@")
 
 # currently skip that but (try to) remember it for later integration
 # include(@CMAKE_INSTALL_FULL_INCLUDEDIR@/fmatvec/cmake_utils/use_cpp_11.cmake)
