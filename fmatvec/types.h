@@ -289,6 +289,12 @@ namespace fmatvec {
     using Type = SquareMatrix<Shape, NewAT>;
   };
 
+  // Replace in a fmatvec scalar, vector or matrix the OldAT with NewAT.
+  template<class MatVec, class NewAT> // handles MatVec being a scalar
+  struct ReplaceAT {
+    using Type = NewAT;
+  };
+
 }
 
 #endif

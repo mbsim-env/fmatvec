@@ -3,6 +3,8 @@
 
 #include "ast.h"
 #include <set>
+#include "function.h"
+#include <boost/hana/type.hpp>
 
 namespace fmatvec {
 
@@ -284,9 +286,9 @@ void Eval<Arg...>::ctorByteCode(const Arg&... arg) {
   // This is again a "slow" operation since the address of the return value may be far away fromo byteCode.
   auto exprRetIt = exprRet.begin();
   walkAT(SymTuple(arg...), numTuple, [this, &exprRet, &exprRetIt](auto &sym, auto &num) {
-    byteCode.emplace_back();
+    byteCode.emplace_back(1);
     auto it = --byteCode.end();
-    it->func = [](double* r, const std::array<double*,AST::ByteCode::N>& a) { *r = *a[0]; };
+    it->func = [](double* r, const AST::ByteCode::Arg& a) { *r = *a[0]; };
     it->argsPtr = { (*(exprRetIt++))->retPtr };
     it->retPtr = &num;
   });
@@ -300,6 +302,211 @@ void Eval<Arg...>::callByteCode() const {
   std::for_each(byteCode.begin(), byteCode.end(), [](const AST::ByteCode &bc){
     bc.func(bc.retPtr, bc.argsPtr);
   });
+}
+
+template<class RetN, class ArgN>
+class FunctionWrap1VecRetToScalar : public Function<double(ArgN)>  {
+  public:
+    FunctionWrap1VecRetToScalar(const std::shared_ptr<Function<RetN(ArgN)>> &func_, int idx_) : func(func_), idx(idx_) {}
+    double operator()(const ArgN &arg) override {
+      return (*func)(arg)(idx);
+    }
+    double dirDer(const ArgN &argDir, const ArgN &arg) override {
+      return func->dirDer(argDir, arg)(idx);
+    }
+    double dirDerDirDer(const ArgN &argDir_1, const ArgN &argDir_2, const ArgN &arg) override {
+      return func->dirDerDirDer(argDir_1, argDir_2, arg)(idx);
+    }
+  private:
+    std::shared_ptr<Function<RetN(ArgN)>> func;
+    int idx;
+};
+
+template<class RetN, class Arg1N, class Arg2N>
+class FunctionWrap2VecRetToScalar : public Function<double(Arg1N,Arg2N)>  {
+  public:
+    FunctionWrap2VecRetToScalar(const std::shared_ptr<Function<RetN(Arg1N,Arg2N)>> &func_, int idx_) :
+      func(func_), idx(idx_) {}
+    double operator()(const Arg1N &arg1, const Arg2N &arg2) override {
+      return (*func)(arg1,arg2)(idx);
+    }
+    double dirDer1(const Arg1N &dir1, const Arg1N &arg1, const Arg2N &arg2) override {
+      return func->dirDer1(dir1, arg1, arg2)(idx);
+    }
+    double dirDer2(const Arg2N &dir2, const Arg1N &arg1, const Arg2N &arg2) override {
+      return func->dirDer2(dir2, arg1, arg2)(idx);
+    }
+    double dirDer1DirDer1(const Arg1N &dir1_1, const Arg1N &dir1_2, const Arg1N &arg1, const Arg2N &arg2) override {
+      return func->dirDer1DirDer1(dir1_1, dir1_2, arg1, arg2)(idx);
+    }
+    double dirDer2DirDer1(const Arg2N &dir2_1, const Arg1N &dir1_2, const Arg1N &arg1, const Arg2N &arg2) override {
+      return func->dirDer2DirDer1(dir2_1, dir1_2, arg1, arg2)(idx);
+    }
+    double dirDer2DirDer2(const Arg2N &dir2_1, const Arg2N &dir2_2, const Arg1N &arg1, const Arg2N &arg2) override {
+      return func->dirDer2DirDer2(dir2_1, dir2_2, arg1, arg2)(idx);
+    }
+  private:
+    std::shared_ptr<Function<RetN(Arg1N,Arg2N)>> func;
+    int idx;
+};
+
+template<class RetN, class ArgN>
+class FunctionWrap1MatRetToScalar : public Function<double(ArgN)>  {
+  public:
+    FunctionWrap1MatRetToScalar(const std::shared_ptr<Function<RetN(ArgN)>> &func_, int row_, int col_) :
+      func(func_), row(row_), col(col_) {}
+    double operator()(const ArgN &arg) override {
+      return (*func)(arg)(row,col);
+    }
+    double dirDer(const ArgN &argDir, const ArgN &arg) override {
+      return func->dirDer(argDir, arg)(row,col);
+    }
+    double dirDerDirDer(const ArgN &argDir_1, const ArgN &argDir_2, const ArgN &arg) override {
+      return func->dirDerDirDer(argDir_1, argDir_2, arg)(row,col);
+    }
+  private:
+    std::shared_ptr<Function<RetN(ArgN)>> func;
+    int row;
+    int col;
+};
+
+template<class RetN, class Arg1N, class Arg2N>
+class FunctionWrap2MatRetToScalar : public Function<double(Arg1N,Arg2N)>  {
+  public:
+    FunctionWrap2MatRetToScalar(const std::shared_ptr<Function<RetN(Arg1N,Arg2N)>> &func_, int row_, int col_) :
+      func(func_), row(row_), col(col_) {}
+    double operator()(const Arg1N &arg1, const Arg2N &arg2) override {
+      return (*func)(arg1,arg2)(row,col);
+    }
+    double dirDer1(const Arg1N &dir1, const Arg1N &arg1, const Arg2N &arg2) override {
+      return func->dirDer1(dir1, arg1, arg2)(row,col);
+    }
+    double dirDer2(const Arg2N &dir2, const Arg1N &arg1, const Arg2N &arg2) override {
+      return func->dirDer2(dir2, arg1, arg2)(row,col);
+    }
+    double dirDer1DirDer1(const Arg1N &dir1_1, const Arg1N &dir1_2, const Arg1N &arg1, const Arg2N &arg2) override {
+      return func->dirDer1DirDer1(dir1_1, dir1_2, arg1, arg2)(row,col);
+    }
+    double dirDer2DirDer1(const Arg2N &dir2_1, const Arg1N &dir1_2, const Arg1N &arg1, const Arg2N &arg2) override {
+      return func->dirDer2DirDer1(dir2_1, dir1_2, arg1, arg2)(row,col);
+    }
+    double dirDer2DirDer2(const Arg2N &dir2_1, const Arg2N &dir2_2, const Arg1N &arg1, const Arg2N &arg2) override {
+      return func->dirDer2DirDer2(dir2_1, dir2_2, arg1, arg2)(row,col);
+    }
+  private:
+    std::shared_ptr<Function<RetN(Arg1N,Arg2N)>> func;
+    int row;
+    int col;
+};
+
+template<class Func, class ArgS>
+FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFuncWrapVecAndMatRet(
+  const std::shared_ptr<Function<Func>> &func, const ArgS &arg, int size1=0, int size2=0) {
+  using RetN = typename std::function<Func>::result_type;
+  using RetS = typename ReplaceAT<RetN,SymbolicExpression>::Type;
+  using ArgN = typename ReplaceAT<ArgS,double>::Type;
+
+  auto hasSize = boost::hana::is_valid([](auto&& vec) -> decltype(vec.size()) {});
+
+  RetS ret;
+  if constexpr (hasSize(ret)) {
+    // vector
+    int size=func->getRetSize().first;
+    if(size==0 && size1!=0)
+      size=size1;
+    else
+      size=(*func)(ArgN()).size();
+    ret.resize(size);
+    for(int i=0; i<size; ++i)
+      ret(i) = AST::SymbolicFuncWrapArg1<double(ArgN), ArgS>::
+               call(std::make_shared<FunctionWrap1VecRetToScalar<RetN,ArgN>>(func, i), arg);
+    return ret;
+  }
+  else {
+    // matrix
+    auto size=func->getRetSize();
+    if(size.first==0 && size1!=0)
+      size.first=size1;
+    else
+      size.first=(*func)(ArgN()).rows();
+    if(size.second==0 && size2!=0)
+      size.second=size2;
+    else
+      size.second=(*func)(ArgN()).cols();
+    ret.resize(size.first, size.second);
+    for(int r=0; r<size.first; ++r)
+      for(int c=0; c<size.second; ++c)
+        ret(r,c) = AST::SymbolicFuncWrapArg1<double(ArgN), ArgS>::call(std::make_shared<FunctionWrap1MatRetToScalar<RetN,ArgN>>(
+                   func, r, c), arg);
+    return ret;
+  }
+}
+
+template<class Func, class Arg1S, class Arg2S>
+FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFuncWrapVecAndMatRet(
+  const std::shared_ptr<Function<Func>> &func, const Arg1S &arg1, const Arg2S &arg2, int size1=0, int size2=0) {
+  using RetN = typename std::function<Func>::result_type;
+  using RetS = typename ReplaceAT<RetN,SymbolicExpression>::Type;
+  using Arg1N = typename ReplaceAT<Arg1S,double>::Type;
+  using Arg2N = typename ReplaceAT<Arg2S,double>::Type;
+
+  auto hasSize = boost::hana::is_valid([](auto&& vec) -> decltype(vec.size()) {});
+
+  RetS ret;
+  if constexpr (hasSize(ret)) {
+    // vector
+    int size=func->getRetSize().first;
+    if(size==0 && size1!=0)
+      size=size1;
+    else
+      size=(*func)(Arg1N(), Arg2N()).size();
+    ret.resize(size);
+    for(int i=0; i<size; ++i)
+      ret(i) = AST::SymbolicFuncWrapArg2<double(Arg1N,Arg2N), Arg1S, Arg2S>::
+               call(std::make_shared<FunctionWrap2VecRetToScalar<RetN,Arg1N,Arg2N>>(func, i), arg1, arg2);
+    return ret;
+  }
+  else {
+    // matrix
+    auto size=func->getRetSize();
+    if(size.first==0 && size1!=0)
+      size.first=size1;
+    else
+      size.first=(*func)(Arg1N(),Arg2N()).rows();
+    if(size.second==0 && size2!=0)
+      size.second=size2;
+    else
+      size.second=(*func)(Arg1N(),Arg2N()).cols();
+    ret.resize(size.first, size.second);
+    for(int r=0; r<size.first; ++r)
+      for(int c=0; c<size.second; ++c)
+        ret(r,c) = AST::SymbolicFuncWrapArg2<double(Arg1N,Arg2N), Arg1S, Arg2S>::
+                   call(std::make_shared<FunctionWrap2MatRetToScalar<RetN,Arg1N,Arg2N>>(func, r, c), arg1, arg2);
+    return ret;
+  }
+}
+
+template<class Func, class ArgS>
+FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFunc(
+  const std::shared_ptr<Function<Func>> &func, const ArgS &arg, int size1=0, int size2=0) {
+  using RetN = typename std::function<Func>::result_type;
+  using ArgN = typename ReplaceAT<ArgS,double>::Type;
+  if constexpr (std::is_same_v<RetN, double>)
+    return AST::SymbolicFuncWrapArg1<double(ArgN), ArgS>::call(func, arg);
+  else
+    return symbolicFuncWrapVecAndMatRet<Func, ArgS>(func, arg, size1, size2);
+}
+
+template<class Func, class Arg1S, class Arg2S>
+FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFunc(
+  const std::shared_ptr<Function<Func>> &func, const Arg1S &arg1, const Arg2S &arg2, int size1=0, int size2=0) {
+  using RetN = typename std::function<Func>::result_type;
+  using Arg1N = typename ReplaceAT<Arg1S,double>::Type;
+  using Arg2N = typename ReplaceAT<Arg2S,double>::Type;
+  if constexpr (std::is_same_v<RetN, double>)
+    return AST::SymbolicFuncWrapArg2<double(Arg1N, Arg2N), Arg1S, Arg2S>::call(func, arg1, arg2);
+  else
+    return symbolicFuncWrapVecAndMatRet<Func, Arg1S, Arg2S>(func, arg1, arg2, size1, size2);
 }
 
 }

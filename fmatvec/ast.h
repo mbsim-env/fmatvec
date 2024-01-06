@@ -1,11 +1,14 @@
 #ifndef _FMATVEC_AST_H_
 #define _FMATVEC_AST_H_
 
+#include "fmatvec/function.h"
 #include <map>
 #include <array>
 #include <memory>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
+#include <boost/container/small_vector.hpp>
+#include <utility>
 #include <fmatvec/stream.h>
 
 namespace fmatvec {
@@ -18,6 +21,7 @@ namespace AST {
   class Vertex;
   class Symbol;
   class Operation;
+  class NativeFunction;
   template<class T> class Constant;
   FMATVEC_EXPORT SymbolicExpression substScalar(const SymbolicExpression &se, const IndependentVariable& a, const SymbolicExpression &b);
 }
@@ -36,6 +40,7 @@ class FMATVEC_EXPORT SymbolicExpression : public std::shared_ptr<const AST::Vert
   friend class AST::Operation;
   friend class AST::Constant<int>;
   friend class AST::Constant<double>;
+  friend class AST::NativeFunction;
   friend FMATVEC_EXPORT SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
   friend SymbolicExpression AST::substScalar(const SymbolicExpression &se,
                                              const IndependentVariable& a, const SymbolicExpression &b);
@@ -194,18 +199,74 @@ namespace AST { // internal namespace
  * To add an element only std::vector::emplace_back() can be used.
 */
 struct FMATVEC_EXPORT ByteCode {
-  static constexpr size_t N { 3 };
-  ByteCode();
+  static constexpr size_t N { 12 };
+  ByteCode(size_t n);
   ByteCode(const ByteCode &) = delete;
   ByteCode(ByteCode &&) noexcept;
   ByteCode &operator=(const ByteCode &) = delete;
   ByteCode &operator=(ByteCode &&) = delete;
   ~ByteCode() = default;
-  std::function<void(double*, const std::array<double*,N>&)> func; // the operation this byteCode entry executes
+  using Arg = boost::container::small_vector<double*,N>;
+  std::function<void(double*, const Arg&)> func; // the operation this byteCode entry executes
   double  retValue; // storage of the return value of the operation: retPtr may point to this value
   double* retPtr; // a pointer to which the operation can write its result to
-  std::array<double ,N> argsValue; // storage for arguments of the operation: argsPtr may point to these values
-  std::array<double*,N> argsPtr; // pointers from which the operation reads its arguments
+  Arg argsPtr; // pointers from which the operation reads its arguments
+};
+
+template<class Func, class ArgS>
+struct SymbolicFuncWrapArg1 {
+  static SymbolicExpression call(
+    const std::shared_ptr<Function<Func>> &func,
+    const ArgS &arg);
+};
+
+template<>
+struct SymbolicFuncWrapArg1<double(double), SymbolicExpression> {
+  static SymbolicExpression call(
+    const std::shared_ptr<Function<double(double)>> &func,
+    const SymbolicExpression &arg);
+};
+
+template<class Type>
+struct SymbolicFuncWrapArg1<double(Vector<Type, double>), Vector<Type, SymbolicExpression>> {
+  static SymbolicExpression call(
+    const std::shared_ptr<Function<double(Vector<Type, double>)>> &func,
+    const Vector<Type, SymbolicExpression> &arg);
+};
+  
+template<class Func, class Arg1S, class Arg2S>
+struct SymbolicFuncWrapArg2 {
+  static SymbolicExpression call(
+    const std::shared_ptr<Function<Func>> &func,
+    const Arg1S &arg1, const Arg2S &arg2);
+};
+
+template<>
+struct SymbolicFuncWrapArg2<double(double,double), SymbolicExpression, SymbolicExpression> {
+  static SymbolicExpression call(
+    const std::shared_ptr<Function<double(double,double)>> &func,
+    const SymbolicExpression &arg1, const SymbolicExpression &arg2);
+};
+
+template<class Type>
+struct SymbolicFuncWrapArg2<double(Vector<Type,double>,double), Vector<Type, SymbolicExpression>, SymbolicExpression> {
+  static SymbolicExpression call(
+    const std::shared_ptr<Function<double(Vector<Type,double>,double)>> &func,
+    const Vector<Type, SymbolicExpression> &arg1, const SymbolicExpression &arg2);
+};
+
+template<class Type>
+struct SymbolicFuncWrapArg2<double(double,Vector<Type,double>), SymbolicExpression, Vector<Type, SymbolicExpression>> {
+  static SymbolicExpression call(
+    const std::shared_ptr<Function<double(double,Vector<Type,double>)>> &func,
+    const SymbolicExpression &arg1, const Vector<Type, SymbolicExpression> &arg2);
+};
+
+template<class Type1, class Type2>
+struct SymbolicFuncWrapArg2<double(Vector<Type1,double>,Vector<Type2,double>), Vector<Type1, SymbolicExpression>, Vector<Type2, SymbolicExpression>> {
+  static SymbolicExpression call(
+    const std::shared_ptr<Function<double(Vector<Type1,double>,Vector<Type2,double>)>> &func,
+    const Vector<Type1, SymbolicExpression> &arg1, const Vector<Type2, SymbolicExpression> &arg2);
 };
 
 // ***** Vertex *****
@@ -213,6 +274,7 @@ struct FMATVEC_EXPORT ByteCode {
 //! A abstract class for a Vertex of the AST (abstract syntax tree).
 class FMATVEC_EXPORT Vertex {
   friend Operation;
+  friend NativeFunction;
   public:
 
     //! Generate a new AST being the partial derivate of this AST with respect to the variable x.
@@ -321,6 +383,280 @@ void Symbol::setValue(double x_) const {
   x=x_;
 }
 
+// ***** ScalarFunctionWrapArg *****
+
+class ScalarFunctionWrapArg {
+  public:
+    virtual double operator()(const ByteCode::Arg &arg) = 0;
+    virtual double dirDer(const ByteCode::Arg &arg) = 0;
+    virtual double dirDerDirDer(const ByteCode::Arg &arg) = 0;
+};
+
+class ScalarFunctionWrapArgS : public ScalarFunctionWrapArg {
+  public:
+    ScalarFunctionWrapArgS(std::shared_ptr<fmatvec::Function<double(double)>> func_) : func(std::move(func_)) {}
+    double operator()(const ByteCode::Arg &arg) override {
+      return (*func)(*arg[0]);
+    }
+    double dirDer(const ByteCode::Arg &arg) override {
+      return func->dirDer(*arg[1], *arg[0]);
+    }
+    double dirDerDirDer(const ByteCode::Arg &arg) override {
+      return func->dirDerDirDer(*arg[1], *arg[2], *arg[0]);
+    }
+  private:
+    std::shared_ptr<fmatvec::Function<double(double)>> func;
+};
+
+template<class Type>
+class ScalarFunctionWrapArgV : public ScalarFunctionWrapArg {
+  public:
+    ScalarFunctionWrapArgV(const std::shared_ptr<fmatvec::Function<double(fmatvec::Vector<Type,double>)>> &func_, int argSize) : func(func_) {
+      argV.resize(argSize);
+      dir1V.resize(argSize);
+      dir2V.resize(argSize);
+    }
+    double operator()(const ByteCode::Arg &arg) override {
+      for(size_t i=0; i<argV.size(); ++i)
+        argV(i) = *arg[i];
+      return (*func)(argV);
+    }
+    double dirDer(const ByteCode::Arg &arg) override {
+      size_t argVsize=argV.size();
+      for(size_t i=0; i<argVsize; ++i)
+        argV(i) = *arg[i];
+      for(size_t i=0; i<argVsize; ++i)
+        dir1V(i) = *arg[i+argVsize];
+      return func->dirDer(dir1V, argV);
+    }
+    double dirDerDirDer(const ByteCode::Arg &arg) override {
+      size_t argVsize=argV.size();
+      for(size_t i=0; i<argVsize; ++i)
+        argV(i) = *arg[i];
+      for(size_t i=0; i<argVsize; ++i)
+        dir1V(i) = *arg[i+argVsize];
+      for(size_t i=0; i<argVsize; ++i)
+        dir2V(i) = *arg[i+2*argVsize];
+      return func->dirDerDirDer(dir1V, dir2V, argV);
+    }
+  private:
+    std::shared_ptr<fmatvec::Function<double(fmatvec::Vector<Type,double>)>> func;
+    fmatvec::Vector<Type,double> argV;
+    fmatvec::Vector<Type,double> dir1V;
+    fmatvec::Vector<Type,double> dir2V;
+};
+
+class ScalarFunctionWrapArgSS : public ScalarFunctionWrapArg {
+  public:
+    ScalarFunctionWrapArgSS(std::shared_ptr<fmatvec::Function<double(double,double)>> func_) : func(std::move(func_)) {}
+    double operator()(const ByteCode::Arg &arg) override {
+      return (*func)(*arg[0], *arg[1]);
+    }
+    double dirDer(const ByteCode::Arg &arg) override {
+      return func->dirDer1(*arg[2], *arg[0], *arg[1]) +
+             func->dirDer2(*arg[3], *arg[0], *arg[1]);
+    }
+    double dirDerDirDer(const ByteCode::Arg &arg) override {
+      return func->dirDer1DirDer1(*arg[2], *arg[4], *arg[0], *arg[1]) + 
+             func->dirDer2DirDer1(*arg[5], *arg[2], *arg[0], *arg[1]) +
+             func->dirDer2DirDer1(*arg[3], *arg[4], *arg[0], *arg[1]) +
+             func->dirDer2DirDer2(*arg[3], *arg[5], *arg[0], *arg[1]);
+    }
+  private:
+    std::shared_ptr<fmatvec::Function<double(double,double)>> func;
+};
+
+template<class Type>
+class ScalarFunctionWrapArgVS : public ScalarFunctionWrapArg {
+  public:
+    ScalarFunctionWrapArgVS(const std::shared_ptr<fmatvec::Function<double(Vector<Type,double>,double)>> &func_, int argSize) : func(func_) {
+      argV.resize(argSize);
+      dir1V.resize(argSize);
+      dir2V.resize(argSize);
+    }
+    double operator()(const ByteCode::Arg &arg) override {
+      for(size_t i=0; i<argV.size(); ++i)
+        argV(i) = *arg[i];
+      return (*func)(argV, *arg[argV.size()]);
+    }
+    double dirDer(const ByteCode::Arg &arg) override {
+      auto argVsize=argV.size();
+      for(size_t i=0; i<argVsize; ++i)
+        argV(i) = *arg[i];
+      for(size_t i=0; i<argVsize; ++i)
+        dir1V(i) = *arg[i+1+argVsize];
+      return func->dirDer1(dir1V             , argV, *arg[argVsize]) +
+             func->dirDer2(*arg[2*argVsize+1], argV, *arg[argVsize]);
+    }
+    double dirDerDirDer(const ByteCode::Arg &arg) override {
+      auto argVsize=argV.size();
+      for(size_t i=0; i<argVsize; ++i)
+        argV(i) = *arg[i];
+      for(size_t i=0; i<argVsize; ++i)
+        dir1V(i) = *arg[i+1+argVsize];
+      for(size_t i=0; i<argVsize; ++i)
+        dir2V(i) = *arg[i+2+2*argVsize];
+      return func->dirDer1DirDer1(dir1V, dir2V, argV, *arg[argVsize]) + 
+             func->dirDer2DirDer1(*arg[1+2*argVsize], dir2V             , argV, *arg[argVsize]) +
+             func->dirDer2DirDer1(*arg[2+3*argVsize], dir1V             , argV, *arg[argVsize]) +
+             func->dirDer2DirDer2(*arg[1+2*argVsize], *arg[2+3*argVsize], argV, *arg[argVsize]);
+    }
+  private:
+    std::shared_ptr<fmatvec::Function<double(Vector<Type,double>,double)>> func;
+    fmatvec::Vector<Type,double> argV;
+    fmatvec::Vector<Type,double> dir1V;
+    fmatvec::Vector<Type,double> dir2V;
+};
+
+template<class Type>
+class ScalarFunctionWrapArgSV : public ScalarFunctionWrapArg {
+  public:
+    ScalarFunctionWrapArgSV(const std::shared_ptr<fmatvec::Function<double(double,Vector<Type,double>)>> &func_, int argSize) : func(func_) {
+      argV.resize(argSize);
+      dir1V.resize(argSize);
+      dir2V.resize(argSize);
+    }
+    double operator()(const ByteCode::Arg &arg) override {
+      for(size_t i=0; i<argV.size(); ++i)
+        argV(i) = *arg[i+1];
+      return (*func)(*arg[0], argV);
+    }
+    double dirDer(const ByteCode::Arg &arg) override {
+      auto argVsize=argV.size();
+      for(size_t i=0; i<argVsize; ++i)
+        argV(i) = *arg[i+1];
+      for(size_t i=0; i<argVsize; ++i)
+        dir1V(i) = *arg[i+2+argVsize];
+      return func->dirDer1(*arg[argVsize+1], *arg[0], argV) +
+             func->dirDer2(dir1V           , *arg[0], argV);
+    }
+    double dirDerDirDer(const ByteCode::Arg &arg) override {
+      auto argVsize=argV.size();
+      for(size_t i=0; i<argVsize; ++i)
+        argV(i) = *arg[i+1];
+      for(size_t i=0; i<argVsize; ++i)
+        dir1V(i) = *arg[i+2+argVsize];
+      for(size_t i=0; i<argVsize; ++i)
+        dir2V(i) = *arg[i+3+2*argVsize];
+      return func->dirDer1DirDer1(*arg[argVsize+1], *arg[2*argVsize+2], *arg[0], argV) + 
+             func->dirDer2DirDer1(dir2V           , *arg[argVsize+1]  , *arg[0], argV) +
+             func->dirDer2DirDer1(dir1V           , *arg[2*argVsize+2], *arg[0], argV) +
+             func->dirDer2DirDer2(dir1V           , dir2V             , *arg[0], argV);
+    }
+  private:
+    std::shared_ptr<fmatvec::Function<double(double,Vector<Type,double>)>> func;
+    fmatvec::Vector<Type,double> argV;
+    fmatvec::Vector<Type,double> dir1V;
+    fmatvec::Vector<Type,double> dir2V;
+};
+
+template<class Type1, class Type2>
+class ScalarFunctionWrapArgVV : public ScalarFunctionWrapArg {
+  public:
+    ScalarFunctionWrapArgVV(const std::shared_ptr<fmatvec::Function<double(Vector<Type1,double>,Vector<Type2,double>)>> &func_,
+                      int argaSize, int argbSize) : func(func_) {
+      argV1.resize(argaSize);
+      argV2.resize(argbSize);
+      dir1V1.resize(argaSize);
+      dir1V2.resize(argbSize);
+      dir2V1.resize(argaSize);
+      dir2V2.resize(argbSize);
+    }
+    double operator()(const ByteCode::Arg &arg) override {
+      auto argV1size = argV1.size();
+      auto argV2size = argV2.size();
+      for(int i=0; i<argV1size; ++i)
+        argV1(i)=*arg[i];
+      for(int i=0; i<argV2size; ++i)
+        argV2(i)=*arg[argV1size+i];
+      return (*func)(argV1, argV2);
+    }
+    double dirDer(const ByteCode::Arg &arg) override {
+      auto argV1size = argV1.size();
+      auto argV2size = argV2.size();
+      for(int i=0; i<argV1size; ++i)
+        argV1(i)=*arg[i];
+      for(int i=0; i<argV2size; ++i)
+        argV2(i)=*arg[argV1size+i];
+      for(size_t i=0; i<argV1size; ++i)
+        dir1V1(i) = *arg[argV1size+argV2size+i];
+      for(size_t i=0; i<argV2size; ++i)
+        dir1V2(i) = *arg[2*argV1size+argV2size+i];
+      return func->dirDer1(dir1V1, argV1, argV2) +
+             func->dirDer2(dir1V2, argV1, argV2);
+    }
+    double dirDerDirDer(const ByteCode::Arg &arg) override {
+      auto argV1size = argV1.size();
+      auto argV2size = argV2.size();
+      for(int i=0; i<argV1size; ++i)
+        argV1(i)=*arg[i];
+      for(int i=0; i<argV2size; ++i)
+        argV2(i)=*arg[argV1size+i];
+      for(size_t i=0; i<argV1size; ++i)
+        dir1V1(i) = *arg[argV1size+argV2size+i];
+      for(size_t i=0; i<argV2size; ++i)
+        dir1V2(i) = *arg[2*argV1size+argV2size+i];
+      for(size_t i=0; i<argV1size; ++i)
+        dir2V1(i) = *arg[2*argV1size+2*argV2size+i];
+      for(size_t i=0; i<argV2size; ++i)
+        dir2V2(i) = *arg[3*argV1size+2*argV2size+i];
+      return func->dirDer1DirDer1(dir1V1, dir2V1, argV1, argV2) + 
+             func->dirDer2DirDer1(dir2V2, dir1V1, argV1, argV2) +
+             func->dirDer2DirDer1(dir1V2, dir2V1, argV1, argV2) +
+             func->dirDer2DirDer2(dir1V2, dir2V2, argV1, argV2);
+    }
+  private:
+    std::shared_ptr<fmatvec::Function<double(Vector<Type1,double>,Vector<Type2,double>)>> func;
+    fmatvec::Vector<Type1,double> argV1;
+    fmatvec::Vector<Type2,double> argV2;
+    fmatvec::Vector<Type1,double> dir1V1;
+    fmatvec::Vector<Type2,double> dir1V2;
+    fmatvec::Vector<Type1,double> dir2V1;
+    fmatvec::Vector<Type2,double> dir2V2;
+};
+
+// ***** Function *****
+
+//! A vertex of the AST representing an arbitary function.
+class FMATVEC_EXPORT NativeFunction : public Vertex, public std::enable_shared_from_this<NativeFunction> {
+  public:
+    static SymbolicExpression create(const std::shared_ptr<ScalarFunctionWrapArg> &funcWrapper,
+                                     const std::vector<SymbolicExpression> &argS,
+                                     const std::vector<SymbolicExpression> &dir1S={},
+                                     const std::vector<SymbolicExpression> &dir2S={});
+    SymbolicExpression parDer(const IndependentVariable &x) const override;
+
+    std::vector<ByteCode>::iterator dumpByteCode(std::vector<ByteCode> &byteCode,
+                                                 std::map<const Vertex*,
+                                                 std::vector<AST::ByteCode>::iterator> &existingVertex) const override;
+
+    void walkVertex(const std::function<void(const std::shared_ptr<const Vertex>&)> &func) const override;
+
+  private:
+    NativeFunction(const std::shared_ptr<ScalarFunctionWrapArg> &func_,
+                   const std::vector<SymbolicExpression> &argS,
+                   const std::vector<SymbolicExpression> &dir1S,
+                   const std::vector<SymbolicExpression> &dir2S);
+    bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
+
+    std::shared_ptr<ScalarFunctionWrapArg> funcWrapper;
+    const std::vector<SymbolicExpression> argS;
+    const std::vector<SymbolicExpression> dir1S;
+    const std::vector<SymbolicExpression> dir2S;
+    
+    using CacheKey = std::tuple<std::weak_ptr<ScalarFunctionWrapArg>,
+                     std::vector<std::weak_ptr<const Vertex>>,
+                     std::vector<std::weak_ptr<const Vertex>>,
+                     std::vector<std::weak_ptr<const Vertex>> >;
+    struct CacheKeyComp {
+      bool operator()(const CacheKey& l, const CacheKey& r) const;
+      private:
+        std::owner_less<std::weak_ptr<const Vertex>> ol;
+        std::owner_less<std::weak_ptr<const ScalarFunctionWrapArg>> olf;
+    };
+    static std::map<CacheKey, std::weak_ptr<const NativeFunction>, CacheKeyComp> cache;
+};
+
 // ***** Operation *****
 
 //! A vertex of the AST representing an operation.
@@ -363,11 +699,67 @@ class FMATVEC_EXPORT Operation : public Vertex, public std::enable_shared_from_t
     struct OpMap {
       std::string funcName; // used to dump/read the expression using boost spirit/karma: e.g.
                             // "plus"
-      std::function<void(double*, const std::array<double*,ByteCode::N>&)> func; // used for runtime evaluation: e.g.
-                            // [](double* r, const std::array<double*,N>& a){ *r = *a[0] + *a[1]; }
+      std::function<void(double*, const ByteCode::Arg&)> func; // used for runtime evaluation: e.g.
+                            // [](double* r, const ByteCode::Arg& a){ *r = *a[0] + *a[1]; }
     };
     static const std::map<Operator, OpMap> opMap;
 };
+
+inline SymbolicExpression SymbolicFuncWrapArg1<double(double), SymbolicExpression>::call(
+  const std::shared_ptr<fmatvec::Function<double(double)>> &func,
+  const SymbolicExpression &arg) {
+  return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgS>(func), std::vector<SymbolicExpression>{arg});
+}
+
+template<class Type>
+SymbolicExpression SymbolicFuncWrapArg1<double(Vector<Type, double>), Vector<Type, SymbolicExpression>>::call(
+  const std::shared_ptr<Function<double(Vector<Type, double>)>> &func,
+  const Vector<Type, SymbolicExpression> &arg) {
+  std::vector<SymbolicExpression> argV(arg.size());
+  for(int i=0; i<arg.size(); ++i)
+    argV[i]=arg(i);
+  return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgV<Type>>(func, arg.size()), argV);
+}
+
+inline SymbolicExpression SymbolicFuncWrapArg2<double(double,double), SymbolicExpression, SymbolicExpression>::call(
+  const std::shared_ptr<fmatvec::Function<double(double,double)>> &func,
+  const SymbolicExpression &arg1, const SymbolicExpression &arg2) {
+  return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgSS>(func), std::vector<SymbolicExpression>{arg1,arg2});
+}
+
+template<class Type>
+SymbolicExpression SymbolicFuncWrapArg2<double(Vector<Type,double>,double), Vector<Type, SymbolicExpression>, SymbolicExpression>::call(
+  const std::shared_ptr<Function<double(Vector<Type,double>,double)>> &func,
+  const Vector<Type, SymbolicExpression> &arg1, const SymbolicExpression &arg2) {
+  std::vector<SymbolicExpression> arg(arg1.size()+1);
+  for(int i=0; i<arg1.size(); ++i)
+    arg[i]=arg1(i);
+  arg[arg1.size()]=arg2;
+  return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgVS<Type>>(func, arg1.size()), arg);
+}
+
+template<class Type>
+SymbolicExpression SymbolicFuncWrapArg2<double(double,Vector<Type,double>), SymbolicExpression, Vector<Type, SymbolicExpression>>::call(
+  const std::shared_ptr<Function<double(double,Vector<Type,double>)>> &func,
+  const SymbolicExpression &arg1, const Vector<Type, SymbolicExpression> &arg2) {
+  std::vector<SymbolicExpression> arg(1+arg2.size());
+  arg[0]=arg1;
+  for(int i=0; i<arg2.size(); ++i)
+    arg[i+1]=arg2(i);
+  return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgSV<Type>>(func, arg2.size()), arg);
+}
+
+template<class Type1, class Type2>
+SymbolicExpression SymbolicFuncWrapArg2<double(Vector<Type1,double>,Vector<Type2,double>), Vector<Type1, SymbolicExpression>, Vector<Type2, SymbolicExpression>>::call(
+  const std::shared_ptr<Function<double(Vector<Type1,double>,Vector<Type2,double>)>> &func,
+  const Vector<Type1, SymbolicExpression> &arg1, const Vector<Type2, SymbolicExpression> &arg2) {
+  std::vector<SymbolicExpression> arg(arg1.size()+arg2.size());
+  for(int i=0; i<arg1.size(); ++i)
+    arg[i]=arg1(i);
+  for(int i=0; i<arg2.size(); ++i)
+    arg[arg1.size()+i]=arg2(i);
+  return AST::NativeFunction::create(std::make_shared<AST::ScalarFunctionWrapArgVV<Type1,Type2>>(func, arg1.size(), arg2.size()), arg);
+}
 
 } // end namespace AST
 #endif

@@ -94,7 +94,7 @@ file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/testsymfunction.ref" testsymfun
 add_custom_target(testsymfunction_diff
     COMMAND ${DIFF} ${testsymfunction_ref} testsymfunction.out
     DEPENDS testsymfunction_run
-    COMMENT "Diff reulsts of testsymfunction"
+    COMMENT "Diff results of testsymfunction"
 )
 add_dependencies(testsymfunction_diff testsymfunction_run)
 
@@ -107,7 +107,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/testast.ref" testast_ref) # fc.exe cannot handle forward slashs in first argument
   add_custom_target(testast_diff
       COMMAND ${DIFF} ${testast_ref}  testast.out
-      COMMENT "Diff reulsts of testast"
+      COMMENT "Diff results of testast"
   )
   add_dependencies(testast_diff testast_run)
 endif()

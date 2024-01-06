@@ -321,10 +321,9 @@ SymbolicExpression substScalar(const SymbolicExpression &se, const IndependentVa
 
 // ***** ByteCode *****
 
-ByteCode::ByteCode() {
+ByteCode::ByteCode(size_t n) {
   retPtr = &retValue;
-  for(size_t i=0; i<argsPtr.size(); ++i)
-    argsPtr[i] = &argsValue[i];
+  argsPtr.resize(n);
 }
 
 ByteCode::ByteCode(ByteCode &&) noexcept {
@@ -381,10 +380,10 @@ std::vector<ByteCode>::iterator Constant<T>::dumpByteCode(vector<ByteCode> &byte
   auto [lastIt, inserted] = existingVertex.insert(make_pair(this, vector<ByteCode>::iterator()));
   if(!inserted) return lastIt->second;
 
-  byteCode.emplace_back();
+  byteCode.emplace_back(0);
   auto it = --byteCode.end();
   lastIt->second = it;
-  it->func = [](double* r, const std::array<double*,ByteCode::N>& a) {};
+  it->func = [](double* r, const ByteCode::Arg& a) {};
   it->retValue = c;
   return --byteCode.end();
 }
@@ -457,15 +456,186 @@ std::vector<ByteCode>::iterator Symbol::dumpByteCode(vector<ByteCode> &byteCode,
   auto [lastIt, inserted] = existingVertex.insert(make_pair(this, vector<ByteCode>::iterator()));
   if(!inserted) return lastIt->second;
 
-  byteCode.emplace_back();
+  byteCode.emplace_back(0);
   auto it = --byteCode.end();
   lastIt->second = it;
   double *xPtr = &x;
-  it->func = [xPtr](double* r, const std::array<double*,ByteCode::N>& a) { *r = *xPtr; };
+  it->func = [xPtr](double* r, const ByteCode::Arg& a) { *r = *xPtr; };
   return --byteCode.end();
 }
 
 void Symbol::walkVertex(const function<void(const shared_ptr<const Vertex>&)> &func) const {
+  func(shared_from_this());
+}
+
+// ***** NativeFunction *****
+
+map<NativeFunction::CacheKey, weak_ptr<const NativeFunction>, NativeFunction::CacheKeyComp> NativeFunction::cache;
+
+bool NativeFunction::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) const {
+  if(olf(get<0>(l), get<0>(r)) || olf(get<0>(r), get<0>(l)))
+    return olf(get<0>(l), get<0>(r));
+
+#define FMATVEC_HELPER(ARG) \
+  if(get<ARG>(l).size() != get<ARG>(r).size()) \
+    return get<ARG>(l).size()<get<ARG>(r).size(); \
+  for(size_t i=0; i<get<ARG>(l).size(); ++i) \
+    if(ol(get<ARG>(l)[i],get<ARG>(r)[i]) || ol(get<ARG>(r)[i],get<ARG>(l)[i])) \
+      return ol(get<ARG>(l)[i], get<ARG>(r)[i]);
+  FMATVEC_HELPER(1)
+  FMATVEC_HELPER(2)
+  FMATVEC_HELPER(3)
+
+  return false;
+}
+
+NativeFunction::NativeFunction(const shared_ptr<ScalarFunctionWrapArg> &funcWrapper_, const vector<SymbolicExpression> &argS_,
+                               const vector<SymbolicExpression> &dir1S_, const vector<SymbolicExpression> &dir2S_) :
+  funcWrapper(funcWrapper_), argS(argS_), dir1S(dir1S_), dir2S(dir2S_) {}
+
+SymbolicExpression NativeFunction::create(const shared_ptr<ScalarFunctionWrapArg> &funcWrapper, const vector<SymbolicExpression> &argS,
+                                          const vector<SymbolicExpression> &dir1S, const vector<SymbolicExpression> &dir2S) {
+  vector<weak_ptr<const Vertex>> weakArgS;
+  // we cannot just use std::copy here since std::shared_ptr is a private base of SymbolicExpression
+  transform(argS.begin(), argS.end(), back_inserter(weakArgS), [](const SymbolicExpression &x){
+    return weak_ptr<const Vertex>(x);
+  });
+
+  vector<weak_ptr<const Vertex>> weakDir1S;
+  // we cannot just use std::copy here since std::shared_ptr is a private base of SymbolicExpression
+  transform(dir1S.begin(), dir1S.end(), back_inserter(weakDir1S), [](const SymbolicExpression &x){
+    return weak_ptr<const Vertex>(x);
+  });
+
+  vector<weak_ptr<const Vertex>> weakDir2S;
+  // we cannot just use std::copy here since std::shared_ptr is a private base of SymbolicExpression
+  transform(dir2S.begin(), dir2S.end(), back_inserter(weakDir2S), [](const SymbolicExpression &x){
+    return weak_ptr<const Vertex>(x);
+  });
+
+  auto r=cache.insert(make_pair(make_tuple(weak_ptr<ScalarFunctionWrapArg>(funcWrapper),
+                      weakArgS, weakDir1S, weakDir2S), weak_ptr<const NativeFunction>()));
+  if(!r.second) {
+    auto oldPtr=r.first->second.lock();
+    if(oldPtr)
+      return oldPtr;
+  }
+  auto newPtr=shared_ptr<NativeFunction>(new NativeFunction(funcWrapper, argS, dir1S, dir2S));
+  r.first->second=newPtr;
+  return newPtr;
+}
+
+SymbolicExpression NativeFunction::parDer(const IndependentVariable &x) const {
+  if(dir1S.size()==0) {
+    // create a new first derivative
+    vector<SymbolicExpression> dir1S_;
+    bool allZero=true;
+    for(size_t i=0; i<argS.size(); ++i) {
+      dir1S_.push_back(argS[i]->parDer(x));
+      if(!dir1S_.back()->isZero())
+        allZero=false;
+    }
+    if(allZero)
+      return 0;
+    return create(funcWrapper, argS, dir1S_);
+  }
+  if(dir2S.size()==0) {
+    // create a new second derivative
+    vector<SymbolicExpression> dir1S_;
+    vector<SymbolicExpression> dir2S_;
+    SymbolicExpression ret;
+    bool all1Zero=true;
+    for(size_t i=0; i<argS.size(); ++i) {
+      dir1S_.push_back(dir1S[i]->parDer(x));
+      if(!dir1S_.back()->isZero())
+        all1Zero=false;
+    }
+    if(all1Zero)
+      ret=0;
+    else
+      ret=create(funcWrapper, argS, dir1S_);
+    bool all2Zero=true;
+    for(size_t i=0; i<argS.size(); ++i) {
+      dir2S_.push_back(argS[i]->parDer(x));
+      if(!dir2S_.back()->isZero())
+        all2Zero=false;
+    }
+    if(!all2Zero)
+      ret=ret+create(funcWrapper, argS, dir1S, dir2S_);
+    return ret;
+  }
+  throw std::runtime_error("Derivative higher than 2 of external function needed. "
+                           "External functions provide only the second derivative.");
+}
+
+bool NativeFunction::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
+  // a native function equals b only if b is also a native function
+  auto bnf=dynamic_pointer_cast<const NativeFunction>(b);
+  if(!bnf)
+    return false;
+  // if the native functions are not the same -> return false
+  if(funcWrapper.get()!=bnf->funcWrapper.get())
+    return false;
+  // if any of the argS's are not equal -> return false
+  if(argS.size()!=bnf->argS.size())
+    return false;
+  for(size_t i=0; i<argS.size(); ++i)
+    if(!argS[i]->equal(bnf->argS[i], m))
+      return false;
+  if(dir1S.size()!=bnf->dir1S.size())
+    return false;
+  for(size_t i=0; i<dir1S.size(); ++i)
+    if(!dir1S[i]->equal(bnf->dir1S[i], m))
+      return false;
+  if(dir2S.size()!=bnf->dir2S.size())
+    return false;
+  for(size_t i=0; i<dir2S.size(); ++i)
+    if(!dir2S[i]->equal(bnf->dir2S[i], m))
+      return false;
+  return true;
+}
+
+std::vector<ByteCode>::iterator NativeFunction::dumpByteCode(std::vector<ByteCode> &byteCode,
+                                             std::map<const Vertex*, std::vector<AST::ByteCode>::iterator> &existingVertex) const {
+
+  auto [lastIt, inserted] = existingVertex.insert(make_pair(this, vector<ByteCode>::iterator()));
+  if(!inserted) return lastIt->second;
+
+  std::vector<vector<ByteCode>::iterator> allargSItVec;
+  for(auto &A : {argS, dir1S, dir2S})
+    for(auto &a : A) {
+      auto it = a->dumpByteCode(byteCode, existingVertex);
+      allargSItVec.push_back(it);
+    }
+
+  byteCode.emplace_back(argS.size()+dir1S.size()+dir2S.size());
+  auto it = --byteCode.end();
+  if(argS.size()+dir1S.size()+dir2S.size() > ByteCode::N)
+    Atom::msgStatic(Atom::Warn)<<
+      "A NativeFunction with more "<<argS.size()+dir1S.size()+dir2S.size()<<
+      " arguments exists, which is more the the inplace size "<<ByteCode::N<<"."<<endl<<
+      "Memory cache will not be optimal. Increase ByteCode::N at compile time to improve performance."<<endl;
+  lastIt->second = it;
+  auto func = funcWrapper; // we don't want to capture this (but need to capture by value the shared_ptr this->funcWapper)
+  if(dir1S.size()==0 && dir2S.size()==0) // 0th derivative
+    it->func = [func](double *ret, const ByteCode::Arg &arg) { *ret = (*func)(arg); };
+  else if(dir2S.size()==0) // 1th derivative
+    it->func = [func](double *ret, const ByteCode::Arg &arg) { *ret = func->dirDer(arg); };
+  else // 2st derivative
+    it->func = [func](double *ret, const ByteCode::Arg &arg) { *ret = func->dirDerDirDer(arg); };
+
+  auto allargSIt = allargSItVec.begin();
+  auto argsPtrIt = it->argsPtr.begin();
+  for(; allargSIt<allargSItVec.end(); ++allargSIt, ++argsPtrIt)
+    *argsPtrIt = (*allargSIt)->retPtr;
+
+  return --byteCode.end();
+}
+
+void NativeFunction::walkVertex(const std::function<void(const std::shared_ptr<const Vertex>&)> &func) const  {
+  for(auto &A : {argS, dir1S, dir2S})
+    for(auto &a : A)
+      a->walkVertex(func);
   func(shared_from_this());
 }
 
@@ -474,43 +644,47 @@ void Symbol::walkVertex(const function<void(const shared_ptr<const Vertex>&)> &f
 map<Operation::CacheKey, weak_ptr<const Operation>, Operation::CacheKeyComp> Operation::cache;
 
 //MISSING: optimized calls for int arguments
-#define FUNC(expr) [](double* r, const std::array<double*,ByteCode::N>& arg) { \
-  auto &a=*arg[0]; /* first argument */ \
-  auto &b=*arg[1]; /* second argument */ \
-  auto &c=*arg[2]; /* third argument */ \
+#define FUNC(expr) [](double* r, const ByteCode::Arg& arg) { \
   *r = expr; \
 }
+#define _a *arg[0]
+#define _b *arg[1]
+#define _c *arg[2]
 const std::map<Operation::Operator, Operation::OpMap> Operation::opMap {
 //  Operator     Name          Lambda-Function
-  { Plus,      { "plus"      , FUNC( a + b                            ) }},
-  { Minus,     { "minus"     , FUNC( a - b                            ) }},
-  { Mult,      { "mult"      , FUNC( a * b                            ) }},
-  { Div,       { "div"       , FUNC( a / b                            ) }},
-  { Pow,       { "pow"       , FUNC( std::pow(a, b)                   ) }},
-  { Log,       { "log"       , FUNC( std::log(a)                      ) }},
-  { Sqrt,      { "sqrt"      , FUNC( std::sqrt(a)                     ) }},
-  { Neg,       { "neg"       , FUNC( - a                              ) }},
-  { Sin,       { "sin"       , FUNC( std::sin(a)                      ) }},
-  { Cos,       { "cos"       , FUNC( std::cos(a)                      ) }}, 
-  { Tan,       { "tan"       , FUNC( std::tan(a)                      ) }}, 
-  { Sinh,      { "sinh"      , FUNC( std::sinh(a)                     ) }}, 
-  { Cosh,      { "cosh"      , FUNC( std::cosh(a)                     ) }}, 
-  { Tanh,      { "tanh"      , FUNC( std::tanh(a)                     ) }}, 
-  { ASin,      { "asin"      , FUNC( std::asin(a)                     ) }}, 
-  { ACos,      { "acos"      , FUNC( std::acos(a)                     ) }}, 
-  { ATan,      { "atan"      , FUNC( std::atan(a)                     ) }}, 
-  { ATan2,     { "atan2"     , FUNC( std::atan2(a, b)                 ) }}, 
-  { ASinh,     { "asinh"     , FUNC( std::asinh(a)                    ) }}, 
-  { ACosh,     { "acosh"     , FUNC( std::acosh(a)                    ) }}, 
-  { ATanh,     { "atanh"     , FUNC( std::atanh(a)                    ) }}, 
-  { Exp,       { "exp"       , FUNC( std::exp(a)                      ) }}, 
-  { Sign,      { "sign"      , FUNC( boost::math::sign(a)             ) }}, 
-  { Heaviside, { "heaviside" , FUNC( 0.5 * boost::math::sign(a) + 0.5 ) }}, 
-  { Abs,       { "abs"       , FUNC( std::abs(a)                      ) }},
-  { Min,       { "min"       , FUNC( std::min(a, b)                   ) }}, 
-  { Max,       { "max"       , FUNC( std::max(a, b)                   ) }},
-  { Condition, { "condition" , FUNC( a > 0 ? b : c                    ) }}, 
+  { Plus,      { "plus"      , FUNC( _a + _b                           ) }},
+  { Minus,     { "minus"     , FUNC( _a - _b                           ) }},
+  { Mult,      { "mult"      , FUNC( _a * _b                           ) }},
+  { Div,       { "div"       , FUNC( _a / _b                           ) }},
+  { Pow,       { "pow"       , FUNC( std::pow(_a, _b)                  ) }},
+  { Log,       { "log"       , FUNC( std::log(_a)                      ) }},
+  { Sqrt,      { "sqrt"      , FUNC( std::sqrt(_a)                     ) }},
+  { Neg,       { "neg"       , FUNC( - _a                              ) }},
+  { Sin,       { "sin"       , FUNC( std::sin(_a)                      ) }},
+  { Cos,       { "cos"       , FUNC( std::cos(_a)                      ) }}, 
+  { Tan,       { "tan"       , FUNC( std::tan(_a)                      ) }}, 
+  { Sinh,      { "sinh"      , FUNC( std::sinh(_a)                     ) }}, 
+  { Cosh,      { "cosh"      , FUNC( std::cosh(_a)                     ) }}, 
+  { Tanh,      { "tanh"      , FUNC( std::tanh(_a)                     ) }}, 
+  { ASin,      { "asin"      , FUNC( std::asin(_a)                     ) }}, 
+  { ACos,      { "acos"      , FUNC( std::acos(_a)                     ) }}, 
+  { ATan,      { "atan"      , FUNC( std::atan(_a)                     ) }}, 
+  { ATan2,     { "atan2"     , FUNC( std::atan2(_a, _b)                ) }}, 
+  { ASinh,     { "asinh"     , FUNC( std::asinh(_a)                    ) }}, 
+  { ACosh,     { "acosh"     , FUNC( std::acosh(_a)                    ) }}, 
+  { ATanh,     { "atanh"     , FUNC( std::atanh(_a)                    ) }}, 
+  { Exp,       { "exp"       , FUNC( std::exp(_a)                      ) }}, 
+  { Sign,      { "sign"      , FUNC( boost::math::sign(_a)             ) }}, 
+  { Heaviside, { "heaviside" , FUNC( 0.5 * boost::math::sign(_a) + 0.5 ) }}, 
+  { Abs,       { "abs"       , FUNC( std::abs(_a)                      ) }},
+  { Min,       { "min"       , FUNC( std::min(_a, _b)                  ) }}, 
+  { Max,       { "max"       , FUNC( std::max(_a, _b)                  ) }},
+  { Condition, { "condition" , FUNC( _a > 0 ? _b : _c                  ) }}, 
 };                                                         
+#undef FUNC
+#undef _a
+#undef _b
+#undef _c
                                                            
 SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpression> &child_) {
   static bool optimizeExpressions=true; // this is "always" true (except for the initial call, see below)
@@ -746,7 +920,6 @@ bool Operation::CacheKeyComp::operator()(const CacheKey& l, const CacheKey& r) c
 
 std::vector<ByteCode>::iterator Operation::dumpByteCode(vector<ByteCode> &byteCode,
                                                      map<const Vertex*, vector<ByteCode>::iterator> &existingVertex) const {
-  assert(child.size() <= ByteCode::N && "If more function arguments are needed you have to increase ByteCode::N at compile time.");
   auto [lastIt, inserted] = existingVertex.insert(make_pair(this, vector<ByteCode>::iterator()));
   if(!inserted) return lastIt->second;
 
@@ -756,18 +929,19 @@ std::vector<ByteCode>::iterator Operation::dumpByteCode(vector<ByteCode> &byteCo
     childItVec.push_back(it);
   }
 
-  byteCode.emplace_back();
+  byteCode.emplace_back(child.size());
   auto it = --byteCode.end();
+  assert(child.size() <= ByteCode::N && "If more function arguments are needed you have to increase ByteCode::N at compile time.");
   lastIt->second = it;
   it->func = opMap.at(op).func;
 
   // optimization for pow with an interger exponent
   if(op == Pow && child[1]->isConstantInt())
-    it->func = [](double* r, const std::array<double*,ByteCode::N>& a){ *r = std::pow(*a[0], static_cast<int>(*a[1])); };
+    it->func = [](double* r, const ByteCode::Arg& a){ *r = std::pow(*a[0], static_cast<int>(*a[1])); };
 
   auto childIt = childItVec.begin();
   auto argsPtrIt = it->argsPtr.begin();
-  for(; childIt<childItVec.end(); ++childIt, ++argsPtrIt)
+  for(; childIt != childItVec.end(); ++childIt, ++argsPtrIt)
     *argsPtrIt = (*childIt)->retPtr;
 
   return --byteCode.end();
@@ -816,6 +990,7 @@ boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& 
     static qi::real_parser<double, qi::strict_real_policies<double>> strict_double;
     static qi::rule<It, SymbolicExpression()>  constDouble;
     static qi::rule<It, SymbolicExpression()>  operation;
+    // NativeFunction cannot be serialized and hence not deserialized
 
     static qi::symbols<char, AST::Operation::Operator> opSym;
     for(auto &x : AST::Operation::opMap)
@@ -865,7 +1040,10 @@ namespace {
     auto s=dynamic_pointer_cast<const AST::Symbol>(se);
     if(s) return s->getUUIDStr();
     pass=false;
-    return string();
+    return {};
+  }
+  int getFunction(const SymbolicExpression &se, bool &pass) {
+    throw runtime_error("Cannot serialize a symbolic expression containing a function.");
   }
 }
 
@@ -882,6 +1060,7 @@ boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& g
     static karma::rule<It, SymbolicExpression()> constInt;
     static karma::rule<It, SymbolicExpression()> constDouble;
     static karma::rule<It, SymbolicExpression()> symbol;
+    static karma::rule<It, SymbolicExpression()> nativeFunction;
     static karma::rule<It, SymbolicExpression()> operation;
 
     auto &doubleBitIdentical=getBoostSpiritKarmaRule<double>();
@@ -890,12 +1069,13 @@ boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& g
     for(auto &x : AST::Operation::opMap)
       opSym.add(x.first, x.second.funcName);
 
-    constInt    = karma::int_[karma::_1=phx::bind(&getConstInt, karma::_val, karma::_pass)];
-    constDouble = doubleBitIdentical[karma::_1=phx::bind(&getConstDouble, karma::_val, karma::_pass)];
-    operation   = opSym[karma::_1=phx::bind(&getOperationOp, karma::_val, karma::_pass)] << '(' <<
-                  (vertex % ',')[karma::_1=phx::bind(&getOperationChilds, karma::_val, karma::_pass)] << ')';
-    symbol      = karma::string[karma::_1=phx::bind(&getSymbol, karma::_val, karma::_pass)];
-    vertex      = constInt | constDouble | symbol | operation;
+    constInt       = karma::int_[karma::_1=phx::bind(&getConstInt, karma::_val, karma::_pass)];
+    constDouble    = doubleBitIdentical[karma::_1=phx::bind(&getConstDouble, karma::_val, karma::_pass)];
+    operation      = opSym[karma::_1=phx::bind(&getOperationOp, karma::_val, karma::_pass)] << '(' <<
+                     (vertex % ',')[karma::_1=phx::bind(&getOperationChilds, karma::_val, karma::_pass)] << ')';
+    symbol         = karma::string[karma::_1=phx::bind(&getSymbol, karma::_val, karma::_pass)];
+    nativeFunction = karma::int_[karma::_1=phx::bind(&getFunction, karma::_val, karma::_pass)];
+    vertex         = constInt | constDouble | symbol | operation | nativeFunction;
   }
   return vertex;
 }
