@@ -39,7 +39,9 @@ string check(double a, double b) {
     if(abs(a-b)/m>1e-12)
       e=false;
   }
-  return e ? boost::lexical_cast<string>(a)+" equal" : boost::lexical_cast<string>(a)+" NOT_EQUAL (=a"+", b="+boost::lexical_cast<string>(b)+")";
+  ostringstream str;
+  str << setprecision(12) << a << (e ? " equal" : " NOT_EQUAL (=a, b="+boost::lexical_cast<string>(b)+")");
+  return str.str();
 }
 
 int main() {
