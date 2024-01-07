@@ -7,6 +7,7 @@
 #include <functional>
 #include <boost/container_hash/hash.hpp>
 #include <fmatvec/fmatvec.h>
+#include <fmatvec/atom.h>
 
 namespace boost {
 
@@ -55,7 +56,9 @@ namespace fmatvec {
   class LRUCache {
     public:
       //! Create a LRU cache of at most size items.
-      LRUCache(size_t size_, size_t bucketSize = 0);
+      LRUCache(size_t size_, double bucketSizeFactor = 1.5);
+      //! Prints the cache hit rate in debug builds to the stream Atom::Debug
+      ~LRUCache();
       /*! Add the key "in" to the cache.
        * Ensures that no more then size entries exist in the cache.
        * Returns a reference to the cache value and a bool which indicates if a new entry was created.
@@ -63,46 +66,66 @@ namespace fmatvec {
        * If a existing entry is returned, than the reference is a reference to the existing cache entry.
        */
       std::pair<Out&, bool> operator()(const In &in);
+      double getCacheHitRate() const;
     private:
       std::list<std::pair<const In&,Out>, ListAllocator> itemList;
       std::unordered_map<In, decltype(itemList.begin()), InHash, InKeyEqual, UnorderedMapAllocator> itemMap;
       size_t size;
+      size_t allCalls { 0 }, cacheHits { 0 };
   };
   
   template<class In, class Out, class InHash, class InKeyEqual, class UnorderedMapAllocator, class ListAllocator>
-  LRUCache<In,Out,InHash,InKeyEqual,UnorderedMapAllocator,ListAllocator>::LRUCache(size_t size_, size_t bucketSize) :
-    itemMap(bucketSize==0 ? floor(1.5*size_) : bucketSize), size(size_) {
+  LRUCache<In,Out,InHash,InKeyEqual,UnorderedMapAllocator,ListAllocator>::LRUCache(size_t size_, double bucketSizeFactor) {
+    // we can override the LRU cache size with FMATVEC_LRUCACHE_SIZE
+    static auto envSize = static_cast<size_t>(-1);
+    if(envSize == static_cast<size_t>(-1)) {
+      const char *env = getenv("FMATVEC_LRUCACHE_SIZE");
+      if(env)
+        envSize = atoi(env);
+      else
+        envSize = 0;
+    }
+    if(envSize != 0)
+      size_ = envSize;
+
+    itemMap.rehash(floor(bucketSizeFactor*size_));
+    size = size_;
+  }
+
+  template<class In, class Out, class InHash, class InKeyEqual, class UnorderedMapAllocator, class ListAllocator>
+  LRUCache<In,Out,InHash,InKeyEqual,UnorderedMapAllocator,ListAllocator>::~LRUCache() {
+    if(Atom::msgActStatic(Atom::Debug))
+      Atom::msgStatic(Atom::Debug)<<"Cache hit rate "<<getCacheHitRate()*100<<"%"<<std::endl;
   }
   
   template<class In, class Out, class InHash, class InKeyEqual, class UnorderedMapAllocator, class ListAllocator>
   std::pair<Out&, bool> LRUCache<In,Out,InHash,InKeyEqual,UnorderedMapAllocator,ListAllocator>::operator()(const In &in) {
+    allCalls++;
     auto [it, created] = itemMap.emplace(in, itemList.begin());
   
-    // item found -> save out and remove it from itemList and itemMap to be readded a last recently used
-    if(!created) {
-      itemList.emplace_front(it->first, std::move(it->second->second)); // move the exiting out value a new first list (Mark *)
-      itemList.erase(it->second);
-      itemMap.erase(it);
+    if(created) {
+      // new itemMap{in,it_dummy} was created by the above call (as "it")
+      itemList.emplace_front(it->first, Out()); // create a new first itemList with a default ctor out value
+      // remove old item(s) if too many items exist
+      if(itemMap.size() > size) {
+        auto itLast = --itemList.end();
+        itemMap.erase(itLast->first);
+        itemList.pop_back();
+      }
     }
-    else
-      itemList.emplace_front(it->first, Out()); // create a new first list item the list with a default ctor out value (Mark *)
-  
-    // add a new last recently used element
-    // Mark *: to use only the default ctor and move ctor of Out the creation of the new item in itemList
-    //         is done in the above if/else construct. Doing it here will be more readable but requires also a move assignment operator.
-    auto newIt = itemList.begin();
-    if(created)
-      it->second=newIt;
-    
-    // remove old item(s) if too many items exist
-    while(itemMap.size() > size) {
-      auto it = itemList.end();
-      --it;
-      itemMap.erase(it->first);
-      itemList.pop_back();
+    else {
+      cacheHits++;
+      // a existing itemMap{in,it_to_itemList} was selected by the above call (as "it")
+      itemList.emplace_front(it->first, std::move(it->second->second)); // create a new first itemList by move-ctor out from the existing
+      itemList.erase(it->second); // remove the old itemList
     }
-  
-    return {newIt->second,created};
+    it->second = itemList.begin(); // fix second value of itemMap (it was either created with a dummy iterator or has changed)
+    return {it->second->second,created};
+  }
+
+  template<class In, class Out, class InHash, class InKeyEqual, class UnorderedMapAllocator, class ListAllocator>
+  double LRUCache<In,Out,InHash,InKeyEqual,UnorderedMapAllocator,ListAllocator>::getCacheHitRate() const {
+    return allCalls==0 ? -1 : static_cast<double>(cacheHits)/allCalls;
   }
 
 }

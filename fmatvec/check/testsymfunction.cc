@@ -50,6 +50,7 @@ int main() {
 #endif
 
   cout<<setprecision(12);
+  Atom::setCurrentMessageStream(Atom::Debug);
 
   {
     IndependentVariable x;

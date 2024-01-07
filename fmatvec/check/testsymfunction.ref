@@ -98,6 +98,9 @@
 0.994787994275 equal
 0.426420590322 equal
 0.426420590322 equal
+Cache hit rate 50%
+Cache hit rate 79.1667%
+Cache hit rate 92.8571%
 2.47285791329e-05 equal
 0.00071820956321 equal
 0.0017067654606 equal
@@ -105,6 +108,9 @@
 0.116620959637 equal
 0.0495531898387 equal
 0.0495531898387 equal
+Cache hit rate 66.6667%
+Cache hit rate 86.1111%
+Cache hit rate 95.2381%
 10.7576138591 equal
 156.409836407 equal
 -26.7365089772 equal
@@ -112,6 +118,12 @@
 157.70744498 equal
 -278.559732338 equal
 -278.559732338 equal
+Cache hit rate 50%
+Cache hit rate 75%
+Cache hit rate 50%
+Cache hit rate 79.1667%
+Cache hit rate 79.1667%
+Cache hit rate 92.8571%
 5264.63937535 equal
 149556.544998 equal
 -18878.1070238 equal
@@ -119,3 +131,9 @@
 207829.839266 equal
 -423955.757689 equal
 -423955.757689 equal
+Cache hit rate 75%
+Cache hit rate 87.5%
+Cache hit rate 75%
+Cache hit rate 89.5833%
+Cache hit rate 89.5833%
+Cache hit rate 96.4286%
