@@ -362,7 +362,7 @@ SymbolicExpression Constant<T>::create(const T&c_) {
 }
 
 template<class T>
-bool Constant<T>::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
+bool Constant<T>::equal(const SymbolicExpression &b, MapIVSE &m) const {
   // a constant is only equal to b if b is the same as this.
   return this->shared_from_this()==b;
 }
@@ -395,8 +395,8 @@ void Constant<T>::walkVertex(const function<void(const shared_ptr<const Vertex>&
 
 template SymbolicExpression Constant<int   >::create(const int   &c_);
 template SymbolicExpression Constant<double>::create(const double&c_);
-template bool Constant<int   >::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const;
-template bool Constant<double>::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const;
+template bool Constant<int   >::equal(const SymbolicExpression &b, MapIVSE &m) const;
+template bool Constant<double>::equal(const SymbolicExpression &b, MapIVSE &m) const;
 template SymbolicExpression Constant<int   >::parDer(const IndependentVariable &x) const;
 template SymbolicExpression Constant<double>::parDer(const IndependentVariable &x) const;
 template std::vector<ByteCode>::iterator Constant<int   >::dumpByteCode(vector<ByteCode> &byteCode, map<const Vertex*, vector<ByteCode>::iterator> &existingVertex) const;
@@ -420,7 +420,7 @@ IndependentVariable Symbol::create(const boost::uuids::uuid& uuid_) {
   return newPtr;
 }
 
-bool Symbol::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
+bool Symbol::equal(const SymbolicExpression &b, MapIVSE &m) const {
   // if this symbol is not already listed in m than this symbol is still free.
   // This means that the the symbol can be equal to b if this symbol is set to b...
   auto ret=m.insert(pair<IndependentVariable, SymbolicExpression>(shared_from_this(), SymbolicExpression()));
@@ -568,7 +568,7 @@ SymbolicExpression NativeFunction::parDer(const IndependentVariable &x) const {
                            "External functions provide only the second derivative.");
 }
 
-bool NativeFunction::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
+bool NativeFunction::equal(const SymbolicExpression &b, MapIVSE &m) const {
   // a native function equals b only if b is also a native function
   auto bnf=dynamic_pointer_cast<const NativeFunction>(b);
   if(!bnf)
@@ -762,7 +762,7 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
     for(auto &opt : optExpr) {
       SymbolicExpression in=opt.first;
       SymbolicExpression out=opt.second;
-      map<IndependentVariable, SymbolicExpression> m;
+      MapIVSE m;
       if(in->equal(curOp, m)) {
         // if this optimization expression matches ...
         // ... and the result is an error -> throw
@@ -816,7 +816,7 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
   return newPtr;
 }
 
-bool Operation::equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const {
+bool Operation::equal(const SymbolicExpression &b, MapIVSE &m) const {
   // a operation equals b only if b is also a operation
   auto bo=dynamic_pointer_cast<const Operation>(b);
   if(!bo)

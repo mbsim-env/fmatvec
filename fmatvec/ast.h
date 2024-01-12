@@ -299,7 +299,20 @@ class FMATVEC_EXPORT Vertex {
     // Returns true if this Vertex the Vertex (SymbolicExpression) b. Every Symbol variables in this Vertex are free. This
     // means that true is also returned if the Symbols in this Vertex can be replaced by anything such that the expressions
     // are equal. All these required replacements are stored in m.
-    virtual bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const=0;
+    // NOTE:
+    // We define our own less operator for std::map<IndependentVariable, ...> since we abort in the overloaded function
+    // inline bool operator<(const fmatvec::SymbolicExpression& a, const fmatvec::SymbolicExpression& b) noexcept,
+    // see below. This abort is needed to avoid that e.g. std::min/std::max can be called with SymbolicExpression arguments.
+    // If your code calls this abort function you may call somewhere std::min(SymbolicExpression, SymbolicExpression) instead of
+    // fmatvec::min(SymbolicExpression, SymbolicExpression). The same applies for std::max/fmatvec::max.
+    // I was not able to solve this in a better way!
+    struct LessIV {
+      bool operator()(const IndependentVariable& a, const IndependentVariable& b) const {
+        return a.std::shared_ptr<const AST::Vertex>::get() < b.std::shared_ptr<const AST::Vertex>::get();
+      }
+    };
+    using MapIVSE = std::map<IndependentVariable, SymbolicExpression, LessIV>;
+    virtual bool equal(const SymbolicExpression &b, MapIVSE &m) const=0;
 };
 
 inline bool Vertex::isConstantInt() const {
@@ -328,7 +341,7 @@ class FMATVEC_EXPORT Constant : public Vertex, public std::enable_shared_from_th
 
     Constant(const T& c_);
     const T c;
-    bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
+    bool equal(const SymbolicExpression &b, MapIVSE &m) const override;
     using CacheKey = T;
     static std::map<CacheKey, std::weak_ptr<const Constant>> cache;
 };
@@ -372,7 +385,7 @@ class FMATVEC_EXPORT Symbol : public Vertex, public std::enable_shared_from_this
   private:
 
     Symbol(const boost::uuids::uuid& uuid_);
-    bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
+    bool equal(const SymbolicExpression &b, MapIVSE &m) const override;
     mutable double x = 0.0;
     boost::uuids::uuid uuid; // each variable has a uuid (this is only used when the AST is serialized and for caching)
     using CacheKey = boost::uuids::uuid;
@@ -637,7 +650,7 @@ class FMATVEC_EXPORT NativeFunction : public Vertex, public std::enable_shared_f
                    const std::vector<SymbolicExpression> &argS,
                    const std::vector<SymbolicExpression> &dir1S,
                    const std::vector<SymbolicExpression> &dir2S);
-    bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
+    bool equal(const SymbolicExpression &b, MapIVSE &m) const override;
 
     std::shared_ptr<ScalarFunctionWrapArg> funcWrapper;
     const std::vector<SymbolicExpression> argS;
@@ -685,7 +698,7 @@ class FMATVEC_EXPORT Operation : public Vertex, public std::enable_shared_from_t
   private:
 
     Operation(Operator op_, const std::vector<SymbolicExpression> &child_);
-    bool equal(const SymbolicExpression &b, std::map<IndependentVariable, SymbolicExpression> &m) const override;
+    bool equal(const SymbolicExpression &b, MapIVSE &m) const override;
     Operator op;
     std::vector<SymbolicExpression> child;
     using CacheKey = std::pair<Operator, std::vector<std::weak_ptr<const Vertex>>>;
@@ -763,6 +776,13 @@ SymbolicExpression SymbolicFuncWrapArg2<double(Vector<Type1,double>,Vector<Type2
 
 } // end namespace AST
 #endif
+
+inline bool operator<(const fmatvec::SymbolicExpression& a, const fmatvec::SymbolicExpression& b) noexcept {
+  // See LessIV why we need to overload this operator< and call abort!
+  std::cerr<<"ABORT: See LessIV: have you called std::min/max instead of fmatvev::min/max with type SymbolicExpression?"<<std::endl;
+  assert(((void)"See LessIV: have you called std::min/max instead of fmatvev::min/max with type SymbolicExpression?", false));
+  abort();
+}
 
 IndependentVariable& IndependentVariable::operator^=(double x) {
   static_cast<const AST::Symbol*>(get())->setValue(x);
