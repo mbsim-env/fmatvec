@@ -3,6 +3,7 @@
 #include "fmatvec/symbolic.h"
 #include <fmatvec/symbolic_function.h>
 #include <boost/lexical_cast.hpp>
+#include <chrono>
 
 using namespace std;
 using namespace fmatvec;

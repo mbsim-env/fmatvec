@@ -68,13 +68,25 @@ add_executable(testsymfunction
                "testsymfunction.cc"
                )
 
+add_executable(testsymfunction_performance
+               EXCLUDE_FROM_ALL
+               "testsymfunction_performance.cc"
+               )
+
 target_include_directories(testsymfunction
    PRIVATE
    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
    $<BUILD_INTERFACE:${FMATVEC_CONFIG_INCLUDE}>
 )
 
+target_include_directories(testsymfunction_performance
+   PRIVATE
+   $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
+   $<BUILD_INTERFACE:${FMATVEC_CONFIG_INCLUDE}>
+)
+
 target_link_libraries(testsymfunction fmatvec)
+target_link_libraries(testsymfunction_performance fmatvec)
 
 if( WIN32 AND NOT CMAKE_CROSSCOMPILING)
   set(PATHSEP ";")
@@ -97,6 +109,12 @@ add_custom_target(testsymfunction_diff
     COMMENT "Diff results of testsymfunction"
 )
 add_dependencies(testsymfunction_diff testsymfunction_run)
+
+add_custom_target(testsymfunction_performance_run
+  COMMAND ${CMAKE_COMMAND} -E env "PATH=$ENV{PATH}${PATHSEP}$<$<BOOL:${WIN32}>:$<TARGET_FILE_DIR:fmatvec>>" ${EXEC_LAUNCHER} ${EXEC_LAUNCHER_ARGS} $<TARGET_FILE_DIR:testsymfunction_performance>/$<TARGET_FILE_NAME:testsymfunction_performance> # add_custom_command can take target names and expands to regular platform-specific paths/executable names
+    DEPENDS testsymfunction_performance
+    COMMENT "Run testsymfunction_performance"
+)
 
 add_custom_target(testast_run
   COMMAND ${CMAKE_COMMAND} -E env "PATH=$ENV{PATH}${PATHSEP}$<$<BOOL:${WIN32}>:$<TARGET_FILE_DIR:fmatvec>>" FMATVEC_DEBUG_SYMBOLICEXPRESSION_UUID=1 ${EXEC_LAUNCHER} ${EXEC_LAUNCHER_ARGS} $<TARGET_FILE_DIR:testast>/$<TARGET_FILE_NAME:testast> > testast.out # add_custom_command can take target names and expands to regular platform-specific paths/executable names
