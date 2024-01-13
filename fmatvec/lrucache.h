@@ -50,12 +50,15 @@ namespace fmatvec {
   inline void assign(T &dst, const T &src);
 
   /*! A generic LRU cache.
-   * For a size <=N an internal array is used as cache which is searched linearly. Its performance is O(N) but N is fixed and small.
-   * For a size  >N a hash map implementation is used. Its performance is O(1) but it may be slower than the first for small size.
+   * For a size <=smallSize an internal array is used as cache which is searched linearly. Its performance is O(smallSize) but smallSize is fixed and small.
+   * For a size  >smallSize a hash map implementation is used. Its performance is O(1) but it may be slower than the first for small size.
+   *
+   * The cache size can be override globally with the envvar FMATVEC_LRUCACHE_SIZE.
+   * This is useful together with the Atom::Debug message stream which print the cache hit rate in the dtor
+   * to check if a higher cache size will influence the cache hit rate of a program.
    * */
   template<class In,
            class Out,
-           int N=45,
            class InHash = boost::hash<In>,
            class InKeyEqual = std::equal_to<In>,
            class UnorderedMapAllocator = std::allocator<std::pair<const In, typename std::list<std::pair<const In&,Out>>::iterator>>,
@@ -63,7 +66,7 @@ namespace fmatvec {
   class LRUCache {
     public:
       //! Create a LRU cache of at most size items.
-      LRUCache(size_t size_, double bucketSizeFactor = 1.5);
+      LRUCache(size_t size_, size_t smallSize=45, double bucketSizeFactor = 1.5);
       //! Prints the cache hit rate in debug builds to the stream Atom::Debug
       ~LRUCache();
       /*! Add the key "in" to the cache.
@@ -80,14 +83,15 @@ namespace fmatvec {
       size_t size;
       size_t allCalls { 0 }, cacheHits { 0 };
 
-      // special case for small size <= N
-      std::array<size_t, N> timeCache;
-      std::array<In, N> inCache;
-      std::array<Out, N> outCache;
+      bool useSmallSizeCode;
+      // special variables for small size <= smallSize
+      std::vector<size_t> timeCache;
+      std::vector<In> inCache;
+      std::vector<Out> outCache;
   };
   
-  template<class In, class Out, int N, class InHash, class InKeyEqual, class UnorderedMapAllocator, class ListAllocator>
-  LRUCache<In,Out,N,InHash,InKeyEqual,UnorderedMapAllocator,ListAllocator>::LRUCache(size_t size_, double bucketSizeFactor) {
+  template<class In, class Out, class InHash, class InKeyEqual, class UnorderedMapAllocator, class ListAllocator>
+  LRUCache<In,Out,InHash,InKeyEqual,UnorderedMapAllocator,ListAllocator>::LRUCache(size_t size_, size_t smallSize, double bucketSizeFactor) {
     // we can override the LRU cache size with FMATVEC_LRUCACHE_SIZE
     static auto envSize = static_cast<size_t>(-1);
     if(envSize == static_cast<size_t>(-1)) {
@@ -101,23 +105,28 @@ namespace fmatvec {
       size_ = envSize;
 
     size = size_;
-    if(size<=N)
+    useSmallSizeCode = size<=smallSize;
+    if(useSmallSizeCode) {
+      timeCache.resize(size);
+      inCache.resize(size);
+      outCache.resize(size);
       for(size_t i=0; i<size; ++i)
         timeCache[i] = 0;
+    }
     else
       itemMap.rehash(floor(bucketSizeFactor*size));
   }
 
-  template<class In, class Out, int N, class InHash, class InKeyEqual, class UnorderedMapAllocator, class ListAllocator>
-  LRUCache<In,Out,N,InHash,InKeyEqual,UnorderedMapAllocator,ListAllocator>::~LRUCache() {
+  template<class In, class Out, class InHash, class InKeyEqual, class UnorderedMapAllocator, class ListAllocator>
+  LRUCache<In,Out,InHash,InKeyEqual,UnorderedMapAllocator,ListAllocator>::~LRUCache() {
     if(Atom::msgActStatic(Atom::Debug))
       Atom::msgStatic(Atom::Debug)<<"Cache hit rate "<<getCacheHitRate()*100<<"%"<<std::endl;
   }
   
-  template<class In, class Out, int N, class InHash, class InKeyEqual, class UnorderedMapAllocator, class ListAllocator>
-  std::pair<Out&, bool> LRUCache<In,Out,N,InHash,InKeyEqual,UnorderedMapAllocator,ListAllocator>::operator()(const In &in) {
+  template<class In, class Out, class InHash, class InKeyEqual, class UnorderedMapAllocator, class ListAllocator>
+  std::pair<Out&, bool> LRUCache<In,Out,InHash,InKeyEqual,UnorderedMapAllocator,ListAllocator>::operator()(const In &in) {
     allCalls++;
-    if(size<=N) {
+    if(useSmallSizeCode) {
       bool created = true;
       size_t minTime = std::numeric_limits<size_t>::max();
       size_t minTimeIdx = 0;
@@ -178,8 +187,8 @@ namespace fmatvec {
     }
   }
 
-  template<class In, class Out, int N, class InHash, class InKeyEqual, class UnorderedMapAllocator, class ListAllocator>
-  double LRUCache<In,Out,N,InHash,InKeyEqual,UnorderedMapAllocator,ListAllocator>::getCacheHitRate() const {
+  template<class In, class Out, class InHash, class InKeyEqual, class UnorderedMapAllocator, class ListAllocator>
+  double LRUCache<In,Out,InHash,InKeyEqual,UnorderedMapAllocator,ListAllocator>::getCacheHitRate() const {
     return allCalls==0 ? -1 : static_cast<double>(cacheHits)/allCalls;
   }
 

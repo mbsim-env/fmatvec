@@ -25,10 +25,10 @@ int main() {
     return sin(1*x)+sin(2*x)+sin(3*x)+sin(4*x)+sin(5*x);
   };
   // the LRUCache size is parameters 2 for the performance test
-  size_t cacheSize=10;
+  size_t cacheSize=1;
   // the small LRUCache size is parameters 3 for the performance test
   // (its default 45 is a good value; for smaller size the std::array approach is faster for larger size the std::unordered_map is faster)
-  constexpr int Nsmall=45;
+  size_t cacheSmallSize=45;
 
   cout<<setprecision(12);
   Atom::setCurrentMessageStream(Atom::Debug);
@@ -47,7 +47,7 @@ int main() {
   }
   double allNoMatchCache=0;
   {
-    LRUCache<double, double, Nsmall> cache(cacheSize);
+    LRUCache<double, double> cache(cacheSize, cacheSmallSize);
     auto start=chrono::high_resolution_clock::now();
     for(size_t i=0; i<N; ++i) {
       double a=static_cast<double>(i)/55;
@@ -61,7 +61,7 @@ int main() {
   }
   double allAllMatchCache=0;
   {
-    LRUCache<double, double, Nsmall> cache(cacheSize);
+    LRUCache<double, double> cache(cacheSize, cacheSmallSize);
     auto start=chrono::high_resolution_clock::now();
     for(size_t i=0; i<N; ++i) {
       double a=static_cast<double>(3847)/55;

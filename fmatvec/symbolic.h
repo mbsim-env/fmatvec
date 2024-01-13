@@ -5,7 +5,6 @@
 #include <set>
 #include "function.h"
 #include <boost/hana/type.hpp>
-#include <fmatvec/lrucache.h>
 
 namespace fmatvec {
 
@@ -308,205 +307,97 @@ void Eval<Arg...>::callByteCode() const {
 template<class RetN, class ArgN>
 class FunctionWrap1VecRetToScalar : public Function<double(ArgN)>  {
   public:
-    FunctionWrap1VecRetToScalar(const std::shared_ptr<Function<RetN(ArgN)>> &func_, int idx_,
-      std::shared_ptr<LRUCache<ArgN,RetN>> lruCacheEval_,
-      std::shared_ptr<LRUCache<std::tuple<ArgN,ArgN>,RetN>> lruCacheDirDer_,
-      std::shared_ptr<LRUCache<std::tuple<ArgN,ArgN,ArgN>,RetN>> lruCacheDirDerDirDer_) :
-      func(func_), idx(idx_),
-      lruCacheEval(lruCacheEval_),
-      lruCacheDirDer(lruCacheDirDer_),
-      lruCacheDirDerDirDer(lruCacheDirDerDirDer_) {}
+    FunctionWrap1VecRetToScalar(const std::shared_ptr<Function<RetN(ArgN)>> &func_, int idx_) :
+      func(func_), idx(idx_) {}
     double operator()(const ArgN &arg) override {
-      auto [r, c] = (*lruCacheEval)(arg);
-      if(c)
-        r <<= (*func)(arg);
-      return r(idx);
+      return (*func)(arg)(idx);
     }
     double dirDer(const ArgN &argDir, const ArgN &arg) override {
-      auto [r, c] = (*lruCacheDirDer)({argDir, arg});
-      if(c)
-        r <<= func->dirDer(argDir, arg);
-      return r(idx);
+      return func->dirDer(argDir, arg)(idx);
     }
     double dirDerDirDer(const ArgN &argDir_1, const ArgN &argDir_2, const ArgN &arg) override {
-      auto [r, c] = (*lruCacheDirDerDirDer)({argDir_1, argDir_2, arg});
-      if(c)
-        r <<= func->dirDerDirDer(argDir_1, argDir_2, arg);
-      return r(idx);
+      return func->dirDerDirDer(argDir_1, argDir_2, arg)(idx);
     }
   private:
     std::shared_ptr<Function<RetN(ArgN)>> func;
     int idx;
-    std::shared_ptr<LRUCache<ArgN,RetN>> lruCacheEval;
-    std::shared_ptr<LRUCache<std::tuple<ArgN,ArgN>,RetN>> lruCacheDirDer;
-    std::shared_ptr<LRUCache<std::tuple<ArgN,ArgN,ArgN>,RetN>> lruCacheDirDerDirDer;
 };
 
 template<class RetN, class Arg1N, class Arg2N>
 class FunctionWrap2VecRetToScalar : public Function<double(Arg1N,Arg2N)>  {
   public:
-    FunctionWrap2VecRetToScalar(const std::shared_ptr<Function<RetN(Arg1N,Arg2N)>> &func_, int idx_,
-      std::shared_ptr<LRUCache<std::tuple<Arg1N,Arg2N>,RetN>> lruCacheEval_,
-      std::shared_ptr<LRUCache<std::tuple<Arg1N,Arg1N,Arg2N>,RetN>> lruCacheDirDer1_,
-      std::shared_ptr<LRUCache<std::tuple<Arg2N,Arg1N,Arg2N>,RetN>> lruCacheDirDer2_,
-      std::shared_ptr<LRUCache<std::tuple<Arg1N,Arg1N,Arg1N,Arg2N>,RetN>> lruCacheDirDer1DirDer1_,
-      std::shared_ptr<LRUCache<std::tuple<Arg2N,Arg1N,Arg1N,Arg2N>,RetN>> lruCacheDirDer2DirDer1_,
-      std::shared_ptr<LRUCache<std::tuple<Arg2N,Arg2N,Arg1N,Arg2N>,RetN>> lruCacheDirDer2DirDer2_) :
-      func(func_), idx(idx_),
-      lruCacheEval(lruCacheEval_),
-      lruCacheDirDer1(lruCacheDirDer1_),
-      lruCacheDirDer2(lruCacheDirDer2_),
-      lruCacheDirDer1DirDer1(lruCacheDirDer1DirDer1_),
-      lruCacheDirDer2DirDer1(lruCacheDirDer2DirDer1_),
-      lruCacheDirDer2DirDer2(lruCacheDirDer2DirDer2_) {}
+    FunctionWrap2VecRetToScalar(const std::shared_ptr<Function<RetN(Arg1N,Arg2N)>> &func_, int idx_) :
+      func(func_), idx(idx_) {}
     double operator()(const Arg1N &arg1, const Arg2N &arg2) override {
-      auto [r, c] = (*lruCacheEval)({arg1, arg2});
-      if(c)
-        r <<= (*func)(arg1,arg2);
-      return r(idx);
+      return (*func)(arg1,arg2)(idx);
     }
     double dirDer1(const Arg1N &dir1, const Arg1N &arg1, const Arg2N &arg2) override {
-      auto [r, c] = (*lruCacheDirDer1)({dir1, arg1, arg2});
-      if(c)
-        r <<= func->dirDer1(dir1, arg1, arg2);
-      return r(idx);
+      return func->dirDer1(dir1, arg1, arg2)(idx);
     }
     double dirDer2(const Arg2N &dir2, const Arg1N &arg1, const Arg2N &arg2) override {
-      auto [r, c] = (*lruCacheDirDer2)({dir2, arg1, arg2});
-      if(c)
-        r <<= func->dirDer2(dir2, arg1, arg2);
-      return r(idx);
+      return func->dirDer2(dir2, arg1, arg2)(idx);
     }
     double dirDer1DirDer1(const Arg1N &dir1_1, const Arg1N &dir1_2, const Arg1N &arg1, const Arg2N &arg2) override {
-      auto [r, c] = (*lruCacheDirDer1DirDer1)({dir1_1, dir1_2, arg1, arg2});
-      if(c)
-        r <<= func->dirDer1DirDer1(dir1_1, dir1_2, arg1, arg2);
-      return r(idx);
+      return func->dirDer1DirDer1(dir1_1, dir1_2, arg1, arg2)(idx);
     }
     double dirDer2DirDer1(const Arg2N &dir2_1, const Arg1N &dir1_2, const Arg1N &arg1, const Arg2N &arg2) override {
-      auto [r, c] = (*lruCacheDirDer2DirDer1)({dir2_1, dir1_2, arg1, arg2});
-      if(c)
-        r <<= func->dirDer2DirDer1(dir2_1, dir1_2, arg1, arg2);
-      return r(idx);
+      return func->dirDer2DirDer1(dir2_1, dir1_2, arg1, arg2)(idx);
     }
     double dirDer2DirDer2(const Arg2N &dir2_1, const Arg2N &dir2_2, const Arg1N &arg1, const Arg2N &arg2) override {
-      auto [r, c] = (*lruCacheDirDer2DirDer2)({dir2_1, dir2_2, arg1, arg2});
-      if(c)
-        r <<= func->dirDer2DirDer2(dir2_1, dir2_2, arg1, arg2);
-      return r(idx);
+      return func->dirDer2DirDer2(dir2_1, dir2_2, arg1, arg2)(idx);
     }
   private:
     std::shared_ptr<Function<RetN(Arg1N,Arg2N)>> func;
     int idx;
-    std::shared_ptr<LRUCache<std::tuple<Arg1N,Arg2N>,RetN>> lruCacheEval;
-    std::shared_ptr<LRUCache<std::tuple<Arg1N,Arg1N,Arg2N>,RetN>> lruCacheDirDer1;
-    std::shared_ptr<LRUCache<std::tuple<Arg2N,Arg1N,Arg2N>,RetN>> lruCacheDirDer2;
-    std::shared_ptr<LRUCache<std::tuple<Arg1N,Arg1N,Arg1N,Arg2N>,RetN>> lruCacheDirDer1DirDer1;
-    std::shared_ptr<LRUCache<std::tuple<Arg2N,Arg1N,Arg1N,Arg2N>,RetN>> lruCacheDirDer2DirDer1;
-    std::shared_ptr<LRUCache<std::tuple<Arg2N,Arg2N,Arg1N,Arg2N>,RetN>> lruCacheDirDer2DirDer2;
 };
 
 template<class RetN, class ArgN>
 class FunctionWrap1MatRetToScalar : public Function<double(ArgN)>  {
   public:
-    FunctionWrap1MatRetToScalar(const std::shared_ptr<Function<RetN(ArgN)>> &func_, int row_, int col_,
-      std::shared_ptr<LRUCache<ArgN,RetN>> lruCacheEval_,
-      std::shared_ptr<LRUCache<std::tuple<ArgN,ArgN>,RetN>> lruCacheDirDer_,
-      std::shared_ptr<LRUCache<std::tuple<ArgN,ArgN,ArgN>,RetN>> lruCacheDirDerDirDer_) :
-      func(func_), row(row_), col(col_),
-      lruCacheEval(lruCacheEval_),
-      lruCacheDirDer(lruCacheDirDer_),
-      lruCacheDirDerDirDer(lruCacheDirDerDirDer_) {}
+    FunctionWrap1MatRetToScalar(const std::shared_ptr<Function<RetN(ArgN)>> &func_, int row_, int col_) :
+      func(func_), row(row_), col(col_) {}
     double operator()(const ArgN &arg) override {
-      auto [r, c] = (*lruCacheEval)(arg);
-      if(c)
-        r <<= (*func)(arg);
-      return r(row,col);
+      return (*func)(arg)(row,col);
     }
     double dirDer(const ArgN &argDir, const ArgN &arg) override {
-      auto [r, c] = (*lruCacheDirDer)({argDir, arg});
-      if(c)
-        r <<= func->dirDer(argDir, arg);
-      return r(row,col);
+      return func->dirDer(argDir, arg)(row,col);
     }
     double dirDerDirDer(const ArgN &argDir_1, const ArgN &argDir_2, const ArgN &arg) override {
-      auto [r, c] = (*lruCacheDirDerDirDer)({argDir_1, argDir_2, arg});
-      if(c)
-        r <<= func->dirDerDirDer(argDir_1, argDir_2, arg);
-      return r(row,col);
+      return func->dirDerDirDer(argDir_1, argDir_2, arg)(row,col);
     }
   private:
     std::shared_ptr<Function<RetN(ArgN)>> func;
     int row;
     int col;
-    std::shared_ptr<LRUCache<ArgN,RetN>> lruCacheEval;
-    std::shared_ptr<LRUCache<std::tuple<ArgN,ArgN>,RetN>> lruCacheDirDer;
-    std::shared_ptr<LRUCache<std::tuple<ArgN,ArgN,ArgN>,RetN>> lruCacheDirDerDirDer;
 };
 
 template<class RetN, class Arg1N, class Arg2N>
 class FunctionWrap2MatRetToScalar : public Function<double(Arg1N,Arg2N)>  {
   public:
-    FunctionWrap2MatRetToScalar(const std::shared_ptr<Function<RetN(Arg1N,Arg2N)>> &func_, int row_, int col_,
-      std::shared_ptr<LRUCache<std::tuple<Arg1N,Arg2N>,RetN>> lruCacheEval_,
-      std::shared_ptr<LRUCache<std::tuple<Arg1N,Arg1N,Arg2N>,RetN>> lruCacheDirDer1_,
-      std::shared_ptr<LRUCache<std::tuple<Arg2N,Arg1N,Arg2N>,RetN>> lruCacheDirDer2_,
-      std::shared_ptr<LRUCache<std::tuple<Arg1N,Arg1N,Arg1N,Arg2N>,RetN>> lruCacheDirDer1DirDer1_,
-      std::shared_ptr<LRUCache<std::tuple<Arg2N,Arg1N,Arg1N,Arg2N>,RetN>> lruCacheDirDer2DirDer1_,
-      std::shared_ptr<LRUCache<std::tuple<Arg2N,Arg2N,Arg1N,Arg2N>,RetN>> lruCacheDirDer2DirDer2_) :
-      func(func_), row(row_), col(col_),
-      lruCacheEval(lruCacheEval_),
-      lruCacheDirDer1(lruCacheDirDer1_),
-      lruCacheDirDer2(lruCacheDirDer2_),
-      lruCacheDirDer1DirDer1(lruCacheDirDer1DirDer1_),
-      lruCacheDirDer2DirDer1(lruCacheDirDer2DirDer1_),
-      lruCacheDirDer2DirDer2(lruCacheDirDer2DirDer2_) {}
+    FunctionWrap2MatRetToScalar(const std::shared_ptr<Function<RetN(Arg1N,Arg2N)>> &func_, int row_, int col_) :
+      func(func_), row(row_), col(col_) {}
     double operator()(const Arg1N &arg1, const Arg2N &arg2) override {
-      auto [r, c] = (*lruCacheEval)({arg1, arg2});
-      if(c)
-        r <<= (*func)(arg1,arg2);
-      return r(row,col);
+      return (*func)(arg1,arg2)(row,col);
     }
     double dirDer1(const Arg1N &dir1, const Arg1N &arg1, const Arg2N &arg2) override {
-      auto [r, c] = (*lruCacheDirDer1)({dir1, arg2, arg2});
-      if(c)
-        r <<= func->dirDer1(dir1, arg1, arg2);
-      return r(row,col);
+      return func->dirDer1(dir1, arg1, arg2)(row,col);
     }
     double dirDer2(const Arg2N &dir2, const Arg1N &arg1, const Arg2N &arg2) override {
-      auto [r, c] = (*lruCacheDirDer2)({dir2, arg2, arg2});
-      if(c)
-        r <<= func->dirDer2(dir2, arg1, arg2);
-      return r(row,col);
+      return func->dirDer2(dir2, arg1, arg2)(row,col);
     }
     double dirDer1DirDer1(const Arg1N &dir1_1, const Arg1N &dir1_2, const Arg1N &arg1, const Arg2N &arg2) override {
-      auto [r, c] = (*lruCacheDirDer1DirDer1)({dir1_1, dir1_2, arg1, arg2});
-      if(c)
-        r <<= func->dirDer1DirDer1(dir1_1, dir1_2, arg1, arg2);
-      return r(row,col);
+      return func->dirDer1DirDer1(dir1_1, dir1_2, arg1, arg2)(row,col);
     }
     double dirDer2DirDer1(const Arg2N &dir2_1, const Arg1N &dir1_2, const Arg1N &arg1, const Arg2N &arg2) override {
-      auto [r, c] = (*lruCacheDirDer2DirDer1)({dir2_1, dir1_2, arg1, arg2});
-      if(c)
-        r <<= func->dirDer2DirDer1(dir2_1, dir1_2, arg1, arg2);
-      return r(row,col);
+      return func->dirDer2DirDer1(dir2_1, dir1_2, arg1, arg2)(row,col);
     }
     double dirDer2DirDer2(const Arg2N &dir2_1, const Arg2N &dir2_2, const Arg1N &arg1, const Arg2N &arg2) override {
-      auto [r, c] = (*lruCacheDirDer2DirDer2)({dir2_1, dir2_2, arg1, arg2});
-      if(c)
-        r <<= func->dirDer2DirDer2(dir2_1, dir2_2, arg1, arg2);
-      return r(row,col);
+      return func->dirDer2DirDer2(dir2_1, dir2_2, arg1, arg2)(row,col);
     }
   private:
     std::shared_ptr<Function<RetN(Arg1N,Arg2N)>> func;
     int row;
     int col;
-    std::shared_ptr<LRUCache<std::tuple<Arg1N,Arg2N>,RetN>> lruCacheEval;
-    std::shared_ptr<LRUCache<std::tuple<Arg1N,Arg1N,Arg2N>,RetN>> lruCacheDirDer1;
-    std::shared_ptr<LRUCache<std::tuple<Arg2N,Arg1N,Arg2N>,RetN>> lruCacheDirDer2;
-    std::shared_ptr<LRUCache<std::tuple<Arg1N,Arg1N,Arg1N,Arg2N>,RetN>> lruCacheDirDer1DirDer1;
-    std::shared_ptr<LRUCache<std::tuple<Arg2N,Arg1N,Arg1N,Arg2N>,RetN>> lruCacheDirDer2DirDer1;
-    std::shared_ptr<LRUCache<std::tuple<Arg2N,Arg2N,Arg1N,Arg2N>,RetN>> lruCacheDirDer2DirDer2;
 };
 
 template<class Func, class ArgS>
@@ -527,12 +418,9 @@ FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,Symb
     else
       size=(*func)(ArgN()).size();
     ret.resize(size);
-    auto lruCacheEval=std::make_shared<LRUCache<ArgN,RetN>>(1);
-    auto lruCacheDirDer=std::make_shared<LRUCache<std::tuple<ArgN,ArgN>,RetN>>(4);
-    auto lruCacheDirDerDirDer=std::make_shared<LRUCache<std::tuple<ArgN,ArgN,ArgN>,RetN>>(1);
     for(int i=0; i<size; ++i)
       ret(i) = AST::SymbolicFuncWrapArg1<double(ArgN), ArgS>::
-               call(std::make_shared<FunctionWrap1VecRetToScalar<RetN,ArgN>>(func, i, lruCacheEval, lruCacheDirDer, lruCacheDirDerDirDer), arg);
+               call(std::make_shared<FunctionWrap1VecRetToScalar<RetN,ArgN>>(func, i), arg);
     return ret;
   }
   else {
@@ -547,13 +435,10 @@ FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,Symb
     else
       size.second=(*func)(ArgN()).cols();
     ret.resize(size.first, size.second);
-    auto lruCacheEval=std::make_shared<LRUCache<ArgN,RetN>>(1);
-    auto lruCacheDirDer=std::make_shared<LRUCache<std::tuple<ArgN,ArgN>,RetN>>(4);
-    auto lruCacheDirDerDirDer=std::make_shared<LRUCache<std::tuple<ArgN,ArgN,ArgN>,RetN>>(1);
     for(int r=0; r<size.first; ++r)
       for(int c=0; c<size.second; ++c)
         ret(r,c) = AST::SymbolicFuncWrapArg1<double(ArgN), ArgS>::call(std::make_shared<FunctionWrap1MatRetToScalar<RetN,ArgN>>(
-                   func, r, c, lruCacheEval, lruCacheDirDer, lruCacheDirDerDirDer), arg);
+                   func, r, c), arg);
     return ret;
   }
 }
@@ -577,18 +462,9 @@ FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,Symb
     else
       size=(*func)(Arg1N(), Arg2N()).size();
     ret.resize(size);
-    auto lruCacheEval=std::make_shared<LRUCache<std::tuple<Arg1N,Arg2N>,RetN>>(1);
-    auto lruCacheDirDer1=std::make_shared<LRUCache<std::tuple<Arg1N,Arg1N,Arg2N>,RetN>>(4);
-    auto lruCacheDirDer2=std::make_shared<LRUCache<std::tuple<Arg2N,Arg1N,Arg2N>,RetN>>(4);
-    auto lruCacheDirDer1DirDer1=std::make_shared<LRUCache<std::tuple<Arg1N,Arg1N,Arg1N,Arg2N>,RetN>>(1);
-    auto lruCacheDirDer2DirDer1=std::make_shared<LRUCache<std::tuple<Arg2N,Arg1N,Arg1N,Arg2N>,RetN>>(2);
-    auto lruCacheDirDer2DirDer2=std::make_shared<LRUCache<std::tuple<Arg2N,Arg2N,Arg1N,Arg2N>,RetN>>(1);
     for(int i=0; i<size; ++i)
       ret(i) = AST::SymbolicFuncWrapArg2<double(Arg1N,Arg2N), Arg1S, Arg2S>::
-               call(std::make_shared<FunctionWrap2VecRetToScalar<RetN,Arg1N,Arg2N>>(func, i,
-                    lruCacheEval, lruCacheDirDer1, lruCacheDirDer2,
-                    lruCacheDirDer1DirDer1, lruCacheDirDer2DirDer1, lruCacheDirDer2DirDer2),
-                    arg1, arg2);
+               call(std::make_shared<FunctionWrap2VecRetToScalar<RetN,Arg1N,Arg2N>>(func, i), arg1, arg2);
     return ret;
   }
   else {
@@ -603,23 +479,19 @@ FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,Symb
     else
       size.second=(*func)(Arg1N(),Arg2N()).cols();
     ret.resize(size.first, size.second);
-    auto lruCacheEval=std::make_shared<LRUCache<std::tuple<Arg1N,Arg2N>,RetN>>(1);
-    auto lruCacheDirDer1=std::make_shared<LRUCache<std::tuple<Arg1N,Arg1N,Arg2N>,RetN>>(4);
-    auto lruCacheDirDer2=std::make_shared<LRUCache<std::tuple<Arg2N,Arg1N,Arg2N>,RetN>>(4);
-    auto lruCacheDirDer1DirDer1=std::make_shared<LRUCache<std::tuple<Arg1N,Arg1N,Arg1N,Arg2N>,RetN>>(1);
-    auto lruCacheDirDer2DirDer1=std::make_shared<LRUCache<std::tuple<Arg2N,Arg1N,Arg1N,Arg2N>,RetN>>(2);
-    auto lruCacheDirDer2DirDer2=std::make_shared<LRUCache<std::tuple<Arg2N,Arg2N,Arg1N,Arg2N>,RetN>>(1);
     for(int r=0; r<size.first; ++r)
       for(int c=0; c<size.second; ++c)
         ret(r,c) = AST::SymbolicFuncWrapArg2<double(Arg1N,Arg2N), Arg1S, Arg2S>::
-                   call(std::make_shared<FunctionWrap2MatRetToScalar<RetN,Arg1N,Arg2N>>(func, r, c,
-                   lruCacheEval, lruCacheDirDer1, lruCacheDirDer2,
-                   lruCacheDirDer1DirDer1, lruCacheDirDer2DirDer1, lruCacheDirDer2DirDer2),
-                   arg1, arg2);
+                   call(std::make_shared<FunctionWrap2MatRetToScalar<RetN,Arg1N,Arg2N>>(func, r, c), arg1, arg2);
     return ret;
   }
 }
 
+/*! Create a symbolic function from the native function func.
+ * If func provides derivatives this symbolic function can also be differentiated using parDir(...).
+ * Note that func should use a LRUCache, at least if return value of func is a vector (R^n) or a matrix (R^rxc) since
+ * func will be called n or r*c times with the same arguments.
+ */
 template<class Func, class ArgS>
 FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFunc(
   const std::shared_ptr<Function<Func>> &func, const ArgS &arg, int size1=0, int size2=0) {
@@ -631,6 +503,11 @@ FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,Symb
     return symbolicFuncWrapVecAndMatRet<Func, ArgS>(func, arg, size1, size2);
 }
 
+/*! Create a symbolic function from the native function func.
+ * If func provides derivatives this symbolic function can also be differentiated using parDir(...).
+ * Note that func should use a LRUCache, at least if return value of func is a vector (R^n) or a matrix (R^rxc) since
+ * func will be called n or r*c times with the same arguments.
+ */
 template<class Func, class Arg1S, class Arg2S>
 FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFunc(
   const std::shared_ptr<Function<Func>> &func, const Arg1S &arg1, const Arg2S &arg2, int size1=0, int size2=0) {
