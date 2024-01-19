@@ -48,6 +48,7 @@ int main() {
   double allNoMatchCache=0;
   {
     LRUCache<double, double> cache(cacheSize, cacheSmallSize);
+    cache.setName("NOMATCH");
     auto start=chrono::high_resolution_clock::now();
     for(size_t i=0; i<N; ++i) {
       double a=static_cast<double>(i)/55;
@@ -62,6 +63,7 @@ int main() {
   double allAllMatchCache=0;
   {
     LRUCache<double, double> cache(cacheSize, cacheSmallSize);
+    cache.setName("ALLMATCH");
     auto start=chrono::high_resolution_clock::now();
     for(size_t i=0; i<N; ++i) {
       double a=static_cast<double>(3847)/55;

@@ -77,11 +77,14 @@ namespace fmatvec {
        */
       inline std::pair<Out&, bool> operator()(const In &in);
       double getCacheHitRate() const;
+      // Set the name of the LRUCache. It's only used to print this name in the dtor to Atom::Debug.
+      void setName(const std::string &name_) { name = name_; }
     private:
       std::list<std::pair<const In&,Out>, ListAllocator> itemList;
       std::unordered_map<In, decltype(itemList.begin()), InHash, InKeyEqual, UnorderedMapAllocator> itemMap;
       size_t size;
       size_t allCalls { 0 }, cacheHits { 0 };
+      std::string name;
 
       bool useSmallSizeCode;
       // special variables for small size <= smallSize
@@ -120,7 +123,7 @@ namespace fmatvec {
   template<class In, class Out, class InHash, class InKeyEqual, class UnorderedMapAllocator, class ListAllocator>
   LRUCache<In,Out,InHash,InKeyEqual,UnorderedMapAllocator,ListAllocator>::~LRUCache() {
     if(Atom::msgActStatic(Atom::Debug))
-      Atom::msgStatic(Atom::Debug)<<"Cache hit rate "<<getCacheHitRate()*100<<"%"<<std::endl;
+      Atom::msgStatic(Atom::Debug)<<"Cache hit rate of '"<<name<<"' = "<<getCacheHitRate()*100<<"%"<<std::endl;
   }
   
   template<class In, class Out, class InHash, class InKeyEqual, class UnorderedMapAllocator, class ListAllocator>
