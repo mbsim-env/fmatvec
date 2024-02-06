@@ -401,7 +401,7 @@ class FunctionWrap2MatRetToScalar : public Function<double(Arg1N,Arg2N)>  {
 };
 
 template<class Func, class ArgS>
-FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFuncWrapVecAndMatRet(
+typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFuncWrapVecAndMatRet(
   const std::shared_ptr<Function<Func>> &func, const ArgS &arg, int size1=0, int size2=0) {
   using RetN = typename std::function<Func>::result_type;
   using RetS = typename ReplaceAT<RetN,SymbolicExpression>::Type;
@@ -444,7 +444,7 @@ FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,Symb
 }
 
 template<class Func, class Arg1S, class Arg2S>
-FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFuncWrapVecAndMatRet(
+typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFuncWrapVecAndMatRet(
   const std::shared_ptr<Function<Func>> &func, const Arg1S &arg1, const Arg2S &arg2, int size1=0, int size2=0) {
   using RetN = typename std::function<Func>::result_type;
   using RetS = typename ReplaceAT<RetN,SymbolicExpression>::Type;
@@ -493,7 +493,7 @@ FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,Symb
  * func will be called n or r*c times with the same arguments.
  */
 template<class Func, class ArgS>
-FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFunc(
+typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFunc(
   const std::shared_ptr<Function<Func>> &func, const ArgS &arg, int size1=0, int size2=0) {
   using RetN = typename std::function<Func>::result_type;
   using ArgN = typename ReplaceAT<ArgS,double>::Type;
@@ -509,7 +509,7 @@ FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,Symb
  * func will be called n or r*c times with the same arguments.
  */
 template<class Func, class Arg1S, class Arg2S>
-FMATVEC_EXPORT typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFunc(
+typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>::Type symbolicFunc(
   const std::shared_ptr<Function<Func>> &func, const Arg1S &arg1, const Arg2S &arg2, int size1=0, int size2=0) {
   using RetN = typename std::function<Func>::result_type;
   using Arg1N = typename ReplaceAT<Arg1S,double>::Type;
