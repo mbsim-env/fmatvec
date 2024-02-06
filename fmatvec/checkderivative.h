@@ -9,8 +9,10 @@
 
 namespace fmatvec {
 
-  #define FMATVEC_CHECKDERIVATIVE_MEMBERFUNC(func, anaDiff, value, indep, ...) fmatvec::checkDerivative(this, #anaDiff, func, anaDiff, value, indep, __VA_ARGS__)
-  #define FMATVEC_CHECKDERIVATIVE_GLOBALFUNC(func, anaDiff, value, indep, ...) fmatvec::checkDerivative(nullptr, #anaDiff, func, anaDiff, value, indep, __VA_ARGS__)
+  #define FMATVEC_CHECKDERIVATIVE_MEMBERFUNC(func, anaDiff, value, /*indep,*/ ...) \
+    fmatvec::checkDerivative(this, std::string(__FILE__)+":"+std::to_string(__LINE__)+":"+#anaDiff, func, anaDiff, value, /*indep,*/ __VA_ARGS__)
+  #define FMATVEC_CHECKDERIVATIVE_GLOBALFUNC(func, anaDiff, value, /*indep,*/ ...) \
+    fmatvec::checkDerivative(nullptr, std::string(__FILE__)+":"+std::to_string(__LINE__)+":"+#anaDiff, func, anaDiff, value, /*indep,*/ __VA_ARGS__)
 
   // Check a analytical derivative against the finite difference.
   // Any local variable for which a analytical derivative is given can be checked.
@@ -82,7 +84,7 @@ namespace fmatvec {
       // if both, the right and the left finite difference, differs from analytically derivative value print a error message
       if(dist[0] > eps && dist[1] > eps) {
         std::stringstream str;
-        str<<"checkDerivative failed at "<<idPtr<<" "<<idName<<":"<<std::endl
+        str<<"checkDerivative failed in "<<idPtr<<": ID = "<<idName<<":"<<std::endl
            <<"- anaDiff         = "<<anaDiff<<std::endl
            <<"- finiteDiffRight = "<<finiteDiffRightLeft[0]<<std::endl
            <<"- finiteDiffLeft  = "<<finiteDiffRightLeft[1]<<std::endl

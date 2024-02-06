@@ -219,17 +219,17 @@ int main() {
 void subfunc(double x) {
   double v0 = 2*pow(x,2);
   double dv0dx = 4*pow(x,1);
-  fmatvec::checkDerivative(nullptr, "dv0dx", &subfunc, dv0dx, v0, x);
+  FMATVEC_CHECKDERIVATIVE_GLOBALFUNC(&subfunc, dv0dx, v0, x);
 }
 
 void checkDer(double x) {
   double v = 5*pow(x,4);
   double dvdx = 20*pow(x,3);
-  fmatvec::checkDerivative(nullptr, "dvdx", &checkDer, dvdx, v, x);
+  FMATVEC_CHECKDERIVATIVE_GLOBALFUNC(&checkDer, dvdx, v, x);
 
   subfunc(x);
 
   double v2 = 7*pow(x,3);
   double dv2dx = 21*pow(x,2);
-  fmatvec::checkDerivative(nullptr, "dv2dx", &checkDer, dv2dx, v2, x);
+  FMATVEC_CHECKDERIVATIVE_GLOBALFUNC(&checkDer, dv2dx, v2, x, 1e-5);
 }
