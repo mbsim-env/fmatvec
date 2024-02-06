@@ -82,7 +82,9 @@ namespace fmatvec {
       }
 
       // if both, the right and the left finite difference, differs from analytically derivative value print a error message
-      if(dist[0] > eps && dist[1] > eps) {
+      double dist0 = dist[0]; // MSVS cannot compile "dist[0] > eps" directly
+      double dist1 = dist[1];
+      if(dist0 > eps && dist1 > eps) {
         std::stringstream str;
         str<<"checkDerivative failed in "<<idPtr<<": ID = "<<idName<<":"<<std::endl
            <<"- anaDiff         = "<<anaDiff<<std::endl
