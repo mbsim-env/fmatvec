@@ -1,3 +1,4 @@
+#include <fmatvec/checkderivative.h>
 #include <config.h>
 #include <cassert>
 #include <cfenv>
@@ -122,6 +123,8 @@ class KinematicRotAboutAxis : public Function<RotMat3(VecV, double)> {
     Vec3 a;
 };
 
+void checkDer(double x);
+
 
 
 int main() {
@@ -207,5 +210,26 @@ int main() {
   { istringstream str("[3]"); VecV v; str>>v; cout<<v<<endl; }
   { istringstream str("3"  ); VecV v; str>>v; cout<<v<<endl; }
 
+  // compile and test checkderivative.h
+  checkDer(2);
+
   return 0;  
+}
+
+void subfunc(double x) {
+  double v0 = 2*pow(x,2);
+  double dv0dx = 4*pow(x,1);
+  fmatvec::checkDerivative(nullptr, "dv0dx", &subfunc, dv0dx, v0, x);
+}
+
+void checkDer(double x) {
+  double v = 5*pow(x,4);
+  double dvdx = 20*pow(x,3);
+  fmatvec::checkDerivative(nullptr, "dvdx", &checkDer, dvdx, v, x);
+
+  subfunc(x);
+
+  double v2 = 7*pow(x,3);
+  double dv2dx = 21*pow(x,2);
+  fmatvec::checkDerivative(nullptr, "dv2dx", &checkDer, dv2dx, v2, x);
 }
