@@ -126,7 +126,7 @@ class FMATVEC_EXPORT PrePostfixedStream : public std::ostream {
     //! Convinence function to print to outstr_.
     PrePostfixedStream(const std::string &prefix_, const std::string &postfix_, std::ostream &outstr_);
   private:
-    class FMATVEC_EXPORT StringBuf : public std::stringbuf {
+    class StringBuf : public std::stringbuf {
       public:
         StringBuf(std::string prefix_, std::string postfix_, const std::function<void(const std::string &)> &f_);
       protected:
