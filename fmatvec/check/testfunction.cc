@@ -1,4 +1,6 @@
-#include <fmatvec/checkderivative.h>
+#ifndef NDEBUG // not allowed in release builds
+  #include <fmatvec/checkderivative.h>
+#endif
 #include <config.h>
 #include <cassert>
 #include <cfenv>
@@ -210,12 +212,15 @@ int main() {
   { istringstream str("[3]"); VecV v; str>>v; cout<<v<<endl; }
   { istringstream str("3"  ); VecV v; str>>v; cout<<v<<endl; }
 
+#ifndef NDEBUG // not allowed in release builds
   // compile and test checkderivative.h
   checkDer(2);
+#endif
 
   return 0;  
 }
 
+#ifndef NDEBUG // not allowed in release builds
 void subfunc(double x) {
   double v0 = 2*pow(x,2);
   double dv0dx = 4*pow(x,1);
@@ -233,3 +238,4 @@ void checkDer(double x) {
   double dv2dx = 21*pow(x,2);
   FMATVEC_CHECKDERIVATIVE_GLOBALFUNC(&checkDer, dv2dx, v2, x, 1e-5);
 }
+#endif
