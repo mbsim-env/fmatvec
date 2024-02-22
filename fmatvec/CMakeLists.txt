@@ -63,6 +63,7 @@ set(fmatvecHdr
    sparse_linear_algebra_double.h
    lrucache.h
    checkderivative.h
+   rotation_matrix.h
 )
 
 add_library(fmatvec SHARED ${fmatvecSrc} ${fmatvecHdr})
