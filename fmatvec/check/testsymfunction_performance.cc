@@ -1,4 +1,11 @@
 #define FMATVEC_LRUCACHE_SMALLSIZE_WORSTPERFORMANCE
+#ifdef _WIN32
+#  define WIN32_LEAN_AND_MEAN
+#  include <windows.h>
+#  undef __STRICT_ANSI__ // to define _controlfp which is not part of ANSI and hence not defined in mingw
+#  include <cfloat>
+#  define __STRICT_ANSI__
+#endif
 #include <cfenv>
 #include <cassert>
 #include "fmatvec/symbolic.h"
@@ -10,7 +17,11 @@ using namespace std;
 using namespace fmatvec;
 
 int main() {
-#ifndef _WIN32
+#ifdef _WIN32
+  SetConsoleCP(CP_UTF8);
+  SetConsoleOutputCP(CP_UTF8);
+  _controlfp(~(_EM_ZERODIVIDE | _EM_INVALID | _EM_OVERFLOW), _MCW_EM);
+#else
   assert(feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW)!=-1);
 #endif
 
