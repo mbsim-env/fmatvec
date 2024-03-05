@@ -5,6 +5,13 @@
 
 namespace fmatvec {
 
+using std::sin;
+using std::cos;
+using std::asin;
+using std::atan2;
+using std::min;
+using std::max;
+
 template<class AT>
 Matrix<Rotation, Fixed<3>, Fixed<3>, AT> al2T(const AT& al) {
   Matrix<Rotation, Fixed<3>, Fixed<3>, AT> T;
@@ -39,7 +46,7 @@ Matrix<Rotation, Fixed<3>, Fixed<3>, AT> ga2T(const AT& ga) {
 }
 
 template<class AT>
-Matrix<Rotation, Fixed<3>, Fixed<3>, AT> albega2T(const Vector<fmatvec::Fixed<3>, AT> &albega) {
+Matrix<Rotation, Fixed<3>, Fixed<3>, AT> albega2T(const Vector<Fixed<3>, AT> &albega) {
   Matrix<Rotation, Fixed<3>, Fixed<3>, AT> T;
   AT sa = sin(albega(0));
   AT sb = sin(albega(1));
@@ -54,7 +61,7 @@ Matrix<Rotation, Fixed<3>, Fixed<3>, AT> albega2T(const Vector<fmatvec::Fixed<3>
 }
 
 template<class AT>
-Matrix<Rotation, Fixed<3>, Fixed<3>, AT> begaal2T(const Vector<fmatvec::Fixed<3>, AT> &begaal) {
+Matrix<Rotation, Fixed<3>, Fixed<3>, AT> begaal2T(const Vector<Fixed<3>, AT> &begaal) {
   Matrix<Rotation, Fixed<3>, Fixed<3>, AT> T;
   AT sb = sin(begaal(0));
   AT sg = sin(begaal(1));
@@ -69,10 +76,10 @@ Matrix<Rotation, Fixed<3>, Fixed<3>, AT> begaal2T(const Vector<fmatvec::Fixed<3>
 }
 
 template<class AT>
-Vector<fmatvec::Fixed<3>, AT> T2albega(const Matrix<Rotation, Fixed<3>, Fixed<3>, AT> &T) {
-  Vector<fmatvec::Fixed<3>, AT> albega(NONINIT);
+Vector<Fixed<3>, AT> T2albega(const Matrix<Rotation, Fixed<3>, Fixed<3>, AT> &T) {
+  Vector<Fixed<3>, AT> albega(NONINIT);
   assert(T(0,2)>=-1-1e-12 && T(0,2)<1+1e-12);
-  albega(1)= asin(std::max(std::min(T(0,2), 1.0), -1.0));
+  albega(1)= asin(max(min(T(0,2), 1.0), -1.0));
   double nenner = cos(albega(1));
   if (fabs(nenner)>1e-10) {
     albega(0) = atan2(-T(1,2),T(2,2));
@@ -85,10 +92,10 @@ Vector<fmatvec::Fixed<3>, AT> T2albega(const Matrix<Rotation, Fixed<3>, Fixed<3>
 }
 
 template<class AT>
-Vector<fmatvec::Fixed<3>, AT> T2begaal(const Matrix<Rotation, Fixed<3>, Fixed<3>, AT> &T) {
-  Vector<fmatvec::Fixed<3>, AT> begaal(NONINIT);
+Vector<Fixed<3>, AT> T2begaal(const Matrix<Rotation, Fixed<3>, Fixed<3>, AT> &T) {
+  Vector<Fixed<3>, AT> begaal(NONINIT);
   assert(T(1,0)>=-1-1e-12 && T(1,0)<1+1e-12);
-  begaal(1)= asin(std::max(std::min(T(1,0), 1.0), -1.0));
+  begaal(1)= asin(max(min(T(1,0), 1.0), -1.0));
   double nenner = cos(begaal(1));
   if (fabs(nenner)>1e-10) {
     begaal(0) = atan2(-T(2,0),T(0,0));
