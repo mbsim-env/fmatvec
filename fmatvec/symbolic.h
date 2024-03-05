@@ -415,7 +415,7 @@ typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>
     int size=func->getRetSize().first;
     if(size==0 && size1!=0)
       size=size1;
-    else
+    else if(size==0)
       size=(*func)(ArgN()).size();
     ret.resize(size);
     for(int i=0; i<size; ++i)
@@ -428,11 +428,11 @@ typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>
     auto size=func->getRetSize();
     if(size.first==0 && size1!=0)
       size.first=size1;
-    else
+    else if(size.first==0)
       size.first=(*func)(ArgN()).rows();
     if(size.second==0 && size2!=0)
       size.second=size2;
-    else
+    else if(size.second==0)
       size.second=(*func)(ArgN()).cols();
     ret.resize(size.first, size.second);
     for(int r=0; r<size.first; ++r)
@@ -459,7 +459,7 @@ typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>
     int size=func->getRetSize().first;
     if(size==0 && size1!=0)
       size=size1;
-    else
+    else if(size==0)
       size=(*func)(Arg1N(), Arg2N()).size();
     ret.resize(size);
     for(int i=0; i<size; ++i)
@@ -472,11 +472,11 @@ typename ReplaceAT<typename std::function<Func>::result_type,SymbolicExpression>
     auto size=func->getRetSize();
     if(size.first==0 && size1!=0)
       size.first=size1;
-    else
+    else if(size.first==0)
       size.first=(*func)(Arg1N(),Arg2N()).rows();
     if(size.second==0 && size2!=0)
       size.second=size2;
-    else
+    else if(size.second==0)
       size.second=(*func)(Arg1N(),Arg2N()).cols();
     ret.resize(size.first, size.second);
     for(int r=0; r<size.first; ++r)
