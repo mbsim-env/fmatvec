@@ -38,7 +38,7 @@ namespace fmatvec {
    * of the matrix. Valid types are int, float, double, complex<float> and
    * complex<double> 
    * */
-  template <int N, class AT> class Matrix<fmatvec::General,fmatvec::Var,fmatvec::Fixed<N>,AT> {
+  template <int N, class AT> class Matrix<General,Var,Fixed<N>,AT> {
 
     public:
       static constexpr bool isVector {false};
@@ -421,7 +421,7 @@ namespace fmatvec {
     inline const Matrix<General,Var,Var,AT> Matrix<General,Var,Fixed<N>,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
       FMATVEC_ASSERT(I.end()<M, AT);
       FMATVEC_ASSERT(J.end()<N, AT);
-      Matrix<General,Var,Var,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
+      Matrix<General,Var,Var,AT> A(I.size(),J.size(),NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
         for(int j=0; j<A.cols(); j++)

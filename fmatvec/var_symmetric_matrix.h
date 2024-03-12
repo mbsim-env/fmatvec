@@ -322,11 +322,11 @@ namespace fmatvec {
        * */
       inline const Matrix<Symmetric,Var,Var,AT> operator()(const Range<Var,Var> &I) const;
 
-      template<class Type, class Row, class Col> inline void set(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
-      template<class Type, class Row, class Col> inline void add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+      template<class Type, class Row, class Col> inline void set(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+      template<class Type, class Row, class Col> inline void add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
 
-      template<class Row> inline void set(const fmatvec::Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A);
-      template<class Row> inline void add(const fmatvec::Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A);
+      template<class Row> inline void set(const Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A);
+      template<class Row> inline void add(const Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A);
 
       inline const Matrix<General,Var,Var,AT> operator()(const Indices &I, const Indices &J) const;
 
@@ -374,7 +374,7 @@ namespace fmatvec {
     inline const Matrix<General,Var,Var,AT> Matrix<Symmetric,Var,Var,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
       FMATVEC_ASSERT(I.end()<M, AT);
       FMATVEC_ASSERT(J.end()<M, AT);
-      Matrix<General,Var,Var,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
+      Matrix<General,Var,Var,AT> A(I.size(),J.size(),NONINIT);
 
       for(int i=0; i<A.rows(); i++)
         for(int j=0; j<A.cols(); j++)
@@ -387,7 +387,7 @@ namespace fmatvec {
     inline const Matrix<Symmetric,Var,Var,AT> Matrix<Symmetric,Var,Var,AT>::operator()(const Range<Var,Var> &I) const {
       FMATVEC_ASSERT(I.end()<M, AT);
 
-      Matrix<Symmetric,Var,Var,AT> A(I.end()-I.start()+1,NONINIT);
+      Matrix<Symmetric,Var,Var,AT> A(I.size(),NONINIT);
 
       for(int i=0; i<A.rows(); i++)
         for(int j=i; j<A.cols(); j++)
@@ -397,7 +397,7 @@ namespace fmatvec {
     }
 
   template <class AT> template<class Type, class Row, class Col>
-    inline void Matrix<Symmetric,Var,Var,AT>::set(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
+    inline void Matrix<Symmetric,Var,Var,AT>::set(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
 
       if(I.start()>=J.start()) FMATVEC_ASSERT(I.start()>=J.end(), AT)
       else FMATVEC_ASSERT(J.start()>=I.end(), AT);
@@ -412,7 +412,7 @@ namespace fmatvec {
     }
 
   template <class AT> template<class Type, class Row, class Col>
-    inline void Matrix<Symmetric,Var,Var,AT>::add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
+    inline void Matrix<Symmetric,Var,Var,AT>::add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
 
       if(I.start()>=J.start()) FMATVEC_ASSERT(I.start()>=J.end(), AT)
       else FMATVEC_ASSERT(J.start()>=I.end(), AT);
@@ -427,7 +427,7 @@ namespace fmatvec {
     }
 
   template <class AT> template<class Row>
-    inline void Matrix<Symmetric,Var,Var,AT>::set(const fmatvec::Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A) {
+    inline void Matrix<Symmetric,Var,Var,AT>::set(const Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A) {
 
       FMATVEC_ASSERT(I.end()<size(), AT);
       FMATVEC_ASSERT(I.size()==A.size(), AT);
@@ -438,7 +438,7 @@ namespace fmatvec {
     }
 
   template <class AT> template<class Row>
-    inline void Matrix<Symmetric,Var,Var,AT>::add(const fmatvec::Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A) {
+    inline void Matrix<Symmetric,Var,Var,AT>::add(const Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A) {
 
       FMATVEC_ASSERT(I.end()<size(), AT);
       FMATVEC_ASSERT(I.size()==A.size(), AT);

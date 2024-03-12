@@ -22,6 +22,7 @@
 #ifndef indices_h
 #define indices_h
 
+#include "range.h"
 #include <cassert>
 #include <utility>
 #include <vector>
@@ -33,10 +34,10 @@ namespace fmatvec {
     public:
       Indices() = default;
       Indices(int size) { ind.resize(size); }
-      Indices(std::vector<int> ind_) : ind(std::move(ind_)) {
+      Indices(const std::vector<int> &ind_) : ind(std::move(ind_)) {
 	assert(min()>=0);
       }
-      Indices(std::initializer_list<int> il) : ind(il) {
+      Indices(const std::initializer_list<int> &il) : ind(il) {
 	assert(min()>=0);
       }
       size_t size() const { return ind.size(); }

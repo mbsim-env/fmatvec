@@ -36,7 +36,7 @@ namespace fmatvec {
    * atomic type of the vector. Valid types are int, float,
    * double, complex<float> and complex<double> 
    * */
-  template <class AT> class Vector<fmatvec::Var,AT> : public Matrix<fmatvec::General,fmatvec::Var,fmatvec::Fixed<1>,AT> {
+  template <class AT> class Vector<Var,AT> : public Matrix<General,Var,Fixed<1>,AT> {
     using Matrix<General,Var,Fixed<1>,AT>::M;
     using Matrix<General,Var,Fixed<1>,AT>::ele;
     friend class RowVector<Var,AT>;
@@ -304,11 +304,11 @@ namespace fmatvec {
       inline RowVector<Var,AT> T() &&;
 #endif
 
-      inline const Vector<Var,AT> operator()(const fmatvec::Range<Var,Var> &I) const;
+      inline const Vector<Var,AT> operator()(const Range<Var,Var> &I) const;
 
-      template <class Row> inline void set(const fmatvec::Range<Var,Var> &I, const Vector<Row,AT> &x);
+      template <class Row> inline void set(const Range<Var,Var> &I, const Vector<Row,AT> &x);
 
-      template <class Row> inline void add(const fmatvec::Range<Var,Var> &I, const Vector<Row,AT> &x);
+      template <class Row> inline void add(const Range<Var,Var> &I, const Vector<Row,AT> &x);
 
       inline const Vector<Var,AT> operator()(const Indices &I) const;
 
@@ -367,9 +367,9 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline const Vector<Var,AT> Vector<Var,AT>::operator()(const fmatvec::Range<Var,Var> &I) const {
+    inline const Vector<Var,AT> Vector<Var,AT>::operator()(const Range<Var,Var> &I) const {
       FMATVEC_ASSERT(I.end()<M, AT);
-      Vector<Var,AT> x(I.end()-I.start()+1,NONINIT);
+      Vector<Var,AT> x(I.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++)
         x.e(i) = e(I.start()+i);
@@ -378,7 +378,7 @@ namespace fmatvec {
     }
 
   template <class AT> template <class Row>
-    inline void Vector<Var,AT>::set(const fmatvec::Range<Var,Var> &I, const Vector<Row,AT> &x) {
+    inline void Vector<Var,AT>::set(const Range<Var,Var> &I, const Vector<Row,AT> &x) {
       FMATVEC_ASSERT(I.end()<size(), AT);
       FMATVEC_ASSERT(I.size()==x.size(), AT);
 
@@ -387,7 +387,7 @@ namespace fmatvec {
     }
 
   template <class AT> template <class Row>
-    inline void Vector<Var,AT>::add(const fmatvec::Range<Var,Var> &I, const Vector<Row,AT> &x) {
+    inline void Vector<Var,AT>::add(const Range<Var,Var> &I, const Vector<Row,AT> &x) {
       FMATVEC_ASSERT(I.end()<size(), AT);
       FMATVEC_ASSERT(I.size()==x.size(), AT);
 

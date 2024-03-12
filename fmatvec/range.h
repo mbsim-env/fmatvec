@@ -22,7 +22,6 @@
 #ifndef range_h
 #define range_h
 
-//#include "matrix.h"
 #include "types.h"
 #include <cassert>
 

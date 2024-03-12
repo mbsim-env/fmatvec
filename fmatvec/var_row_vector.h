@@ -362,7 +362,7 @@ namespace fmatvec {
   template <class AT>
     inline const RowVector<Var,AT> RowVector<Var,AT>::operator()(const Range<Var,Var> &I) const {
       FMATVEC_ASSERT(I.end()<N, AT);
-      RowVector<Var,AT> x(I.end()-I.start()+1,NONINIT);
+      RowVector<Var,AT> x(I.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++)
         x.e(i) = e(I.start()+i);

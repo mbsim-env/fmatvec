@@ -398,7 +398,7 @@ namespace fmatvec {
     inline const Matrix<General,Var,Var,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
       FMATVEC_ASSERT(I.end()<M, AT);
       FMATVEC_ASSERT(J.end()<N, AT);
-      Matrix<General,Var,Var,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
+      Matrix<General,Var,Var,AT> A(I.size(),J.size(),NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
         for(int j=0; j<A.cols(); j++)
@@ -424,7 +424,7 @@ namespace fmatvec {
     inline const Matrix<General,Fixed<M2-M1+1>,Var,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::operator()(const Range<Fixed<M1>,Fixed<M2>> &I, const Range<Var,Var> &J) const {
       FMATVEC_ASSERT(M2<M, AT);
       FMATVEC_ASSERT(J.end()<N, AT);
-      Matrix<General,Fixed<M2-M1+1>,Var,AT> A(J.end()-J.start()+1,NONINIT);
+      Matrix<General,Fixed<M2-M1+1>,Var,AT> A(J.size(),NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
         for(int j=0; j<A.cols(); j++)
@@ -437,7 +437,7 @@ namespace fmatvec {
     inline const Matrix<General,Var,Fixed<N2-N1+1>,AT> Matrix<General,Fixed<M>,Fixed<N>,AT>::operator()(const Range<Var,Var> &I, const Range<Fixed<N1>,Fixed<N2>> &J) const {
       FMATVEC_ASSERT(I.end()<M, AT);
       FMATVEC_ASSERT(N2<N, AT);
-      Matrix<General,Var,Fixed<N2-N1+1>,AT> A(I.end()-I.start()+1,NONINIT);
+      Matrix<General,Var,Fixed<N2-N1+1>,AT> A(I.size(),NONINIT);
 
       for(int i=0; i<A.rows(); i++) 
         for(int j=0; j<A.cols(); j++)

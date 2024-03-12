@@ -330,17 +330,17 @@ namespace fmatvec {
        * */
       inline const Matrix<Symmetric,Ref,Ref,AT> operator()(const Range<Var,Var> &I) const;
 
-      template<class Type, class Row, class Col> inline void set(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
-      template<class Type, class Row, class Col> inline void add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+      template<class Type, class Row, class Col> inline void set(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
+      template<class Type, class Row, class Col> inline void add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A);
 
-      template<class Row> inline void set(const fmatvec::Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A);
-      template<class Row> inline void add(const fmatvec::Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A);
+      template<class Row> inline void set(const Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A);
+      template<class Row> inline void add(const Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A);
 
       inline const Matrix<General,Ref,Ref,AT> operator()(const Indices &I, const Indices &J) const;
 
       inline const Matrix<Symmetric,Ref,Ref,AT> operator()(const Indices &I) const;
 
-      inline void ref(Matrix<Symmetric,Ref,Ref,AT> &A, const fmatvec::Range<Var,Var> &I);
+      inline void ref(Matrix<Symmetric,Ref,Ref,AT> &A, const Range<Var,Var> &I);
 
       /*! \brief Cast to std::vector<std::vector<AT>>.
        *
@@ -399,7 +399,7 @@ namespace fmatvec {
     inline const Matrix<General,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const {
       FMATVEC_ASSERT(I.end()<n, AT);
       FMATVEC_ASSERT(J.end()<n, AT);
-      Matrix<General,Ref,Ref,AT> A(I.end()-I.start()+1,J.end()-J.start()+1,NONINIT);
+      Matrix<General,Ref,Ref,AT> A(I.size(),J.size(),NONINIT);
 
       for(int i=0; i<A.rows(); i++)
         for(int j=0; j<A.cols(); j++)
@@ -412,7 +412,7 @@ namespace fmatvec {
     inline const Matrix<Symmetric,Ref,Ref,AT> Matrix<Symmetric,Ref,Ref,AT>::operator()(const Range<Var,Var> &I) const {
       FMATVEC_ASSERT(I.end()<n, AT);
 
-      Matrix<Symmetric,Ref,Ref,AT> A(I.end()-I.start()+1,NONINIT);
+      Matrix<Symmetric,Ref,Ref,AT> A(I.size(),NONINIT);
 
       for(int i=0; i<A.rows(); i++)
         for(int j=i; j<A.cols(); j++)
@@ -422,7 +422,7 @@ namespace fmatvec {
     }
 
   template <class AT> template<class Type, class Row, class Col>
-    inline void Matrix<Symmetric,Ref,Ref,AT>::set(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
+    inline void Matrix<Symmetric,Ref,Ref,AT>::set(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
 
       if(I.start()>=J.start()) FMATVEC_ASSERT(I.start()>=J.end(), AT)
       else FMATVEC_ASSERT(J.start()>=I.end(), AT);
@@ -437,7 +437,7 @@ namespace fmatvec {
     }
 
   template <class AT> template<class Type, class Row, class Col>
-    inline void Matrix<Symmetric,Ref,Ref,AT>::add(const fmatvec::Range<Var,Var> &I, const fmatvec::Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
+    inline void Matrix<Symmetric,Ref,Ref,AT>::add(const Range<Var,Var> &I, const Range<Var,Var> &J, const Matrix<Type,Row,Col,AT> &A) {
 
       if(I.start()>=J.start()) FMATVEC_ASSERT(I.start()>=J.end(), AT)
       else FMATVEC_ASSERT(J.start()>=I.end(), AT);
@@ -452,7 +452,7 @@ namespace fmatvec {
     }
 
   template <class AT> template<class Row>
-    inline void Matrix<Symmetric,Ref,Ref,AT>::set(const fmatvec::Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A) {
+    inline void Matrix<Symmetric,Ref,Ref,AT>::set(const Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A) {
 
       FMATVEC_ASSERT(I.end()<size(), AT);
       FMATVEC_ASSERT(I.size()==A.size(), AT);
@@ -463,7 +463,7 @@ namespace fmatvec {
     }
 
   template <class AT> template<class Row>
-    inline void Matrix<Symmetric,Ref,Ref,AT>::add(const fmatvec::Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A) {
+    inline void Matrix<Symmetric,Ref,Ref,AT>::add(const Range<Var,Var> &I, const Matrix<Symmetric,Row,Row,AT> &A) {
 
       FMATVEC_ASSERT(I.end()<size(), AT);
       FMATVEC_ASSERT(I.size()==A.size(), AT);
@@ -501,7 +501,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline void Matrix<Symmetric,Ref,Ref,AT>::ref(Matrix<Symmetric,Ref,Ref,AT> &A, const fmatvec::Range<Var,Var> &I) {
+    inline void Matrix<Symmetric,Ref,Ref,AT>::ref(Matrix<Symmetric,Ref,Ref,AT> &A, const Range<Var,Var> &I) {
       FMATVEC_ASSERT(I.end()<A.size(), AT);
       n=I.size();
       memory = A.memory;

@@ -301,19 +301,19 @@ namespace fmatvec {
 //       * */
 //      explicit RowVector(const AT &x) : Matrix<General,Ref,Ref,AT>(x) { }
 
-      template<class Row> inline void set(const fmatvec::Range<Var,Var> &I, const RowVector<Row,AT> &x);
+      template<class Row> inline void set(const Range<Var,Var> &I, const RowVector<Row,AT> &x);
 
-      template<class Row> inline void add(const fmatvec::Range<Var,Var> &I, const RowVector<Row,AT> &x);
+      template<class Row> inline void add(const Range<Var,Var> &I, const RowVector<Row,AT> &x);
 
       inline const RowVector<Ref,AT> operator()(const Indices &I) const;
 
       template<class Row> inline void set(const Indices &I, const RowVector<Row,AT> &x);
 
-      inline void ref(RowVector<Ref,AT> &x, const fmatvec::Range<Var,Var> &I);
+      inline void ref(RowVector<Ref,AT> &x, const Range<Var,Var> &I);
 
       inline void ref(Matrix<General,Ref,Ref,AT> &A, int i);
 
-      inline void ref(Matrix<General,Ref,Ref,AT> &A, int i, const fmatvec::Range<Var,Var> &J);
+      inline void ref(Matrix<General,Ref,Ref,AT> &A, int i, const Range<Var,Var> &J);
 
       const Vector<Ref,AT> T() const;
   };
@@ -331,7 +331,7 @@ namespace fmatvec {
     inline const RowVector<Ref,AT> RowVector<Ref,AT>::operator()(const Range<Var,Var> &I) const {
 
       FMATVEC_ASSERT(I.end()<n, AT);
-      RowVector<Ref,AT> x(I.end()-I.start()+1,NONINIT);
+      RowVector<Ref,AT> x(I.size(),NONINIT);
 
       for(int i=0; i<x.size(); i++)
         x.e(i) = e(I.start()+i);
@@ -403,7 +403,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline void RowVector<Ref,AT>::ref(RowVector<Ref,AT> &x, const fmatvec::Range<Var,Var> &I) {
+    inline void RowVector<Ref,AT>::ref(RowVector<Ref,AT> &x, const Range<Var,Var> &I) {
 
       FMATVEC_ASSERT(I.end()<x.size(), AT);
 
@@ -427,7 +427,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline void RowVector<Ref,AT>::ref(Matrix<General,Ref,Ref,AT> &A, int i, const fmatvec::Range<Var,Var> &J) {
+    inline void RowVector<Ref,AT>::ref(Matrix<General,Ref,Ref,AT> &A, int i, const Range<Var,Var> &J) {
 
       FMATVEC_ASSERT(i<A.rows(), AT);
       FMATVEC_ASSERT(J.end()<A.cols(), AT);
