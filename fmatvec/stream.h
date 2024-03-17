@@ -46,9 +46,11 @@ namespace fmatvec {
 
   template<> FMATVEC_EXPORT boost::spirit::qi::rule<boost::spirit::istream_iterator, double()>& getBoostSpiritQiRule<double>();
   template<> FMATVEC_EXPORT boost::spirit::qi::rule<boost::spirit::istream_iterator, int()>& getBoostSpiritQiRule<int>();
+  template<> FMATVEC_EXPORT boost::spirit::qi::rule<boost::spirit::istream_iterator, long()>& getBoostSpiritQiRule<long>();
   template<> FMATVEC_EXPORT boost::spirit::qi::rule<boost::spirit::istream_iterator, std::complex<double>()>& getBoostSpiritQiRule<std::complex<double>>();
   template<> FMATVEC_EXPORT boost::spirit::karma::rule<std::ostream_iterator<char>, double()>& getBoostSpiritKarmaRule<double>();
   template<> FMATVEC_EXPORT boost::spirit::karma::rule<std::ostream_iterator<char>, int()>& getBoostSpiritKarmaRule<int>();
+  template<> FMATVEC_EXPORT boost::spirit::karma::rule<std::ostream_iterator<char>, long()>& getBoostSpiritKarmaRule<long>();
   template<> FMATVEC_EXPORT boost::spirit::karma::rule<std::ostream_iterator<char>, std::complex<double>()>& getBoostSpiritKarmaRule<std::complex<double>>();
 
   /*! \brief Matrix input

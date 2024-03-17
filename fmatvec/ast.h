@@ -38,7 +38,7 @@ class FMATVEC_EXPORT SymbolicExpression : public std::shared_ptr<const AST::Vert
   template<class... Arg> friend class Eval;
   friend class EvalHelper;
   friend class AST::Operation;
-  friend class AST::Constant<int>;
+  friend class AST::Constant<long>;
   friend class AST::Constant<double>;
   friend class AST::NativeFunction;
   friend FMATVEC_EXPORT SymbolicExpression parDer(const SymbolicExpression &dep, const IndependentVariable &indep);
@@ -62,6 +62,7 @@ class FMATVEC_EXPORT SymbolicExpression : public std::shared_ptr<const AST::Vert
     SymbolicExpression(const std::string &str);
     //! Creates a integer constant.
     SymbolicExpression(int x);
+    SymbolicExpression(long x);
     //! Creates a double constant.
     SymbolicExpression(double x);
 
@@ -125,11 +126,13 @@ class FMATVEC_EXPORT IndependentVariable : public SymbolicExpression {
 FMATVEC_OPERATORRESULT1(SymbolicExpression, SymbolicExpression)
 
 FMATVEC_OPERATORRESULT2(SymbolicExpression, int, SymbolicExpression)
+FMATVEC_OPERATORRESULT2(SymbolicExpression, long, SymbolicExpression)
 FMATVEC_OPERATORRESULT2(SymbolicExpression, double, SymbolicExpression)
 
 FMATVEC_OPERATORRESULT1(IndependentVariable, SymbolicExpression)
 
 FMATVEC_OPERATORRESULT2(IndependentVariable, int, SymbolicExpression)
+FMATVEC_OPERATORRESULT2(IndependentVariable, long, SymbolicExpression)
 FMATVEC_OPERATORRESULT2(IndependentVariable, double, SymbolicExpression)
 FMATVEC_OPERATORRESULT2(IndependentVariable, SymbolicExpression, SymbolicExpression)
 
@@ -144,6 +147,10 @@ FMATVEC_EXPORT SymbolicExpression operator+(int a, const SymbolicExpression &b);
 FMATVEC_EXPORT SymbolicExpression operator-(int a, const SymbolicExpression &b);
 FMATVEC_EXPORT SymbolicExpression operator*(int a, const SymbolicExpression &b);
 FMATVEC_EXPORT SymbolicExpression operator/(int a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator+(long a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator-(long a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator*(long a, const SymbolicExpression &b);
+FMATVEC_EXPORT SymbolicExpression operator/(long a, const SymbolicExpression &b);
 
 //! Generate a new SymbolicExpression being the partial derivate of dep
 //! with respect to indep (indep must be a symbol).
@@ -321,7 +328,7 @@ inline bool Vertex::isConstantInt() const {
 
 // ***** Constant *****
 
-//! A vertex of the AST representing a constant (int or double)
+//! A vertex of the AST representing a constant (long or double)
 template<class T>
 class FMATVEC_EXPORT Constant : public Vertex, public std::enable_shared_from_this<Constant<T>> {
   friend SymbolicExpression;
@@ -352,7 +359,7 @@ inline bool Constant<double>::isConstantInt() const {
 }
 
 template<>
-inline bool Constant<int>::isConstantInt() const {
+inline bool Constant<long>::isConstantInt() const {
   return true;
 }
 

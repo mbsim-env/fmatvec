@@ -44,6 +44,11 @@ namespace fmatvec {
     static boost::spirit::qi::rule<boost::spirit::istream_iterator, int()> ret=boost::spirit::qi::int_;
     return ret;
   }
+  template<>
+  boost::spirit::qi::rule<boost::spirit::istream_iterator, long()>& getBoostSpiritQiRule<long>() {
+    static boost::spirit::qi::rule<boost::spirit::istream_iterator, long()> ret=boost::spirit::qi::long_;
+    return ret;
+  }
 
   template<>
   boost::spirit::qi::rule<boost::spirit::istream_iterator, std::complex<double>()>& getBoostSpiritQiRule<std::complex<double>>() {
@@ -107,6 +112,11 @@ namespace fmatvec {
   template<>
   boost::spirit::karma::rule<std::ostream_iterator<char>, int()>& getBoostSpiritKarmaRule<int>() {
     static boost::spirit::karma::rule<std::ostream_iterator<char>, int()> myint=boost::spirit::karma::int_;
+    return myint;
+  }
+  template<>
+  boost::spirit::karma::rule<std::ostream_iterator<char>, long()>& getBoostSpiritKarmaRule<long>() {
+    static boost::spirit::karma::rule<std::ostream_iterator<char>, long()> myint=boost::spirit::karma::long_;
     return myint;
   }
 

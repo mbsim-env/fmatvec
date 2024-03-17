@@ -29,10 +29,11 @@ namespace {
     return ret;
   }
 }
-SymbolicExpression::SymbolicExpression() : shared_ptr<const AST::Vertex>(AST::Constant<int>::create(0)) {}
+SymbolicExpression::SymbolicExpression() : shared_ptr<const AST::Vertex>(AST::Constant<long>::create(0)) {}
 SymbolicExpression::SymbolicExpression(const string &str) : SymbolicExpression(stringCTorHelper(str)) {}
 template<class T> SymbolicExpression::SymbolicExpression(const shared_ptr<T> &x) : shared_ptr<const AST::Vertex>(x) {}
-SymbolicExpression::SymbolicExpression(int x) : shared_ptr<const AST::Vertex>(AST::Constant<int>::create(x)) {}
+SymbolicExpression::SymbolicExpression(int x) : shared_ptr<const AST::Vertex>(AST::Constant<long>::create(x)) {}
+SymbolicExpression::SymbolicExpression(long x) : shared_ptr<const AST::Vertex>(AST::Constant<long>::create(x)) {}
 SymbolicExpression::SymbolicExpression(double x) : shared_ptr<const AST::Vertex>(AST::Constant<double>::create(x)) {}
 SymbolicExpression::SymbolicExpression(ConstructSymbol) : shared_ptr<const AST::Vertex>(AST::Symbol::create()) {}
 
@@ -43,7 +44,7 @@ void erase(T &cache) {
 }
 
 void SymbolicExpression::garbageCollect() {
-  erase(AST::Constant<int>::cache);
+  erase(AST::Constant<long>::cache);
   erase(AST::Constant<double>::cache);
   erase(AST::Symbol::cache);
   erase(AST::Operation::cache);
@@ -270,16 +271,28 @@ SymbolicExpression operator/(double a, const SymbolicExpression &b) {
 SymbolicExpression operator+(int a, const SymbolicExpression &b) {
   return SymbolicExpression(a)+b;
 }
+SymbolicExpression operator+(long a, const SymbolicExpression &b) {
+  return SymbolicExpression(a)+b;
+}
 
 SymbolicExpression operator-(int a, const SymbolicExpression &b) {
+  return SymbolicExpression(a)-b;
+}
+SymbolicExpression operator-(long a, const SymbolicExpression &b) {
   return SymbolicExpression(a)-b;
 }
 
 SymbolicExpression operator*(int a, const SymbolicExpression &b) {
   return SymbolicExpression(a)*b;
 }
+SymbolicExpression operator*(long a, const SymbolicExpression &b) {
+  return SymbolicExpression(a)*b;
+}
 
 SymbolicExpression operator/(int a, const SymbolicExpression &b) {
+  return SymbolicExpression(a)/b;
+}
+SymbolicExpression operator/(long a, const SymbolicExpression &b) {
   return SymbolicExpression(a)/b;
 }
 
@@ -333,13 +346,13 @@ ByteCode::ByteCode(ByteCode &&) noexcept {
 // ***** Vertex *****
 
 bool Vertex::isZero() const {
-  if(isConstantInt() && static_cast<const Constant<int>*>(this)->getValue()==0)
+  if(isConstantInt() && static_cast<const Constant<long>*>(this)->getValue()==0)
     return true;
   return false;
 }
 
 bool Vertex::isOne() const {
-  if(isConstantInt() && static_cast<const Constant<int>*>(this)->getValue()==1)
+  if(isConstantInt() && static_cast<const Constant<long>*>(this)->getValue()==1)
     return true;
   return false;
 }
@@ -369,7 +382,7 @@ bool Constant<T>::equal(const SymbolicExpression &b, MapIVSE &m) const {
 
 template<class T>
 SymbolicExpression Constant<T>::parDer(const IndependentVariable &x) const {
-  return Constant<int>::create(0);
+  return Constant<long>::create(0);
 }
 
 template<class T>
@@ -393,15 +406,15 @@ void Constant<T>::walkVertex(const function<void(const shared_ptr<const Vertex>&
   func(this->shared_from_this());
 }
 
-template SymbolicExpression Constant<int   >::create(const int   &c_);
+template SymbolicExpression Constant<long   >::create(const long   &c_);
 template SymbolicExpression Constant<double>::create(const double&c_);
-template bool Constant<int   >::equal(const SymbolicExpression &b, MapIVSE &m) const;
+template bool Constant<long   >::equal(const SymbolicExpression &b, MapIVSE &m) const;
 template bool Constant<double>::equal(const SymbolicExpression &b, MapIVSE &m) const;
-template SymbolicExpression Constant<int   >::parDer(const IndependentVariable &x) const;
+template SymbolicExpression Constant<long   >::parDer(const IndependentVariable &x) const;
 template SymbolicExpression Constant<double>::parDer(const IndependentVariable &x) const;
-template std::vector<ByteCode>::iterator Constant<int   >::dumpByteCode(vector<ByteCode> &byteCode, map<const Vertex*, vector<ByteCode>::iterator> &existingVertex) const;
+template std::vector<ByteCode>::iterator Constant<long   >::dumpByteCode(vector<ByteCode> &byteCode, map<const Vertex*, vector<ByteCode>::iterator> &existingVertex) const;
 template std::vector<ByteCode>::iterator Constant<double>::dumpByteCode(vector<ByteCode> &byteCode, map<const Vertex*, vector<ByteCode>::iterator> &existingVertex) const;
-template void Constant<int   >::walkVertex(const function<void(const shared_ptr<const Vertex>&)> &func) const;
+template void Constant<long   >::walkVertex(const function<void(const shared_ptr<const Vertex>&)> &func) const;
 template void Constant<double>::walkVertex(const function<void(const shared_ptr<const Vertex>&)> &func) const;
 
 // ***** Symbol *****
@@ -434,7 +447,7 @@ bool Symbol::equal(const SymbolicExpression &b, MapIVSE &m) const {
 }
 
 SymbolicExpression Symbol::parDer(const IndependentVariable &x) const {
-  return this == x.get() ? Constant<int>::create(1) : Constant<int>::create(0);
+  return this == x.get() ? Constant<long>::create(1) : Constant<long>::create(0);
 }
 
 Symbol::Symbol(const boost::uuids::uuid& uuid_) : uuid(uuid_) {}
@@ -793,9 +806,12 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
         bc.func(bc.retPtr, bc.argsPtr);
       });
       double doubleValue = retIt->retValue;
-      int intValue=lround(doubleValue);
-      if(std::abs(intValue-doubleValue)<2*numeric_limits<double>::epsilon())
-        return Constant<int>::create(intValue);
+      if(doubleValue > static_cast<double>(numeric_limits<long>::min()) &&
+         doubleValue < static_cast<double>(numeric_limits<long>::max())) {
+        long intValue=lround(doubleValue);
+        if(std::abs(intValue-doubleValue)<2*numeric_limits<double>::epsilon())
+          return Constant<long>::create(intValue);
+      }
       return Constant<double>::create(doubleValue);
     }
   }
@@ -852,7 +868,7 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
       return (ad * b - a * bd) / (b * b);
     case Pow:
       if(b->isConstantInt())
-        return b * pow(a, static_cast<const Constant<int>*>(b.get())->getValue() - 1) * ad;
+        return b * pow(a, static_cast<const Constant<long>*>(b.get())->getValue() - 1) * ad;
       else
         return pow(a, b-1) * (bd * log(a) * a + ad * b);
     case Log:
@@ -996,7 +1012,7 @@ boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& 
     for(auto &x : AST::Operation::opMap)
       opSym.add(x.second.funcName, x.first);
 
-    constInt    = *qi::blank >> qi::int_[qi::_val=phx::bind(&AST::Constant<int>::create, qi::_1)];
+    constInt    = *qi::blank >> qi::int_[qi::_val=phx::bind(&AST::Constant<long>::create, qi::_1)];
     constDouble = *qi::blank >> strict_double[qi::_val=phx::bind(&AST::Constant<double>::create, qi::_1)];
     qi::rule<It, IndependentVariable()> &symbol = getBoostSpiritQiRule<IndependentVariable>();
     operation   = *qi::blank >> (opSym >> '(' >> (vertex % ',') >> ')')[qi::_val=phx::bind(&AST::Operation::create, qi::_1, qi::_2)];
@@ -1006,9 +1022,9 @@ boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& 
 }
 
 namespace {
-  int getConstInt(const SymbolicExpression &se, bool &pass) {
+  long getConstInt(const SymbolicExpression &se, bool &pass) {
     pass=true;
-    auto c=dynamic_pointer_cast<const AST::Constant<int>>(se);
+    auto c=dynamic_pointer_cast<const AST::Constant<long>>(se);
     if(c) return c->getValue();
     pass=false;
     return 0;
@@ -1042,7 +1058,7 @@ namespace {
     pass=false;
     return {};
   }
-  int getFunction(const SymbolicExpression &se, bool &pass) {
+  long getFunction(const SymbolicExpression &se, bool &pass) {
     throw runtime_error("Cannot serialize a symbolic expression containing a function.");
   }
 }
