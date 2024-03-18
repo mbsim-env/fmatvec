@@ -1,5 +1,6 @@
 #ifdef _WIN32
 #  define WIN32_LEAN_AND_MEAN
+#  define NOMINMAX
 #  include <windows.h>
 #  undef __STRICT_ANSI__ // to define _controlfp which is not part of ANSI and hence not defined in mingw
 #  include <cfloat>
