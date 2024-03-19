@@ -720,6 +720,8 @@ SymbolicExpression Operation::create(Operator op_, const vector<SymbolicExpressi
       {    a - 0       ,  a},
       {    a - 0.0     ,  a},
       {    a - a       ,  0},
+      {    0 - a       , -a},
+      {      - 0       ,  0},
       {    0 * a       ,  0},
       {  0.0 * a       ,  0},
       {    a * 0       ,  0},
@@ -865,10 +867,15 @@ SymbolicExpression Operation::parDer(const IndependentVariable &x) const {
     case Mult:
       return ad * b + a * bd;
     case Div:
-      return (ad * b - a * bd) / (b * b);
+      if(dynamic_cast<const Constant<double>*>(b.get()) || dynamic_cast<const Constant<long>*>(b.get()))
+        return ad / b;
+      else
+        return (ad * b - a * bd) / (b * b);
     case Pow:
       if(b->isConstantInt())
         return b * pow(a, static_cast<const Constant<long>*>(b.get())->getValue() - 1) * ad;
+      else if(dynamic_cast<const Constant<double>*>(a.get()) || dynamic_cast<const Constant<long>*>(a.get()))
+        return pow(a, b) * bd * log(a);
       else
         return pow(a, b-1) * (bd * log(a) * a + ad * b);
     case Log:
@@ -1002,7 +1009,7 @@ boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& 
   static bool init=false;
   if(!init) {
     init=true;
-    static qi::rule<It, SymbolicExpression()>  constInt;
+    static qi::rule<It, SymbolicExpression()>  constLong;
     static qi::real_parser<double, qi::strict_real_policies<double>> strict_double;
     static qi::rule<It, SymbolicExpression()>  constDouble;
     static qi::rule<It, SymbolicExpression()>  operation;
@@ -1012,11 +1019,11 @@ boost::spirit::qi::rule<boost::spirit::istream_iterator, SymbolicExpression()>& 
     for(auto &x : AST::Operation::opMap)
       opSym.add(x.second.funcName, x.first);
 
-    constInt    = *qi::blank >> qi::int_[qi::_val=phx::bind(&AST::Constant<long>::create, qi::_1)];
+    constLong   = *qi::blank >> qi::long_[qi::_val=phx::bind(&AST::Constant<long>::create, qi::_1)];
     constDouble = *qi::blank >> strict_double[qi::_val=phx::bind(&AST::Constant<double>::create, qi::_1)];
     qi::rule<It, IndependentVariable()> &symbol = getBoostSpiritQiRule<IndependentVariable>();
     operation   = *qi::blank >> (opSym >> '(' >> (vertex % ',') >> ')')[qi::_val=phx::bind(&AST::Operation::create, qi::_1, qi::_2)];
-    vertex      = symbol | operation | constDouble | constInt;
+    vertex      = symbol | operation | constDouble | constLong;
   }
   return vertex;
 }
@@ -1073,7 +1080,7 @@ boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& g
   static bool init=false;
   if(!init) {
     init=true;
-    static karma::rule<It, SymbolicExpression()> constInt;
+    static karma::rule<It, SymbolicExpression()> constLong;
     static karma::rule<It, SymbolicExpression()> constDouble;
     static karma::rule<It, SymbolicExpression()> symbol;
     static karma::rule<It, SymbolicExpression()> nativeFunction;
@@ -1085,13 +1092,13 @@ boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpression()>& g
     for(auto &x : AST::Operation::opMap)
       opSym.add(x.first, x.second.funcName);
 
-    constInt       = karma::int_[karma::_1=phx::bind(&getConstInt, karma::_val, karma::_pass)];
+    constLong      = karma::long_[karma::_1=phx::bind(&getConstInt, karma::_val, karma::_pass)];
     constDouble    = doubleBitIdentical[karma::_1=phx::bind(&getConstDouble, karma::_val, karma::_pass)];
     operation      = opSym[karma::_1=phx::bind(&getOperationOp, karma::_val, karma::_pass)] << '(' <<
                      (vertex % ',')[karma::_1=phx::bind(&getOperationChilds, karma::_val, karma::_pass)] << ')';
     symbol         = karma::string[karma::_1=phx::bind(&getSymbol, karma::_val, karma::_pass)];
-    nativeFunction = karma::int_[karma::_1=phx::bind(&getFunction, karma::_val, karma::_pass)];
-    vertex         = constInt | constDouble | symbol | operation | nativeFunction;
+    nativeFunction = karma::int_[karma::_1=phx::bind(&getFunction, karma::_val, karma::_pass)]; // dummy, getFunction throw always
+    vertex         = constLong | constDouble | symbol | operation | nativeFunction;
   }
   return vertex;
 }
