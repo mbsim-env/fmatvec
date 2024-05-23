@@ -112,7 +112,7 @@ def C(x, asVectorIfPossible=True):
   if type(x)==numpy.ndarray:
     # convert numpy array to sympy matrix
     return sympy.Matrix(x)
-  if x.__class__.__name__=="MutableDenseMatrix" or x.__class__.__name__=="ImmutableDenseMatrix":
+  if x.__class__.__name__=="MutableDenseMatrix" or x.__class__.__name__=="ImmutableDenseMatrix" or x.__class__.__name__=="ImmutableDenseNDimArray":
     # convert sympy matrix to numpy array (as 1D or 2D)
     if asVectorIfPossible and x.shape[1]==1:
       return numpy.reshape(x, (x.shape[0],))
