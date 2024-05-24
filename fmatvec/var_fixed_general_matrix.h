@@ -63,10 +63,14 @@ namespace fmatvec {
 
       explicit Matrix(int m, Noinit) : M(m), ele(new AT[M*N]) { }
       explicit Matrix(int m, Init ini=INIT, const AT &a=AT()) : M(m), ele(new AT[M*N]) { init(a); }
+#ifndef SWIG
       explicit Matrix(int m, Eye ini, const AT &a=1) : M(m), ele(new AT[M*N]) { init(ini,a); }
+#endif
       explicit Matrix(int m, int n, Noinit) : M(m), ele(new AT[M*N]) { FMATVEC_ASSERT(n==N, AT); }
       explicit Matrix(int m, int n, Init ini=INIT, const AT &a=AT()) : M(m), ele(new AT[M*N]) {  FMATVEC_ASSERT(n==N, AT); init(a); }
+#ifndef SWIG
       explicit Matrix(int m, int n, Eye ini, const AT &a=1) : M(m), ele(new AT[M*N]) {  FMATVEC_ASSERT(n==N, AT); init(ini,a); }
+#endif
 
       // move
       Matrix(Matrix<General,Var,Fixed<N>,AT> &&src)  noexcept {
@@ -152,7 +156,9 @@ namespace fmatvec {
 
       Matrix<General,Var,Fixed<N>,AT>& resize(int m, Init ini=INIT, const AT &a=AT()) { return resize(m,Noinit()).init(a); }
 
+#ifndef SWIG
       Matrix<General,Var,Fixed<N>,AT>& resize(int m, Eye ini, const AT &a=1) { return resize(m,Noinit()).init(ini,a); }
+#endif
 
       //! Resize a var-fixed matrix.
       //! Throw if the fixed dimension is different and resize the var dimension
@@ -316,7 +322,9 @@ namespace fmatvec {
 	return CblasRowMajor;
       }
 
+#ifndef SWIG
       inline const Matrix<General,Var,Var,AT> operator()(const Range<Var,Var> &I, const Range<Var,Var> &J) const;
+#endif
 
       inline const RowVector<Fixed<N>,AT> row(int i) const;
       inline const Vector<Var,AT> col(int j) const;
@@ -330,7 +338,9 @@ namespace fmatvec {
        * */
       inline Matrix<General,Var,Fixed<N>,AT>& init(const AT &val=AT()); 
       inline Matrix<General,Var,Fixed<N>,AT>& init(Init, const AT &a=AT()) { return init(a); }
+#ifndef SWIG
       inline Matrix<General,Var,Fixed<N>,AT>& init(Eye, const AT &val=1);
+#endif
       inline Matrix<General,Var,Fixed<N>,AT>& init(Noinit, const AT &a=AT()) { return *this; }
 
       /*! \brief Cast to std::vector<std::vector<AT>>.

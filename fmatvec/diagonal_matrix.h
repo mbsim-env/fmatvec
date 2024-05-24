@@ -292,7 +292,7 @@ namespace fmatvec {
        * An FMATVEC_ASSERT checks for constant length of each row.
        * \param m The std::vector<std::vector<AT>> the matrix will be initialized with.
        * */
-      explicit Matrix<Diagonal,Ref,Ref,AT>(const std::vector<std::vector<AT>> &m);
+      explicit Matrix(const std::vector<std::vector<AT>> &m);
 
 //      /*! \brief Cast to AT.
 //       *
