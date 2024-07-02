@@ -21,6 +21,7 @@
 
 #include "config.h"
 #include "wrapper.h"
+#include <cassert>
 
 #define CVT_TRANSPOSE(c) \
    (((c) == CblasNoTrans) ? 'N' : \
@@ -125,6 +126,7 @@ namespace fmatvec {
                  const int K, const double alpha, const double *A,
                  const int lda, const double *B, const int ldb,
                  const double beta, double *C, const int ldc) {
+    assert(Order == CblasColMajor);
 
     const char trA=CVT_TRANSPOSE(TransA);
     const char trB=CVT_TRANSPOSE(TransB);
@@ -136,6 +138,7 @@ namespace fmatvec {
                  const double alpha, const double *A, const int lda,
                  const double *B, const int ldb, const double beta,
                  double *C, const int ldc) {
+    assert(Order == CblasColMajor);
 
 
     const char side = CVT_SIDE(Side);
@@ -159,6 +162,7 @@ namespace fmatvec {
                  const double alpha, const double *A, const int lda,
                  const double *X, const int incX, const double beta,
                  double *Y, const int incY) {
+    assert(Order == CblasColMajor);
 
     const char trA=CVT_TRANSPOSE(TransA);
 
@@ -169,6 +173,7 @@ namespace fmatvec {
                  const int N, const double alpha, const double *A,
                  const int lda, const double *X, const int incX,
                  const double beta, double *Y, const int incY) {
+    assert(Order == CblasColMajor);
 
     const char uplo = CVT_UPLO(Uplo);
 
@@ -199,6 +204,7 @@ namespace fmatvec {
   int dgesv(const CBLAS_ORDER Order, const int N, const int NRHS,
                   double *A, const int lda, int *ipiv,
                   double *B, const int ldb) {
+    assert(Order == CblasColMajor);
 
     int info;
     dgesv_(&N, &NRHS, A, &lda, ipiv, B, &ldb, &info);
@@ -209,6 +215,7 @@ namespace fmatvec {
   int zgesv(const CBLAS_ORDER Order, const int N, const int NRHS,
                   doublecomplex *A, const int lda, int *ipiv,
                   doublecomplex *B, const int ldb) {
+    assert(Order == CblasColMajor);
 
     int info;
     zgesv_(&N, &NRHS, A, &lda, ipiv, B, &ldb, &info);
@@ -219,6 +226,7 @@ namespace fmatvec {
   int dgetrs(const CBLAS_ORDER Order, const CBLAS_TRANSPOSE Trans,
     const int N, const int NRHS, const double *A, const int lda,
     const int *ipiv, double *B, const int ldb) {
+    assert(Order == CblasColMajor);
 
     const char trA=CVT_TRANSPOSE(Trans);
     int info;
@@ -228,6 +236,7 @@ namespace fmatvec {
 
   int dgetrf(const CBLAS_ORDER Order, const int M, const int N,
                    double *A, const int lda, int *ipiv) {
+    assert(Order == CblasColMajor);
     int info;
     dgetrf_(&M, &N, A, &lda, ipiv, &info);
     return info;
@@ -235,6 +244,7 @@ namespace fmatvec {
 
   int dgetri(const CBLAS_ORDER Order, const int N, double *A,
                    const int lda, const int *ipiv) {
+    assert(Order == CblasColMajor);
     int info;
     int lwork = 2*N;
     auto *work = new double[lwork];
@@ -244,6 +254,7 @@ namespace fmatvec {
   }
 
   int dpotrf(const ATLAS_ORDER Order, const ATLAS_UPLO Uplo, const int N, double *A, const int lda) {
+    assert(Order == CblasColMajor);
 
     int info;
     const char uplo = CVT_UPLO(Uplo);
@@ -253,6 +264,7 @@ namespace fmatvec {
 
   int dpotri(const ATLAS_ORDER Order, const ATLAS_UPLO Uplo,
                    const int N, double *A, const int lda) {
+    assert(Order == CblasColMajor);
     int info;
     const char uplo = CVT_UPLO(Uplo);
     dpotri_(&uplo, &N, A, &lda, &info);
@@ -262,6 +274,7 @@ namespace fmatvec {
   int dposv(const ATLAS_ORDER Order, const ATLAS_UPLO Uplo,
                   const int N, const int NRHS, double *A, const int lda,
                   double *B, const int ldb) {
+    assert(Order == CblasColMajor);
     int info;
     const char uplo = CVT_UPLO(Uplo);
     dposv_(&uplo, &N, &NRHS, A, &lda, B, &ldb, &info);
@@ -271,6 +284,7 @@ namespace fmatvec {
   int dpotrs(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
                    const int N, const int NRHS, const double *A, const int lda,
                    double *B, const int ldb) {
+    assert(Order == CblasColMajor);
     int info;
     const char uplo = CVT_UPLO(Uplo);
     dpotrs_(&uplo, &N, &NRHS, A, &lda, B, &ldb, &info);

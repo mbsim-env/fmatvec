@@ -251,11 +251,15 @@ namespace fmatvec {
     if (x.size() == 0)
       return y;
 
-    SquareMatrix<Var, double> B = A;
+    // a SquareMatrix<Var, ...> in row-major -> check this at debug builds
+    assert(A.blasOrder() == CblasRowMajor);
+    // dgesv can only handle col-major matrices -> store the transpose of A in B
+    SquareMatrix<Var, double> B = A.T();
 
     auto *ipiv = new int[A.size()];
 
-    info = dgesv(B.blasOrder(), B.size(), 1, B(), B.ldim(), ipiv, y(), y.size());
+    // call dgesv now explicitly with CblasColMajor since we put in the transpose of A
+    info = dgesv(CblasColMajor, B.size(), 1, B(), B.ldim(), ipiv, y(), y.size());
 
     delete[] ipiv;
 
