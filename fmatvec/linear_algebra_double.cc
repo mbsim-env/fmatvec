@@ -123,23 +123,24 @@ namespace fmatvec {
 
     assert(A.size() == X.rows());
 
-    Matrix<General, Var, Var, double> Y = X;
+    Matrix<General, Var, Var, double> Y = X.T();
 
     if (X.rows() == 0 || X.cols() == 0)
-      return Y;
+      return Y.T();
 
     SquareMatrix<Var, double> B = A;
 
+    // the LU decomposed matrix B = A is the output of facLU which stores it in col-major order -> hence we always explicitly call dgetrs with col-major blasOrder
 #ifndef HAVE_LIBMKL_INTEL_LP64
-    int info = dgetrs(B.blasOrder(), B.blasTrans(), B.size(), Y.cols(), B(), B.ldim(), ipiv(), Y(), Y.ldim());
+    int info = dgetrs(CblasColMajor, B.blasTrans(), B.size(), X.cols(), B(), B.ldim(), ipiv(), Y(), Y.ldim());
 #else
-    int info = dgetrs(B.blasOrder(), CVT_TRANSPOSE(B.blasTrans()), B.size(), Y.cols(), B(), B.ldim(), ipiv(), Y(), Y.ldim());
+    int info = dgetrs(CblasColMajor, CVT_TRANSPOSE(B.blasTrans()), B.size(), X.cols(), B(), B.ldim(), ipiv(), Y(), Y.ldim());
 #endif
 
     if(info != 0)
       throw std::runtime_error("Exception in slvLUFac: dgetrs exited with info="+std::to_string(info));
 
-    return Y;
+    return Y.T();
   }
 
   Matrix<General, Ref, Ref, double> slvQR(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &X) {
@@ -300,10 +301,11 @@ namespace fmatvec {
 
     SquareMatrix<Var, double> B = A;
 
+    // the LU decomposed matrix B = A is the output of facLU which stores it in col-major order -> hence we always explicitly call dgetrs with col-major blasOrder
 #ifndef HAVE_LIBMKL_INTEL_LP64
-    int info = dgetrs(B.blasOrder(), B.blasTrans(), B.size(), 1, B(), B.ldim(), ipiv(), y(), y.size());
+    int info = dgetrs(CblasColMajor, B.blasTrans(), B.size(), 1, B(), B.ldim(), ipiv(), y(), y.size());
 #else
-    int info = dgetrs(B.blasOrder(), CVT_TRANSPOSE(B.blasTrans()), B.size(), 1, B(), B.ldim(), ipiv(), y(), y.size());
+    int info = dgetrs(CblasColMajor, CVT_TRANSPOSE(B.blasTrans()), B.size(), 1, B(), B.ldim(), ipiv(), y(), y.size());
 #endif
 
     if(info != 0)
@@ -432,7 +434,10 @@ namespace fmatvec {
 
   SquareMatrix<Var, double> facLU(const SquareMatrix<Var, double> &A, Vector<Var, int> &ipiv) {
 
-    SquareMatrix<Var, double> B = A;
+    // a SquareMatrix<Var, ...> in row-major -> check this at debug builds
+    assert(A.blasOrder() == CblasRowMajor);
+    // dgetrf can only handle col-major matrices -> store the transpose of A in B
+    SquareMatrix<Var, double> B = A.T();
 
     if (A.size() == 0)
       return B;
@@ -442,7 +447,8 @@ namespace fmatvec {
       ipiv.resize(is);
     }
 
-    int info = dgetrf(B.blasOrder(), B.rows(), B.cols(), B(), B.ldim(), ipiv());
+    // call dgetrf now explicitly with CblasColMajor since we put in the transpose of A
+    int info = dgetrf(CblasColMajor, B.rows(), B.cols(), B(), B.ldim(), ipiv());
 
     if(info != 0)
       throw std::runtime_error("Exception in facLU: dgetrf exited with info="+std::to_string(info));

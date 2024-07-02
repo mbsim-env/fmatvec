@@ -155,8 +155,8 @@ namespace fmatvec {
    *
    * This function solves systems of linear equations 
    * according to \f[\boldsymbol{A}\,\boldsymbol{X}=\boldsymbol{B} \f]. 
-   * The matrix is already decomposed by a LU decompostion.
-   * \param A A square matrix decomposed by a LU decompostion. 
+   * The matrix is already decomposed by a LU decompostion using facLU.
+   * \param A A square matrix decomposed by a LU decompostion using facLU. 
    * \param B A general matrix containing the right hand sides.
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A general matrix containig the solution.
@@ -168,8 +168,8 @@ namespace fmatvec {
    *
    * This function solves a system of linear equations 
    * according to \f[\boldsymbol{A}\,\boldsymbol{x}=\boldsymbol{b} \f]. 
-   * The matrix is already decomposed by a LU decompostion.
-   * \param A A square matrix decomposed by a LU decompostion. 
+   * The matrix is already decomposed by a LU decompostion using facLU.
+   * \param A A square matrix decomposed by a LU decompostion using facLU. 
    * \param b A vector containing the right hand side.
    * \param ipiv A vector of integers containing the pivot indices.
    * \return A vector containig the solution.
