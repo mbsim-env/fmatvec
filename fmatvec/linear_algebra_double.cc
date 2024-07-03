@@ -80,20 +80,20 @@ namespace fmatvec {
 
     assert(A.size() == X.rows());
 
-    Matrix<General, Var, Var, double> Y = X;
+    Matrix<General, Var, Var, double> Y = X.T();
 
     if (X.rows() == 0 || X.cols() == 0)
-      return Y;
+      return Y.T();
 
-    SquareMatrix<Var, double> B = A;
+    SquareMatrix<Var, double> B = A.T();
 
     auto *ipiv = new int[A.size()];
 
-    info = dgesv(B.blasOrder(), B.size(), Y.cols(), B(), B.ldim(), ipiv, Y(), Y.ldim());
+    info = dgesv(CblasColMajor, B.size(), X.cols(), B(), B.ldim(), ipiv, Y(), Y.ldim());
 
     delete[] ipiv;
 
-    return Y;
+    return Y.T();
   }
 
   Matrix<General, Ref, Ref, double> slvLUFac(const SquareMatrix<Ref, double> &A, const Matrix<General, Ref, Ref, double> &X, const Vector<Ref, int> &ipiv) {
