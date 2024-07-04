@@ -85,6 +85,9 @@ namespace fmatvec {
     if (X.rows() == 0 || X.cols() == 0)
       return Y.T();
 
+    // a SquareMatrix<Var, ...> in row-major -> check this at debug builds
+    assert(A.blasOrder() == CblasRowMajor);
+    // dgesv can only handle col-major matrices -> store the transpose of A in B
     SquareMatrix<Var, double> B = A.T();
 
     auto *ipiv = new int[A.size()];
