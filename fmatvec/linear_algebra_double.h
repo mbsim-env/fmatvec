@@ -113,7 +113,7 @@ namespace fmatvec {
    *
    * REMARK: Copied and fitted on 28.01.2013 of http://www.mymathlib.com/c_source/matrices/linearsystems/doolittle_pivot.c
    */
-  FMATVEC_EXPORT int Doolittle_LU_with_Pivoting_Solve(double *A, double B[], const int pivot[], double x[], int n);
+  FMATVEC_EXPORT int Doolittle_LU_with_Pivoting_Solve(const double *A, double B[], const int pivot[], double x[], int n);
 
   /*! \brief Systems of linear equations
    *
@@ -416,7 +416,7 @@ namespace fmatvec {
 
     info = facLU(LU(), ipiv, size);
 
-    Vector<Fixed<size>, double> x = b;
+    Vector<Fixed<size>, double> x;
     Vector<Fixed<size>, double> y = b;
 
     info = Doolittle_LU_with_Pivoting_Solve(LU(), y(), ipiv, x(), size);
@@ -424,6 +424,21 @@ namespace fmatvec {
     return x;
 
   }
+
+  template <int size>
+  SquareMatrix<Fixed<size>, double> facLU(const SquareMatrix<Fixed<size>, double> &A, Vector<Fixed<size>, int> &ipiv) {
+    SquareMatrix<Fixed<size>, double> LU = A;
+    facLU(LU(), ipiv(), size);
+    return LU;
+  }
+
+  template <int size>
+  Vector<Fixed<size>, double> slvLUFac(const SquareMatrix<Fixed<size>, double> &ALU, const Vector<Fixed<size>, double> &b, const Vector<Fixed<size>, int> &ipiv, int &info) {
+    Vector<Fixed<size>, double> x;
+    Vector<Fixed<size>, double> y = b;
+    info = Doolittle_LU_with_Pivoting_Solve(ALU(), y(), ipiv(), x(), size);
+    return x;
+  };
 
 }
 

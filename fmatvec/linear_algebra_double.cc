@@ -165,9 +165,9 @@ namespace fmatvec {
     return Y;
   }
 
-  int Doolittle_LU_with_Pivoting_Solve(double *A, double B[], const int pivot[], double x[], int n) {
+  int Doolittle_LU_with_Pivoting_Solve(const double *A, double B[], const int pivot[], double x[], int n) {
     int i, k;
-    double *p_k;
+    const double *p_k;
     double dum;
 
     //         Solve the linear equation Lx = B for x, where L is a lower
