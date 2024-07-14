@@ -438,7 +438,7 @@ namespace fmatvec {
     Vector<Fixed<size>, double> y = b;
     info = Doolittle_LU_with_Pivoting_Solve(ALU(), y(), ipiv(), x(), size);
     return x;
-  };
+  }
 
 }
 
