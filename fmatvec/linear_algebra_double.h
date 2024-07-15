@@ -215,11 +215,22 @@ namespace fmatvec {
    * This function solves a system of linear equations 
    * according to \f[\boldsymbol{A}\,\boldsymbol{x}=\boldsymbol{b} \f]
    * by a QR decompostion.
-   * \param A A symmetric matrix. 
+   * \param A A square matrix. 
    * \param b A vector containing the right hand side.
    * \return A vector containig the solution.
    * */
   FMATVEC_EXPORT Vector<Ref, double> slvQR(const SquareMatrix<Ref, double> &A, const Vector<Ref, double> &x);
+
+  /*! \brief System of overdetermined or underdetermined linear equations
+   *
+   * This function solves the least squares problem of a overdetermined system and solves the minimum norm problem of a underdetermined system.
+   * by a QR or LQ decompostion.
+   * slvQRLQ is faster than slvLS but cannot handle rank deficient matrices A (A must have full rank).
+   * \param A A general matrix which must have full rank. 
+   * \param b A vector containing the right hand side.
+   * \return A vector containig the solution.
+   * */
+  FMATVEC_EXPORT Vector<Ref, double> slvQRLQ(const Matrix<General, Ref, Ref, double> &A, const Vector<Ref, double> &x);
 
   /*! \brief Inverse
    *
@@ -438,6 +449,21 @@ namespace fmatvec {
     Vector<Fixed<size>, double> y = b;
     info = Doolittle_LU_with_Pivoting_Solve(ALU(), y(), ipiv(), x(), size);
     return x;
+  }
+
+  template <int size, int nrrhs>
+  Matrix<General, Fixed<size>, Fixed<nrrhs>, double> slvLUFac(const SquareMatrix<Fixed<size>, double> &ALU, const Matrix<General, Fixed<size>, Fixed<nrrhs>, double> &B, const Vector<Fixed<size>, int> &ipiv, int &info) {
+    Matrix<General, Fixed<size>, Fixed<nrrhs>, double> X;
+    Vector<Fixed<size>, double> x;
+    info = 0;
+    for(int c=0; c<nrrhs; c++) {
+      Vector<Fixed<size>, double> y = B.col(c);
+      int localInfo = Doolittle_LU_with_Pivoting_Solve(ALU(), y(), ipiv(), x(), size);
+      if(localInfo!=0)
+        info = localInfo;
+      X.set(c, x);
+    }
+    return X;
   }
 
 }

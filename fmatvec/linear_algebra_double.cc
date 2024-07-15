@@ -20,6 +20,7 @@
  */
 
 #include "config.h"
+#include "fmatvec/fmatvec.h"
 #include "linear_algebra.h"
 #include "linear_algebra_double.h"
 #include "wrapper.h"
@@ -334,6 +335,28 @@ namespace fmatvec {
       throw std::runtime_error("Exception in slvQR: dgels exited with info="+std::to_string(info));
 
     return y;
+  }
+
+  Vector<Ref, double> slvQRLQ(const Matrix<General, Ref, Ref, double> &A, const Vector<Ref, double> &b) {
+
+    assert(A.rows() == b.size());
+
+    Vector<Ref, double> bmax { std::max(A.rows(), A.cols()) };
+    bmax.set(RangeV(0,b.size()-1), b);
+
+    if (b.size() == 0)
+      return Vector<Ref, double>{ A.cols() };
+
+    Matrix<General, Ref, Ref, double> Acopy = A;
+
+    int info = dgels(Acopy.blasTrans(), Acopy.rows(), Acopy.cols(), bmax.cols(), Acopy(), Acopy.ldim(), bmax(), bmax.size());
+
+    if(info != 0)
+      throw std::runtime_error("Exception in slvQR: dgels exited with info="+std::to_string(info));
+
+    Vector<Ref, double> x{ A.cols() };
+    x.set(RangeV(0,x.size()-1), bmax);
+    return x;
   }
 
   SquareMatrix<Ref, double> inv(const SquareMatrix<Ref, double> &A) {
