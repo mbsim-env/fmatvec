@@ -352,10 +352,9 @@ namespace fmatvec {
     int info = dgels(Acopy.blasTrans(), Acopy.rows(), Acopy.cols(), bmax.cols(), Acopy(), Acopy.ldim(), bmax(), bmax.size());
 
     if(info != 0)
-      throw std::runtime_error("Exception in slvQR: dgels exited with info="+std::to_string(info));
+      throw std::runtime_error("Exception in slvQRLQ: dgels exited with info="+std::to_string(info));
 
-    Vector<Ref, double> x{ A.cols() };
-    x.set(RangeV(0,x.size()-1), bmax);
+    auto x = bmax(RangeV(0,A.cols()-1));
     return x;
   }
 
