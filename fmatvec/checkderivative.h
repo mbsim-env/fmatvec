@@ -36,7 +36,10 @@ namespace fmatvec {
 
     if(disturbed) { // this is a distributed call (for the key in "ele") ..
       // ... save the distributed value (in "ele" map)
-      disturbedValue = value;
+      if constexpr (std::is_same_v<Value, double>)
+        disturbedValue = value;
+      else
+        disturbedValue <<= value;
     }
     else if(distributedCount == 0) { // this is a normal call (not distributed) ...
       std::array<Value, 2> disturbedValueRightLeft;
@@ -68,7 +71,10 @@ namespace fmatvec {
       std::array<double, 2> dist;
       std::array<Value, 2> finiteDiffRightLeft;
       for(int i=0; i<2; ++i) {
-        finiteDiffRightLeft[i] = (i==0?1.0:-1.0) * (disturbedValueRightLeft[i] - value)/delta;
+        if constexpr (std::is_same_v<Value, double>)
+          finiteDiffRightLeft[i] = (i==0?1.0:-1.0) * (disturbedValueRightLeft[i] - value)/delta;
+        else
+          finiteDiffRightLeft[i] <<= (i==0?1.0:-1.0) * (disturbedValueRightLeft[i] - value)/delta;
 
         if constexpr (std::is_same_v<Value, double>)
           dist[i] = std::abs(finiteDiffRightLeft[i] - anaDiff);
