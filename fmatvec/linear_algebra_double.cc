@@ -358,6 +358,27 @@ namespace fmatvec {
     return x;
   }
 
+  Matrix<General, Ref, Ref, double> slvQRLQ(const Matrix<General, Ref, Ref, double> &A, const Matrix<General, Ref, Ref, double> &B) {
+
+    assert(A.rows() == B.rows());
+
+    Matrix<General, Ref, Ref, double> Bmax { std::max(A.rows(), A.cols()), B.cols() };
+    Bmax.set(RangeV(0,B.rows()-1), RangeV(0,B.cols()-1), B);
+
+    if (B.rows() == 0)
+      return Matrix<General, Ref, Ref, double>{ A.cols(), B.cols() };
+
+    Matrix<General, Ref, Ref, double> Acopy = A;
+
+    int info = dgels(Acopy.blasTrans(), Acopy.rows(), Acopy.cols(), Bmax.cols(), Acopy(), Acopy.ldim(), Bmax(), Bmax.ldim());
+
+    if(info != 0)
+      throw std::runtime_error("Exception in slvQRLQ: dgels exited with info="+std::to_string(info));
+
+    auto X = Bmax(RangeV(0,A.cols()-1),RangeV(0,B.cols()-1));
+    return X;
+  }
+
   SquareMatrix<Ref, double> inv(const SquareMatrix<Ref, double> &A) {
 
     SquareMatrix<Ref, double> B = A;

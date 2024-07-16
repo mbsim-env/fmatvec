@@ -230,7 +230,18 @@ namespace fmatvec {
    * \param b A vector containing the right hand side.
    * \return A vector containig the solution.
    * */
-  FMATVEC_EXPORT Vector<Ref, double> slvQRLQ(const Matrix<General, Ref, Ref, double> &A, const Vector<Ref, double> &x);
+  FMATVEC_EXPORT Vector<Ref, double> slvQRLQ(const Matrix<General, Ref, Ref, double> &A, const Vector<Ref, double> &b);
+
+  /*! \brief System of overdetermined or underdetermined linear equations
+   *
+   * This function solves the least squares problem of a overdetermined system and solves the minimum norm problem of a underdetermined system.
+   * by a QR or LQ decompostion.
+   * slvQRLQ is faster than slvLS but cannot handle rank deficient matrices A (A must have full rank).
+   * \param A A general matrix which must have full rank. 
+   * \param B A matrix containing the B.cols() number of right hand sides.
+   * \return A matrix containig the solutions.
+   * */
+  FMATVEC_EXPORT Matrix<General, Ref, Ref, double> slvQRLQ(const Matrix<General, Ref, Ref, double> &A, const Matrix<General, Ref, Ref, double> &B);
 
   /*! \brief Inverse
    *
