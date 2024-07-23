@@ -477,6 +477,21 @@ namespace fmatvec {
     return X;
   }
 
+  template <int size>
+  Matrix<General, Fixed<size>, Var, double> slvLUFac(const SquareMatrix<Fixed<size>, double> &ALU, const Matrix<General, Fixed<size>, Var, double> &B, const Vector<Fixed<size>, int> &ipiv, int &info) {
+    Matrix<General, Fixed<size>, Var, double> X(size,B.cols());
+    Vector<Fixed<size>, double> x;
+    info = 0;
+    for(int c=0; c<B.cols(); c++) {
+      Vector<Fixed<size>, double> y = B.col(c);
+      int localInfo = Doolittle_LU_with_Pivoting_Solve(ALU(), y(), ipiv(), x(), size);
+      if(localInfo!=0)
+        info = localInfo;
+      X.set(c, x);
+    }
+    return X;
+  }
+
 }
 
 #endif
