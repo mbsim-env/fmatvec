@@ -16,6 +16,46 @@ def symbol(name, rows=None, cols=None):
     m.append(list(map(lambda c: sympy.Symbol(name+"("+str(r)+","+str(c)+")", real=True), range(0,cols))))
   return numpy.array(m)
 
+# helper function to apply func to each element of a numpy scalar/vector/matrix
+def _perElement(x, func):
+  if not hasattr(x, "shape"):
+    # scalar
+    return func(x)
+  elif len(x.shape)==1:
+    # vector
+    vec=[]
+    for r in range(0, x.shape[0]):
+      vec.append(func(x[r]))
+    return numpy.array(vec)
+  elif len(x.shape)==2:
+    # matrix
+    mat=[]
+    for r in range(0, x.shape[0]):
+      row=[]
+      for c in range(0, x.shape[1]):
+        row.append(func(x[r,c]))
+      mat.append(row)
+    return numpy.array(mat)
+  else:
+    raise RuntimeError("Unknonwn type: "+str(type(x)))
+
+# calculate the derivative of each element in d with respect to the scalar i
+def diff(d, i):
+  return _perElement(d, lambda e: sympy.diff(e, i))
+
+# substutude s with v in each element in x
+def subs(x, s, v):
+  def _subs(e, s, v):
+    if hasattr(e, "subs"):
+      return e.subs(s, v)
+    else:
+      return e
+  return _perElement(x, lambda e: _subs(e,s,v))
+
+# evaluate each element to float
+def float_(x):
+  return _perElement(x, lambda e: float(e))
+
 # Generate c-code for all expressions *xx.
 # If only one expression is provided use retName as output variable name.
 # If more then one expression is provided and retName is a string use "{retName}[{idx}]" as output variable name.
