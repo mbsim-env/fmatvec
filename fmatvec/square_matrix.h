@@ -215,7 +215,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline SquareMatrix<Ref,AT>::SquareMatrix(const std::vector<std::vector<AT>> &m) : Matrix<General,Ref,Ref,AT>(static_cast<int>(m.size()),static_cast<int>(m[0].size()),NONINIT) {
+    inline SquareMatrix<Ref,AT>::SquareMatrix(const std::vector<std::vector<AT>> &m) : Matrix<General,Ref,Ref,AT>(static_cast<int>(m.size()),static_cast<int>(m.empty()?0:m[0].size()),NONINIT) {
       for(int r=0; r<rows(); r++) {
         if(static_cast<int>(m[r].size())!=cols())
           throw std::runtime_error("The rows of the input have different length.");

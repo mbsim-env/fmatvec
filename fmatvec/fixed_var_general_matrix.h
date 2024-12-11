@@ -639,7 +639,7 @@ namespace fmatvec {
     }
 
   template <int M, class AT>
-    inline Matrix<General,Fixed<M>,Var,AT>::Matrix(const std::vector<std::vector<AT>> &m) : N(!m.empty()? static_cast<int>(m[0].size()):0), ele(new AT[M*N]) {
+    inline Matrix<General,Fixed<M>,Var,AT>::Matrix(const std::vector<std::vector<AT>> &m) : N(!m.empty()? static_cast<int>(m.empty()?0:m[0].size()):0), ele(new AT[M*N]) {
       if(m.size() != M)
         throw std::runtime_error("The input has "+std::to_string(m.size())+" rows but "+std::to_string(M)+" rows are required.");
       for(int r=0; r<rows(); r++) {

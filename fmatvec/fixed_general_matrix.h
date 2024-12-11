@@ -555,8 +555,8 @@ namespace fmatvec {
     inline Matrix<General,Fixed<M>,Fixed<N>,AT>::Matrix(const std::vector<std::vector<AT>> &m) {
       if(m.size() != M)
         throw std::runtime_error("The input has "+std::to_string(m.size())+" rows but "+std::to_string(M)+" rows are required.");
-      if(m[0].size() != N)
-        throw std::runtime_error("The input has "+std::to_string(m[0].size())+" columne but "+std::to_string(N)+" columns are required.");
+      if((m.empty()?0:m[0].size()) != N)
+        throw std::runtime_error("The input has "+std::to_string((m.empty()?0:m[0].size()))+" columne but "+std::to_string(N)+" columns are required.");
       for(int r=0; r<rows(); r++) {
         if(static_cast<int>(m[r].size())!=cols())
           throw std::runtime_error("The rows of the input have different length.");

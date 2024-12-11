@@ -431,8 +431,17 @@ namespace fmatvec {
 
   template <class AT>
     inline Matrix<General,Var,Var,AT>&  Matrix<General,Var,Var,AT>::init(const AT &val) {
+      #if __GNUC__ >= 10
+        // gcc >= 11 triggers a false positive on this code due to init(val) calls from ctor setting M=0
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Warray-bounds"
+        #pragma GCC diagnostic ignored "-Wstringop-overflow"
+      #endif
       for(int i=0; i<M*N; i++) 
         e(i) = val;
+      #if __GNUC__ >= 10
+        #pragma GCC diagnostic pop
+      #endif
       return *this;
     }
 
@@ -686,7 +695,7 @@ namespace fmatvec {
     }
 
   template <class AT>
-    inline Matrix<General,Var,Var,AT>::Matrix(const std::vector<std::vector<AT>> &m) : M(static_cast<int>(m.size())), N(static_cast<int>(m[0].size())), ele(new AT[M*N]) {
+    inline Matrix<General,Var,Var,AT>::Matrix(const std::vector<std::vector<AT>> &m) : M(static_cast<int>(m.size())), N(static_cast<int>(m.empty()?0:m[0].size())), ele(new AT[M*N]) {
       for(int r=0; r<rows(); r++) {
         if(static_cast<int>(m[r].size())!=cols())
           throw std::runtime_error("The rows of the input have different length.");
