@@ -795,20 +795,20 @@ int main() {
         double operator()(const VecV &arg1, const double &arg2) override {
           return arg2*arg2+arg1(0)*arg1(1)*arg1(2)+arg2*arg2*arg1(0)*arg1(1)*arg1(2);
         }
-        double dirDer1(const VecV &arg1Dir, const VecV &arg1, const double &arg2) {
+        double dirDer1(const VecV &arg1Dir, const VecV &arg1, const double &arg2) override {
           return (arg1(1)*arg1(2)+arg2*arg2*arg1(1)*arg1(2))*arg1Dir(0) +
                  (arg1(0)*arg1(2)+arg2*arg2*arg1(0)*arg1(2))*arg1Dir(1) +
                  (arg1(0)*arg1(1)+arg2*arg2*arg1(0)*arg1(1))*arg1Dir(2);
         }
-        double dirDer2(const double &arg2Dir, const VecV &arg1, const double &arg2) {
+        double dirDer2(const double &arg2Dir, const VecV &arg1, const double &arg2) override {
           return (2*arg2+2*arg2*arg1(0)*arg1(1)*arg1(2))*arg2Dir;
         }
-        double dirDer2DirDer1(const double &arg2Dir, const VecV &arg1Dir, const VecV &arg1, const double &arg2) {
+        double dirDer2DirDer1(const double &arg2Dir, const VecV &arg1Dir, const VecV &arg1, const double &arg2) override {
           return (2*arg2*arg1(1)*arg1(2))*arg1Dir(0)*arg2Dir +
                  (2*arg2*arg1(0)*arg1(2))*arg1Dir(1)*arg2Dir +
                  (2*arg2*arg1(0)*arg1(1))*arg1Dir(2)*arg2Dir;
         }
-        double dirDer1DirDer1(const VecV &arg1Dir_1, const VecV &arg1Dir_2, const VecV &arg1, const double &arg2) {
+        double dirDer1DirDer1(const VecV &arg1Dir_1, const VecV &arg1Dir_2, const VecV &arg1, const double &arg2) override {
           return (arg1(2)+arg2*arg2*arg1(2))*arg1Dir_1(1)*arg1Dir_2(0) +
                  (arg1(1)+arg2*arg2*arg1(1))*arg1Dir_1(2)*arg1Dir_2(0) +
                  (arg1(2)+arg2*arg2*arg1(2))*arg1Dir_1(0)*arg1Dir_2(1) +
@@ -816,7 +816,7 @@ int main() {
                  (arg1(1)+arg2*arg2*arg1(1))*arg1Dir_1(0)*arg1Dir_2(2) +
                  (arg1(0)+arg2*arg2*arg1(0))*arg1Dir_1(1)*arg1Dir_2(2);
         }
-        double dirDer2DirDer2(const double &arg2Dir_1, const double &arg2Dir_2, const VecV &arg1, const double &arg2) {
+        double dirDer2DirDer2(const double &arg2Dir_1, const double &arg2Dir_2, const VecV &arg1, const double &arg2) override {
           return (2+2*arg1(0)*arg1(1)*arg1(2))*arg2Dir_1*arg2Dir_2;
         }
     };
@@ -845,16 +845,16 @@ int main() {
         double operator()(const VecV &arg1, const VecV &arg2) override {
           return arg1(0)*arg1(1)+arg2(0)*arg2(1)*arg2(2)+arg1(0)*arg1(1)*arg2(0)*arg2(1)*arg2(2);
         }
-        double dirDer1(const VecV &arg1Dir, const VecV &arg1, const VecV &arg2) {
+        double dirDer1(const VecV &arg1Dir, const VecV &arg1, const VecV &arg2) override {
           return (arg1(1)+arg1(1)*arg2(0)*arg2(1)*arg2(2))*arg1Dir(0) +
                  (arg1(0)+arg1(0)*arg2(0)*arg2(1)*arg2(2))*arg1Dir(1);
         }
-        double dirDer2(const VecV &arg2Dir, const VecV &arg1, const VecV &arg2) {
+        double dirDer2(const VecV &arg2Dir, const VecV &arg1, const VecV &arg2) override {
           return (arg2(1)*arg2(2)+arg1(0)*arg1(1)*arg2(1)*arg2(2))*arg2Dir(0) +
                  (arg2(0)*arg2(2)+arg1(0)*arg1(1)*arg2(0)*arg2(2))*arg2Dir(1) +
                  (arg2(0)*arg2(1)+arg1(0)*arg1(1)*arg2(0)*arg2(1))*arg2Dir(2);
         }
-        double dirDer2DirDer1(const VecV &arg2Dir, const VecV &arg1Dir, const VecV &arg1, const VecV &arg2) {
+        double dirDer2DirDer1(const VecV &arg2Dir, const VecV &arg1Dir, const VecV &arg1, const VecV &arg2) override {
           return (arg1(1)*arg2(1)*arg2(2))*arg2Dir(0)*arg1Dir(0) +
                  (arg1(1)*arg2(0)*arg2(2))*arg2Dir(1)*arg1Dir(0) +
                  (arg1(1)*arg2(0)*arg2(1))*arg2Dir(2)*arg1Dir(0) +
@@ -862,11 +862,11 @@ int main() {
                  (arg1(0)*arg2(0)*arg2(2))*arg2Dir(1)*arg1Dir(1) +
                  (arg1(0)*arg2(0)*arg2(1))*arg2Dir(2)*arg1Dir(1);
         }
-        double dirDer1DirDer1(const VecV &arg1Dir_1, const VecV &arg1Dir_2, const VecV &arg1, const VecV &arg2) {
+        double dirDer1DirDer1(const VecV &arg1Dir_1, const VecV &arg1Dir_2, const VecV &arg1, const VecV &arg2) override {
           return (1+arg2(0)*arg2(1)*arg2(2))*arg1Dir_1(1)*arg1Dir_2(0) +
                  (1+arg2(0)*arg2(1)*arg2(2))*arg1Dir_1(0)*arg1Dir_2(1);
         }
-        double dirDer2DirDer2(const VecV &arg2Dir_1, const VecV &arg2Dir_2, const VecV &arg1, const VecV &arg2) {
+        double dirDer2DirDer2(const VecV &arg2Dir_1, const VecV &arg2Dir_2, const VecV &arg1, const VecV &arg2) override {
           return (arg2(2)+arg1(0)*arg1(1)*arg2(2))*arg2Dir_1(1)*arg2Dir_2(0) +
                  (arg2(1)+arg1(0)*arg1(1)*arg2(1))*arg2Dir_1(2)*arg2Dir_2(0) +
                  (arg2(2)+arg1(0)*arg1(1)*arg2(2))*arg2Dir_1(0)*arg2Dir_2(1) +
