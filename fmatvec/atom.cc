@@ -86,21 +86,37 @@ void Atom::adoptMessageStreams(const Atom *src) {
   }
 }
 
-PrePostfixedStream::PrePostfixedStream(const string &prefix, const string &postfix, const function<void(const string&)> &f) :
-  ostream(nullptr), buffer(prefix, postfix, f) {
+PrePostfixedStream::PrePostfixedStream(const string &prefix, const string &postfix,
+                                       const function<void(const string&)> &outputFunc,
+                                       const function<void(string&)> &escapingFunc) :
+  ostream(nullptr), buffer(*this, prefix, postfix, outputFunc, escapingFunc) {
+  unsetf(skipws);
   rdbuf(&buffer);
 }
 
-PrePostfixedStream::PrePostfixedStream(const string &prefix, const string &postfix, ostream &outstr) :
-  ostream(nullptr), buffer(prefix, postfix, [&outstr](const string &s){ outstr<<s<<std::flush; }) {
+PrePostfixedStream::PrePostfixedStream(const string &prefix, const string &postfix, ostream &outstr,
+                                       const function<void(string&)> &escapingFunc) :
+  ostream(nullptr), buffer(*this, prefix, postfix, [&outstr](const string &s){
+    outstr<<s<<std::flush;
+  }, escapingFunc) {
+  unsetf(skipws);
   rdbuf(&buffer);
 }
 
-PrePostfixedStream::StringBuf::StringBuf(string prefix_, string postfix_, const function<void(const string&)> &f_) :
-  stringbuf(ios_base::out), prefix(std::move(prefix_)), postfix(std::move(postfix_)), f(f_) {}
+PrePostfixedStream::StringBuf::StringBuf(const PrePostfixedStream &stream_, const string prefix_, string postfix_,
+                                         const function<void(const string&)> &outputFunc_,
+                                         const function<void(string&)> &escapingFunc_) :
+  stream(stream_), stringbuf(ios_base::out), prefix(std::move(prefix_)), postfix(std::move(postfix_)),
+  outputFunc(outputFunc_), escapingFunc(escapingFunc_) {}
 
 int PrePostfixedStream::StringBuf::sync() {
-  f(prefix+str()+postfix);
+  if(!escapingFunc || (stream.flags() & skipws))
+    outputFunc(prefix+str()+postfix);
+  else {
+    string msg(str());
+    escapingFunc(msg);
+    outputFunc(prefix+msg+postfix);
+  }
   str("");
   return 0;
 }

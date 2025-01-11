@@ -118,22 +118,34 @@ class FMATVEC_EXPORT Atom {
 };
 
 #ifndef SWIG
-//! A ostream object which prefix/postfix every meassage and calls the given function.
+//! A ostream object which prefix/postfix every messasge.
+//! Before the output happens the message is converted using escapingFunc, if given.
+//! Then result is then passed to outputFunc of printed to outstr_ (dependent on the used ctor).
+//! The conversion using escapingFunc is skipped if the stream has set the skipws formatting flag, which is not set at the beginning.
+//! However, you have ALWAYS to call flush before changing the skipws flag!!!
+//! (this flag is used since it is not relevant for a ostream and can hence be "misused" here).
 class FMATVEC_EXPORT PrePostfixedStream : public std::ostream {
   public:
     //! Call f with every message of the stream, prefixed/postfixed.
-    PrePostfixedStream(const std::string &prefix_, const std::string &postfix_, const std::function<void(const std::string &)> &f);
+    PrePostfixedStream(const std::string &prefix_, const std::string &postfix_,
+                       const std::function<void(const std::string &)> &outputFunc,
+                       const std::function<void(std::string&)> &escapingFunc=nullptr);
     //! Convinence function to print to outstr_.
-    PrePostfixedStream(const std::string &prefix_, const std::string &postfix_, std::ostream &outstr_);
+    PrePostfixedStream(const std::string &prefix_, const std::string &postfix_, std::ostream &outstr_,
+                       const std::function<void(std::string&)> &escapingFunc=nullptr);
   private:
     class StringBuf : public std::stringbuf {
       public:
-        StringBuf(std::string prefix_, std::string postfix_, const std::function<void(const std::string &)> &f_);
+        StringBuf(const PrePostfixedStream &stream_, std::string prefix_, std::string postfix_,
+                  const std::function<void(const std::string &)> &outputFunc_,
+                  const std::function<void(std::string&)> &escapingFunc_);
       protected:
         int sync() override;
+        const PrePostfixedStream &stream;
         std::string prefix;
         std::string postfix;
-        const std::function<void(const std::string &)> f;
+        const std::function<void(const std::string &)> outputFunc;
+        const std::function<void(std::string&)> escapingFunc;
     };
     StringBuf buffer;
 };
