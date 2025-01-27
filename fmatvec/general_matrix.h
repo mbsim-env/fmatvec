@@ -324,7 +324,7 @@ namespace fmatvec {
        * \return CblasTrans if the matrix is in transposed form, CblasNoTrans
        * otherwise. 
        * */
-      const CBLAS_TRANSPOSE blasTrans() const {
+      CBLAS_TRANSPOSE blasTrans() const {
         return CblasNoTrans;
       }
 
@@ -335,8 +335,8 @@ namespace fmatvec {
        * i.e. the elements are stored columnwise. 
        * \return CblasColMajor.
        * */
-      const CBLAS_ORDER blasOrder() const {
-	return CblasColMajor;
+      CBLAS_ORDER blasOrder() const {
+        return CblasColMajor;
       }
 
       /*! \brief Submatrix operator.

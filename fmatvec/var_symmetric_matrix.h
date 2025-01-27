@@ -287,8 +287,8 @@ namespace fmatvec {
        * i.e. the elements are stored columnwise. 
        * \return CblasRowMajor.
        * */
-      const CBLAS_ORDER blasOrder() const {
-	return CblasRowMajor;
+      CBLAS_ORDER blasOrder() const {
+        return CblasRowMajor;
       }
 
       /*! \brief Symmetry convention.
@@ -298,8 +298,8 @@ namespace fmatvec {
        * part of the array,
        * \return CblasLower.
        * */
-      const CBLAS_UPLO blasUplo() const {
-	return  CblasLower;
+      CBLAS_UPLO blasUplo() const {
+        return CblasLower;
       }
 
       /*! \brief Initialization.

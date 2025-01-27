@@ -277,7 +277,7 @@ namespace fmatvec {
 
         /*! \brief Storage convention.
          * */
-        const CBLAS_ORDER blasOrder() const {
+        CBLAS_ORDER blasOrder() const {
           throw std::runtime_error("Matrix<SymmetricSparse, Ref, Ref, AT>::blasOrder() cannot be called.");
         }
 

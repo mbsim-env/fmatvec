@@ -237,7 +237,7 @@ namespace fmatvec {
        * i.e. the elements are stored columnwise. 
        * \return CblasColMajor.
        * */
-      const CBLAS_ORDER blasOrder() const {
+      CBLAS_ORDER blasOrder() const {
         return CblasColMajor;
       }
 
