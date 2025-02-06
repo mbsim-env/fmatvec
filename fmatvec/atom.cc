@@ -110,14 +110,20 @@ PrePostfixedStream::StringBuf::StringBuf(const PrePostfixedStream &stream_, cons
   outputFunc(outputFunc_), escapingFunc(escapingFunc_) {}
 
 int PrePostfixedStream::StringBuf::sync() {
+  auto msg=str();
+  str("");
+  if(msg.empty())
+    return 0;
+  if(msg=="\n") {
+    outputFunc("\n");
+    return 0;
+  }
   if(!escapingFunc || (stream.flags() & skipws))
-    outputFunc(prefix+str()+postfix);
+    outputFunc(prefix+msg+postfix);
   else {
-    string msg(str());
     escapingFunc(msg);
     outputFunc(prefix+msg+postfix);
   }
-  str("");
   return 0;
 }
 
