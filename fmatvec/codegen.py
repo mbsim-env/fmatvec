@@ -1,12 +1,12 @@
-# This is a python helper module for mathematic code generation.
-# Its mainly useful during C++ development.
+"""This is a python helper module for mathematic code generation.
+Its mainly useful during C++ development."""
 
 import sympy
 import numpy
 
-# Create a scalar (rows=None, cols=None), vector (cols=None) or matrix symbolic variable with basename name.
-# For vector/matrix the element access in in fmatvec notation.
 def symbol(name, rows=None, cols=None):
+  """Create a scalar (rows=None, cols=None), vector (cols=None) or matrix symbolic variable with basename name.
+  For vector/matrix the element access in in fmatvec notation."""
   if rows is None and cols is None:
     return sympy.Symbol(name, real=True)
   if cols is None:
@@ -39,12 +39,12 @@ def _perElement(x, func):
   else:
     raise RuntimeError("Unknonwn type: "+str(type(x)))
 
-# calculate the derivative of each element in d with respect to the scalar i
 def diff(d, i):
+  """calculate the derivative of each element in d with respect to the scalar i"""
   return _perElement(d, lambda e: sympy.diff(e, i))
 
-# substutude s with v in each element in x
 def subs(x, s, v):
+  """substutude s with v in each element in x"""
   def _subs(e, s, v):
     if hasattr(e, "subs"):
       return e.subs(s, v)
@@ -52,17 +52,17 @@ def subs(x, s, v):
       return e
   return _perElement(x, lambda e: _subs(e,s,v))
 
-# evaluate each element to float
 def float_(x):
+  """evaluate each element to float"""
   return _perElement(x, lambda e: float(e))
 
-# Generate c-code for all expressions *xx.
-# If only one expression is provided use retName as output variable name.
-# If more then one expression is provided and retName is a string use "{retName}[{idx}]" as output variable name.
-# If more then one expression is provided and retName is a list of string use "{retName[idx]] as output variable name.
-# If common subexpressions are extracted (cse=True) then subsName is used as prefix for cse variables.
-# If oneOutputPerLine=True matrix expressions a printed one line per element, else matrices are printed as a matrix.
 def ccode(*xx, retName="ret", subsName="x", oneOutputPerLine=False, cse=True):
+  """Generate c-code for all expressions *xx.
+  If only one expression is provided use retName as output variable name.
+  If more then one expression is provided and retName is a string use "{retName}[{idx}]" as output variable name.
+  If more then one expression is provided and retName is a list of string use "{retName[idx]] as output variable name.
+  If common subexpressions are extracted (cse=True) then subsName is used as prefix for cse variables.
+  If oneOutputPerLine=True matrix expressions a printed one line per element, else matrices are printed as a matrix."""
   if cse:
     # convert matrix/vector to sympy
     sympy_xx = []
@@ -145,10 +145,10 @@ def ccode(*xx, retName="ret", subsName="x", oneOutputPerLine=False, cse=True):
       fullRet += ret
   return fullRet
 
-# Convert from numpy to sympy scalar/vector/matrix.
-# Note that a sympy matrix of size Nx1 is converted to a numpy vector of shape (N,) if asVectorIfPossible=True
-# (there is no sympy vector)
 def C(x, asVectorIfPossible=True):
+  """Convert from numpy to sympy scalar/vector/matrix.
+  Note that a sympy matrix of size Nx1 is converted to a numpy vector of shape (N,) if asVectorIfPossible=True
+  (there is no sympy vector)"""
   if type(x)==numpy.ndarray:
     # convert numpy array to sympy matrix
     return sympy.Matrix(x)
