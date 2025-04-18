@@ -692,7 +692,7 @@ const std::map<Operation::Operator, Operation::OpMap> Operation::opMap {
   { Abs,       { "abs"       , FUNC( std::abs(_a)                      ) }},
   { Min,       { "min"       , FUNC( std::min(_a, _b)                  ) }}, 
   { Max,       { "max"       , FUNC( std::max(_a, _b)                  ) }},
-  { Condition, { "condition" , FUNC( _a > 0 ? _b : _c                  ) }}, 
+  { Condition, { "condition" , FUNC( _a >= 0 ? _b : _c                 ) }}, 
 };                                                         
 #undef FUNC
 #undef _a
