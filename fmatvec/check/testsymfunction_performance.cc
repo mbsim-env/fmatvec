@@ -10,6 +10,7 @@
 #include <cfenv>
 #include <cassert>
 #include "fmatvec/symbolic.h"
+#include "fmatvec/lrucache.h"
 #include <fmatvec/symbolic_function.h>
 #include <boost/lexical_cast.hpp>
 #include <chrono>
