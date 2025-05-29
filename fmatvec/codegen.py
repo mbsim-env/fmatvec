@@ -39,9 +39,35 @@ def _perElement(x, func):
   else:
     raise RuntimeError("Unknonwn type: "+str(type(x)))
 
-def diff(d, i):
-  """calculate the derivative of each element in d with respect to the scalar i"""
-  return _perElement(d, lambda e: sympy.diff(e, i))
+def diff(d, i, rotMat=False):
+  """calculate the derivative of each element in d with respect to the scalar i or vector i"""
+  if not hasattr(i, "shape"):
+    # i is scalar
+    der=_perElement(d, lambda e: sympy.diff(e, i))
+    if not rotMat:
+      return der
+    else:
+      import mbxmlutils
+      if d.shape!=(3,3):
+        raise RuntimeError("diff with rotMat=True can only be called with a 3x3 matrix")
+      return mbxmlutils.tilde(der @ d.T)
+  elif len(i.shape)==1:
+    if len(d.shape)==2 and not rotMat:
+      raise RuntimeError("diff with with a vector i can only be called with a scalar or vector for d")
+    # i is vector
+    der=[]
+    for ii in i:
+      der.append(diff(d, ii))
+    if not rotMat:
+      return numpy.stack(der, axis=1)
+    else:
+      import mbxmlutils
+      ret=[]
+      for x in der:
+        ret.append(mbxmlutils.tilde(x @ d.T))
+      return numpy.stack(ret, axis=1)
+  else:
+    raise RuntimeError("Unknonwn type: "+str(type(i)))
 
 def subs(x, s, v):
   """substutude s with v in each element in x"""
