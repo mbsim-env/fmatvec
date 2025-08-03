@@ -89,42 +89,73 @@ void Atom::adoptMessageStreams(const Atom *src) {
 PrePostfixedStream::PrePostfixedStream(const string &prefix, const string &postfix,
                                        const function<void(const string&)> &outputFunc,
                                        const function<void(string&)> &escapingFunc) :
-  ostream(nullptr), buffer(*this, prefix, postfix, outputFunc, escapingFunc) {
+  ostream(&buffer), buffer(*this, prefix, postfix, outputFunc, escapingFunc) {
   unsetf(skipws);
-  rdbuf(&buffer);
 }
 
 PrePostfixedStream::PrePostfixedStream(const string &prefix, const string &postfix, ostream &outstr,
                                        const function<void(string&)> &escapingFunc) :
-  ostream(nullptr), buffer(*this, prefix, postfix, [&outstr](const string &s){
+  ostream(&buffer), buffer(*this, prefix, postfix, [&outstr](const string &s){
     outstr<<s<<std::flush;
   }, escapingFunc) {
   unsetf(skipws);
-  rdbuf(&buffer);
 }
 
-PrePostfixedStream::StringBuf::StringBuf(const PrePostfixedStream &stream_, const string prefix_, string postfix_,
+PrePostfixedStream::StringBuf::StringBuf(const PrePostfixedStream &stream_, string prefix_, string postfix_,
                                          const function<void(const string&)> &outputFunc_,
                                          const function<void(string&)> &escapingFunc_) :
-  stream(stream_), stringbuf(ios_base::out), prefix(std::move(prefix_)), postfix(std::move(postfix_)),
+  stream(stream_), prefix(std::move(prefix_)), postfix(std::move(postfix_)),
   outputFunc(outputFunc_), escapingFunc(escapingFunc_) {}
 
+// This gets called for single char writes to the stream.
+// Add char to buffer and call the outputFunc if a newline has been added
+int PrePostfixedStream::StringBuf::overflow(int c) {
+  if(c == EOF)
+    return c;
+  buffer += static_cast<char>(c);
+  if(c == '\n')
+    flushBuffer();
+  return c;
+}
+
+// This gets called for multi char writes to the stream.
+// Add everything up to the next newline to the buffer and call the outputFunc.
+// Repeat until no more newlines are found.
+// Add the rest to the buffer but do not call the outputFunc.
+streamsize PrePostfixedStream::StringBuf::xsputn(const char_type* s, std::streamsize count) {
+  string data(s, count);
+  size_t idx;
+  while((idx=data.find('\n'))!=string::npos) {
+    buffer += data.substr(0, idx+1);
+    flushBuffer();
+    data = data.substr(idx+1);
+  }
+  buffer += data;
+  return count;
+}
+
+// This gets called if flush is called on the stream.
+// Call the outputFunc which will somehow break the formatting but usually no explicit flush is called.
 int PrePostfixedStream::StringBuf::sync() {
-  auto msg=str();
-  str("");
-  if(msg.empty())
-    return 0;
-  if(msg=="\n") {
+  flushBuffer();
+  return 0;
+}
+
+void PrePostfixedStream::StringBuf::flushBuffer() {
+  if(buffer.empty())
+    return;
+  if(buffer == "\n") {
     outputFunc("\n");
-    return 0;
+    buffer.clear();
+    return;
   }
   if(!escapingFunc || (stream.flags() & skipws))
-    outputFunc(prefix+msg+postfix);
+    outputFunc(prefix+buffer+postfix);
   else {
-    escapingFunc(msg);
-    outputFunc(prefix+msg+postfix);
+    escapingFunc(buffer);
+    outputFunc(prefix+buffer+postfix);
   }
-  return 0;
+  buffer.clear();
 }
 
 AdoptCurrentMessageStreamsUntilScopeExit::AdoptCurrentMessageStreamsUntilScopeExit(const Atom* src) {

@@ -134,17 +134,22 @@ class FMATVEC_EXPORT PrePostfixedStream : public std::ostream {
     PrePostfixedStream(const std::string &prefix_, const std::string &postfix_, std::ostream &outstr_,
                        const std::function<void(std::string&)> &escapingFunc=nullptr);
   private:
-    class StringBuf : public std::stringbuf {
+    class StringBuf : public std::streambuf {
       public:
         StringBuf(const PrePostfixedStream &stream_, std::string prefix_, std::string postfix_,
                   const std::function<void(const std::string &)> &outputFunc_,
                   const std::function<void(std::string&)> &escapingFunc_);
       protected:
+        int overflow(int c) override;
+        std::streamsize xsputn(const char_type* s, std::streamsize count) override;
         int sync() override;
+      private:
+        void flushBuffer();
+        std::string buffer;
+        std::function<void(const std::string &)> outputFunc;
         const PrePostfixedStream &stream;
-        std::string prefix;
-        std::string postfix;
-        const std::function<void(const std::string &)> outputFunc;
+        const std::string prefix;
+        const std::string postfix;
         const std::function<void(std::string&)> escapingFunc;
     };
     StringBuf buffer;
