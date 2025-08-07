@@ -283,6 +283,7 @@ class FMATVEC_EXPORT Vertex {
   friend Operation;
   friend NativeFunction;
   public:
+    virtual ~Vertex() = default;
 
     //! Generate a new AST being the partial derivate of this AST with respect to the variable x.
     virtual SymbolicExpression parDer(const IndependentVariable &x) const=0;
@@ -407,6 +408,7 @@ void Symbol::setValue(double x_) const {
 
 class ScalarFunctionWrapArg {
   public:
+    virtual ~ScalarFunctionWrapArg() = default;
     virtual double operator()(const ByteCode::Arg &arg) = 0;
     virtual double dirDer(const ByteCode::Arg &arg) = 0;
     virtual double dirDerDirDer(const ByteCode::Arg &arg) = 0;

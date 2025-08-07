@@ -12,6 +12,7 @@ else()
   add_compile_options(-Wno-unused-function)
   add_compile_options(-Werror)
   add_compile_options(-fvisibility=hidden)
+  add_compile_options(-Wnon-virtual-dtor)
 endif()
 
 # Adhere to GNU filesystem layout conventions
