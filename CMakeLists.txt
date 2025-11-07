@@ -47,7 +47,7 @@ set(BLAS_LAPACK_LIBRARIES ${LAPACK_LIBRARIES} )
 #         With boost 1.67 it works as expected
 #     cmake 3.17 finds c:\local\boost_1_72_0 extracted from boost_<version>-bin-msvc-all-32-64.7z
 #     Alternative: set BOOST_INCLUDEDIR to boost installation
-find_package(Boost 1.67 REQUIRED COMPONENTS system) # COMPONENTS spirit uuid dll
+find_package(Boost 1.70 CONFIG REQUIRED) # COMPONENTS system spirit uuid dll (all header only)
 
 if(NOT DEFINED ARPACK_INCLUDE_DIRS OR NOT DEFINED ARPACK_LIBRARIES)
   find_package(arpack-ng QUIET)
@@ -139,13 +139,6 @@ endif()
 set(INCDIRS "-I${Boost_INCLUDE_DIRS}")
 foreach(LIB ${BLAS_LAPACK_LIBRARIES})
   string(REGEX MATCH "(.*)/lib([^\\.]*)\\.(.*)" LIBTMP "${LIB}") # "." must have double excaping "\\"
-  if(NOT "${CMAKE_MATCH_1}" STREQUAL "" AND NOT "${CMAKE_MATCH_2}" STREQUAL "")
-    set(LIBS "${LIBS} -L${CMAKE_MATCH_1} -l${CMAKE_MATCH_2}")
-  endif()
-endforeach()
-foreach(LIB Boost::system)
-  get_property(LIBLOC TARGET ${LIB} PROPERTY LOCATION)
-  string(REGEX MATCH "(.*)/lib([^\\.]*)\\.(.*)" LIBTMP "${LIBLOC}") # "." must have double excaping "\\"
   if(NOT "${CMAKE_MATCH_1}" STREQUAL "" AND NOT "${CMAKE_MATCH_2}" STREQUAL "")
     set(LIBS "${LIBS} -L${CMAKE_MATCH_1} -l${CMAKE_MATCH_2}")
   endif()
