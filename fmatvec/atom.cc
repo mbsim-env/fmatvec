@@ -1,6 +1,7 @@
 #include <config.h>
 #include "fmatvec/atom.h"
 #include <boost/preprocessor/iteration/local.hpp>
+#include <mutex>
 
 using namespace std;
 
@@ -172,6 +173,32 @@ AdoptCurrentMessageStreamsUntilScopeExit::~AdoptCurrentMessageStreamsUntilScopeE
     auto type=static_cast<Atom::MsgType>(t);
     Atom::setCurrentMessageStream(type, savedStreams[type].first, savedStreams[type].second);
   }
+}
+
+osyncstream::osyncstream(ostream &str_) : ostream(&buf), buf(), str(str_) {
+}
+
+osyncstream::osyncstream(osyncstream &&o) noexcept : ostream(), buf(std::move(o.buf)), str(o.str) {
+  rdbuf(&buf);
+  o.moved = true;
+}
+
+osyncstream::~osyncstream() {
+  try {
+    static mutex m;
+    unique_lock l(m);
+    emit();
+  }
+  catch(...) {
+  }
+}
+
+void osyncstream::emit() {
+  if(moved)
+    return;
+  str << buf.str();
+  buf.str("");
+  str.flush();
 }
 
 }
