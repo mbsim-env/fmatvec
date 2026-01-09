@@ -15,7 +15,7 @@ class AdoptCurrentMessageStreamsUntilScopeExit;
 
 // Write synchronized to str_.
 // The synchronization is done globally (not seperately for each str_)
-// The content if buffered and written to str_ at destruction time of this object of if emit() is called.
+// The content if buffered and written to str_ at destruction time of this object, if emit() is called and on skipws/noskipws.
 class FMATVEC_EXPORT osyncstream
 #ifndef SWIG // swig can not parse this however it is not needed for swig
   : public std::ostream
@@ -28,12 +28,24 @@ class FMATVEC_EXPORT osyncstream
     osyncstream& operator=(osyncstream &) = delete;
     osyncstream& operator=(osyncstream &&) = delete;
     ~osyncstream() override;
-    void emit();
+    void emit(const std::function<void(std::ostream&)> &postFunc = {});
+#ifndef SWIG // swig can not parse this however it is not needed for swig
+    using std::ostream::operator<<;
+#endif
+    osyncstream& operator<<(std::ios_base& (*func)(std::ios_base&));
+    osyncstream& operator<<(std::ostream& (*func) (std::ostream&));
   private:
     std::stringbuf buf;
     std::ostream &str;
     bool moved { false };
 };
+
+FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, char ch);
+FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, signed char ch);
+FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, unsigned char ch);
+FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, const char* s);
+FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, const signed char* s);
+FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, const unsigned char* s);
 
 /*! Top level class.
  * This is the top level class which is used for (at least) all classes
