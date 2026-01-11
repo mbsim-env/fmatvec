@@ -5,41 +5,6 @@
 using namespace std;
 using namespace fmatvec;
 
-#ifndef _WIN32
-#include <valgrind/valgrind.h>
-#endif
-class MFMF : public Atom {
-  public:
-    void mfmf() {
-      msg(Info)<<"test"<<endl;
-    }
-};
-#include <thread>
-#include <chrono>
-void mfmf() {
-  size_t N;
-  #ifndef _WIN32
-    if(RUNNING_ON_VALGRIND)
-      N=10;
-    else
-      N=100000;
-  #else
-    N=1000000;
-  #endif
-  MFMF m;
-  auto start = std::chrono::high_resolution_clock::now();
-  thread t([&m, N](){
-    for(size_t i=0; i<N; ++i)
-      m.mfmf();
-  });
-  for(size_t i=0; i<N; ++i)
-    m.mfmf();
-  t.join();
-  auto end = std::chrono::high_resolution_clock::now();
-  std::chrono::duration<double> elapsed = end - start;
-  std::cout << "Elapsed time: " << elapsed.count() << " seconds\n";
-}
-
 int main() {
 
   cout<<setprecision(12);
@@ -90,7 +55,6 @@ int main() {
     cout<<"r.eval.SUM = "<<rSumNative<<endl;
     cout<<"execution time of native performance test with N="<<N<<": "<<delta.count()<<"sec (about factor 2 faster)"<<endl;
   }
-  mfmf();
 
   return rSumSym != rSumNative;
 }
