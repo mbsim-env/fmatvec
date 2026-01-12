@@ -13,6 +13,40 @@ namespace fmatvec {
 
 class AdoptCurrentMessageStreamsUntilScopeExit;
 
+// Write synchronized to str_.
+// The synchronization is done globally (not seperately for each str_)
+// The content if buffered and written to str_ at destruction time of this object, if emit() is called and on skipws/noskipws.
+class FMATVEC_EXPORT osyncstream
+#ifndef SWIG // swig can not parse this however it is not needed for swig
+  : public std::ostream
+#endif
+{
+  public:
+    osyncstream(std::ostream &str_);
+    osyncstream(osyncstream &) = delete;
+    osyncstream(osyncstream &&) noexcept;
+    osyncstream& operator=(osyncstream &) = delete;
+    osyncstream& operator=(osyncstream &&) = delete;
+    ~osyncstream() override;
+    void emit(const std::function<void(std::ostream&)> &postFunc = {});
+#ifndef SWIG // swig can not parse this however it is not needed for swig
+    using std::ostream::operator<<;
+#endif
+    osyncstream& operator<<(std::ios_base& (*func)(std::ios_base&));
+    osyncstream& operator<<(std::ostream& (*func) (std::ostream&));
+  private:
+    std::stringbuf buf;
+    std::ostream &str;
+    bool moved { false };
+};
+
+FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, char ch);
+FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, signed char ch);
+FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, unsigned char ch);
+FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, const char* s);
+FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, const signed char* s);
+FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, const unsigned char* s);
+
 /*! Top level class.
  * This is the top level class which is used for (at least) all classes
  * which may be created using a object factory.
@@ -78,7 +112,7 @@ class FMATVEC_EXPORT Atom {
     //! Return the message stream of type type.
     //! Node: If the code is performance critical you should check first whether this stream is really
     //! printed using msgAct(type). If this return false just skip the complete message.
-    std::ostream &msg(MsgType type) const {
+    osyncstream msg(MsgType type) const {
       return *_msg[type];
     }
     //! Return true if the the message of type type is currently active.
@@ -90,7 +124,7 @@ class FMATVEC_EXPORT Atom {
 
     //! Same as msg(type).
     //! Use this function only if not object is available. This should normally not be the case.
-    static std::ostream &msgStatic(MsgType type) {
+    static osyncstream msgStatic(MsgType type) {
       return *_msgStatic[type];
     }
     //! Same as msgAct(type).

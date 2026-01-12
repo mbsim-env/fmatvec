@@ -1,6 +1,7 @@
 #include <config.h>
 #include "fmatvec/atom.h"
 #include <boost/preprocessor/iteration/local.hpp>
+#include <mutex>
 
 using namespace std;
 
@@ -172,6 +173,85 @@ AdoptCurrentMessageStreamsUntilScopeExit::~AdoptCurrentMessageStreamsUntilScopeE
     auto type=static_cast<Atom::MsgType>(t);
     Atom::setCurrentMessageStream(type, savedStreams[type].first, savedStreams[type].second);
   }
+}
+
+osyncstream::osyncstream(ostream &str_) : ostream(&buf), buf(), str(str_) {
+}
+
+osyncstream::osyncstream(osyncstream &&o) noexcept : ostream(), buf(std::move(o.buf)), str(o.str) {
+  rdbuf(&buf);
+  o.moved = true;
+}
+
+osyncstream::~osyncstream() {
+  try {
+    emit();
+  }
+  catch(...) {
+  }
+}
+
+void osyncstream::emit(const function<void(ostream&)> &postFunc) {
+  if(moved)
+    return;
+  static mutex m;
+  unique_lock l(m);
+  str << buf.str();
+  if(postFunc)
+    postFunc(str);
+  buf.str("");
+}
+
+osyncstream& osyncstream::operator<<(ios_base& (*func)(ios_base&)) {
+  if(func==::skipws)
+    emit([](ostream &s){
+      s<<::skipws;
+    });
+  else if(func==::noskipws)
+    emit([](ostream &s){
+      s<<::noskipws;
+    });
+  ostream::operator<<(func);
+  return *this;
+}
+
+osyncstream& osyncstream::operator<<(ostream& (*func)(ostream&)) {
+  if(func==static_cast<ostream& (*)(ostream&)>(&::flush))
+    emit([](ostream &s){
+      s<<::flush;
+    });
+  ostream::operator<<(func);
+  return *this;
+}
+
+osyncstream& operator<<(osyncstream& os, char ch) {
+  operator<<(static_cast<ostream&>(os), ch);
+  return os;
+}
+
+osyncstream& operator<<(osyncstream& os, signed char ch) {
+  operator<<(static_cast<ostream&>(os), ch);
+  return os;
+}
+
+osyncstream& operator<<(osyncstream& os, unsigned char ch) {
+  operator<<(static_cast<ostream&>(os), ch);
+  return os;
+}
+
+osyncstream& operator<<(osyncstream& os, const char* s) {
+  operator<<(static_cast<ostream&>(os), s);
+  return os;
+}
+
+osyncstream& operator<<(osyncstream& os, const signed char* s) {
+  operator<<(static_cast<ostream&>(os), s);
+  return os;
+}
+
+osyncstream& operator<<(osyncstream& os, const unsigned char* s) {
+  operator<<(static_cast<ostream&>(os), s);
+  return os;
 }
 
 }
