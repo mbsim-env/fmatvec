@@ -10,30 +10,31 @@
 #include "stream.h"
 
 namespace fmatvec {
+FMATVEC_MSVC_DISABLEW4251_BEGIN
 
 class AdoptCurrentMessageStreamsUntilScopeExit;
 
 // Write synchronized to str_.
 // The synchronization is done globally (not seperately for each str_)
 // The content if buffered and written to str_ at destruction time of this object, if emit() is called and on skipws/noskipws.
-class osyncstream
+class FMATVEC_EXPORT osyncstream
 #ifndef SWIG // swig can not parse this however it is not needed for swig
   : public std::ostream
 #endif
 {
   public:
-    FMATVEC_EXPORT osyncstream(std::ostream &str_);
+    osyncstream(std::ostream &str_);
     osyncstream(osyncstream &) = delete;
-    FMATVEC_EXPORT osyncstream(osyncstream &&) noexcept;
+    osyncstream(osyncstream &&) noexcept;
     osyncstream& operator=(osyncstream &) = delete;
     osyncstream& operator=(osyncstream &&) = delete;
-    FMATVEC_EXPORT ~osyncstream() override;
-    FMATVEC_EXPORT void emit(const std::function<void(std::ostream&)> &postFunc = {});
+    ~osyncstream() override;
+    void emit(const std::function<void(std::ostream&)> &postFunc = {});
 #ifndef SWIG // swig can not parse this however it is not needed for swig
     using std::ostream::operator<<;
 #endif
-    FMATVEC_EXPORT osyncstream& operator<<(std::ios_base& (*func)(std::ios_base&));
-    FMATVEC_EXPORT osyncstream& operator<<(std::ostream& (*func) (std::ostream&));
+    osyncstream& operator<<(std::ios_base& (*func)(std::ios_base&));
+    osyncstream& operator<<(std::ostream& (*func) (std::ostream&));
   private:
     std::stringbuf buf;
     std::ostream &str;
@@ -54,7 +55,7 @@ FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, const unsigned char* s);
  * printing messages. No mathematical or other "none" basic content should
  * be added here.
  */
-class Atom {
+class FMATVEC_EXPORT Atom {
   friend class AdoptCurrentMessageStreamsUntilScopeExit;
   public:
 
@@ -76,15 +77,15 @@ class Atom {
 
   protected:
     //! When a Atom is default constructed use the current statically set message streams.
-    FMATVEC_EXPORT Atom();
+    Atom();
     //! When a Atom is copy constructed use the current statically set message streams, not the message streams from src.
-    FMATVEC_EXPORT Atom(const Atom &src);
+    Atom(const Atom &src);
   public:
     //! dtor.
-    FMATVEC_EXPORT virtual ~Atom();
+    virtual ~Atom();
 #ifndef SWIG // no assignment operator for swig
     //! When a Atom is assinged do not change the messsage streams since we always use the message streams being active at ctor time.
-    FMATVEC_EXPORT Atom& operator=(const Atom &);
+    Atom& operator=(const Atom &);
 #endif
 
     //! Set the current message stream used by all subsequent created objects.
@@ -92,44 +93,44 @@ class Atom {
     //! If s is not defined, the message of type type prints to cout.
     //! If a is not defined, a new shared bool flag set to true is used.
     //! Be aware of data races in streams if objects of type Atom print messages in threads.
-    FMATVEC_EXPORT static void setCurrentMessageStream(MsgType type,
+    static void setCurrentMessageStream(MsgType type,
                   const std::shared_ptr<bool> &a=std::make_shared<bool>(true),
                   const std::shared_ptr<std::ostream> &s=std::make_shared<std::ostream>(std::cout.rdbuf()));
 
     //! Set the active flag of this object and all objects which were created using the same message stream as this object.
-    FMATVEC_EXPORT void setMessageStreamActive(MsgType type, bool activeFlag);
+    void setMessageStreamActive(MsgType type, bool activeFlag);
 
     //! Get the shared message stream active flag and the shared message stream of this object
-    FMATVEC_EXPORT void getMessageStream(MsgType type,
+    void getMessageStream(MsgType type,
            std::shared_ptr<bool> &a,
            std::shared_ptr<std::ostream> &s) const;
 
     //! Adopt the message streams from src to this object.
     //! If src is NULL adopt the current (static) message streams.
     //! Normally always the streams at ctor time are used. But in some special cassed this function is usefull.
-    FMATVEC_EXPORT void adoptMessageStreams(const Atom *src=nullptr);
+    void adoptMessageStreams(const Atom *src=nullptr);
 
     //! Return the message stream of type type.
     //! Node: If the code is performance critical you should check first whether this stream is really
     //! printed using msgAct(type). If this return false just skip the complete message.
-    FMATVEC_EXPORT osyncstream msg(MsgType type) const {
+    osyncstream msg(MsgType type) const {
       return *_msg[type];
     }
     //! Return true if the the message of type type is currently active.
     //! Note: If the code is not performance critical their is no need to check this flag. You can
     //! just print using msg(type)<<"Hello world"<<endl; and it is not really printed.
-    FMATVEC_EXPORT bool msgAct(MsgType type) const {
+    bool msgAct(MsgType type) const {
       return *_msgAct[type];
     }
 
     //! Same as msg(type).
     //! Use this function only if not object is available. This should normally not be the case.
-    FMATVEC_EXPORT static osyncstream msgStatic(MsgType type) {
+    static osyncstream msgStatic(MsgType type) {
       return *_msgStatic[type];
     }
     //! Same as msgAct(type).
     //! Use this function only if not object is available. This should normally not be the case.
-    FMATVEC_EXPORT static bool msgActStatic(MsgType type) {
+    static bool msgActStatic(MsgType type) {
       return *_msgActStatic[type];
     }
 
@@ -158,14 +159,14 @@ class Atom {
 //! The conversion using escapingFunc is skipped if the stream has set the skipws formatting flag, which is not set at the beginning.
 //! However, you have ALWAYS to call flush before changing the skipws flag!!!
 //! (this flag is used since it is not relevant for a ostream and can hence be "misused" here).
-class PrePostfixedStream : public std::ostream {
+class FMATVEC_EXPORT PrePostfixedStream : public std::ostream {
   public:
     //! Call f with every message of the stream, prefixed/postfixed.
-    FMATVEC_EXPORT PrePostfixedStream(const std::string &prefix_, const std::string &postfix_,
+    PrePostfixedStream(const std::string &prefix_, const std::string &postfix_,
                        const std::function<void(const std::string &)> &outputFunc,
                        const std::function<void(std::string&)> &escapingFunc=nullptr);
     //! Convinence function to print to outstr_.
-    FMATVEC_EXPORT PrePostfixedStream(const std::string &prefix_, const std::string &postfix_, std::ostream &outstr_,
+    PrePostfixedStream(const std::string &prefix_, const std::string &postfix_, std::ostream &outstr_,
                        const std::function<void(std::string&)> &escapingFunc=nullptr);
   private:
     class StringBuf : public std::streambuf {
@@ -192,20 +193,21 @@ class PrePostfixedStream : public std::ostream {
 
 //! Adopt the current message streams for the livetime of this object.
 //! This can be used to set the current message streams to an existing object.
-class AdoptCurrentMessageStreamsUntilScopeExit {
+class FMATVEC_EXPORT AdoptCurrentMessageStreamsUntilScopeExit {
   public:
     //! Save the current message streams and then set it to be equal to src.
     //! The current message streams are reset to the saved ones when this object goes out of scope.
-    FMATVEC_EXPORT AdoptCurrentMessageStreamsUntilScopeExit(const Atom* src);
-    FMATVEC_EXPORT ~AdoptCurrentMessageStreamsUntilScopeExit();
-    FMATVEC_EXPORT AdoptCurrentMessageStreamsUntilScopeExit(const AdoptCurrentMessageStreamsUntilScopeExit& other) = delete;
-    FMATVEC_EXPORT AdoptCurrentMessageStreamsUntilScopeExit(AdoptCurrentMessageStreamsUntilScopeExit&& other) noexcept = delete;
-    FMATVEC_EXPORT AdoptCurrentMessageStreamsUntilScopeExit& operator=(const AdoptCurrentMessageStreamsUntilScopeExit& other) = delete;
-    FMATVEC_EXPORT AdoptCurrentMessageStreamsUntilScopeExit& operator=(AdoptCurrentMessageStreamsUntilScopeExit&& other) noexcept = delete;
+    AdoptCurrentMessageStreamsUntilScopeExit(const Atom* src);
+    ~AdoptCurrentMessageStreamsUntilScopeExit();
+    AdoptCurrentMessageStreamsUntilScopeExit(const AdoptCurrentMessageStreamsUntilScopeExit& other) = delete;
+    AdoptCurrentMessageStreamsUntilScopeExit(AdoptCurrentMessageStreamsUntilScopeExit&& other) noexcept = delete;
+    AdoptCurrentMessageStreamsUntilScopeExit& operator=(const AdoptCurrentMessageStreamsUntilScopeExit& other) = delete;
+    AdoptCurrentMessageStreamsUntilScopeExit& operator=(AdoptCurrentMessageStreamsUntilScopeExit&& other) noexcept = delete;
   private:
     std::array<std::pair<std::shared_ptr<bool>, std::shared_ptr<std::ostream>>, Atom::SIZE> savedStreams;
 };
 
+FMATVEC_MSVC_DISABLEW4251_END
 }
 
 #endif

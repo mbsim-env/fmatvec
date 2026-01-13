@@ -12,6 +12,7 @@
 #include <fmatvec/stream.h>
 
 namespace fmatvec {
+FMATVEC_MSVC_DISABLEW4251_BEGIN
 
 // forward declarations
 
@@ -34,7 +35,7 @@ class EvalHelper;
 //! This can either be the special case of just a symbol
 //! or an arbitary expression consisting of a hierarchiy
 //! of operations consisting itself of expressions, symbols or constants.
-class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
+class FMATVEC_EXPORT SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
   template<class... Arg> friend class Eval;
   friend class EvalHelper;
   friend class AST::Operation;
@@ -57,61 +58,61 @@ class SymbolicExpression : public std::shared_ptr<const AST::Vertex> {
     using std::shared_ptr<const AST::Vertex>::operator->;
   public:
     //! Creates the value 0.
-    FMATVEC_EXPORT SymbolicExpression();
+    SymbolicExpression();
     //! Creates a expression form the specified string (the string must be a serialized SymbolicExpression).
-    FMATVEC_EXPORT SymbolicExpression(const std::string &str);
+    SymbolicExpression(const std::string &str);
     //! Creates a integer constant.
-    FMATVEC_EXPORT SymbolicExpression(int x);
-    FMATVEC_EXPORT SymbolicExpression(long x);
+    SymbolicExpression(int x);
+    SymbolicExpression(long x);
     //! Creates a double constant.
-    FMATVEC_EXPORT SymbolicExpression(double x);
+    SymbolicExpression(double x);
 
     //! Garbage collect everything.
     //! The only "garbage" which can be left by this class are empty weak_ptr's stored in global maps.
     //! This routine removes such garbage.
-    FMATVEC_EXPORT static void garbageCollect();
+    static void garbageCollect();
 
     // default ctors and assignment operators
-    FMATVEC_EXPORT SymbolicExpression(const SymbolicExpression& x) = default;
-    FMATVEC_EXPORT SymbolicExpression(SymbolicExpression&& x) = default;
-    FMATVEC_EXPORT SymbolicExpression& operator=(const SymbolicExpression& x) = default;
-    FMATVEC_EXPORT SymbolicExpression& operator=(SymbolicExpression&& x) = default;
-    FMATVEC_EXPORT ~SymbolicExpression() = default;
+    SymbolicExpression(const SymbolicExpression& x) = default;
+    SymbolicExpression(SymbolicExpression&& x) = default;
+    SymbolicExpression& operator=(const SymbolicExpression& x) = default;
+    SymbolicExpression& operator=(SymbolicExpression&& x) = default;
+    ~SymbolicExpression() = default;
 
     // operators
 #ifndef SWIG
-    FMATVEC_EXPORT SymbolicExpression operator+(const SymbolicExpression &b) const;
-    FMATVEC_EXPORT SymbolicExpression operator-(const SymbolicExpression &b) const;
-    FMATVEC_EXPORT SymbolicExpression operator*(const SymbolicExpression &b) const;
-    FMATVEC_EXPORT SymbolicExpression operator/(const SymbolicExpression &b) const;
+    SymbolicExpression operator+(const SymbolicExpression &b) const;
+    SymbolicExpression operator-(const SymbolicExpression &b) const;
+    SymbolicExpression operator*(const SymbolicExpression &b) const;
+    SymbolicExpression operator/(const SymbolicExpression &b) const;
 #endif
-    FMATVEC_EXPORT SymbolicExpression operator-() const;
-    FMATVEC_EXPORT SymbolicExpression& operator+=(const SymbolicExpression &b);
-    FMATVEC_EXPORT SymbolicExpression& operator-=(const SymbolicExpression &b);
-    FMATVEC_EXPORT SymbolicExpression& operator*=(const SymbolicExpression &b);
-    FMATVEC_EXPORT SymbolicExpression& operator/=(const SymbolicExpression &b);
+    SymbolicExpression operator-() const;
+    SymbolicExpression& operator+=(const SymbolicExpression &b);
+    SymbolicExpression& operator-=(const SymbolicExpression &b);
+    SymbolicExpression& operator*=(const SymbolicExpression &b);
+    SymbolicExpression& operator/=(const SymbolicExpression &b);
 
     // We implement operator<<= to be able to use SymbolicExpression fully equivalent to the vector/matrix classes
     // which have a assign method which redimension before assigning. Redimensioning is not required for a scalar
     // type like assign
-    FMATVEC_EXPORT SymbolicExpression& operator<<=(const SymbolicExpression &src);
+    SymbolicExpression& operator<<=(const SymbolicExpression &src);
 
 #if defined(FMATVEC_DEBUG) && !defined(SWIG)
-    FMATVEC_EXPORT static signed long evalOperationsCount;
+    static signed long evalOperationsCount;
 #endif
 };
 
 //! A independent variable.
 //! Any SymbolicExpression can be partialliy differentiated with respect to a independent variable.
 //! An independent varible can also be assigned a value which is used if eval is called.
-class IndependentVariable : public SymbolicExpression {
+class FMATVEC_EXPORT IndependentVariable : public SymbolicExpression {
   friend class AST::Symbol;
   friend FMATVEC_EXPORT std::istream& operator>>(std::istream& s, IndependentVariable &v);
   public:
     //! Creates a IndependentVariable variable (each call to this ctor creates a new independent variable)
-    FMATVEC_EXPORT IndependentVariable();
+    IndependentVariable();
     //! Creates a IndependentVariable variable from the specified string (the string is a serialized IndependentVariable).
-    FMATVEC_EXPORT IndependentVariable(const std::string &str);
+    IndependentVariable(const std::string &str);
 
 #ifndef SWIG
     //! Set the double value of the independent value.
@@ -205,14 +206,14 @@ namespace AST { // internal namespace
  * Hence std::vector<ByteCode> can only be used without reallocation: std::vector::reserve must be called before use.
  * To add an element only std::vector::emplace_back() can be used.
 */
-struct ByteCode {
+struct FMATVEC_EXPORT ByteCode {
   static constexpr size_t N { 12 };
-  FMATVEC_EXPORT ByteCode(size_t n);
+  ByteCode(size_t n);
   ByteCode(const ByteCode &) = delete;
-  FMATVEC_EXPORT ByteCode(ByteCode &&) noexcept;
+  ByteCode(ByteCode &&) noexcept;
   ByteCode &operator=(const ByteCode &) = delete;
   ByteCode &operator=(ByteCode &&) = delete;
-  FMATVEC_EXPORT ~ByteCode() = default;
+  ~ByteCode() = default;
   using Arg = boost::container::small_vector<double*,N>;
   std::function<void(double*, const Arg&)> func; // the operation this byteCode entry executes
   double  retValue; // storage of the return value of the operation: retPtr may point to this value
@@ -331,19 +332,19 @@ inline bool Vertex::isConstantInt() const {
 
 //! A vertex of the AST representing a constant (long or double)
 template<class T>
-class Constant : public Vertex, public std::enable_shared_from_this<Constant<T>> {
+class FMATVEC_EXPORT Constant : public Vertex, public std::enable_shared_from_this<Constant<T>> {
   friend SymbolicExpression;
   public:
 
-    FMATVEC_EXPORT static SymbolicExpression create(const T& c_);
-    FMATVEC_EXPORT SymbolicExpression parDer(const IndependentVariable &x) const override;
+    static SymbolicExpression create(const T& c_);
+    SymbolicExpression parDer(const IndependentVariable &x) const override;
     inline bool isConstantInt() const override;
     //! Get the constant value of the vertex.
     inline const T& getValue() const;
-    FMATVEC_EXPORT std::vector<ByteCode>::iterator dumpByteCode(std::vector<ByteCode> &byteCode,
+    std::vector<ByteCode>::iterator dumpByteCode(std::vector<ByteCode> &byteCode,
                                   std::map<const Vertex*, std::vector<AST::ByteCode>::iterator> &existingVertex) const override;
 
-    FMATVEC_EXPORT void walkVertex(const std::function<void(const std::shared_ptr<const Vertex>&)> &func) const override;
+    void walkVertex(const std::function<void(const std::shared_ptr<const Vertex>&)> &func) const override;
 
   private:
 
@@ -372,23 +373,23 @@ const T& Constant<T>::getValue() const {
 // ***** Symbol *****
 
 //! A vertex of the AST representing a independent variable.
-class Symbol : public Vertex, public std::enable_shared_from_this<Symbol> {
+class FMATVEC_EXPORT Symbol : public Vertex, public std::enable_shared_from_this<Symbol> {
   friend SymbolicExpression;
   friend IndependentVariable;
   public:
 
-    FMATVEC_EXPORT static IndependentVariable create(const boost::uuids::uuid& uuid_=boost::uuids::random_generator()());
-    FMATVEC_EXPORT SymbolicExpression parDer(const IndependentVariable &x) const override;
+    static IndependentVariable create(const boost::uuids::uuid& uuid_=boost::uuids::random_generator()());
+    SymbolicExpression parDer(const IndependentVariable &x) const override;
     //! Set the value of this independent variable.
     //! This has an influence on the evaluation of all ASTs which depend on this independent variable.
     inline void setValue(double x_) const;
 
-    FMATVEC_EXPORT std::string getUUIDStr() const;
+    std::string getUUIDStr() const;
 
-    FMATVEC_EXPORT std::vector<ByteCode>::iterator dumpByteCode(std::vector<ByteCode> &byteCode,
+    std::vector<ByteCode>::iterator dumpByteCode(std::vector<ByteCode> &byteCode,
                                   std::map<const Vertex*, std::vector<AST::ByteCode>::iterator> &existingVertex) const override;
 
-    FMATVEC_EXPORT void walkVertex(const std::function<void(const std::shared_ptr<const Vertex>&)> &func) const override;
+    void walkVertex(const std::function<void(const std::shared_ptr<const Vertex>&)> &func) const override;
 
   private:
 
@@ -640,19 +641,19 @@ class ScalarFunctionWrapArgVV : public ScalarFunctionWrapArg {
 // ***** Function *****
 
 //! A vertex of the AST representing an arbitary function.
-class NativeFunction : public Vertex, public std::enable_shared_from_this<NativeFunction> {
+class FMATVEC_EXPORT NativeFunction : public Vertex, public std::enable_shared_from_this<NativeFunction> {
   public:
-    FMATVEC_EXPORT static SymbolicExpression create(const std::shared_ptr<ScalarFunctionWrapArg> &funcWrapper,
+    static SymbolicExpression create(const std::shared_ptr<ScalarFunctionWrapArg> &funcWrapper,
                                      const std::vector<SymbolicExpression> &argS,
                                      const std::vector<SymbolicExpression> &dir1S={},
                                      const std::vector<SymbolicExpression> &dir2S={});
-    FMATVEC_EXPORT SymbolicExpression parDer(const IndependentVariable &x) const override;
+    SymbolicExpression parDer(const IndependentVariable &x) const override;
 
-    FMATVEC_EXPORT std::vector<ByteCode>::iterator dumpByteCode(std::vector<ByteCode> &byteCode,
+    std::vector<ByteCode>::iterator dumpByteCode(std::vector<ByteCode> &byteCode,
                                                  std::map<const Vertex*,
                                                  std::vector<AST::ByteCode>::iterator> &existingVertex) const override;
 
-    FMATVEC_EXPORT void walkVertex(const std::function<void(const std::shared_ptr<const Vertex>&)> &func) const override;
+    void walkVertex(const std::function<void(const std::shared_ptr<const Vertex>&)> &func) const override;
 
   private:
     NativeFunction(const std::shared_ptr<ScalarFunctionWrapArg> &func_,
@@ -682,7 +683,7 @@ class NativeFunction : public Vertex, public std::enable_shared_from_this<Native
 // ***** Operation *****
 
 //! A vertex of the AST representing an operation.
-class Operation : public Vertex, public std::enable_shared_from_this<Operation> {
+class FMATVEC_EXPORT Operation : public Vertex, public std::enable_shared_from_this<Operation> {
   friend SymbolicExpression;
   friend SymbolicExpression fmatvec::AST::substScalar(const SymbolicExpression &se,
                                                       const IndependentVariable& a, const SymbolicExpression &b);
@@ -694,15 +695,15 @@ class Operation : public Vertex, public std::enable_shared_from_this<Operation> 
 
     //! Defined operations.
     enum Operator { Plus, Minus, Mult, Div, Pow, Log, Sqrt, Neg, Sin, Cos, Tan, Sinh, Cosh, Tanh, ASin, ACos, ATan, ATan2, ASinh, ACosh, ATanh, Exp, Sign, Heaviside, Abs, Min, Max, Condition };
-    FMATVEC_EXPORT static SymbolicExpression create(Operator op_, const std::vector<SymbolicExpression> &child_);
-    FMATVEC_EXPORT SymbolicExpression parDer(const IndependentVariable &x) const override;
+    static SymbolicExpression create(Operator op_, const std::vector<SymbolicExpression> &child_);
+    SymbolicExpression parDer(const IndependentVariable &x) const override;
 
-    FMATVEC_EXPORT Operator getOp() const { return op; }
-    FMATVEC_EXPORT const std::vector<SymbolicExpression>& getChilds() const { return child; }
-    FMATVEC_EXPORT std::vector<ByteCode>::iterator dumpByteCode(std::vector<ByteCode> &byteCode,
+    Operator getOp() const { return op; }
+    const std::vector<SymbolicExpression>& getChilds() const { return child; }
+    std::vector<ByteCode>::iterator dumpByteCode(std::vector<ByteCode> &byteCode,
                                   std::map<const Vertex*, std::vector<AST::ByteCode>::iterator> &existingVertex) const override;
 
-    FMATVEC_EXPORT void walkVertex(const std::function<void(const std::shared_ptr<const Vertex>&)> &func) const override;
+    void walkVertex(const std::function<void(const std::shared_ptr<const Vertex>&)> &func) const override;
 
   private:
 
@@ -811,6 +812,7 @@ template<> boost::spirit::karma::rule<std::ostream_iterator<char>, SymbolicExpre
 template<> struct AssertUseException<IndependentVariable> { constexpr static bool value = true; };
 template<> struct AssertUseException<SymbolicExpression>  { constexpr static bool value = true; };
 
+FMATVEC_MSVC_DISABLEW4251_END
 } // end namespace fmatvec
 
 #endif

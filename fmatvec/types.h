@@ -28,17 +28,19 @@
 #include <boost/current_function.hpp>
 
 #ifdef _MSC_VER
-#ifdef fmatvec_EXPORTS
-#define FMATVEC_EXPORT __declspec(dllexport)
+  #ifdef fmatvec_EXPORTS
+    #define FMATVEC_EXPORT __declspec(dllexport)
+  #else
+    #define FMATVEC_EXPORT __declspec(dllimport)
+  #endif
+  #define FMATVEC_MSVC_DISABLEW4251_BEGIN __pragma(warning(push)) __pragma(warning(disable:4251))
+  #define FMATVEC_MSVC_DISABLEW4251_END __pragma(warning(pop))
 #else
-#define FMATVEC_EXPORT __declspec(dllimport)
-#endif
-#else
-#ifdef fmatvec_EXPORTS
-#define FMATVEC_EXPORT __attribute((visibility ("default")))
-#else
-#define FMATVEC_EXPORT
-#endif
+  #ifdef fmatvec_EXPORTS
+    #define FMATVEC_EXPORT __attribute((visibility ("default")))
+  #else
+    #define FMATVEC_EXPORT
+  #endif
 #endif
 
 
