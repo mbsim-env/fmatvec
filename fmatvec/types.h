@@ -41,6 +41,8 @@
   #else
     #define FMATVEC_EXPORT
   #endif
+  #define FMATVEC_MSVC_DISABLEW4251_BEGIN
+  #define FMATVEC_MSVC_DISABLEW4251_END
 #endif
 
 
