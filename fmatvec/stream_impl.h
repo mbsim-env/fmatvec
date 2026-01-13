@@ -34,7 +34,7 @@
 #include "types.h"
 #include <boost/spirit/include/qi.hpp>
 #include <boost/phoenix/bind/bind_function.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
+#include <boost/phoenix/operator.hpp>
 #include <boost/spirit/include/support_istream_iterator.hpp>
 #include <boost/spirit/include/karma_real.hpp>
 #include <boost/spirit/include/karma.hpp>

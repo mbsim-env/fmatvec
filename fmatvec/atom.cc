@@ -178,8 +178,7 @@ AdoptCurrentMessageStreamsUntilScopeExit::~AdoptCurrentMessageStreamsUntilScopeE
 osyncstream::osyncstream(ostream &str_) : ostream(&buf), buf(), str(str_) {
 }
 
-osyncstream::osyncstream(osyncstream &&o) noexcept : ostream(), buf(std::move(o.buf)), str(o.str) {
-  rdbuf(&buf);
+osyncstream::osyncstream(osyncstream &&o) noexcept : ostream(&buf), buf(std::move(o.buf)), str(o.str) {
   o.moved = true;
 }
 

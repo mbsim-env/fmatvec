@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 if(MSVC)
   # https://devblogs.microsoft.com/cppblog/permissive-switch/
-  add_compile_options(/permissive- /wd4996)
+  add_compile_options(/permissive- /wd4996 /wd4267 /wd4244)
 else()
   add_compile_options(-Wno-format-security) # this is required by types.h stating "fprintf(stderr, out_c_str);" which is marked by gcc -Wformat-security which is enabled by default on Ubuntu distributions
   add_compile_options(-Wno-unused-function)
