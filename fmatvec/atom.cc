@@ -193,11 +193,14 @@ osyncstream::~osyncstream() {
 void osyncstream::emit(const function<void(ostream&)> &postFunc) {
   if(moved)
     return;
-  static mutex m;
-  unique_lock l(m);
-  str << buf.str();
-  if(postFunc)
-    postFunc(str);
+  {
+    static mutex m;
+    unique_lock l(m);
+    str << buf.str();
+    if(postFunc)
+      postFunc(str);
+    str << ::flush;
+  }
   buf.str("");
 }
 
