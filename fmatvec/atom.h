@@ -35,6 +35,9 @@ class FMATVEC_EXPORT osyncstream
 #endif
     osyncstream& operator<<(std::ios_base& (*func)(std::ios_base&));
     osyncstream& operator<<(std::ostream& (*func) (std::ostream&));
+
+    // Use this function with care!!! It's mainly not indented to be used.
+    std::ostream &getOStream() const { return str; }
   private:
     std::stringbuf buf;
     std::ostream &str;
@@ -47,6 +50,7 @@ FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, unsigned char ch);
 FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, const char* s);
 FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, const signed char* s);
 FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, const unsigned char* s);
+FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, const std::string &s);
 
 /*! Top level class.
  * This is the top level class which is used for (at least) all classes

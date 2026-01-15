@@ -256,4 +256,9 @@ osyncstream& operator<<(osyncstream& os, const unsigned char* s) {
   return os;
 }
 
+osyncstream& operator<<(osyncstream& os, const string &s) {
+  operator<<(static_cast<ostream&>(os), s);
+  return os;
+}
+
 }
