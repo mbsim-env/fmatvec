@@ -1,3 +1,14 @@
+INFO: 3.5 534
+
+INFO: output &lt;b&gt;with&lt;/b&gt; escaping
+INFO: output <b>without</b> escaping
+
+INFO: output &lt;b&gt;with&lt;/b&gt; escaping
+INFO: output <b>without</b> escaping
+
+INFO: output &lt;b&gt;with&lt;/b&gt; escaping
+INFO: output <b>without</b> escaping
+
 complex 0 = (6.6,9.9)
 complex 1 = (23.2,19.8)
 complex 2 = (9.95,14.52)

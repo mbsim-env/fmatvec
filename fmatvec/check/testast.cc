@@ -12,6 +12,7 @@
 #include "fmatvec/symbolic.h"
 #include "fmatvec/fmatvec.h"
 #include "fmatvec/linear_algebra_complex.h"
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 using namespace fmatvec;
@@ -431,6 +432,8 @@ void checkRefMatrix() {
   cout<<"subMatparder = "<<parDer(sub, t)<<endl;
 }
 
+void checkMsgStreams();
+
 int main() {
 #ifdef _WIN32
   SetConsoleCP(CP_UTF8);
@@ -441,6 +444,8 @@ int main() {
 #endif
 
   cout<<setprecision(12);
+
+  checkMsgStreams();
 
   checkDoubleComplex();
   checkComplex();
@@ -453,4 +458,30 @@ int main() {
   checkRefMatrix();
 
   return 0;  
+}
+
+void htmlEscaping(string &msg) {
+  boost::replace_all(msg, "&", "&amp;");
+  boost::replace_all(msg, "<", "&lt;");
+  boost::replace_all(msg, ">", "&gt;");
+}
+
+template<class T>
+void checkMsgStreamsType() {
+  cout<<endl;
+  T msg1 = const_cast<char*>("output <b>with</b> escaping");
+  T msg2 = const_cast<char*>("output <b>without</b> escaping");
+  Atom::msgStatic(Atom::Info)<<msg1<<endl
+                             <<flush<<skipws<<msg2<<flush<<noskipws<<endl;
+}
+
+void checkMsgStreams() {
+  Atom::setCurrentMessageStream(Atom::Info, std::make_shared<bool>(true),
+    std::make_shared<PrePostfixedStream>("INFO: ", "", cout, htmlEscaping));
+
+  Atom::msgStatic(Atom::Info)<<3.5<<" "<<534<<endl;
+  checkMsgStreamsType<char*>();
+  checkMsgStreamsType<const char*>();
+  checkMsgStreamsType<string>();
+  cout<<endl;
 }
