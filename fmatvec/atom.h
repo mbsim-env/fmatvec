@@ -14,9 +14,19 @@ FMATVEC_MSVC_DISABLEW4251_BEGIN
 
 class AdoptCurrentMessageStreamsUntilScopeExit;
 
+class DisableEscaping {};
+class EnableEscaping {};
+FMATVEC_EXPORT extern DisableEscaping disableEscaping;
+FMATVEC_EXPORT extern EnableEscaping enableEscaping;
+
 // Write synchronized to str_.
 // The synchronization is done globally (not seperately for each str_)
-// The content if buffered and written to str_ at destruction time of this object, if emit() is called and on skipws/noskipws.
+// The content is buffered and written to str_ at destruction time of this object.
+// The two special output manipulators disableEscaping and enableEscaping can be used (always as a pair)
+// to enforce a none escaping mode of str_ if str_ supports this.
+// If so, disableEscaping is translated to str_<<flush<<skipws and
+// enableEscaping to std_<<flush<<noskipws.
+// What str_ actually does on skipws/noskipws is defined by the used class for str_.
 class FMATVEC_EXPORT osyncstream
 #ifndef SWIG // swig can not parse this however it is not needed for swig
   : public std::ostream
@@ -29,12 +39,25 @@ class FMATVEC_EXPORT osyncstream
     osyncstream& operator=(osyncstream &) = delete;
     osyncstream& operator=(osyncstream &&) = delete;
     ~osyncstream() override;
-    void emit(const std::function<void(std::ostream&)> &postFunc = {});
-#ifndef SWIG // swig can not parse this however it is not needed for swig
-    using std::ostream::operator<<;
-#endif
-    osyncstream& operator<<(std::ios_base& (*func)(std::ios_base&));
-    osyncstream& operator<<(std::ostream& (*func) (std::ostream&));
+    osyncstream& operator<<(DisableEscaping&);
+    osyncstream& operator<<(EnableEscaping&);
+    osyncstream& operator<<(bool value)                             { std::ostream::operator<<(value  ); return *this; }
+    osyncstream& operator<<(long value)                             { std::ostream::operator<<(value  ); return *this; }
+    osyncstream& operator<<(unsigned long value)                    { std::ostream::operator<<(value  ); return *this; }
+    osyncstream& operator<<(long long value)                        { std::ostream::operator<<(value  ); return *this; }
+    osyncstream& operator<<(unsigned long long value)               { std::ostream::operator<<(value  ); return *this; }
+    osyncstream& operator<<(double value)                           { std::ostream::operator<<(value  ); return *this; }
+    osyncstream& operator<<(long double value)                      { std::ostream::operator<<(value  ); return *this; }
+    osyncstream& operator<<(const void* value)                      { std::ostream::operator<<(value  ); return *this; }
+    osyncstream& operator<<(std::nullptr_t)                         { std::ostream::operator<<(nullptr); return *this; }
+    osyncstream& operator<<(short value)                            { std::ostream::operator<<(value  ); return *this; }
+    osyncstream& operator<<(int value)                              { std::ostream::operator<<(value  ); return *this; }
+    osyncstream& operator<<(unsigned short value)                   { std::ostream::operator<<(value  ); return *this; }
+    osyncstream& operator<<(unsigned int value)                     { std::ostream::operator<<(value  ); return *this; }
+    osyncstream& operator<<(float value)                            { std::ostream::operator<<(value  ); return *this; }
+    osyncstream& operator<<(std::streambuf* sb)                     { std::ostream::operator<<(sb     ); return *this; }
+    osyncstream& operator<<(std::ios_base& (*func)(std::ios_base&)) { std::ostream::operator<<(func   ); return *this; }
+    osyncstream& operator<<(std::ostream& (*func)(std::ostream&))   { std::ostream::operator<<(func   ); return *this; }
 
     // Use this function with care!!! It's mainly not indented to be used.
     std::ostream &getOStream() const { return str; }
@@ -44,13 +67,13 @@ class FMATVEC_EXPORT osyncstream
     bool moved { false };
 };
 
-FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, char ch);
-FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, signed char ch);
-FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, unsigned char ch);
-FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, const char* s);
-FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, const signed char* s);
-FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, const unsigned char* s);
-FMATVEC_EXPORT osyncstream& operator<<(osyncstream& os, const std::string &s);
+inline osyncstream& operator<<(osyncstream& os, char ch)                { operator<<(static_cast<std::ostream&>(os), ch); return os; }
+inline osyncstream& operator<<(osyncstream& os, signed char ch)         { operator<<(static_cast<std::ostream&>(os), ch); return os; }
+inline osyncstream& operator<<(osyncstream& os, unsigned char ch)       { operator<<(static_cast<std::ostream&>(os), ch); return os; }
+inline osyncstream& operator<<(osyncstream& os, const char* s)          { operator<<(static_cast<std::ostream&>(os), s ); return os; }
+inline osyncstream& operator<<(osyncstream& os, const signed char* s)   { operator<<(static_cast<std::ostream&>(os), s ); return os; }
+inline osyncstream& operator<<(osyncstream& os, const unsigned char* s) { operator<<(static_cast<std::ostream&>(os), s ); return os; }
+inline osyncstream& operator<<(osyncstream& os, const std::string &s)   { operator<<(static_cast<std::ostream&>(os), s ); return os; }
 
 /*! Top level class.
  * This is the top level class which is used for (at least) all classes
@@ -161,7 +184,8 @@ class FMATVEC_EXPORT Atom {
 //! Before the output happens the message is converted using escapingFunc, if given.
 //! Then result is then passed to outputFunc of printed to outstr_ (dependent on the used ctor).
 //! The conversion using escapingFunc is skipped if the stream has set the skipws formatting flag, which is not set at the beginning.
-//! However, you have ALWAYS to call flush before changing the skipws flag!!!
+//! However, you have ALWAYS to call flush before skipws and to call flush and noskipws afterwards!!!
+//! But note that normally this is done by using disableEscaping and enableEscaping on the osyncstream of Atom::msg/Atom::msgStatic.
 //! (this flag is used since it is not relevant for a ostream and can hence be "misused" here).
 class FMATVEC_EXPORT PrePostfixedStream : public std::ostream {
   public:

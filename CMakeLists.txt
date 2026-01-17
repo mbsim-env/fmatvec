@@ -47,7 +47,7 @@ set(BLAS_LAPACK_LIBRARIES ${LAPACK_LIBRARIES} )
 #         With boost 1.67 it works as expected
 #     cmake 3.17 finds c:\local\boost_1_72_0 extracted from boost_<version>-bin-msvc-all-32-64.7z
 #     Alternative: set BOOST_INCLUDEDIR to boost installation
-find_package(Boost 1.70 CONFIG REQUIRED) # COMPONENTS system spirit uuid dll (all header only)
+find_package(Boost 1.70 CONFIG REQUIRED COMPONENTS regex) # COMPONENTS system spirit uuid dll (all header only)
 
 if(NOT DEFINED ARPACK_INCLUDE_DIRS OR NOT DEFINED ARPACK_LIBRARIES)
   find_package(arpack-ng QUIET)

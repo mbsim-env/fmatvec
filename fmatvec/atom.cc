@@ -1,11 +1,15 @@
 #include <config.h>
 #include "fmatvec/atom.h"
 #include <boost/preprocessor/iteration/local.hpp>
+#include <boost/algorithm/string/regex.hpp>
 #include <mutex>
 
 using namespace std;
 
 namespace fmatvec {
+
+DisableEscaping disableEscaping;
+EnableEscaping enableEscaping;
 
 // a shared null stream object
 shared_ptr<ostream> Atom::_nullStream = make_shared<ostream>(static_cast<streambuf*>(nullptr));
@@ -182,83 +186,49 @@ osyncstream::osyncstream(osyncstream &&o) noexcept : ostream(&buf), buf(std::mov
   o.moved = true;
 }
 
+namespace {
+  const string disableEscapingChar = u8"\uE000";
+  const string enableEscapingChar  = u8"\uE001";
+}
+
 osyncstream::~osyncstream() {
   try {
-    emit();
+    if(moved)
+      return;
+    // split string by disableEscapingChar/enableEscapingChar tokens
+    std::vector<std::string> msgs;
+    static const boost::regex re(disableEscapingChar+"|"+enableEscapingChar);
+    boost::algorithm::split_regex(msgs, buf.str(), re);
+    #ifndef NDEBUG
+      // check that always pairs of disableEscapingChar and enableEscapingChar appear
+      // NOT DONE TILL NOW
+    #endif
+    buf.str("");
+    {
+      static mutex m;
+      unique_lock l(m);
+      bool skipEsc = false;
+      for(auto &msg : msgs) {
+        if(skipEsc) str << ::flush << ::skipws;
+        str << msg;
+        if(skipEsc) str << ::flush << ::noskipws;
+        skipEsc = !skipEsc;
+      }
+      str << ::flush;
+    }
   }
   catch(...) {
   }
 }
 
-void osyncstream::emit(const function<void(ostream&)> &postFunc) {
-  if(moved)
-    return;
-  {
-    static mutex m;
-    unique_lock l(m);
-    str << buf.str();
-    if(postFunc)
-      postFunc(str);
-    str << ::flush;
-  }
-  buf.str("");
-}
-
-osyncstream& osyncstream::operator<<(ios_base& (*func)(ios_base&)) {
-  if(func==::skipws)
-    emit([](ostream &s){
-      s<<::skipws;
-    });
-  else if(func==::noskipws)
-    emit([](ostream &s){
-      s<<::noskipws;
-    });
-  ostream::operator<<(func);
+osyncstream& osyncstream::operator<<(DisableEscaping&) {
+  ::operator<<(*this, disableEscapingChar);
   return *this;
 }
 
-osyncstream& osyncstream::operator<<(ostream& (*func)(ostream&)) {
-  if(func==static_cast<ostream& (*)(ostream&)>(&::flush))
-    emit([](ostream &s){
-      s<<::flush;
-    });
-  ostream::operator<<(func);
+osyncstream& osyncstream::operator<<(EnableEscaping&) {
+  ::operator<<(*this, enableEscapingChar);
   return *this;
-}
-
-osyncstream& operator<<(osyncstream& os, char ch) {
-  operator<<(static_cast<ostream&>(os), ch);
-  return os;
-}
-
-osyncstream& operator<<(osyncstream& os, signed char ch) {
-  operator<<(static_cast<ostream&>(os), ch);
-  return os;
-}
-
-osyncstream& operator<<(osyncstream& os, unsigned char ch) {
-  operator<<(static_cast<ostream&>(os), ch);
-  return os;
-}
-
-osyncstream& operator<<(osyncstream& os, const char* s) {
-  operator<<(static_cast<ostream&>(os), s);
-  return os;
-}
-
-osyncstream& operator<<(osyncstream& os, const signed char* s) {
-  operator<<(static_cast<ostream&>(os), s);
-  return os;
-}
-
-osyncstream& operator<<(osyncstream& os, const unsigned char* s) {
-  operator<<(static_cast<ostream&>(os), s);
-  return os;
-}
-
-osyncstream& operator<<(osyncstream& os, const string &s) {
-  operator<<(static_cast<ostream&>(os), s);
-  return os;
 }
 
 }

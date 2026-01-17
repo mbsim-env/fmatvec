@@ -472,7 +472,7 @@ void checkMsgStreamsType() {
   T msg1 = const_cast<char*>("output <b>with</b> escaping");
   T msg2 = const_cast<char*>("output <b>without</b> escaping");
   Atom::msgStatic(Atom::Info)<<msg1<<endl
-                             <<flush<<skipws<<msg2<<flush<<noskipws<<endl;
+                               <<disableEscaping<<msg2<<enableEscaping<<endl;
 }
 
 void checkMsgStreams() {

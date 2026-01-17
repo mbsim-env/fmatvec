@@ -95,7 +95,7 @@ if( MSVC )
   )
 endif()
 
-target_link_libraries(fmatvec ${BLAS_LAPACK_LIBRARIES} ${ARPACK_LIBRARIES} ${SPOOLES_LIBRARIES})
+target_link_libraries(fmatvec ${BLAS_LAPACK_LIBRARIES} ${ARPACK_LIBRARIES} ${SPOOLES_LIBRARIES} Boost::regex)
 if(NOT WIN32)
   target_link_libraries(fmatvec pthread)
 else()
