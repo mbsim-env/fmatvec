@@ -7,6 +7,7 @@
 #include <memory>
 #include <array>
 #include <sstream>
+#include <chrono>
 #include "stream.h"
 
 namespace fmatvec {
@@ -234,6 +235,61 @@ class FMATVEC_EXPORT AdoptCurrentMessageStreamsUntilScopeExit {
   private:
     std::array<std::pair<std::shared_ptr<bool>, std::shared_ptr<std::ostream>>, Atom::SIZE> savedStreams;
 };
+
+// BEGIN: measure time (just used for performance debugging)
+class DebugMeasureAccumulatedTime {
+  public:
+    DebugMeasureAccumulatedTime(std::chrono::duration<double> &sum_, size_t &count_) : sum(sum_), count(count_) {
+      start = std::chrono::steady_clock::now();
+    }
+    ~DebugMeasureAccumulatedTime() {
+      auto end = std::chrono::steady_clock::now();
+      auto delta = std::chrono::duration<double>(end - start);
+      sum += delta;
+      count++;
+    }
+  private:
+    std::chrono::time_point<std::chrono::steady_clock> start;
+    std::chrono::duration<double> &sum;
+    size_t &count;
+};
+class DebugMeasureAccumulatedTimeOnExit {
+  public:
+    DebugMeasureAccumulatedTimeOnExit(const std::string &id_, std::chrono::duration<double> &sum_, size_t &count_) : id(id_), sum(sum_), count(count_) {
+    }
+    ~DebugMeasureAccumulatedTimeOnExit() {
+      std::cout<<"fmatvec_measure_id,"<<id<<",totalsec,"<<sum.count()<<",count,"<<count<<",avgsec,"<<sum.count()/count<<std::endl;
+    }
+  private:
+    std::string id;
+    std::chrono::duration<double> &sum;
+    size_t &count;
+};
+// measure the accumulated time and number of calls of a block
+#define FMATVEC_MEASURE_BLOCK(id) \
+  static std::chrono::duration<double> fmatvec_measure_sum_##id {}; \
+  static size_t fmatvec_measure_count_##id {}; \
+  static fmatvec::DebugMeasureAccumulatedTimeOnExit fmatvec_measure_onexit_##id(#id, fmatvec_measure_sum_##id, fmatvec_measure_count_##id); \
+  fmatvec::DebugMeasureAccumulatedTime fmatvec_measure_dummy_##id(fmatvec_measure_sum_##id, fmatvec_measure_count_##id);
+// measure the accumulated time and number of calls of all blocks which contain FMATVEC_MEASURE_RUN(id)
+#define FMATVEC_MEASURE_BLOCKINIT(id) \
+  static std::chrono::duration<double> fmatvec_measure_sum_##id {}; \
+  static size_t fmatvec_measure_count_##id {}; \
+  static fmatvec::DebugMeasureAccumulatedTimeOnExit fmatvec_measure_onexit_##id(#id, fmatvec_measure_sum_##id, fmatvec_measure_count_##id);
+// see, the define above
+#define FMATVEC_MEASURE_BLOCKEXE(id) \
+  fmatvec::DebugMeasureAccumulatedTime fmatvec_measure_dummy_##id(fmatvec_measure_sum_##id, fmatvec_measure_count_##id);
+// start time measure for id
+#define FMATVEC_MEASURE_START(id) \
+  auto fmatvec_measure_start_##id = std::chrono::steady_clock::now();
+// dump elapsed time since the start of id (see the define above)
+#define FMATVEC_MEASURE_DUMP(id) \
+  { \
+    auto end = std::chrono::steady_clock::now(); \
+    auto delta = std::chrono::duration<double>(end - fmatvec_measure_start_##id); \
+    std::cout<<"fmatvec_measure_start_end_id,"<<#id<<",sec,"<<delta.count()<<std::endl; \
+  }
+// BEGIN: measure time (just used for performance debugging)
 
 FMATVEC_MSVC_DISABLEW4251_END
 }
