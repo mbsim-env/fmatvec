@@ -205,12 +205,20 @@ namespace fmatvec {
   template<> struct OperatorResult<AT2, AT1> { typedef ATRes Type; };
   
   FMATVEC_OPERATORRESULT1(double, double)
+  FMATVEC_OPERATORRESULT1(float, float)
   FMATVEC_OPERATORRESULT1(int, int)
   FMATVEC_OPERATORRESULT1(std::complex<double>, std::complex<double>)
+  FMATVEC_OPERATORRESULT1(std::complex<float>, std::complex<float>)
 
   FMATVEC_OPERATORRESULT2(double, std::complex<double>, std::complex<double>)
+  FMATVEC_OPERATORRESULT2(float, std::complex<float>, std::complex<float>)
+  FMATVEC_OPERATORRESULT2(double, std::complex<float>, std::complex<double>)
+  FMATVEC_OPERATORRESULT2(float, std::complex<double>, std::complex<double>)
   FMATVEC_OPERATORRESULT2(int, std::complex<double>, std::complex<double>)
+  FMATVEC_OPERATORRESULT2(int, std::complex<float>, std::complex<float>)
   FMATVEC_OPERATORRESULT2(int, double, double)
+  FMATVEC_OPERATORRESULT2(int, float, float)
+  FMATVEC_OPERATORRESULT2(float, double, double)
 
   // FMATVEC_ASSERT(expr, AT) is fully equal to assert(expr) if no spezialization of AssertUseException for AT exists.
   // FMATVEC_ASSERT(expr, AT) is similar to assert(expr) but throws an exception instead of calling abort regardless whether

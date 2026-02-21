@@ -163,18 +163,18 @@ namespace fmatvec {
     return c;
   }
   // move
-  template <class Row1, class Row2>
-  inline Vector<Row2, double> operator-(Vector<Row1, double> &&a, Vector<Row2, double> &&b) {
+  template <class Row1, class Row2, class AT>
+  inline Vector<Row2, AT> operator-(Vector<Row1, AT> &&a, Vector<Row2, AT> &&b) {
     sub(a, b);
     return std::move(a);
   }
-  template <class Row1, class Row2>
-  inline Vector<Row1, double> operator-(Vector<Row1, double> &&a, const Vector<Row2, double> &b) {
+  template <class Row1, class Row2, class AT>
+  inline Vector<Row1, AT> operator-(Vector<Row1, AT> &&a, const Vector<Row2, AT> &b) {
     sub(a, b);
     return std::move(a);
   }
-  template <class Row1, class Row2>
-  inline Vector<Row2, double> operator-(const Vector<Row1, double> &a, Vector<Row2, double> &&b) {
+  template <class Row1, class Row2, class AT>
+  inline Vector<Row2, AT> operator-(const Vector<Row1, AT> &a, Vector<Row2, AT> &&b) {
     sub(a, b, b);
     return std::move(b);
   }
@@ -286,18 +286,18 @@ namespace fmatvec {
     return c;
   }
   // move
-  template <class Row1, class Row2>
-  inline RowVector<Row2, double> operator-(RowVector<Row1, double> &&a, RowVector<Row2, double> &&b) {
+  template <class Row1, class Row2, class AT>
+  inline RowVector<Row2, AT> operator-(RowVector<Row1, AT> &&a, RowVector<Row2, AT> &&b) {
     sub(a, b);
     return std::move(a);
   }
-  template <class Row1, class Row2>
-  inline RowVector<Row1, double> operator-(RowVector<Row1, double> &&a, const RowVector<Row2, double> &b) {
+  template <class Row1, class Row2, class AT>
+  inline RowVector<Row1, AT> operator-(RowVector<Row1, AT> &&a, const RowVector<Row2, AT> &b) {
     sub(a, b);
     return std::move(a);
   }
-  template <class Row1, class Row2>
-  inline RowVector<Row2, double> operator-(const RowVector<Row1, double> &a, RowVector<Row2, double> &&b) {
+  template <class Row1, class Row2, class AT>
+  inline RowVector<Row2, AT> operator-(const RowVector<Row1, AT> &a, RowVector<Row2, AT> &&b) {
     sub(a, b, b);
     return std::move(b);
   }
@@ -731,18 +731,18 @@ namespace fmatvec {
     return C;
   }
   // move
-  template <class Type1, class Type2, class Row1, class Row2, class Col1, class Col2>
-  inline Matrix<Type2, Row2, Col2, double> operator-(Matrix<Type1, Row1, Col1, double> &&a, Matrix<Type2, Row2, Col2, double> &&b) {
+  template <class Type1, class Type2, class Row1, class Row2, class Col1, class Col2, class AT>
+  inline Matrix<Type2, Row2, Col2, AT> operator-(Matrix<Type1, Row1, Col1, AT> &&a, Matrix<Type2, Row2, Col2, AT> &&b) {
     sub(a, b);
     return std::move(a);
   }
-  template <class Type1, class Type2, class Row1, class Row2, class Col1, class Col2>
-  inline Matrix<Type1, Row1, Col1, double> operator-(Matrix<Type1, Row1, Col1, double> &&a, const Matrix<Type2, Row2, Col2, double> &b) {
+  template <class Type1, class Type2, class Row1, class Row2, class Col1, class Col2, class AT>
+  inline Matrix<Type1, Row1, Col1, AT> operator-(Matrix<Type1, Row1, Col1, AT> &&a, const Matrix<Type2, Row2, Col2, AT> &b) {
     sub(a, b);
     return std::move(a);
   }
-  template <class Type1, class Type2, class Row1, class Row2, class Col1, class Col2>
-  inline Matrix<Type2, Row2, Col2, double> operator-(const Matrix<Type1, Row1, Col1, double> &a, Matrix<Type2, Row2, Col2, double> &&b) {
+  template <class Type1, class Type2, class Row1, class Row2, class Col1, class Col2, class AT>
+  inline Matrix<Type2, Row2, Col2, AT> operator-(const Matrix<Type1, Row1, Col1, AT> &a, Matrix<Type2, Row2, Col2, AT> &&b) {
     sub(a, b, b);
     return std::move(b);
   }
@@ -796,18 +796,18 @@ namespace fmatvec {
     return A3;
   }
   // move
-  template <class Row1, class Row2>
-  inline SquareMatrix<Row1, double> operator-(SquareMatrix<Row1, double> &&A1, SquareMatrix<Row2, double> &&A2) {
+  template <class Row1, class Row2, class AT>
+  inline SquareMatrix<Row1, AT> operator-(SquareMatrix<Row1, AT> &&A1, SquareMatrix<Row2, AT> &&A2) {
     sub(A1, A2);
     return std::move(A1);;
   }
-  template <class Row1, class Row2>
-  inline SquareMatrix<Row1, double> operator-(SquareMatrix<Row1, double> &&A1, const SquareMatrix<Row2, double> &A2) {
+  template <class Row1, class Row2, class AT>
+  inline SquareMatrix<Row1, AT> operator-(SquareMatrix<Row1, AT> &&A1, const SquareMatrix<Row2, AT> &A2) {
     sub(A1, A2);
     return std::move(A1);;
   }
-  template <class Row1, class Row2>
-  inline SquareMatrix<Row2, double> operator-(const SquareMatrix<Row1, double> &A1, SquareMatrix<Row2, double> &&A2) {
+  template <class Row1, class Row2, class AT>
+  inline SquareMatrix<Row2, AT> operator-(const SquareMatrix<Row1, AT> &A1, SquareMatrix<Row2, AT> &&A2) {
     sub(A1, A2, A2);
     return std::move(A2);
   }
@@ -1631,8 +1631,8 @@ namespace fmatvec {
     return y;
   }
   // move
-  template <class Row>
-  Vector<Row, double> operator-(Vector<Row, double> &&x) {
+  template <class Row, class AT>
+  Vector<Row, AT> operator-(Vector<Row, AT> &&x) {
     for (int i = 0; i < x.size(); i++)
       x.e(i) = -x.e(i);
     return std::move(x);
@@ -1654,8 +1654,8 @@ namespace fmatvec {
     return c;
   }
   // move
-  template <class Col>
-  RowVector<Col, double> operator-(RowVector<Col, double> &&a) {
+  template <class Col, class AT>
+  RowVector<Col, AT> operator-(RowVector<Col, AT> &&a) {
     for (int i = 0; i < a.size(); i++)
       a.e(i) = -a.e(i);
     return std::move(a);
@@ -1678,8 +1678,8 @@ namespace fmatvec {
     return B;
   }
   // move
-  template <class Row>
-  SquareMatrix<Row, double> operator-(SquareMatrix<Row, double> &&A) {
+  template <class Row, class AT>
+  SquareMatrix<Row, AT> operator-(SquareMatrix<Row, AT> &&A) {
     for (int i = 0; i < A.size(); i++)
       for (int j = 0; j < A.size(); j++)
         A.e(i, j) = -A.e(i, j);
@@ -1703,8 +1703,8 @@ namespace fmatvec {
     return B;
   }
   // move
-  template <class Type, class Row, class Col>
-  Matrix<Type, Row, Col, double> operator-(Matrix<Type, Row, Col, double> &&A) {
+  template <class Type, class Row, class Col, class AT>
+  Matrix<Type, Row, Col, AT> operator-(Matrix<Type, Row, Col, AT> &&A) {
     for (int i = 0; i < A.rows(); i++)
       for (int j = 0; j < A.cols(); j++)
         A.e(i, j) = -A.e(i, j);
