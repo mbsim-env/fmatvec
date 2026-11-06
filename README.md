@@ -19,86 +19,39 @@ Current Daily Build Status of the MBSim-Environment
 
 # fmatvec (Fast Matrix-Vector Library)
 
-The purpose of this project is to provide a C++-library for high performance
-matrix-vector computations. The software has an object oriented design allowing
-the use of matrices and vectors in a comfortable way.  One of the main tasks
-ist storing and managing of data types. For most of the computations ATLAS
-(Automatically Tuned Linear Algebra Software) is used providing C and Fortran77
-interfaces to a portably efficient BLAS implementation, as well as a few
-routines from LAPACK. For a full linear algebra package the original LAPACK
-library is required as well.
+The fmatvec (Fast Matrix-Vector Library) project aims to provide a high-performance C++ library for matrix-vector computations. Its object-oriented design enables convenient and intuitive handling of matrices and vectors, with a particular focus on efficient storage and management of different data types.
 
-The library supports vectors, general matrices, symmetric matrices, banded
-matrices as well as sparse matrices. Computations with dimensionless matrices
-and vectors are possible. It makes use of the template mechanism in order to
-provide matrices and vectors of any type like int, double, complex, etc..
+Most computational operations rely on ATLAS (Automatically Tuned Linear Algebra Software), which provides a portable and efficient implementation of BLAS through C and Fortran 77 interfaces, as well as selected LAPACK routines. For access to the full range of linear algebra functionality, the original LAPACK library is also required.
 
-# Requirements
+The library supports a wide range of data structures, including vectors, general matrices, symmetric matrices, banded matrices, and sparse matrices. It also supports computations involving dimensionless matrices and vectors. By leveraging C++ templates, fmatvec allows matrices and vectors to be instantiated with various data types, including integers, floating-point numbers (such as double), and complex numbers.
 
-- ATLAS from http://math-atlas.sourceforge.net (BSD license)
-- LAPACK from http://www.netlib.org/lapack (BSD license)
 
-# Installation
 
-1. Install ATLAS with full LAPACK support, if necessary. For more
-   details see http://math-atlas.sourceforge.net/faq.html.
-   Alternatively, use fmatvec without ATLAS and install the reference
-   libraries of BLAS and LAPACK from http://www.netlib.org/lapack.
+# The MBSim Environment
 
-2. Run aclocal, autoheader, autoconf, libtoolize und automake, if
-   necessary:
-   ```
-   aclocal
-   autoheader
-   autoconf
-   libtoolize
-   automake -a
-   ```
-		                
-3. Run configure
+This repository is embed in the GitHub organization [MBSim-Env](https://github.com/mbsim-env/)
 
-   `./configure`
+The MBSim Environment (MBSim-Env) is a scientific software project with
+a long-standing history and a dedicated development and release infrastructure.
 
-   Hereby, the following options are important:
+For further information about the project, its scientific background,
+and its development, please visit the official project homepage:
 
-   `--prefix=PFX` (prefix, where the library will be installed).
+[www.mbsim-env.de](https://www.mbsim-env.de/)
 
-   `--enable-atlas` (use ATLAS)
+## Project Resources
 
-   `--with-blas-lib-prefix=PFX` (prefix, where the BLAS lib is
-       installed, when ATLAS is not used)
+The project maintains its own infrastructure for continuous integration,
+automated testing, documentation generation, and official software releases.
 
-   `--with-lapack-lib-prefix=PFX` (prefix, where the LAPACK lib is
-       installed, when ATLAS is not used)
+The following resources are available on the official project website:
 
-   `--with-atlas-inc-prefix=PFX` (prefix, where the ATLAS includes 
-       are installed, when ATLAS is used)
+* [Documentation](https://www.mbsim-env.de/service/docu/) - Technical documentation and user guides.
+* [Releases](https://www.mbsim-env.de/service/releases/) - Official software releases.
+* [Nightly and CI Builds](https://www.mbsim-env.de/service/home/) - Development builds and continuous integration results.
 
-   `--with-atlas-lib-prefix=PFX` (prefix, where the ATLAS libs are
-       installed, when ATLAS is used)
+## Project History and Maintenance
 
-4. Run make in order to build the shared library libfmatvec.so.
-          
-   `make`
+The official homepage also provides an overview of the scientific history and development of MBSim-Env.
 
-5. Run make install in order to install the library libfmatvec.so.
-
-   `make install`
-				  
-# Usage
-
-1. To compile a program that includes the fmatvec headers use
-
-   `pkg-config --cflags fmatvec`
-
-2. To link a program against the fmatvec library use
-
-   `pkg-config --libs fmatvec`
-
-# Documentation
-
-See the doxygen documentation. Use
-
-`make doc`
-
-to create this documentation.
+It is primarily maintained by [Markus Friedrich](https://github.com/friedrichatgc).
